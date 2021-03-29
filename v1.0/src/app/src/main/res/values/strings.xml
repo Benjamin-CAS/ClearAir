@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">CleanAir Spaces</string>
+    <string name="tool_bar_logo_desc">logo</string>
+    <string name="map_menu_help_txt">Help</string>
+    <string name="map_menu_about_app_txt">About App</string>
+    <string name="app_logo_image_desc">app logo</string>
+    <string name="about_app_txt">CleanAir Spaces 2021</string>
+    <string name="app_version_desc">Version 1.0</string>
+    <string name="got_it">Got it!</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="locations_txt">Locations</string>
+    <string name="smart_qr_txt">SMART QR</string>
+    <string name="map_view_txt">Map View</string>
+    <string name="add_txt">Add</string>
+    <string name="location_logo_image_desc">Location logo image</string>
+    <string name="indoor_txt">indoor</string>
+    <string name="outdoor_txt">outdoor</string>
+    <string name="air_status_indicator_desc">air status indicator</string>
+    <string name="good_air_status_txt">Good</string>
+    <string name="moderate_air_status_txt">Moderate</string>
+    <string name="click_to_view_info_txt">Click to view info</string>
+    <string name="location_permission_rationale">Permissions required to display your location on the map</string>
+    <string name="turn_on_gps_prompt">Please enable GPS to access your location</string>
+    <string name="map_menu_help_desc_txt">Help</string>
+    <string name="danger_txt">Bad</string>
+
 </resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="md_space">16dp</dimen>
+    <dimen name="std_space">8dp</dimen>
+    <dimen name="md_icon">32dp</dimen>
+    <dimen name="clickable_std">48dp</dimen>
+    <dimen name="product_image_height">200dp</dimen>
+    <dimen name="lg_txt">22sp</dimen>
+    <dimen name="half_location_logo_size">60dp</dimen>
+    <dimen name="location_logo_size">120dp</dimen>
+    <dimen name="std_icon">24dp</dimen>
+</resources>

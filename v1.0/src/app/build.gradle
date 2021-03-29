@@ -5,6 +5,8 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id "androidx.navigation.safeargs.kotlin"
     id "kotlin-parcelize"
+    id "com.google.secrets_gradle_plugin" version '0.5'
+
 }
 
 android {
@@ -19,10 +21,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-
-        resValue "string", 'AMAPS_DEBUG_KEY', AMAPS_DEBUG_KEY
-
     }
 
     buildTypes {
@@ -91,6 +89,8 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
 
+    //A MAP
+    implementation files('libs/Amap_2DMap_V6.0.0_20191106.jar')
 }
 
 kapt {

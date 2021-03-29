@@ -25,7 +25,11 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="@string/AMAPS_DEBUG_KEY"/>
+            android:value="${AMAPS_DEBUG_KEY}"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${GMAPS_API_DEBUG_KEY}" />
 
         <activity android:name=".MainActivity">
             <intent-filter>

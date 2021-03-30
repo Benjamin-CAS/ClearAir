@@ -23,5 +23,26 @@
     <string name="turn_on_gps_prompt">Please enable GPS to access your location</string>
     <string name="map_menu_help_desc_txt">Help</string>
     <string name="danger_txt">Bad</string>
+    <string name="condition_good">Good</string>
+    <string name="pm2_5_lvl_comment">PM2.5 Level</string>
+    <string name="condition_beyond_rating">Beyond Rating</string>
+    <string name="pm2_5_lvl_aqi_us_comment">PM2.5 Level AQI US</string>
+    <string name="condition_moderate">Moderate</string>
+    <string name="condition_unhealthy_sensitive_groups">Unhealthy F. S. G.</string>
+    <string name="condition_unhealthy_sensitive_groups_comment">PM2.5 Level AQI US Unhealthy for sensitive groups</string>
+    <string name="condition_unhealthy">Unhealthy</string>
+    <string name="condition_very_unhealthy">Very Unhealthy</string>
+    <string name="condition_hazardous">Hazardous</string>
+    <string name="pm2_5_lvl_aqi_cn_comment">PM2.5 Level AQI CN</string>
+    <string name="condition_excellent">Excellent</string>
+    <string name="condition_lightly">Lightly</string>
+    <string name="condition_heavy">Heavy</string>
+    <string name="condition_severe">Severe</string>
+    <string name="condition_undetermined">Undetermined</string>
+    <string name="voc_lvl_comment">VOC Level</string>
+    <string name="good_voc_lvl_comment">Good VOC Level</string>
+    <string name="moderate_voc_lvl_comment">Moderate VOC Level</string>
+    <string name="unhealthy_voc_lvl_comment">Unhealthy VOC Level</string>
+    <string name="co_2_lvl_comment">CO2 Level</string>
 
 </resources>

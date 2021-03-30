@@ -28,8 +28,7 @@ import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.FragmentAmapBinding
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
-import com.cleanairspaces.android.utils.MyLogger
-import com.cleanairspaces.android.utils.showSnackBar
+import com.cleanairspaces.android.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,8 +48,8 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     private var snackbar: Snackbar? = null
 
 
-    private val CIRCLE_RADIUS = 500.toDouble()
-    private val STROKE_WIDTH = 5f
+    private val CIRCLE_RADIUS = 20000.toDouble()
+    private val STROKE_WIDTH = 1f
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
@@ -106,7 +105,7 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
                 aMap?.apply {
                     setMapLanguage(AMap.ENGLISH)
                     uiSettings.isZoomControlsEnabled = false
-                    setOnMapLoadedListener { requestPermissionsToShowUserLocation() }
+                    requestPermissionsToShowUserLocation()
                     observeOutDoorLocations()
                 }
             }
@@ -115,14 +114,16 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     }
 
     private fun observeOutDoorLocations(){
-        viewModel.refreshOutDoorLocations()
+        //todo right place to initialize? and clear map
+        //TODO viewModel.refreshOutDoorLocations()
         viewModel.observeLocations().observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 MyLogger.logThis(
                         TAG, "observeOutDoorLocations() -> observeLocations()" , " found in room ${it.size}"
                 )
-                //setupMarkers(locations = it)
-                //initInfoWindowsAdapter()
+               //todo maybe? setupMarkers(locations = it)
+               //todo maybe? initInfoWindowsAdapter()
+              drawOutDoorLocationCirclesOnTheMap(it)
             }
         })
     }
@@ -277,12 +278,23 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
 
     }
 
-    /*todo private fun getCircle(pos: LatLng, locationStatus: LocationStatus): CircleOptions? {
-        return CircleOptions().center(pos).radius(CIRCLE_RADIUS)
-            .fillColor(ContextCompat.getColor(requireContext(), locationStatus.colorRes))
-            .strokeColor(ContextCompat.getColor(requireContext(), R.color.blue))
+    private fun drawOutDoorLocationCirclesOnTheMap(locations: List<OutDoorLocations>) {
+        for (location in locations){
+            aMap?.addCircle(getCircle(location))
+        }
+
+        MyLogger.logThis( TAG,"drawOutDoorLocationCirclesOnTheMap()", "added ${locations.size} circles")
+    }
+    private fun getCircle(location: OutDoorLocations): CircleOptions? {
+        val pm25  = if(location.pm2p5 != "") location.pm2p5 else location.reading
+        val uiColor = AQI.getAQIColorFromPM25(pm25.toDouble())
+        val aqiColor = ColorUtils.convertUIColorToRGB(uiColor)
+
+        return CircleOptions().center(location.getLocationLatLng()).radius(CIRCLE_RADIUS)
+            .fillColor(aqiColor)
+            .strokeColor(aqiColor)
             .strokeWidth(STROKE_WIDTH)
-    }*/
+    }
 
 
     /************* forwarding life cycle methods & clearing *********/

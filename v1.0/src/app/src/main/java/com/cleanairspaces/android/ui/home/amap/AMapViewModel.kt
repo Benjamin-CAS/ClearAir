@@ -1,18 +1,20 @@
 package com.cleanairspaces.android.ui.home.amap
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.cleanairspaces.android.R
-import com.cleanairspaces.android.models.entities.LocationInfo
-import com.cleanairspaces.android.models.repository.LocationsRepo
+import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
 class AMapViewModel @Inject constructor(
-    private val locationsRepo: LocationsRepo
+    private val locationsRepo: OutDoorLocationsRepo
 ) : ViewModel() {
 
     var hasPromptedForLocationSettings = false
@@ -23,8 +25,13 @@ class AMapViewModel @Inject constructor(
         MapActions(action = MapActionChoices.ADD),
     )
 
-    fun getLocations() : LiveData<List<LocationInfo>> = locationsRepo.getLocations()
-    fun getLocationInfo(locationName: String) = locationsRepo.getLocationByName(locationName)
+    fun observeLocations() = locationsRepo.getOutDoorLocationsFlow().asLiveData()
+
+    fun refreshOutDoorLocations(){
+        viewModelScope.launch(Dispatchers.IO) {
+            locationsRepo.refreshOutDoorLocations()
+        }
+    }
 }
 
 @Parcelize

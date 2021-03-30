@@ -26,9 +26,9 @@ import com.amap.api.maps2d.MapView
 import com.amap.api.maps2d.model.*
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.FragmentAmapBinding
-import com.cleanairspaces.android.models.entities.LocationInfo
-import com.cleanairspaces.android.models.entities.LocationStatus
+import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.showSnackBar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -107,17 +107,24 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
                     setMapLanguage(AMap.ENGLISH)
                     uiSettings.isZoomControlsEnabled = false
                     setOnMapLoadedListener { requestPermissionsToShowUserLocation() }
-                    viewModel.getLocations().observe(viewLifecycleOwner, Observer {
-                        if (it != null) {
-                            setupMarkers(locations = it)
-
-                            initInfoWindowsAdapter()
-                        }
-                    })
+                    observeOutDoorLocations()
                 }
             }
         }
 
+    }
+
+    private fun observeOutDoorLocations(){
+        viewModel.refreshOutDoorLocations()
+        viewModel.observeLocations().observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                MyLogger.logThis(
+                        TAG, "observeOutDoorLocations() -> observeLocations()" , " found in room ${it.size}"
+                )
+                //setupMarkers(locations = it)
+                //initInfoWindowsAdapter()
+            }
+        })
     }
 
     private fun initInfoWindowsAdapter() {
@@ -246,23 +253,23 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
 
 
     /**************** MARKERS & CIRCLES **************/
-    private fun setupMarkers(locations: List<LocationInfo>) {
+    private fun setupMarkers(locations: List<OutDoorLocations>) {
         for (location in locations) {
             val markerOptions = MarkerOptions()
             markerOptions.apply {
-                position(location.location)
-                title(location.location_name)
-                snippet(location.location_area)
+                position(location.getLocationLatLng())
+                title(location.getLocationNameEn())
+                snippet(location.location_area.areaName)
                 draggable(false)
-                icon(
+                /*TODO icon(
                     BitmapDescriptorFactory.fromBitmap(
                         BitmapFactory
                             .decodeResource(resources, location.indoor_status.drawableRes)
                     )
-                )
+                )*/
             }
             aMap?.addMarker(markerOptions)
-            aMap?.addCircle(getCircle(locationStatus = location.outdoor_status, pos = location.location))
+           //todo aMap?.addCircle(getCircle(locationStatus = location.outdoor_status, pos = location.location))
         }
         aMap?.setOnMarkerClickListener {
             false
@@ -270,12 +277,12 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
 
     }
 
-    private fun getCircle(pos: LatLng, locationStatus: LocationStatus): CircleOptions? {
+    /*todo private fun getCircle(pos: LatLng, locationStatus: LocationStatus): CircleOptions? {
         return CircleOptions().center(pos).radius(CIRCLE_RADIUS)
             .fillColor(ContextCompat.getColor(requireContext(), locationStatus.colorRes))
             .strokeColor(ContextCompat.getColor(requireContext(), R.color.blue))
             .strokeWidth(STROKE_WIDTH)
-    }
+    }*/
 
 
     /************* forwarding life cycle methods & clearing *********/

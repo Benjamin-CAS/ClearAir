@@ -12,5 +12,6 @@
         style="@style/Theme.CleanAirSpaces.Button"
         android:background="@drawable/round_whitish_bg"
         android:textColor="?colorOnPrimary"
-        android:layout_marginStart="@dimen/md_space"/>
+        android:layout_marginStart="@dimen/md_space"
+        android:elevation="@dimen/std_space"/>
 </layout>

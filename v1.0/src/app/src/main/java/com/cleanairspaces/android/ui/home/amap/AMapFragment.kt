@@ -1,7 +1,6 @@
 package com.cleanairspaces.android.ui.home.amap
 
 
-import android.provider.Settings
 import android.Manifest
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
@@ -9,6 +8,7 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
 
@@ -40,27 +41,32 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
         private val TAG = AMapFragment::class.java.simpleName
     }
 
+    //prepare bitmaps
+    private val aQIGoodBitmap = R.drawable.good_circle
+    private val aQIModerateBitmap = R.drawable.moderate_circle
+    private val aQIGUnhealthyBitmap = R.drawable.g_unhealthy_circle
+    private val aQIUnhealthyBitmap = R.drawable.unhealthy_circle
+    private val aQIVUnhealthyBitmap = R.drawable.v_unhealthy_circle
+    private val aQIHazardousBitmap = R.drawable.hazardous_circle
+    private val aQIBeyondBitmap = R.drawable.beyond_circle
+    private val aQICNExcellentBitmap = R.drawable.excellent
+
+
     private var _binding: FragmentAmapBinding? = null
     private val binding get() = _binding!!
-    private val viewModel : AMapViewModel by viewModels()
+    private val viewModel: AMapViewModel by viewModels()
 
     private var popUp: AlertDialog? = null
     private var snackbar: Snackbar? = null
 
-
-    private val CIRCLE_RADIUS = 20000.toDouble()
-    private val STROKE_WIDTH = 1f
-
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    private val mapActionsAdapter by lazy {
-        MapActionsAdapter(this)
-    }
+    private val mapActionsAdapter = MapActionsAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
+                ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
                 showUserLocation()
@@ -69,9 +75,9 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAmapBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
@@ -82,9 +88,9 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
-                requireContext(),
-                RecyclerView.HORIZONTAL,
-                false
+                    requireContext(),
+                    RecyclerView.HORIZONTAL,
+                    false
             )
             mapActionsAdapter.setMapActionsList(viewModel.mapActions)
             mapActionsRv.adapter = mapActionsAdapter
@@ -98,12 +104,12 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     private var aMap: AMap? = null
     private fun initializeMap(savedInstanceState: Bundle?) {
         binding.apply {
-            mapView = map as MapView
+            mapView = map
             mapView?.let { mMapView ->
                 mMapView.onCreate(savedInstanceState)
                 aMap = mMapView.map
                 aMap?.apply {
-                    setMapLanguage(AMap.ENGLISH)
+                    //todo settings setMapLanguage(AMap.ENGLISH)
                     uiSettings.isZoomControlsEnabled = false
                     requestPermissionsToShowUserLocation()
                     observeOutDoorLocations()
@@ -113,23 +119,17 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
 
     }
 
-    private fun observeOutDoorLocations(){
-        //todo right place to initialize? and clear map
-        //TODO viewModel.refreshOutDoorLocations()
+    private fun observeOutDoorLocations() {
+        viewModel.refreshOutDoorLocations()
         viewModel.observeLocations().observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 MyLogger.logThis(
-                        TAG, "observeOutDoorLocations() -> observeLocations()" , " found in room ${it.size}"
+                        TAG, "observeOutDoorLocations() -> observeLocations()", " found in room ${it.size}"
                 )
-               //todo maybe? setupMarkers(locations = it)
-               //todo maybe? initInfoWindowsAdapter()
-              drawOutDoorLocationCirclesOnTheMap(it)
+                aMap?.clear()
+                setupMarkers(locations = it)
             }
         })
-    }
-
-    private fun initInfoWindowsAdapter() {
-       //todo
     }
 
 
@@ -138,8 +138,8 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     private fun requestPermissionsToShowUserLocation() {
         when {
             ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED -> {
                 showUserLocation()
             }
@@ -157,20 +157,20 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     }
 
     private fun showUserLocation() {
-        val myLocationStyle: MyLocationStyle = MyLocationStyle()
+        val myLocationStyle = MyLocationStyle()
         myLocationStyle.apply {
             myLocationIcon(
-                BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory
-                        .decodeResource(resources, R.drawable.my_location_icon)
-                )
+                    BitmapDescriptorFactory.fromBitmap(
+                            BitmapFactory
+                                    .decodeResource(resources, R.drawable.my_location_icon)
+                    )
             )
             interval(2000)
             myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW)
         }
         aMap?.apply {
             setMyLocationStyle(myLocationStyle)
-            uiSettings?.isMyLocationButtonEnabled = true
+            uiSettings?.isMyLocationButtonEnabled = false
             isMyLocationEnabled = true
             promptMyLocationSettings()
         }
@@ -187,48 +187,42 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
         }
     }
 
-    /***************** DIALOGS ****************/
-
-    private fun displayLocationInfo(title: String) {
-      //todo
-    }
-
     override fun onClickAction(actionChoice: MapActionChoices) {
-       //todo
+        MyLogger.logThis(TAG, "onClickAction()", "user clicked ${getString(actionChoice.strRes)}")
     }
 
 
+    /***************** DIALOGS ****************/
     private fun showDialog(msgRes: Int, positiveAction: () -> Unit) {
         dismissPopUps()
         popUp = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(msgRes)
-            .setPositiveButton(
-                R.string.got_it
-            ) { dialog, _ ->
-                positiveAction.invoke()
-                dialog.dismiss()
-            }
-            .setNeutralButton(
-                R.string.dismiss
-            ) { dialog, _ ->
-                dialog.dismiss()
-            }.create()
+                .setTitle(msgRes)
+                .setPositiveButton(
+                        R.string.got_it
+                ) { dialog, _ ->
+                    positiveAction.invoke()
+                    dialog.dismiss()
+                }
+                .setNeutralButton(
+                        R.string.dismiss
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
 
         popUp?.show()
     }
 
     private fun showSnackBar(
-        msgRes: Int,
-        isError: Boolean = false,
-        actionRes: Int? = null,
-        msg: String? = null
+            msgRes: Int,
+            isError: Boolean = false,
+            actionRes: Int? = null
     ) {
         dismissPopUps()
         binding.apply {
             snackbar = viewsContainer.showSnackBar(
-                msgResId = msgRes,
-                isErrorMsg = isError,
-                actionMessage = actionRes
+                    msgResId = msgRes,
+                    isErrorMsg = isError,
+                    actionMessage = actionRes
             )
         }
     }
@@ -247,7 +241,7 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
                 true
             }
             else -> item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(
-                item
+                    item
             )
         }
     }
@@ -256,21 +250,23 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     /**************** MARKERS & CIRCLES **************/
     private fun setupMarkers(locations: List<OutDoorLocations>) {
         for (location in locations) {
+            val mDrawable = getIconForMarker(location)
+            val mIcon = if (mDrawable == null) null else
+                BitmapDescriptorFactory.fromBitmap(
+                        BitmapFactory
+                                .decodeResource(resources, mDrawable)
+                )
+
             val markerOptions = MarkerOptions()
             markerOptions.apply {
                 position(location.getLocationLatLng())
-                title(location.getLocationNameEn())
-                snippet(location.location_area.areaName)
                 draggable(false)
-                /*TODO icon(
-                    BitmapDescriptorFactory.fromBitmap(
-                        BitmapFactory
-                            .decodeResource(resources, location.indoor_status.drawableRes)
-                    )
-                )*/
+                anchor(0.5f, 0.5f)
+                mIcon?.let{
+                    icon(it)
+                }
             }
             aMap?.addMarker(markerOptions)
-           //todo aMap?.addCircle(getCircle(locationStatus = location.outdoor_status, pos = location.location))
         }
         aMap?.setOnMarkerClickListener {
             false
@@ -278,28 +274,24 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
 
     }
 
-    private fun drawOutDoorLocationCirclesOnTheMap(locations: List<OutDoorLocations>) {
-        for (location in locations){
-            aMap?.addCircle(getCircle(location))
+    private fun getIconForMarker(location: OutDoorLocations): Int? {
+        val pm25 = if (location.pm2p5 != "") location.pm2p5 else location.reading
+        return when (AQI.getAQIColorFromPM25(pm25.toDouble())) {
+            UIColor.AQIGoodColor -> aQIGoodBitmap
+            UIColor.AQIModerateColor -> aQIModerateBitmap
+            UIColor.AQIGUnhealthyColor -> aQIGUnhealthyBitmap
+            UIColor.AQIUnhealthyColor -> aQIUnhealthyBitmap
+            UIColor.AQIVUnhealthyColor -> aQIVUnhealthyBitmap
+            UIColor.AQIHazardousColor -> aQIHazardousBitmap
+            UIColor.AQIBeyondColor -> aQIBeyondBitmap
+            UIColor.AQICNExcellentColor -> aQICNExcellentBitmap
+            else -> null
         }
-
-        MyLogger.logThis( TAG,"drawOutDoorLocationCirclesOnTheMap()", "added ${locations.size} circles")
-    }
-    private fun getCircle(location: OutDoorLocations): CircleOptions? {
-        val pm25  = if(location.pm2p5 != "") location.pm2p5 else location.reading
-        val uiColor = AQI.getAQIColorFromPM25(pm25.toDouble())
-        val aqiColor = ColorUtils.convertUIColorToRGB(uiColor)
-
-        return CircleOptions().center(location.getLocationLatLng()).radius(CIRCLE_RADIUS)
-            .fillColor(aqiColor)
-            .strokeColor(aqiColor)
-            .strokeWidth(STROKE_WIDTH)
     }
 
 
     /************* forwarding life cycle methods & clearing *********/
     private fun dismissPopUps() {
-        //todo locationInfoDialog
         popUp?.let {
             if (it.isShowing) it.dismiss()
         }
@@ -328,7 +320,6 @@ class AMapFragment : Fragment(), MapActionsAdapter.ClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         mapView?.onDestroy()
-        //todo mapsMarkersInfoWindowAdapter = null
         dismissPopUps()
         _binding = null
     }

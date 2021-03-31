@@ -4,8 +4,11 @@ import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.amap.api.maps2d.model.BitmapDescriptor
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
+import com.cleanairspaces.android.utils.MyColorUtils
+import com.cleanairspaces.android.utils.UIColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +35,8 @@ class AMapViewModel @Inject constructor(
             locationsRepo.refreshOutDoorLocations()
         }
     }
+
+
 }
 
 @Parcelize

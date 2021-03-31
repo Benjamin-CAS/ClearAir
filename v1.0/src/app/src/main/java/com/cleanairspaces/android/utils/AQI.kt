@@ -60,9 +60,7 @@ object AQI {
         while (PM25[i] < pm25) i += 1
 
         when (i) {
-            0 ->
-                return UIColor.AQIGoodColor
-            1 ->
+            0, 1 ->
                 return UIColor.AQIGoodColor
             2 ->
                 return UIColor.AQIModerateColor
@@ -72,9 +70,7 @@ object AQI {
                 return UIColor.AQIUnhealthyColor
             5 ->
                 return UIColor.AQIVUnhealthyColor
-            6 ->
-                return UIColor.AQIHazardousColor
-            7 ->
+            6, 7 ->
                 return UIColor.AQIHazardousColor
             else ->
                 return UIColor.AQIBeyondColor

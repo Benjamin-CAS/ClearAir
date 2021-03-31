@@ -1,25 +1,31 @@
-package com.cleanairspaces.android.ui.home.amap
+package com.cleanairspaces.android.ui.home
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.amap.api.maps2d.model.BitmapDescriptor
 import com.cleanairspaces.android.R
+import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
-import com.cleanairspaces.android.utils.MyColorUtils
-import com.cleanairspaces.android.utils.UIColor
+import com.cleanairspaces.android.utils.MyLogger
+import com.cleanairspaces.android.utils.OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class AMapViewModel @Inject constructor(
+class MapViewModel @Inject constructor(
     private val locationsRepo: OutDoorLocationsRepo
 ) : ViewModel() {
 
+    init {
+        refreshOutDoorLocations()
+    }
     var hasPromptedForLocationSettings = false
 
     val mapActions = arrayListOf(
@@ -28,15 +34,23 @@ class AMapViewModel @Inject constructor(
         MapActions(action = MapActionChoices.ADD),
     )
 
-    fun observeLocations() = locationsRepo.getOutDoorLocationsFlow().asLiveData()
+    fun observeLocations() : LiveData<List<OutDoorLocations>> = locationsRepo.getOutDoorLocationsLive().asLiveData()
 
-    fun refreshOutDoorLocations(){
+    private fun refreshOutDoorLocations(){
+        MyLogger.logThis(TAG, "refreshOutDoorLocations()","called --")
         viewModelScope.launch(Dispatchers.IO) {
             locationsRepo.refreshOutDoorLocations()
+            delay(OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS)
+            withContext(Dispatchers.Main){
+                refreshOutDoorLocations()
+            }
         }
     }
 
 
+    companion object{
+        private val TAG = MapViewModel::class.java.simpleName
+    }
 }
 
 @Parcelize

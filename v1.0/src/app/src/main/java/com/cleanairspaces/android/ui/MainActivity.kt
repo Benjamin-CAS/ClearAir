@@ -1,23 +1,20 @@
 package com.cleanairspaces.android.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.isVisible
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.bumptech.glide.Glide
-import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityMainBinding
+import com.cleanairspaces.android.ui.home.amap.AMapActivity
+import com.cleanairspaces.android.ui.home.gmap.GMapActivity
+import com.cleanairspaces.android.utils.MyLogger
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var navController: NavController
-    private lateinit var appBarConfiguration: AppBarConfiguration
 
     private val TAG = MainActivity::class.java.simpleName
 
@@ -27,65 +24,27 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
-        navController = navHostFragment.findNavController()
-        //specify home fragments
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.aMapFragment,
-                R.id.gMapFragment,
-                R.id.splashFragment
-            )
-        )
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        if (false) {
+            //TODO CALL checkForGooglePlayServices()
+           MyLogger.logThis(TAG, "onViewCreated()" , "google play services found & up to date")
+            startActivity(Intent(this, GMapActivity::class.java))
+       } else {
+           MyLogger.logThis(TAG, "onViewCreated()" , "google play services not found & or out-dated")
+            startActivity(Intent(this, AMapActivity::class.java))
+       }
 
-        //hide and show menus depending on fragment
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-
-                R.id.aMapFragment,
-                R.id.gMapFragment-> {
-                    binding.apply {
-                        toolbar.isVisible = true
-                        toolbarTitle.isVisible = false
-                        toolbarLogo.isVisible = true
-                        Glide.with(this@MainActivity)
-                            .load(R.drawable.clean_air_spaces_logo_name)
-                            .into(toolbarLogo)
-                    }
-                }
-
-                R.id.splashFragment -> {
-                    binding.apply {
-                        toolbar.isVisible = false
-                    }
-                }
-
-                R.id.aboutAppFragment -> {
-                    binding.apply {
-                        toolbar.isVisible = true
-                        toolbarLogo.isVisible = false
-                        toolbarTitle.isVisible = true
-                        toolbarTitle.setText(R.string.map_menu_about_app_txt)
-                    }
-                }
-
-                else -> {
-                    binding.apply {
-                        toolbar.isVisible = false
-                    }
-                }
-
-            }
-        }
+        this.finish()
     }
 
-    //toolbar handle back navigation
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+    private fun checkForGooglePlayServices(): Boolean {
+        //maybe need update?
+        val googleApiAvailability = GoogleApiAvailability.getInstance()
+        return when (googleApiAvailability.isGooglePlayServicesAvailable(
+                this
+        )) {
+            ConnectionResult.SUCCESS -> true
+            else -> false
+        }
     }
 
 }

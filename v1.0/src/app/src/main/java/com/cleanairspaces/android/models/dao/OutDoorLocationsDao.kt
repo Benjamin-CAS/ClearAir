@@ -14,5 +14,11 @@ interface OutDoorLocationsDao {
     suspend fun insertOutDoorLocation(locations: OutDoorLocations)
 
     @Query("SELECT * FROM out_door_locations")
-    fun getOutDoorLocationsFlow(): Flow<List<OutDoorLocations>>
+    fun getOutDoorLocationsLive(): Flow<List<OutDoorLocations>>
+
+    @Query("DELETE FROM out_door_locations ")
+    suspend fun deleteAllLocations()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOutDoorLocations(newOutDoorLocations: List<OutDoorLocations>)
 }

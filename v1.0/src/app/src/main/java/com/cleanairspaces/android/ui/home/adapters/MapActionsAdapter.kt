@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cleanairspaces.android.databinding.MapActionsItemBinding
-import com.cleanairspaces.android.ui.home.amap.MapActionChoices
-import com.cleanairspaces.android.ui.home.amap.MapActions
+import com.cleanairspaces.android.ui.home.MapActionChoices
+import com.cleanairspaces.android.ui.home.MapActions
+import com.cleanairspaces.android.ui.home.gmap.GMapActivity
 import kotlinx.parcelize.Parcelize
 
 
-class MapActionsAdapter (private val actionsListener: MapActionsAdapter.ClickListener) :
+class MapActionsAdapter(private val actionsListener: ClickListener) :
     RecyclerView.Adapter<MapActionsAdapter.MapActionsViewHolder>() {
 
     private val mapActionsList = ArrayList<MapActions>()

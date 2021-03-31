@@ -4,8 +4,9 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.amap.api.maps2d.model.LatLng
 import com.cleanairspaces.android.utils.DEFAULT_LOCATION_EN_NAME
+import com.google.android.gms.maps.model.LatLng as gMapLatLng
+import com.amap.api.maps2d.model.LatLng as aMapLatLng
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -24,8 +25,12 @@ data class OutDoorLocations(
         val lat : String,
         val location_area: LocationAreas = LocationAreas.OTHER
 ):Parcelable {
-    fun getLocationLatLng(): LatLng {
-        return LatLng(lat.toDouble(), lon.toDouble())
+    fun getGMapLocationLatLng(): gMapLatLng {
+        return gMapLatLng(lat.toDouble(), lon.toDouble())
+    }
+
+    fun getAMapLocationLatLng(): aMapLatLng {
+        return aMapLatLng(lat.toDouble(), lon.toDouble())
     }
 
     fun getLocationNameEn() : String{

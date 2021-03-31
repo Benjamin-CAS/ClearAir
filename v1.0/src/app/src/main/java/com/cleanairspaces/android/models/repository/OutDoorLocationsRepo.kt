@@ -8,7 +8,6 @@ import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOther
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.entities.LocationAreas
 import com.cleanairspaces.android.models.entities.OutDoorLocations
-import com.cleanairspaces.android.utils.DEFAULT_LOCATION_EN_NAME
 import com.cleanairspaces.android.utils.MyLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -27,7 +26,7 @@ class OutDoorLocationsRepo
 ){
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
 
-        fun  getOutDoorLocationsFlow() = outDoorLocationsDao.getOutDoorLocationsFlow()
+        fun  getOutDoorLocationsLive() = outDoorLocationsDao.getOutDoorLocationsLive()
 
     private fun getOtherOutDoorLocationsResponseCallback() : Callback<OutDoorLocationsOtherResponse> {
         return object : Callback<OutDoorLocationsOtherResponse> {
@@ -146,18 +145,20 @@ class OutDoorLocationsRepo
     
     fun saveOutDoorLocations(locations : List<Any>, location_area : LocationAreas){
         coroutineScope.launch {
+            outDoorLocationsDao.deleteAllLocations()
+            val newOutDoorLocations = ArrayList<OutDoorLocations>()
             when (location_area) {
                 LocationAreas.AMERICA -> {
                     val locationsList = locations as List<*>
                     for (loc in locationsList) {
                         val location = loc as OutDoorLocationAmerica
-                        val outDoorLocations = OutDoorLocations(
+                        val outDoorLocation = OutDoorLocations(
                             pm2p5 = location.pm2p5,
                             lon = location.sta_lon,
                             lat = location.sta_lat,
                             location_area = LocationAreas.AMERICA
                         )
-                        outDoorLocationsDao.insertOutDoorLocation(outDoorLocations)
+                        newOutDoorLocations.add(outDoorLocation)
 
                     }
                 }
@@ -165,13 +166,13 @@ class OutDoorLocationsRepo
                     val locationsList = locations as List<*>
                     for (loc in locationsList) {
                         val location = loc as OutDoorLocationTaiwan
-                        val outDoorLocations = OutDoorLocations(
+                        val outDoorLocation = OutDoorLocations(
                                 pm2p5 = location.pm2p5,
                                 lon = location.lon,
                                 lat = location.lat,
                                 location_area = LocationAreas.TAIWAN
                         )
-                        outDoorLocationsDao.insertOutDoorLocation(outDoorLocations)
+                        newOutDoorLocations.add(outDoorLocation)
                     }
 
                 }
@@ -179,7 +180,7 @@ class OutDoorLocationsRepo
                     val locationsList = locations as List<*>
                     for (loc in locationsList) {
                         val location = loc as OutDoorLocationsOther
-                        val outDoorLocations = OutDoorLocations(
+                        val outDoorLocation = OutDoorLocations(
                                 location_id = location.location_id,
                                 monitor_id = location.monitor_id,
                                 name_en = location.name_en,
@@ -189,10 +190,11 @@ class OutDoorLocationsRepo
                                 lat = location.lat,
                                 location_area = LocationAreas.OTHER
                         )
-                        outDoorLocationsDao.insertOutDoorLocation(outDoorLocations)
+                       newOutDoorLocations.add(outDoorLocation)
                     }
                 }
             }
+            outDoorLocationsDao.insertOutDoorLocations(newOutDoorLocations)
         }
     }
 }

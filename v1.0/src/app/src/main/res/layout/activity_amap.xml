@@ -85,6 +85,12 @@
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@id/locations_tv" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/locations_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/locations_tv"/>
+
             </RelativeLayout>
         </ScrollView>
 

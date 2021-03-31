@@ -95,6 +95,9 @@ dependencies {
     //gmap
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
+    //qr code scanner
+    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
+
 }
 
 kapt {

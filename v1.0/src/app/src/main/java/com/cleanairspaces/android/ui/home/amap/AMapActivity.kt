@@ -1,19 +1,10 @@
 package com.cleanairspaces.android.ui.home.amap
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings
 import android.view.*
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,39 +18,22 @@ import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityAmapBinding
 import com.cleanairspaces.android.models.entities.OutDoorLocations
-import com.cleanairspaces.android.ui.home.MapActionChoices
+import com.cleanairspaces.android.ui.home.BaseMapActivity
 import com.cleanairspaces.android.ui.home.MapViewModel
-import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
 import com.cleanairspaces.android.utils.AQI
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.UIColor
 import com.cleanairspaces.android.utils.showSnackBar
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
+class AMapActivity : BaseMapActivity()  {
 
     private lateinit var binding: ActivityAmapBinding
 
     private val TAG = AMapActivity::class.java.simpleName
 
-    //prepare bitmaps
-    private val aQIGoodBitmap = R.drawable.good_circle
-    private val aQIModerateBitmap = R.drawable.moderate_circle
-    private val aQIGUnhealthyBitmap = R.drawable.g_unhealthy_circle
-    private val aQIUnhealthyBitmap = R.drawable.unhealthy_circle
-    private val aQIVUnhealthyBitmap = R.drawable.v_unhealthy_circle
-    private val aQIHazardousBitmap = R.drawable.hazardous_circle
-    private val aQIBeyondBitmap = R.drawable.beyond_circle
-    private val aQICNExcellentBitmap = R.drawable.excellent
-
     private val viewModel: MapViewModel by viewModels()
-    private var popUp: AlertDialog? = null
-    private var snackbar: Snackbar? = null
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-    private val mapActionsAdapter = MapActionsAdapter(this)
 
     private var mapView: MapView? = null
     private var aMap: AMap? = null
@@ -139,32 +113,8 @@ class AMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
 
 
         /****************** USER LOCATION ******************/
-
-        private fun requestPermissionsToShowUserLocation() {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                when {
-                    ContextCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                        showUserLocation()
-                    }
-                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                        showDialog(msgRes = R.string.location_permission_rationale) { requestPermission() }
-                    }
-                    else -> {
-                        requestPermission()
-                    }
-                }
-            }
-        }
-
-        private fun requestPermission() {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-
         /* TODO request location LAT-LNG and reposition camera instead ******/
-        private fun showUserLocation() {
+        override fun showUserLocation() {
             val myLocationStyle = MyLocationStyle()
             myLocationStyle.apply {
                 myLocationIcon(
@@ -180,78 +130,29 @@ class AMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
                 setMyLocationStyle(myLocationStyle)
                 uiSettings?.isMyLocationButtonEnabled = false
                 isMyLocationEnabled = true
-                promptMyLocationSettings()
+                askUserToEnableGPS()
             }
         }
 
-        private fun promptMyLocationSettings() {
+        private fun  askUserToEnableGPS(){
             if (viewModel.hasPromptedForLocationSettings)
                 return
             viewModel.hasPromptedForLocationSettings = true
-            val manager = getSystemService(LOCATION_SERVICE) as LocationManager?
-            if (!manager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                //showTurnOnGPSDialog
-                showDialog(msgRes = R.string.turn_on_gps_prompt, positiveAction = { startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) })
-            }
-        }
-
-        override fun onClickAction(actionChoice: MapActionChoices) {
-            MyLogger.logThis(TAG, "onClickAction()", "user clicked ${getString(actionChoice.strRes)}")
+            promptMyLocationSettings()
         }
 
 
-        /***************** DIALOGS ****************/
-        private fun showDialog(msgRes: Int, positiveAction: () -> Unit) {
-            dismissPopUps()
-            popUp = MaterialAlertDialogBuilder( this)
-                    .setTitle(msgRes)
-                    .setPositiveButton(
-                            R.string.got_it
-                    ) { dialog, _ ->
-                        positiveAction.invoke()
-                        dialog.dismiss()
-                    }
-                    .setNeutralButton(
-                            R.string.dismiss
-                    ) { dialog, _ ->
-                        dialog.dismiss()
-                    }.create()
-
-            popUp?.show()
+    override fun hideMyLocations() {
+        binding.apply {
+            if (locationsRv.visibility == View.VISIBLE)
+                locationsRv.visibility = View.INVISIBLE
+            else
+                locationsRv.visibility = View.VISIBLE
         }
-
-        private fun showSnackBar(
-                msgRes: Int,
-                isError: Boolean = false,
-                actionRes: Int? = null
-        ) {
-            dismissPopUps()
-            binding.apply {
-                snackbar = viewsContainer.showSnackBar(
-                        msgResId = msgRes,
-                        isErrorMsg = isError,
-                        actionMessage = actionRes
-                )
-            }
-        }
-
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.map_view_menu, menu)
-        return true
     }
 
 
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            return when (item.itemId) {
-                R.id.action_help -> {
-                    showDialog(msgRes = R.string.map_menu_help_desc_txt, positiveAction = {})
-                    true
-                }
-                else -> super.onOptionsItemSelected(item)
-            }
-        }
+
 
 
         /**************** MARKERS & CIRCLES **************/
@@ -297,18 +198,26 @@ class AMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
         }
 
 
-        /************* forwarding life cycle methods & clearing *********/
-        private fun dismissPopUps() {
-            popUp?.let {
-                if (it.isShowing) it.dismiss()
+    /************************** QR CODE SCANNING ***************/
+
+
+        /***** dialogs ******/
+    override fun showSnackBar(
+                msgRes: Int,
+                isError: Boolean,
+                actionRes: Int?
+        ) {
+            dismissPopUps()
+            binding.apply {
+                snackbar = viewsContainer.showSnackBar(
+                        msgResId = msgRes,
+                        isErrorMsg = isError,
+                        actionMessage = actionRes
+                )
             }
-            snackbar?.let {
-                if (it.isShown) it.dismiss()
-            }
-            popUp = null
-            snackbar = null
         }
 
+    /************* forwarding life cycle methods & clearing *********/
         override fun onSaveInstanceState(outState: Bundle) {
             super.onSaveInstanceState(outState)
             mapView?.onSaveInstanceState(outState)

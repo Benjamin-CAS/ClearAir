@@ -1,11 +1,43 @@
 package com.cleanairspaces.android.utils
 
+import android.app.Activity
+import android.content.Context
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
 import com.cleanairspaces.android.R
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
+
+
+fun TextInputLayout.myTxt(v: TextInputLayout): String? {
+    return v.editText?.text?.toString()
+}
+
+fun TextInputLayout.setTxt(v: TextInputLayout, txt: String) {
+    v.editText?.setText(txt)
+}
+
+
+fun <T : View> T.toggleVisibility(makeVisible: Boolean) {
+    if (makeVisible) {
+        this.visibility = View.VISIBLE
+    } else {
+        this.visibility = View.INVISIBLE
+    }
+}
+
+fun Fragment.hideKeyBoard(context: Context, v: View) {
+    val imm = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+        context.getSystemService(InputMethodManager::class.java)
+    } else {
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
+    }
+    imm?.hideSoftInputFromWindow(v.windowToken, 0)
+}
 
 fun View.showSnackBar(
     msgResId: Int,

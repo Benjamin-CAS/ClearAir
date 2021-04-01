@@ -38,25 +38,21 @@ class GMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Retrieve the content view that renders the map.
-        setContentView(R.layout.activity_gmap)
         binding = ActivityGmapBinding.inflate(layoutInflater)
-
-        //toolbar
         val view = binding.root
         setContentView(view)
+        //toolbar
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.apply {
-            toolbar.isVisible = true
-            toolbarTitle.isVisible = false
-            toolbarLogo.isVisible = true
             Glide.with(this@GMapActivity)
                 .load(R.drawable.clean_air_spaces_logo_name)
                 .into(toolbarLogo)
         }
-            /*TODO  Get the SupportMapFragment and request notification when the map is ready to be used.
-            mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-            mapFragment?.getMapAsync(this) */
+
+        /*TODO  Get the SupportMapFragment and request notification when the map is ready to be used.
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        mapFragment?.getMapAsync(this) */
 
         initializeRecyclerViewForUserActions()
     }

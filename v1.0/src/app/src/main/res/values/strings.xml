@@ -44,5 +44,15 @@
     <string name="moderate_voc_lvl_comment">Moderate VOC Level</string>
     <string name="unhealthy_voc_lvl_comment">Unhealthy VOC Level</string>
     <string name="co_2_lvl_comment">CO2 Level</string>
+    <string name="scan_qr_code_prompt">Scan a barcode or QR Code</string>
+    <string name="scan_qr_code_cancelled">Scanning qr code cancelled</string>
+    <string name="scan_qr_code_unknown">"Unknown QR Code "</string>
+    <string name="scanned_qr_content_image_desc">Location Logo</string>
+    <string name="site_credentials_txt">Site Credentials</string>
+    <string name="user_name_hint">User</string>
+    <string name="password_hint">Password</string>
+    <string name="add_location_text">Add Location</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="processing_qr_code">Processing...</string>
 
 </resources>

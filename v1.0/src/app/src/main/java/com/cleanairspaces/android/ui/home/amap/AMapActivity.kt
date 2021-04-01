@@ -1,9 +1,13 @@
 package com.cleanairspaces.android.ui.home.amap
 
+import android.app.Activity
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -20,6 +24,7 @@ import com.cleanairspaces.android.databinding.ActivityAmapBinding
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.BaseMapActivity
 import com.cleanairspaces.android.ui.home.MapViewModel
+import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
 import com.cleanairspaces.android.utils.AQI
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.UIColor
@@ -38,18 +43,16 @@ class AMapActivity : BaseMapActivity()  {
     private var mapView: MapView? = null
     private var aMap: AMap? = null
 
+    override var mapActionsAdapter = MapActionsAdapter(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_amap)
         binding = ActivityAmapBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.apply {
-            toolbar.isVisible = true
-            toolbarTitle.isVisible = false
-            toolbarLogo.isVisible = true
             Glide.with(this@AMapActivity)
                     .load(R.drawable.clean_air_spaces_logo_name)
                     .into(toolbarLogo)
@@ -64,7 +67,17 @@ class AMapActivity : BaseMapActivity()  {
             }
         }
 
-        initializeRecyclerViewForUserActions()
+        //scan-qr launcher must be set
+        scanQrCodeLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                //  you will get result here in result.data
+                handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+            }
+
+        }
+
+    initializeRecyclerViewForUserActions()
         initializeMap(savedInstanceState)
     }
 

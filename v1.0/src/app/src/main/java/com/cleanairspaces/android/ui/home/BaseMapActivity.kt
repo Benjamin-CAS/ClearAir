@@ -14,14 +14,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.smart_qr.CaptureQrCodeActivity
+import com.cleanairspaces.android.ui.home.smart_qr.QrCodeProcessingActivity
+import com.cleanairspaces.android.ui.home.smart_qr.QrCodeProcessingActivity.Companion.INTENT_EXTRA_TAG
+import com.cleanairspaces.android.utils.MyLogger
+import com.cleanairspaces.android.utils.SCANNING_QR_TIMEOUT_MILLS
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener {
 
+    private val TAG = BaseMapActivity::class.java.simpleName
 
     var popUp: AlertDialog? = null
     var snackbar: Snackbar? = null
@@ -38,7 +46,8 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
 
 
     lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-    val mapActionsAdapter = MapActionsAdapter(this)
+    lateinit var scanQrCodeLauncher: ActivityResultLauncher<Intent>
+    open lateinit var mapActionsAdapter : MapActionsAdapter
 
     //TO BE IMPLEMENTED
      open fun showUserLocation(){}
@@ -49,8 +58,8 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             when {
                 ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     showUserLocation()
                 }
@@ -64,7 +73,7 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
         }
     }
 
-    fun requestPermission() {
+    private fun requestPermission() {
         requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
@@ -78,7 +87,7 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
             MapActionChoices.MAP_VIEW -> {
                 hideMyLocations()
             }
-            MapActionChoices.ADD ->  {
+            MapActionChoices.ADD -> {
                 //todo
             }
         }
@@ -86,7 +95,41 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
 
     /************ QR CODE ***********/
     private fun scanQRCode(){
+        val intentIntegrator = IntentIntegrator(this)
+        intentIntegrator.apply {
+            val scanQrCodePromptText = getString(R.string.scan_qr_code_prompt)
+            setPrompt(scanQrCodePromptText)
+            setTimeout(SCANNING_QR_TIMEOUT_MILLS)
+            setOrientationLocked(true)
+            captureActivity = CaptureQrCodeActivity::class.java
+        }
+        val intent = intentIntegrator.createScanIntent()
+        scanQrCodeLauncher.launch(intent)
+    }
 
+    fun handleScannedQrIntent(resultCode : Int, data : Intent?){
+        val intentResult = IntentIntegrator.parseActivityResult(resultCode, data)
+        if (intentResult != null) {
+            if (intentResult.contents == null) {
+                showSnackBar(msgRes = R.string.scan_qr_code_cancelled)
+            } else {
+                // if the intentResult is not null we'll set
+                // the content and format of scan message
+                val qrContent = intentResult.contents
+                val qrFormatName = intentResult.formatName
+                MyLogger.logThis( TAG, " handleScannedQrIntent($resultCode : Int, $data : Intent?)",
+                "qrContent $qrContent , qrFormatName $qrFormatName")
+                startActivity(Intent(this@BaseMapActivity, QrCodeProcessingActivity::class.java).putExtra(
+                        INTENT_EXTRA_TAG, qrContent
+                ))
+
+            }
+        }
+        else{
+            MyLogger.logThis( TAG, " handleScannedQrIntent($resultCode : Int, $data : Intent?)",
+                    "qrContent $intentResult is null")
+            showSnackBar(msgRes = R.string.scan_qr_code_unknown)
+        }
     }
 
     /***************** DIALOGS ****************/
@@ -94,10 +137,12 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
         val manager = getSystemService(LOCATION_SERVICE) as LocationManager?
         if (!manager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //showTurnOnGPSDialog
-            showDialog(msgRes = R.string.turn_on_gps_prompt, positiveAction = { startActivity(
-                Intent(
-                    Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-            ) })
+            showDialog(msgRes = R.string.turn_on_gps_prompt, positiveAction = {
+                startActivity(
+                        Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                )
+            })
         }
     }
 
@@ -114,16 +159,16 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
     
     private fun showDialog(msgRes: Int, positiveAction: () -> Unit) {
         dismissPopUps()
-        popUp = MaterialAlertDialogBuilder( this)
+        popUp = MaterialAlertDialogBuilder(this)
             .setTitle(msgRes)
             .setPositiveButton(
-                R.string.got_it
+                    R.string.got_it
             ) { dialog, _ ->
                 positiveAction.invoke()
                 dialog.dismiss()
             }
             .setNeutralButton(
-                R.string.dismiss
+                    R.string.dismiss
             ) { dialog, _ ->
                 dialog.dismiss()
             }.create()
@@ -132,9 +177,9 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
     }
 
     open fun showSnackBar(
-        msgRes: Int,
-        isError: Boolean = false,
-        actionRes: Int? = null
+            msgRes: Int,
+            isError: Boolean = false,
+            actionRes: Int? = null
     ) {}
 
     /****************** MENU **************/

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.smart_qr.QrCodeProcessingActivity"
+    android:orientation="vertical"
+    android:id="@+id/container"
+    >
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/appToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="0dp"
+        app:popupTheme="@style/appToolbarPopUpMenu">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/toolbar_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/clickable_std"
+                android:layout_gravity="start|center_vertical"
+                android:contentDescription="@string/tool_bar_logo_desc"
+                android:scaleType="fitStart" />
+        </FrameLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_marginTop="@dimen/md_space"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="@dimen/location_logo_size"
+                android:layout_height="@dimen/location_logo_size"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:contentDescription="@string/scanned_qr_content_image_desc"
+                android:scaleType="fitCenter"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:gravity="center"
+                android:layout_margin="@dimen/md_space"
+                style="@style/Theme.CleanAirSpaces.Body1"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/site_credentials_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/site_credentials_txt"
+                android:textSize="@dimen/lg_txt"
+                app:layout_constraintTop_toBottomOf="@id/info"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:gravity="center"
+                style="@style/Theme.CleanAirSpaces.Body1"
+                android:visibility="invisible"/>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/user_name"
+                style="@style/Theme.CleanAirSpaces.TextInputLayout"
+                app:hintTextAppearance="@style/Theme.CleanAirSpaces.Caption"
+                android:layout_width="match_parent"
+                android:layout_margin="@dimen/md_space"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/site_credentials_lbl">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/user_name_hint"
+                    android:inputType="textShortMessage"
+                    style="@style/Theme.CleanAirSpaces.Body1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password"
+                style="@style/Theme.CleanAirSpaces.TextInputLayout"
+                app:hintTextAppearance="@style/Theme.CleanAirSpaces.Caption"
+                android:layout_width="match_parent"
+                android:layout_margin="@dimen/md_space"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/user_name">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/password_hint"
+                    android:inputType="textPassword"
+                    style="@style/Theme.CleanAirSpaces.Body1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/add_location_btn"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Button"
+                android:paddingStart="@dimen/md_space"
+                android:paddingEnd="@dimen/md_space"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/md_space"
+                android:background="@color/blue_light"
+                android:textColor="@color/white"
+                android:text="@string/add_location_text"
+                android:visibility="invisible"
+                app:layout_constraintTop_toBottomOf="@id/password"
+                app:layout_constraintStart_toStartOf="parent"
+                android:elevation="@dimen/std_space"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cancel_btn"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Button"
+                android:paddingStart="@dimen/md_space"
+                android:paddingEnd="@dimen/md_space"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/md_space"
+                android:background="?attr/colorPrimary"
+                android:textColor="?attr/colorOnPrimary"
+                android:text="@string/cancel_text"
+                android:visibility="invisible"
+                app:layout_constraintTop_toBottomOf="@id/add_location_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                android:elevation="@dimen/std_space"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</LinearLayout>

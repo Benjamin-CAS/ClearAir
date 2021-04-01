@@ -8,6 +8,8 @@
     android:orientation="vertical"
     tools:context=".ui.home.gmap.GMapActivity">
 
+
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/appToolbar"
@@ -26,17 +28,7 @@
                 android:layout_height="@dimen/clickable_std"
                 android:layout_gravity="start|center_vertical"
                 android:contentDescription="@string/tool_bar_logo_desc"
-                android:scaleType="fitStart"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/toolbar_title"
-                style="@style/Theme.CleanAirSpaces.Title2"
-                android:layout_width="wrap_content"
-                android:layout_height="?attr/actionBarSize"
-                android:gravity="start|center_vertical"
-                android:textColor="?attr/colorOnPrimary"
-                android:visibility="gone" />
+                android:scaleType="fitStart" />
         </FrameLayout>
     </androidx.appcompat.widget.Toolbar>
 

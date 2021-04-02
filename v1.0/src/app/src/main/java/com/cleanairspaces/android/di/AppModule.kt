@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.cleanairspaces.android.models.api.CasDatabase
 import com.cleanairspaces.android.models.api.OutDoorLocationsApiService
+import com.cleanairspaces.android.models.api.QrScannedItemsApiService
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
 import com.cleanairspaces.android.utils.BASE_URL
@@ -16,29 +17,45 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
+
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
+
+    //todo remove in production
+    fun getLogger(): OkHttpClient {
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        return OkHttpClient.Builder().addInterceptor(interceptor).build()
+    }
 
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit =
             Retrofit.Builder()
                     .baseUrl(BASE_URL)
+                    .client(getLogger())
                     .addConverterFactory(
-                            GsonConverterFactory.create(
-                                    GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-                            )
+                        GsonConverterFactory.create(
+                            GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+                        )
                     ).build()
 
     @Provides
     @Singleton
     fun provideOutDoorLocationsApiService(retrofit: Retrofit): OutDoorLocationsApiService =
             retrofit.create(OutDoorLocationsApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideQrScannedItemsApiService(retrofit: Retrofit): QrScannedItemsApiService =
+        retrofit.create(QrScannedItemsApiService::class.java)
 
     @Provides
     @Singleton
@@ -59,5 +76,15 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideLocationsRepo(outDoorLocationsApiService: OutDoorLocationsApiService, coroutineScope: CoroutineScope, outDoorLocationsDao : OutDoorLocationsDao): OutDoorLocationsRepo = OutDoorLocationsRepo(outDoorLocationsApiService, coroutineScope, outDoorLocationsDao)
+    fun provideLocationsRepo(
+        outDoorLocationsApiService: OutDoorLocationsApiService,
+        qrScannedItemsApiService: QrScannedItemsApiService,
+        coroutineScope: CoroutineScope,
+        outDoorLocationsDao: OutDoorLocationsDao
+    ): OutDoorLocationsRepo = OutDoorLocationsRepo(
+        outDoorLocationsApiService,
+        qrScannedItemsApiService,
+        coroutineScope,
+        outDoorLocationsDao
+    )
 }

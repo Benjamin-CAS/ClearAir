@@ -56,5 +56,9 @@
     <string name="scan_qr_code_unknown">The QR Code you scanned is not a valid CAS QR Code.</string>
     <string name="parsing_device_qr_failed">Could not parse that device\'s qr code.\nPlease try again later.</string>
     <string name="parsing_monitor_qr_failed">Could not parse that monitor\'s qr code.\nPlease try again later.</string>
+    <string name="company_name_lbl">Company</string>
+    <string name="location_lbl">Location</string>
+    <string name="device_id_lbl">ID</string>
+    <string name="ref_mon_lbl">Name</string>
 
 </resources>

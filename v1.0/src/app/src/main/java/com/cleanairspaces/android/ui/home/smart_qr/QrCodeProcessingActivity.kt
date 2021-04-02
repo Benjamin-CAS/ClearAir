@@ -5,14 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
-import com.cleanairspaces.android.databinding.ActivityAmapBinding
-import com.cleanairspaces.android.databinding.ActivityGmapBinding
 import com.cleanairspaces.android.databinding.ActivityQrCodeProcessingBinding
-import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.QrCodeProcessor
-import com.google.android.gms.dynamic.IFragmentWrapper
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -65,6 +62,10 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                     viewModel.addLocationFromMonitorId(monitorId = parsedResult.monitorId)
                 }
                 else if (parsedResult.locId != null && parsedResult.compId != null){
+                    observeThisLocation(
+                        locId = parsedResult.locId,
+                        compId = parsedResult.compId
+                    )
                     viewModel.addLocationFromCompanyInfo(locId = parsedResult.locId , compId = parsedResult.compId)
                 }
             }else {
@@ -72,6 +73,25 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                 info.setText(parsedResult.codeRes)
             }
         }
+    }
+
+    private fun observeThisLocation(locId: Int, compId: Int) {
+        viewModel.observeLocationFromCompanyInfo(locId = locId, compId = compId).observe(
+            this, Observer {
+                if (it != null){
+                    binding.apply {
+                        progressCircular.isVisible = false
+                        val refMonLbl = getString(R.string.ref_mon_lbl)
+                        val companyLblTxt = getString(R.string.company_name_lbl)
+                        val locationLblTxt = getString(R.string.location_lbl)
+                        val infoText = "$companyLblTxt\n${it.company}\n$locationLblTxt:${it.location}\n${it.dev_name}$refMonLbl:${it.reference_mon}"
+                        info.text = infoText
+                        addLocationBtn.isVisible = true
+                        cancelBtn.isVisible = true
+                    }
+                }
+            }
+        )
     }
 
 }

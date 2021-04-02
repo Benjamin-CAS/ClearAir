@@ -1,6 +1,7 @@
 package com.cleanairspaces.android.models.api
 
 import com.cleanairspaces.android.BuildConfig
+import com.cleanairspaces.android.models.api.responses.ScannedDeviceQrResponse
 import com.cleanairspaces.android.utils.NONCE
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -23,6 +24,6 @@ interface QrScannedItemsApiService {
         @Query("method") method: String = DEVICE_INFO_METHOD,
         @Query("nonce") nonce: String = NONCE,
         @Body data: JsonObject
-    ): Call<Any>
+    ): Call<ScannedDeviceQrResponse>
 
 }

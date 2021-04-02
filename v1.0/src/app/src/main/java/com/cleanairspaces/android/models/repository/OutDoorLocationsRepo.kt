@@ -9,6 +9,7 @@ import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.utils.L_TIME_KEY
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.PAYLOAD_KEY
+import com.cleanairspaces.android.utils.QrCodeProcessor
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -24,7 +25,6 @@ import kotlin.collections.ArrayList
 class OutDoorLocationsRepo
 @Inject constructor(
     private val outDoorLocationsApiService: OutDoorLocationsApiService,
-    private val qrScannedItemsApiService: QrScannedItemsApiService,
     private val coroutineScope: CoroutineScope,
     private val outDoorLocationsDao: OutDoorLocationsDao
 ){
@@ -269,73 +269,4 @@ class OutDoorLocationsRepo
         }
     }
 
-
-
-    /************************ QR SCANNED ITEMS *********************/
-    private fun getScannedDeviceQrResponseCallback() : Callback<Any> {
-        return object : Callback<Any> {
-            override fun onResponse(
-                call: Call<Any>,
-                response: Response<Any>
-            ) {
-                when {
-                    response.code() == 200 -> {
-                        val responseBody = response.body()
-                        try {
-                            if (responseBody == null) {
-                                MyLogger.logThis(
-                                    TAG,
-                                    "getScannedDeviceQrResponseCallback()",
-                                    "returned a null body"
-                                )
-                            } else {
-                                MyLogger.logThis(
-                                    TAG, "getScannedDeviceQrResponseCallback()",
-                                            " in response body $responseBody"
-                                )
-                            }
-                        } catch (e: Exception) {
-                            MyLogger.logThis(
-                                TAG,
-                                "getScannedDeviceQrResponseCallback()",
-                                "exception ${e.message}",
-                                e
-                            )
-                        }
-                    }
-                    else -> {
-                        MyLogger.logThis(
-                            TAG,
-                            "getScannedDeviceQrResponseCallback()",
-                            "response code not 200, $response"
-                        )
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<Any>, e: Throwable) {
-                MyLogger.logThis(
-                    TAG,
-                    "getScannedDeviceQrResponseCallback()",
-                    "OnFailure-exception ${e.message}"
-                )
-            }
-        }
-    }
-
-    suspend fun fetchLocationFromScannedDeviceQr(base64Str: String, payLoadTimeStamp: String) {
-        try {
-           val data = JsonObject()
-           data.addProperty(L_TIME_KEY, payLoadTimeStamp)
-           data.addProperty(PAYLOAD_KEY, base64Str)
-            val otherLocationsResponse = qrScannedItemsApiService.fetchScannedDeviceQrResponse(
-                data = data
-            )
-
-            MyLogger.logThis(TAG, "fetchLocationFromScannedDeviceQr()", "passing data $data")
-            otherLocationsResponse.enqueue(getScannedDeviceQrResponseCallback())
-        }catch (e : Exception){
-            MyLogger.logThis(TAG, "fetchLocationFromScannedDeviceQr()", "exc ${e.message}", e)
-        }
-    }
 }

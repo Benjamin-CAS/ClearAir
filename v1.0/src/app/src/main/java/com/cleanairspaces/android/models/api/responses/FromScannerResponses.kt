@@ -7,5 +7,9 @@ data class ScannedDeviceQrResponse(
         val payload  : String,
 
         @Expose
-        val code : String
+        val code : String,
+
+        @Expose
+        val ltime : String
+
     )

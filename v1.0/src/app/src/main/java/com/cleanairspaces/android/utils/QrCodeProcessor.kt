@@ -140,6 +140,13 @@ object QrCodeProcessor {
         return toBase64Encoding(casEncrypted)
     }
 
+    fun getUnEncryptedPayload(encPayload: String, lTime: String): String {
+        val decoded = fromBase64Encoding(encPayload)
+        val key = getProperPayloadKey(lTime)
+        val casDecrypted = doCASEncryptOrDecrypt(payload = decoded, key= key)
+        MyLogger.logThis(TAG, "getUnEncryptedPayload...", "decrypted $casDecrypted")
+        return casDecrypted
+    }
 
 
 }

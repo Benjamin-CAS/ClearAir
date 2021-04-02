@@ -5,8 +5,10 @@ import androidx.room.Room
 import com.cleanairspaces.android.models.api.CasDatabase
 import com.cleanairspaces.android.models.api.OutDoorLocationsApiService
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService
+import com.cleanairspaces.android.models.dao.CustomerDeviceDataDao
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
+import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
 import com.cleanairspaces.android.utils.BASE_URL
 import com.cleanairspaces.android.utils.DATABASE_NAME
 import com.google.gson.GsonBuilder
@@ -74,17 +76,36 @@ class AppModule {
     fun provideOutDoorLocationsDao(casDatabase: CasDatabase): OutDoorLocationsDao =
             casDatabase.outDoorLocationsDao()
 
+
+    @Provides
+    @Singleton
+    fun provideCustomerDeviceDataDao(casDatabase: CasDatabase): CustomerDeviceDataDao =
+        casDatabase.customerDeviceDataDao()
+
+
     @Provides
     @Singleton
     fun provideLocationsRepo(
         outDoorLocationsApiService: OutDoorLocationsApiService,
-        qrScannedItemsApiService: QrScannedItemsApiService,
         coroutineScope: CoroutineScope,
         outDoorLocationsDao: OutDoorLocationsDao
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
-        outDoorLocationsApiService,
-        qrScannedItemsApiService,
-        coroutineScope,
-        outDoorLocationsDao
+        outDoorLocationsApiService =  outDoorLocationsApiService,
+        coroutineScope =  coroutineScope,
+        outDoorLocationsDao = outDoorLocationsDao
     )
+
+
+    @Provides
+    @Singleton
+    fun provideScannedDevicesRepo(
+        qrScannedItemsApiService: QrScannedItemsApiService,
+        coroutineScope: CoroutineScope,
+        customerDeviceDataDao : CustomerDeviceDataDao
+    ): ScannedDevicesRepo =  ScannedDevicesRepo(
+        qrScannedItemsApiService =  qrScannedItemsApiService,
+        coroutineScope = coroutineScope,
+        customerDeviceDataDao =  customerDeviceDataDao
+    )
+
 }

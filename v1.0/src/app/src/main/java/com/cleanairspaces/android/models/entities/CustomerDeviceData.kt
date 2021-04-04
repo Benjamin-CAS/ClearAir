@@ -32,6 +32,10 @@ data class CustomerDeviceData(
         return LOGO_BASE_URL + logo
     }
 
+    fun getFullDeviceLogoUrl(deviceLogoName: String): String {
+        return LOGO_BASE_URL + deviceLogoName
+    }
+
     companion object{
         const val RESPONSE_MONITOR_TYPE_KEY: String = "type"
         const val RESPONSE_KEY = "customer"

@@ -11,10 +11,7 @@ import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityQrCodeProcessingBinding
 import com.cleanairspaces.android.models.entities.CustomerDeviceData
-import com.cleanairspaces.android.utils.MyLogger
-import com.cleanairspaces.android.utils.QrCodeProcessor
-import com.cleanairspaces.android.utils.myTxt
-import com.cleanairspaces.android.utils.showSnackBar
+import com.cleanairspaces.android.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -109,6 +106,25 @@ class QrCodeProcessingActivity : AppCompatActivity() {
   private fun displayLocationInfo(customerDeviceData: CustomerDeviceData) {
       binding.apply {
           progressCircular.isVisible = false
+
+          var infoText = ""
+
+          if(!customerDeviceData.monitor_id.isNullOrBlank() && !customerDeviceData.type.isNullOrBlank()){
+            val deviceInfo = getDeviceInfoByType(customerDeviceData.type!!)
+            if (deviceInfo != null){
+                binding.deviceLogo.isVisible = true
+                Glide.with(this@QrCodeProcessingActivity)
+                        .load(customerDeviceData.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
+                        .into(binding.deviceLogo)
+                val deviceInfoTxt = getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
+                val deviceIdLbl = getString(R.string.device_id_lbl)
+                infoText += "$deviceInfoTxt\n$deviceIdLbl: ${customerDeviceData.monitor_id}\n"
+
+            }else{
+                binding.deviceLogo.isVisible = false
+            }
+          }
+
           Glide.with(this@QrCodeProcessingActivity)
                   .load(customerDeviceData.getFullLogoUrl())
                   .into(logo)
@@ -116,7 +132,7 @@ class QrCodeProcessingActivity : AppCompatActivity() {
           val locationInfoTitle = getString(R.string.location_information)
           val companyLblTxt = getString(R.string.company_name_lbl)
           val locationLblTxt = getString(R.string.location_lbl)
-          val infoText = "$locationInfoTitle\n$companyLblTxt: ${customerDeviceData.company}\n$locationLblTxt: ${customerDeviceData.location}"
+          infoText += "$locationInfoTitle\n$companyLblTxt: ${customerDeviceData.company}\n$locationLblTxt: ${customerDeviceData.location}"
           info.text = infoText
           addLocationBtn.isVisible = true
           cancelBtn.isVisible = true

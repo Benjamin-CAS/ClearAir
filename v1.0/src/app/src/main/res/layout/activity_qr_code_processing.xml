@@ -55,11 +55,22 @@
                 android:contentDescription="@string/scanned_qr_content_image_desc"
                 android:scaleType="fitCenter"/>
 
+            <ImageView
+                android:id="@+id/device_logo"
+                android:layout_width="@dimen/location_logo_size"
+                android:layout_height="@dimen/location_logo_size"
+                app:layout_constraintTop_toBottomOf="@id/logo"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:contentDescription="@string/scanned_qr_content_image_desc"
+                android:scaleType="fitCenter"/>
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/logo"
+                app:layout_constraintTop_toBottomOf="@id/device_logo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:gravity="center"

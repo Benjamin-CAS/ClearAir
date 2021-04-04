@@ -63,5 +63,16 @@
     <string name="location_information">Location Information</string>
     <string name="location_added_text">Location Added</string>
     <string name="enter_username_password"><![CDATA[Please enter the username & password]]></string>
+    <string name="device_type_one">CMD - ductFIT Ceiling</string>
+    <string name="device_type_three">EP550</string>
+    <string name="device_type_four">CMD - ductFIT Ceiling</string>
+    <string name="device_type_five">KleanSense Air Quality Monitor</string>
+    <string name="device_type_six">Fresh Air Unit</string>
+    <string name="device_type_eight">CMD - Fresh Air</string>
+    <string name="device_type_nine">ductFIT</string>
+    <string name="device_type_ten">Fresh Air Unit</string>
+    <string name="device_type_eleven">ductFIT Cloud</string>
+    <string name="device_type_twelve">ductFIT Wall</string>
+    <string name="device_info_lbl">Device Information</string>
 
 </resources>

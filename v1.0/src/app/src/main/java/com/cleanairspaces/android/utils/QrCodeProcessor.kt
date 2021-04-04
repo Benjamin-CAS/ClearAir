@@ -159,6 +159,8 @@ object QrCodeProcessor {
     }
 
 
+
+
 }
 
 data class ParserResult(

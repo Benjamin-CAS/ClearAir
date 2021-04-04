@@ -22,5 +22,8 @@ interface CustomerDeviceDataDao {
     @Update
     suspend fun updateDevice(deviceData: CustomerDeviceData)
 
-    
+    @Query("SELECT COUNT(autoId) FROM customer_device_data WHERE company_id =:companyId AND location_id =:locationId AND isMyDeviceData =:isMine")
+    suspend fun checkIfIsMyLocation(companyId : String, locationId  : String, isMine : Boolean = true): Int
+
+
 }

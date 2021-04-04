@@ -42,7 +42,8 @@
         android:layout_height="wrap_content">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipToPadding="false">
 
             <ImageView
                 android:id="@+id/logo"
@@ -62,8 +63,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:gravity="center"
+                android:textSize="@dimen/md_txt"
                 android:layout_margin="@dimen/md_space"
-                style="@style/Theme.CleanAirSpaces.Body1"/>
+                style="@style/Theme.CleanAirSpaces.Subtitle1"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/site_credentials_lbl"
@@ -87,6 +89,7 @@
                 android:layout_margin="@dimen/md_space"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
+                app:hintTextColor="?colorOnPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/site_credentials_lbl">
 
@@ -94,6 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/user_name_hint"
+                    android:textColorHint="?colorOnPrimary"
                     android:inputType="textShortMessage"
                     style="@style/Theme.CleanAirSpaces.Body1" />
 
@@ -108,6 +112,7 @@
                 android:layout_margin="@dimen/md_space"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
+                app:hintTextColor="?colorOnPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/user_name">
 
@@ -115,6 +120,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/password_hint"
+                    android:textColorHint="?colorOnPrimary"
                     android:inputType="textPassword"
                     style="@style/Theme.CleanAirSpaces.Body1" />
 
@@ -144,8 +150,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/md_space"
-                android:background="?attr/colorPrimary"
-                android:textColor="?attr/colorOnPrimary"
+                android:background="@color/whitish"
+                android:textColor="@color/blue"
                 android:text="@string/cancel_text"
                 android:visibility="invisible"
                 app:layout_constraintTop_toBottomOf="@id/add_location_btn"

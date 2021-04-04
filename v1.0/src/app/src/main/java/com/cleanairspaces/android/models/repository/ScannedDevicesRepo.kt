@@ -55,7 +55,7 @@ class ScannedDevicesRepo
                                     TAG, "getScannedDeviceQrResponseCallback()",
                                     " in response body ${responseBody.payload}"
                                 )
-                                processEncryptedPayload(responseBody.payload, responseBody.ltime)
+                                processLocationPayload(responseBody.payload, responseBody.ltime)
                             }
                         } catch (e: Exception) {
                             MyLogger.logThis(
@@ -86,7 +86,7 @@ class ScannedDevicesRepo
         }
     }
 
-    private fun processEncryptedPayload(payload: String, lTime  : String) {
+    private fun processLocationPayload(payload: String, lTime  : String) {
         try {
             val unEncyptedPayload = QrCodeProcessor.getUnEncryptedPayload(payload, lTime)
             val companyData= JSONObject(unEncyptedPayload).getString(CustomerDeviceData.RESPONSE_KEY)
@@ -95,6 +95,8 @@ class ScannedDevicesRepo
                 "processEncryptedPayload(payload: $payload, lTime  : $lTime)",
                 "success -- SAVING DATA $customerDeviceData")
             coroutineScope.launch(Dispatchers.IO) {
+                val isFound = customerDeviceDataDao.checkIfIsMyLocation(companyId = customerDeviceData.company_id, locationId = customerDeviceData.location_id)
+                customerDeviceData.isMyDeviceData = (isFound > 0)
                 customerDeviceDataDao.insertDeviceData(customerDeviceData)
             }
         }catch (e : java.lang.Exception){
@@ -117,6 +119,15 @@ class ScannedDevicesRepo
             otherLocationsResponse.enqueue(getScannedDeviceQrResponseCallback())
         }catch (e : Exception){
             MyLogger.logThis(TAG, "fetchLocationFromScannedDeviceQr()", "exc ${e.message}", e)
+        }
+    }
+
+   suspend fun addMyLocationData(customerDeviceData: CustomerDeviceData, userName: String?, userPassword: String?) {
+        if (userName != null && userPassword != null && customerDeviceData.isSecure){
+            //todo validate credentials
+        }else{
+            customerDeviceData.isMyDeviceData = true
+            customerDeviceDataDao.updateDevice(customerDeviceData)
         }
     }
 }

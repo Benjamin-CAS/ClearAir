@@ -4,12 +4,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityQrCodeProcessingBinding
+import com.cleanairspaces.android.models.entities.CustomerDeviceData
+import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.QrCodeProcessor
+import com.cleanairspaces.android.utils.myTxt
+import com.cleanairspaces.android.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -62,7 +67,7 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                     viewModel.addLocationFromMonitorId(monitorId = parsedResult.monitorId)
                 }
                 else if (parsedResult.locId != null && parsedResult.compId != null){
-                    observeThisLocation(
+                    observeScannedLocation(
                         locId = parsedResult.locId,
                         compId = parsedResult.compId
                     )
@@ -75,23 +80,75 @@ class QrCodeProcessingActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeThisLocation(locId: Int, compId: Int) {
+    private fun observeScannedLocation(locId: Int, compId: Int) {
         viewModel.observeLocationFromCompanyInfo(locId = locId, compId = compId).observe(
             this, Observer {
                 if (it != null){
-                    binding.apply {
-                        progressCircular.isVisible = false
-                        val refMonLbl = getString(R.string.ref_mon_lbl)
-                        val companyLblTxt = getString(R.string.company_name_lbl)
-                        val locationLblTxt = getString(R.string.location_lbl)
-                        val infoText = "$companyLblTxt\n${it.company}\n$locationLblTxt:${it.location}\n${it.dev_name}$refMonLbl:${it.reference_mon}"
-                        info.text = infoText
-                        addLocationBtn.isVisible = true
-                        cancelBtn.isVisible = true
-                    }
+                    displayLocationInfo(it)
+
                 }
             }
         )
+    }
+
+  private fun displayLocationInfo(customerDeviceData: CustomerDeviceData) {
+      binding.apply {
+          progressCircular.isVisible = false
+          Glide.with(this@QrCodeProcessingActivity)
+                  .load(customerDeviceData.getFullLogoUrl())
+                  .into(logo)
+          MyLogger.logThis(TAG, "displaying", customerDeviceData.getFullLogoUrl())
+          val locationInfoTitle = getString(R.string.location_information)
+          val companyLblTxt = getString(R.string.company_name_lbl)
+          val locationLblTxt = getString(R.string.location_lbl)
+          val infoText = "$locationInfoTitle\n$companyLblTxt: ${customerDeviceData.company}\n$locationLblTxt: ${customerDeviceData.location}"
+          info.text = infoText
+          addLocationBtn.isVisible = true
+          cancelBtn.isVisible = true
+
+          if (customerDeviceData.isMyDeviceData) {
+              addLocationBtn.apply {
+                  setText(R.string.location_added_text)
+                  isEnabled = false
+                  setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(this@QrCodeProcessingActivity, R.drawable.ic_on_secondary_check), null)
+              }
+          }else {
+              addLocationBtn.apply {
+                  setText(R.string.add_location_text)
+                  isEnabled = true
+                  setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+                  setOnClickListener {
+                      addLocationAsMine(customerDeviceData)
+                  }
+              }
+          }
+          if(customerDeviceData.isSecure){
+              userName.isVisible = true
+              password.isVisible = true
+          }else{
+              userName.isVisible = false
+              password.isVisible = false
+          }
+      }
+  }
+
+    private fun addLocationAsMine(customerDeviceData: CustomerDeviceData){
+        if (customerDeviceData.isSecure){
+          val userName = binding.userName.myTxt(binding.userName)
+          val userPassword = binding.password.myTxt(binding.password)
+         if (userName.isNullOrBlank() || userPassword.isNullOrBlank()){
+             binding.container.showSnackBar(
+                     msgResId = R.string.enter_username_password,
+                     isErrorMsg = true
+             )
+         }else {
+             binding.progressCircular.isVisible = true
+            viewModel.saveMyLocation(customerDeviceData, userName, userPassword)
+         }
+        }else{
+            binding.progressCircular.isVisible = true
+            viewModel.saveMyLocation(customerDeviceData)
+        }
     }
 
 }

@@ -58,7 +58,7 @@ fun View.showSnackBar(
     snackBar.view.setBackgroundColor(
         ContextCompat.getColor(
             this.context,
-            R.color.blue_dark
+            R.color.white
         )
     )
 
@@ -77,8 +77,8 @@ fun View.showSnackBar(
             )
         )
     } else {
-        mainSnackBarTxt.setTextColor(ContextCompat.getColor(this.context, R.color.white))
-        actionTxt.setTextColor(ContextCompat.getColor(this.context, R.color.whitish))
+        mainSnackBarTxt.setTextColor(ContextCompat.getColor(this.context, R.color.black))
+        actionTxt.setTextColor(ContextCompat.getColor(this.context, R.color.blue))
     }
 
     //set the font

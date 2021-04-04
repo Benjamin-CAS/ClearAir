@@ -8,4 +8,5 @@
     <dimen name="half_location_logo_size">60dp</dimen>
     <dimen name="location_logo_size">120dp</dimen>
     <dimen name="std_icon">24dp</dimen>
+    <dimen name="md_txt">18sp</dimen>
 </resources>

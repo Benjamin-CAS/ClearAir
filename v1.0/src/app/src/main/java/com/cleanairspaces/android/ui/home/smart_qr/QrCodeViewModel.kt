@@ -5,13 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.cleanairspaces.android.models.entities.CustomerDeviceData
-import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
 import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.QrCodeProcessor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,5 +32,11 @@ class QrCodeViewModel@Inject constructor(
 
     fun addLocationFromMonitorId(monitorId: String) {
         MyLogger.logThis(TAG, "addLocationFromMonitorId($monitorId)" , "called" )
+    }
+
+    fun saveMyLocation(customerDeviceData: CustomerDeviceData, userName: String? = null, userPassword: String? = null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            scannedDevicesRepo.addMyLocationData(customerDeviceData, userName, userPassword)
+        }
     }
 }

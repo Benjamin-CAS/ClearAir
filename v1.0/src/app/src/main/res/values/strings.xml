@@ -60,5 +60,8 @@
     <string name="location_lbl">Location</string>
     <string name="device_id_lbl">ID</string>
     <string name="ref_mon_lbl">Name</string>
+    <string name="location_information">Location Information</string>
+    <string name="location_added_text">Location Added</string>
+    <string name="enter_username_password"><![CDATA[Please enter the username & password]]></string>
 
 </resources>

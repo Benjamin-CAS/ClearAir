@@ -22,16 +22,23 @@ class QrCodeViewModel@Inject constructor(
 
     fun observeLocationFromCompanyInfo(compId: Int, locId: Int) : LiveData<CustomerDeviceData> = scannedDevicesRepo.getADeviceFlow(compId = compId.toString(), locId = locId.toString()).asLiveData()
 
+    fun observeLocationFromMonitorInfo(monitorId: String) : LiveData<CustomerDeviceData> = scannedDevicesRepo.getADeviceFlowByMonitorId(monitorId = monitorId).asLiveData()
+
     fun addLocationFromCompanyInfo(locId: Int, compId: Int) {
        val timeStamp = System.currentTimeMillis().toString()
-       val pl = QrCodeProcessor.getEncryptedEncodedPayload(locId, compId, timeStamp)
+       val pl = QrCodeProcessor.getEncryptedEncodedPayloadForLocation(locId, compId, timeStamp)
         viewModelScope.launch(Dispatchers.IO) {
-            scannedDevicesRepo.fetchLocationFromScannedDeviceQr(base64Str = pl, payLoadTimeStamp = timeStamp)
+            scannedDevicesRepo.fetchDataFromScannedDeviceQr(base64Str = pl, payLoadTimeStamp = timeStamp, forCompLocation = true)
         }
     }
 
     fun addLocationFromMonitorId(monitorId: String) {
+        val timeStamp = System.currentTimeMillis().toString()
+        val pl = QrCodeProcessor.getEncryptedEncodedPayloadForMonitor(monitorId = monitorId, timeStamp = timeStamp)
         MyLogger.logThis(TAG, "addLocationFromMonitorId($monitorId)" , "called" )
+        viewModelScope.launch(Dispatchers.IO) {
+            scannedDevicesRepo.fetchDataFromScannedDeviceQr(base64Str = pl, payLoadTimeStamp = timeStamp, forCompLocation = false, monitorId = monitorId)
+        }
     }
 
     fun saveMyLocation(customerDeviceData: CustomerDeviceData, userName: String? = null, userPassword: String? = null) {
@@ -39,4 +46,6 @@ class QrCodeViewModel@Inject constructor(
             scannedDevicesRepo.addMyLocationData(customerDeviceData, userName, userPassword)
         }
     }
+
+
 }

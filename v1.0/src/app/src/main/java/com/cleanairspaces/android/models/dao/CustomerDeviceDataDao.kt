@@ -16,6 +16,9 @@ interface CustomerDeviceDataDao {
     @Query("SELECT * FROM customer_device_data WHERE company_id =:companyId AND location_id =:locationId ")
     fun getADeviceFlow(companyId : String, locationId  : String): Flow<CustomerDeviceData>
 
+    @Query("SELECT * FROM customer_device_data WHERE monitor_id =:monitorId")
+    fun getADeviceFlowByMonitorId(monitorId : String): Flow<CustomerDeviceData>
+
     @Query("DELETE FROM customer_device_data")
     suspend fun deleteAllDevices()
 

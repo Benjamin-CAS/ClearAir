@@ -23,7 +23,9 @@ data class CustomerDeviceData(
     @ColumnInfo(name = "logo_file_name")
     val logo : String,
     val reference_mon : String,
-    var isMyDeviceData : Boolean = false
+    var isMyDeviceData : Boolean = false,
+    var monitor_id : String?,
+    var type : String?,
 ):Parcelable{
 
     fun getFullLogoUrl(): String {
@@ -31,6 +33,7 @@ data class CustomerDeviceData(
     }
 
     companion object{
+        const val RESPONSE_MONITOR_TYPE_KEY: String = "type"
         const val RESPONSE_KEY = "customer"
         private const val LOGO_BASE_URL = "${BASE_URL}assets/images/logo/"
     }

@@ -64,6 +64,9 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                 val infoTxt = processingQrCodeTxt + "\n" + parsedResult.extraData
                 info.text = infoTxt
                 if (parsedResult.monitorId != null){
+                    observeScannedLocation(
+                            monitorId =  parsedResult.monitorId
+                    )
                     viewModel.addLocationFromMonitorId(monitorId = parsedResult.monitorId)
                 }
                 else if (parsedResult.locId != null && parsedResult.compId != null){
@@ -80,15 +83,27 @@ class QrCodeProcessingActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeScannedLocation(locId: Int, compId: Int) {
-        viewModel.observeLocationFromCompanyInfo(locId = locId, compId = compId).observe(
-            this, Observer {
-                if (it != null){
+    private fun observeScannedLocation(locId: Int? = null, compId: Int? = null, monitorId : String? = null) {
+        if (compId != null && locId != null) {
+            viewModel.observeLocationFromCompanyInfo(locId = locId, compId = compId).observe(
+                    this, Observer {
+                if (it != null) {
                     displayLocationInfo(it)
 
                 }
             }
-        )
+            )
+        }
+        if (monitorId != null){
+            viewModel.observeLocationFromMonitorInfo(monitorId = monitorId).observe(
+                    this, Observer {
+                if (it != null) {
+                    displayLocationInfo(it)
+
+                }
+            }
+            )
+        }
     }
 
   private fun displayLocationInfo(customerDeviceData: CustomerDeviceData) {

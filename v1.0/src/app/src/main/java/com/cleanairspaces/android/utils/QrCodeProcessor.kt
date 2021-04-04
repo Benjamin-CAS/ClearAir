@@ -4,8 +4,8 @@ import android.util.Base64
 import android.util.Base64.decode
 import android.util.Base64.encodeToString
 import com.cleanairspaces.android.R
-import com.cleanairspaces.android.models.api.QrScannedItemsApiService
-import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.DEVICE_INFO_METHOD_FOR_KEY
+import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.LOCATION_INFO_METHOD_FOR_KEY
+import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.MONITOR_INFO_METHOD_FOR_KEY
 
 /*
 **
@@ -62,7 +62,7 @@ object QrCodeProcessor {
                 // This is a monitorID, let's get the location and try to add it
                 val properMonitorId  =
                 if (qrContent.length == QR_MONITOR_ID_PADDED_LENGTH){
-                   qrContent.substring(QR_MONITOR_ID_PAD_LENGTH until 22  - QR_MONITOR_ID_PAD_LENGTH)
+                   qrContent.substring(QR_MONITOR_ID_PAD_LENGTH until QR_MONITOR_ID_PADDED_LENGTH  - QR_MONITOR_ID_PAD_LENGTH)
                 }else qrContent
 
                 return ParserResult(codeRes = SUCCESS, monitorId = properMonitorId,  extraData = properMonitorId)
@@ -122,16 +122,17 @@ object QrCodeProcessor {
         return "{\"$COMP_ID_KEY\":$compId, \"$LOC_ID_KEY\":$locId}"
     }
 
-    private fun getProperPayloadWithPass(locId: Int, compId: Int):String {
-        return "{\"$COMP_ID_KEY\":$compId,\"$LOC_ID_KEY\":$locId,\"$USER_KEY\":${QrScannedItemsApiService.APP_USER},\"$PWD_KEY\":${QrScannedItemsApiService.APP_USER_PWD}}"
+
+    private fun getProperPayloadKeyForCompLocation(timeStamp: String): String {
+        return "${LOCATION_INFO_METHOD_FOR_KEY}$timeStamp"
     }
 
-    private fun getProperPayloadKey(timeStamp: String): String {
-        return "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
+    private fun getProperPayloadKeyForMonitor(timeStamp: String): String {
+        return "${MONITOR_INFO_METHOD_FOR_KEY}$timeStamp"
     }
 
-    fun getEncryptedEncodedPayload(locId: Int, compId: Int, timeStamp: String): String {
-        val key = getProperPayloadKey(timeStamp)
+    fun getEncryptedEncodedPayloadForLocation(locId: Int, compId: Int, timeStamp: String): String {
+        val key = getProperPayloadKeyForCompLocation(timeStamp)
         MyLogger.logThis(TAG, "getEncryptedEncodedPayload($locId : L, $compId : C, $timeStamp : t)", "true key $key")
         val payload = getProperPayload(locId, compId)
         MyLogger.logThis(TAG, "getEncryptedEncodedPayload()", "payload $payload")
@@ -140,9 +141,18 @@ object QrCodeProcessor {
         return toBase64Encoding(casEncrypted)
     }
 
-    fun getUnEncryptedPayload(encPayload: String, lTime: String): String {
+    fun getEncryptedEncodedPayloadForMonitor(monitorId: String, timeStamp: String): String {
+        val key = getProperPayloadKeyForMonitor(timeStamp)
+        MyLogger.logThis(TAG, "getEncryptedEncodedPayloadForMonitor(monitorId: $monitorId, $timeStamp : time)", "true key $key")
+        val casEncrypted = doCASEncryptOrDecrypt(payload = monitorId, key= key)
+        MyLogger.logThis(TAG, "getEncryptedEncodedPayloadForMonitor()", "encrypted $casEncrypted")
+        return toBase64Encoding(casEncrypted)
+    }
+
+    fun getUnEncryptedPayload(encPayload: String, lTime: String, forCompLocation: Boolean): String {
         val decoded = fromBase64Encoding(encPayload)
-        val key = getProperPayloadKey(lTime)
+        val key = if (forCompLocation)  getProperPayloadKeyForCompLocation(lTime)
+                else getProperPayloadKeyForMonitor(lTime)
         val casDecrypted = doCASEncryptOrDecrypt(payload = decoded, key= key)
         MyLogger.logThis(TAG, "getUnEncryptedPayload...", "decrypted $casDecrypted")
         return casDecrypted

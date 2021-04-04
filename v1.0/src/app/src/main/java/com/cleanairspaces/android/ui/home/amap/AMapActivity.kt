@@ -83,7 +83,7 @@ class AMapActivity : BaseMapActivity()  {
 
     /*************** USER ACTIONS ****************/
     private fun initializeRecyclerViewForUserActions(){
-        binding.apply {
+        binding.homeMapOverlay.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
                     this@AMapActivity,
                     RecyclerView.HORIZONTAL,
@@ -156,7 +156,7 @@ class AMapActivity : BaseMapActivity()  {
 
 
     override fun hideMyLocations() {
-        binding.apply {
+        binding.homeMapOverlay.apply {
             if (locationsRv.visibility == View.VISIBLE)
                 locationsRv.visibility = View.INVISIBLE
             else
@@ -222,7 +222,7 @@ class AMapActivity : BaseMapActivity()  {
         ) {
             dismissPopUps()
             binding.apply {
-                snackbar = viewsContainer.showSnackBar(
+                snackbar = homeMapOverlay.viewsContainer.showSnackBar(
                         msgResId = msgRes,
                         isErrorMsg = isError,
                         actionMessage = actionRes

@@ -59,7 +59,7 @@ class GMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
 
     /*************** USER ACTIONS ****************/
     private fun initializeRecyclerViewForUserActions(){
-        binding.apply {
+        binding.homeMapOverlay.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
                 this@GMapActivity,
                 RecyclerView.HORIZONTAL,
@@ -70,8 +70,6 @@ class GMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
         }
 
     }
-
-
 
 
     /************* forwarding life cycle methods & clearing *********/

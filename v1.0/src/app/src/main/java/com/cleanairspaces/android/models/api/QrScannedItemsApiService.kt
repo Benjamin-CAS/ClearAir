@@ -14,7 +14,7 @@ interface QrScannedItemsApiService {
     companion object {
         const val APP_USER = BuildConfig.APP_USER
         const val APP_USER_PWD = BuildConfig.APP_USER_PWD
-        const val LOCATION_INFO_METHOD  = "GetDevInfoById"
+        const val LOCATION_INFO_METHOD = "GetDevInfoById"
         const val LOCATION_INFO_METHOD_FOR_KEY = "GetDevInfoByIdCAS"
         const val MONITOR_INFO_METHOD_FOR_KEY = "GetDevInfoCAS"
         const val MONITOR_INFO_METHOD = "GetDevInfo"
@@ -22,10 +22,10 @@ interface QrScannedItemsApiService {
 
     @POST("index.php/api/approuter")
     fun fetchScannedDeviceQrResponse(
-            @Query("app_id") app_id: Int = 1,
-            @Query("method") method: String,
-            @Query("nonce") nonce: String = NONCE,
-            @Body data: JsonObject
+        @Query("app_id") app_id: Int = 1,
+        @Query("method") method: String,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
     ): Call<ScannedDeviceQrResponse>
 
 }

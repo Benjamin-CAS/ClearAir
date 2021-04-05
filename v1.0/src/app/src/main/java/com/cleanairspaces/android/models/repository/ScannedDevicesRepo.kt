@@ -28,16 +28,19 @@ class ScannedDevicesRepo
 @Inject constructor(
     private val qrScannedItemsApiService: QrScannedItemsApiService,
     private val coroutineScope: CoroutineScope,
-    private val customerDeviceDataDao : CustomerDeviceDataDao
-        ) {
+    private val customerDeviceDataDao: CustomerDeviceDataDao
+) {
 
-    private lateinit var recentlyFetchedQrCodeData : JsonObject
+    private lateinit var recentlyFetchedQrCodeData: JsonObject
 
     /************************ QR SCANNED ITEMS *********************/
-    fun getADeviceFlow(compId : String, locId : String) = customerDeviceDataDao.getADeviceFlow(companyId = compId, locationId = locId)
-    fun getADeviceFlowByMonitorId(monitorId :String) = customerDeviceDataDao.getADeviceFlowByMonitorId(monitorId = monitorId)
+    fun getADeviceFlow(compId: String, locId: String) =
+        customerDeviceDataDao.getADeviceFlow(companyId = compId, locationId = locId)
 
-    private fun getScannedDeviceQrResponseCallback() : Callback<ScannedDeviceQrResponse> {
+    fun getADeviceFlowByMonitorId(monitorId: String) =
+        customerDeviceDataDao.getADeviceFlowByMonitorId(monitorId = monitorId)
+
+    private fun getScannedDeviceQrResponseCallback(): Callback<ScannedDeviceQrResponse> {
         return object : Callback<ScannedDeviceQrResponse> {
             override fun onResponse(
                 call: Call<ScannedDeviceQrResponse>,
@@ -49,27 +52,30 @@ class ScannedDevicesRepo
                         try {
                             if (responseBody == null) {
                                 MyLogger.logThis(
-                                        Companion.TAG,
+                                    Companion.TAG,
                                     "getScannedDeviceQrResponseCallback()",
                                     "returned a null body"
                                 )
                             } else {
                                 if (responseBody.payload != null) {
                                     MyLogger.logThis(
-                                            Companion.TAG, "getScannedDeviceQrResponseCallback()",
-                                            " in response body ${responseBody.payload}"
+                                        Companion.TAG, "getScannedDeviceQrResponseCallback()",
+                                        " in response body ${responseBody.payload}"
                                     )
-                                    processReturnedEncPayLoad(responseBody.payload, responseBody.ltime)
-                                }else{
+                                    processReturnedEncPayLoad(
+                                        responseBody.payload,
+                                        responseBody.ltime
+                                    )
+                                } else {
                                     MyLogger.logThis(
-                                            Companion.TAG, "getScannedDeviceQrResponseCallback()",
-                                            "payload is null in response body $responseBody"
+                                        Companion.TAG, "getScannedDeviceQrResponseCallback()",
+                                        "payload is null in response body $responseBody"
                                     )
                                 }
                             }
                         } catch (e: Exception) {
                             MyLogger.logThis(
-                                    Companion.TAG,
+                                Companion.TAG,
                                 "getScannedDeviceQrResponseCallback()",
                                 "exception ${e.message}",
                                 e
@@ -78,7 +84,7 @@ class ScannedDevicesRepo
                     }
                     else -> {
                         MyLogger.logThis(
-                                Companion.TAG,
+                            Companion.TAG,
                             "getScannedDeviceQrResponseCallback()",
                             "response code not 200, $response"
                         )
@@ -88,7 +94,7 @@ class ScannedDevicesRepo
 
             override fun onFailure(call: Call<ScannedDeviceQrResponse>, e: Throwable) {
                 MyLogger.logThis(
-                        Companion.TAG,
+                    Companion.TAG,
                     "getScannedDeviceQrResponseCallback()",
                     "OnFailure-exception ${e.message}"
                 )
@@ -96,47 +102,63 @@ class ScannedDevicesRepo
         }
     }
 
-    private fun processReturnedEncPayLoad(payload: String, timeStmp  : String?) {
+    private fun processReturnedEncPayLoad(payload: String, timeStmp: String?) {
         try {
-             var lTime = timeStmp
-             var forCompLocation = true
-             if (::recentlyFetchedQrCodeData.isInitialized){
+            var lTime = timeStmp
+            var forCompLocation = true
+            if (::recentlyFetchedQrCodeData.isInitialized) {
                 //todo may not be necessary if response identifies this
-                 if (timeStmp == null){
-                     lTime = recentlyFetchedQrCodeData.get(L_TIME_KEY).asString
-                 }
-                 forCompLocation = recentlyFetchedQrCodeData.get(IS_COMP_LOC_KEY).asBoolean
+                if (timeStmp == null) {
+                    lTime = recentlyFetchedQrCodeData.get(L_TIME_KEY).asString
+                }
+                forCompLocation = recentlyFetchedQrCodeData.get(IS_COMP_LOC_KEY).asBoolean
             }
             if (lTime == null) return
-            val unEncryptedPayload = QrCodeProcessor.getUnEncryptedPayload(payload, lTime, forCompLocation)
+            val unEncryptedPayload =
+                QrCodeProcessor.getUnEncryptedPayload(payload, lTime, forCompLocation)
             val unEncJson = JSONObject(unEncryptedPayload)
-            val companyData= unEncJson.getString(CustomerDeviceData.RESPONSE_KEY)
-            val type = if (!forCompLocation) unEncJson.getString(CustomerDeviceData.RESPONSE_MONITOR_TYPE_KEY)
+            val companyData = unEncJson.getString(CustomerDeviceData.RESPONSE_KEY)
+            val type =
+                if (!forCompLocation) unEncJson.getString(CustomerDeviceData.RESPONSE_MONITOR_TYPE_KEY)
                 else ""
             val customerDeviceData = Gson().fromJson(companyData, CustomerDeviceData::class.java)
             coroutineScope.launch(Dispatchers.IO) {
-                val isFound = customerDeviceDataDao.checkIfIsMyLocation(companyId = customerDeviceData.company_id, locationId = customerDeviceData.location_id)
+                val isFound = customerDeviceDataDao.checkIfIsMyLocation(
+                    companyId = customerDeviceData.company_id,
+                    locationId = customerDeviceData.location_id
+                )
                 customerDeviceData.isMyDeviceData = (isFound > 0)
-                if (!forCompLocation && recentlyFetchedQrCodeData.has(MONITOR_ID_KEY)){
+                if (!forCompLocation && recentlyFetchedQrCodeData.has(MONITOR_ID_KEY)) {
                     //todo match with timestamp returned
                     val forMonitorId = recentlyFetchedQrCodeData.get(MONITOR_ID_KEY).asString
                     customerDeviceData.monitor_id = forMonitorId
                     customerDeviceData.type = type
                 }
-                MyLogger.logThis(Companion.TAG,
-                        "processEncryptedPayload(payload: $payload, lTime  : $lTime)",
-                        "success -- SAVING DATA $customerDeviceData")
+                MyLogger.logThis(
+                    Companion.TAG,
+                    "processEncryptedPayload(payload: $payload, lTime  : $lTime)",
+                    "success -- SAVING DATA $customerDeviceData"
+                )
 
                 customerDeviceDataDao.insertDeviceData(customerDeviceData)
             }
-        }catch (e : java.lang.Exception){
-            MyLogger.logThis(Companion.TAG, "processEncryptedPayload(payload: $payload, lTime  : $timeStmp)"
-            , "failed ${e.message}", e)
+        } catch (e: java.lang.Exception) {
+            MyLogger.logThis(
+                Companion.TAG,
+                "processEncryptedPayload(payload: $payload, lTime  : $timeStmp)",
+                "failed ${e.message}",
+                e
+            )
         }
     }
 
 
-    suspend fun fetchDataFromScannedDeviceQr(base64Str: String, payLoadTimeStamp: String, forCompLocation: Boolean, monitorId: String? = null) {
+    suspend fun fetchDataFromScannedDeviceQr(
+        base64Str: String,
+        payLoadTimeStamp: String,
+        forCompLocation: Boolean,
+        monitorId: String? = null
+    ) {
         try {
             val method = if (forCompLocation) LOCATION_INFO_METHOD
             else MONITOR_INFO_METHOD
@@ -154,15 +176,24 @@ class ScannedDevicesRepo
             if (monitorId != null) data.addProperty(MONITOR_ID_KEY, monitorId)
             recentlyFetchedQrCodeData = data
             otherLocationsResponse.enqueue(getScannedDeviceQrResponseCallback())
-        }catch (e : Exception){
-            MyLogger.logThis(Companion.TAG, "fetchLocationFromScannedDeviceQr()", "exc ${e.message}", e)
+        } catch (e: Exception) {
+            MyLogger.logThis(
+                Companion.TAG,
+                "fetchLocationFromScannedDeviceQr()",
+                "exc ${e.message}",
+                e
+            )
         }
     }
 
-   suspend fun addMyLocationData(customerDeviceData: CustomerDeviceData, userName: String?, userPassword: String?) {
-        if (userName != null && userPassword != null && customerDeviceData.isSecure){
+    suspend fun addMyLocationData(
+        customerDeviceData: CustomerDeviceData,
+        userName: String?,
+        userPassword: String?
+    ) {
+        if (userName != null && userPassword != null && customerDeviceData.isSecure) {
             //todo validate credentials
-        }else{
+        } else {
             customerDeviceData.isMyDeviceData = true
             customerDeviceDataDao.updateDevice(customerDeviceData)
         }

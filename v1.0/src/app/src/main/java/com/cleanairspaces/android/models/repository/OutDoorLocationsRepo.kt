@@ -1,16 +1,14 @@
 package com.cleanairspaces.android.models.repository
 
 import com.cleanairspaces.android.models.api.OutDoorLocationsApiService
-import com.cleanairspaces.android.models.api.QrScannedItemsApiService
-import com.cleanairspaces.android.models.api.responses.*
+import com.cleanairspaces.android.models.api.responses.OutDoorLocationAmerica
+import com.cleanairspaces.android.models.api.responses.OutDoorLocationTaiwan
+import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOther
+import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOtherResponse
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.entities.LocationAreas
 import com.cleanairspaces.android.models.entities.OutDoorLocations
-import com.cleanairspaces.android.utils.L_TIME_KEY
 import com.cleanairspaces.android.utils.MyLogger
-import com.cleanairspaces.android.utils.PAYLOAD_KEY
-import com.cleanairspaces.android.utils.QrCodeProcessor
-import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -18,7 +16,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.collections.ArrayList
 
 
 @Singleton
@@ -27,12 +24,12 @@ class OutDoorLocationsRepo
     private val outDoorLocationsApiService: OutDoorLocationsApiService,
     private val coroutineScope: CoroutineScope,
     private val outDoorLocationsDao: OutDoorLocationsDao
-){
+) {
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
 
-        fun  getOutDoorLocationsLive() = outDoorLocationsDao.getOutDoorLocationsLive()
+    fun getOutDoorLocationsLive() = outDoorLocationsDao.getOutDoorLocationsLive()
 
-    private fun getOtherOutDoorLocationsResponseCallback() : Callback<OutDoorLocationsOtherResponse> {
+    private fun getOtherOutDoorLocationsResponseCallback(): Callback<OutDoorLocationsOtherResponse> {
         return object : Callback<OutDoorLocationsOtherResponse> {
             override fun onResponse(
                 call: Call<OutDoorLocationsOtherResponse>,
@@ -86,7 +83,7 @@ class OutDoorLocationsRepo
         }
     }
 
-   private fun getAmericaOutDoorLocationsResponseCallback() : Callback<List<OutDoorLocationAmerica>> {
+    private fun getAmericaOutDoorLocationsResponseCallback(): Callback<List<OutDoorLocationAmerica>> {
         return object : Callback<List<OutDoorLocationAmerica>> {
             override fun onResponse(
                 call: Call<List<OutDoorLocationAmerica>>,
@@ -142,7 +139,7 @@ class OutDoorLocationsRepo
         }
     }
 
-   private fun getTaiwanOutDoorLocationsResponseCallback() : Callback<List<OutDoorLocationTaiwan>> {
+    private fun getTaiwanOutDoorLocationsResponseCallback(): Callback<List<OutDoorLocationTaiwan>> {
         return object : Callback<List<OutDoorLocationTaiwan>> {
             override fun onResponse(
                 call: Call<List<OutDoorLocationTaiwan>>,
@@ -199,7 +196,7 @@ class OutDoorLocationsRepo
     }
 
 
-    suspend fun refreshOutDoorLocations(){
+    suspend fun refreshOutDoorLocations() {
         //refreshing out door locations
         val otherLocationsResponse = outDoorLocationsApiService.fetchOtherOutDoorLocations()
         otherLocationsResponse.enqueue(getOtherOutDoorLocationsResponseCallback())
@@ -213,8 +210,8 @@ class OutDoorLocationsRepo
         taiwanLocationsResponse.enqueue(getTaiwanOutDoorLocationsResponseCallback())
 
     }
-    
-    fun saveOutDoorLocations(locations: List<Any>, location_area: LocationAreas){
+
+    fun saveOutDoorLocations(locations: List<Any>, location_area: LocationAreas) {
         coroutineScope.launch {
             outDoorLocationsDao.deleteAllLocations()
             val newOutDoorLocations = ArrayList<OutDoorLocations>()

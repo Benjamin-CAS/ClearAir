@@ -1,9 +1,6 @@
 package com.cleanairspaces.android.utils
 
-import android.graphics.*
-import com.amap.api.maps2d.model.BitmapDescriptor
-import com.amap.api.maps2d.model.BitmapDescriptorFactory
-import com.cleanairspaces.android.R
+import android.graphics.Color
 
 
 enum class UIColor(val red: Double, val green: Double, val blue: Double) {
@@ -59,8 +56,6 @@ object MyColorUtils {
 
         return Color.argb(70, red, green, blue)
     }
-
-
 
 
 }

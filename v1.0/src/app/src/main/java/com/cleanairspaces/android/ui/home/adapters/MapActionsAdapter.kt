@@ -1,14 +1,11 @@
 package com.cleanairspaces.android.ui.home.adapters
 
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.cleanairspaces.android.databinding.MapActionsItemBinding
 import com.cleanairspaces.android.ui.home.MapActionChoices
 import com.cleanairspaces.android.ui.home.MapActions
-import com.cleanairspaces.android.ui.home.gmap.GMapActivity
-import kotlinx.parcelize.Parcelize
 
 
 class MapActionsAdapter(private val actionsListener: ClickListener) :
@@ -43,7 +40,7 @@ class MapActionsAdapter(private val actionsListener: ClickListener) :
     }
 
     override fun onBindViewHolder(holder: MapActionsAdapter.MapActionsViewHolder, position: Int) {
-        val action= mapActionsList[position]
+        val action = mapActionsList[position]
         holder.bind(action, actionsListener)
     }
 

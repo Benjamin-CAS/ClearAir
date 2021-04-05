@@ -1,10 +1,9 @@
 package com.cleanairspaces.android.ui.home
 
+import android.location.Location
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.amap.api.maps.model.LatLng as aLatLng
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
@@ -26,29 +25,44 @@ class MapViewModel @Inject constructor(
     init {
         refreshOutDoorLocations()
     }
-    var hasPromptedForLocationSettings = false
 
+
+    /*********** AMAP SPECIFIC LOCATION *************/
+    private var userLastKnowALatLng: aLatLng? = null
+    fun setUserLastKnownALatLng(it: Location?) {
+        it?.let {
+            userLastKnowALatLng = aLatLng(it.latitude, it.longitude)
+            MyLogger.logThis(TAG, "userLastKnownLocale()" , "-- $it")
+        }
+    }
+    fun getUserLastKnownALatLng(): aLatLng? = userLastKnowALatLng
+
+
+    var hasSetMyLocationStyle = false
     val mapActions = arrayListOf(
         MapActions(action = MapActionChoices.SMART_QR),
         MapActions(action = MapActionChoices.MAP_VIEW),
         MapActions(action = MapActionChoices.ADD),
     )
 
-    fun observeLocations() : LiveData<List<OutDoorLocations>> = locationsRepo.getOutDoorLocationsLive().asLiveData()
+    fun observeLocations(): LiveData<List<OutDoorLocations>> =
+        locationsRepo.getOutDoorLocationsLive().asLiveData()
 
-    private fun refreshOutDoorLocations(){
-        MyLogger.logThis(TAG, "refreshOutDoorLocations()","called --")
+    private fun refreshOutDoorLocations() {
+        MyLogger.logThis(TAG, "refreshOutDoorLocations()", "called --")
         viewModelScope.launch(Dispatchers.IO) {
             locationsRepo.refreshOutDoorLocations()
             delay(OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS)
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 refreshOutDoorLocations()
             }
         }
     }
 
 
-    companion object{
+
+
+    companion object {
         private val TAG = MapViewModel::class.java.simpleName
     }
 }
@@ -56,7 +70,7 @@ class MapViewModel @Inject constructor(
 @Parcelize
 class MapActions(
     val action: MapActionChoices
-): Parcelable
+) : Parcelable
 
 enum class MapActionChoices(val strRes: Int) {
     SMART_QR(strRes = R.string.smart_qr_txt),

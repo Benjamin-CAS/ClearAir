@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import dagger.hilt.android.AndroidEntryPoint
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,15 +17,16 @@ import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
 import com.cleanairspaces.android.utils.MyLogger
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class GMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
+class GMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener {
 
 
     private val mapActionsAdapter = MapActionsAdapter(this)
 
     private lateinit var binding: ActivityGmapBinding
-    private val viewModel : MapViewModel by viewModels()
+    private val viewModel: MapViewModel by viewModels()
 
     private var popUp: AlertDialog? = null
     private var snackbar: Snackbar? = null
@@ -58,7 +57,7 @@ class GMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener  {
     }
 
     /*************** USER ACTIONS ****************/
-    private fun initializeRecyclerViewForUserActions(){
+    private fun initializeRecyclerViewForUserActions() {
         binding.homeMapOverlay.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
                 this@GMapActivity,

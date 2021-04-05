@@ -4,20 +4,15 @@ import android.app.Activity
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.amap.api.maps2d.AMap
-import com.amap.api.maps2d.MapView
-import com.amap.api.maps2d.model.BitmapDescriptorFactory
-import com.amap.api.maps2d.model.MarkerOptions
-import com.amap.api.maps2d.model.MyLocationStyle
+import com.amap.api.maps.AMap
+import com.amap.api.maps.CameraUpdateFactory
+import com.amap.api.maps.MapView
+import com.amap.api.maps.model.*
 import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityAmapBinding
@@ -25,14 +20,12 @@ import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.BaseMapActivity
 import com.cleanairspaces.android.ui.home.MapViewModel
 import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
-import com.cleanairspaces.android.utils.AQI
-import com.cleanairspaces.android.utils.MyLogger
-import com.cleanairspaces.android.utils.UIColor
-import com.cleanairspaces.android.utils.showSnackBar
+import com.cleanairspaces.android.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
-class AMapActivity : BaseMapActivity()  {
+class AMapActivity : BaseMapActivity() {
 
     private lateinit var binding: ActivityAmapBinding
 
@@ -45,6 +38,7 @@ class AMapActivity : BaseMapActivity()  {
 
     override var mapActionsAdapter = MapActionsAdapter(this)
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAmapBinding.inflate(layoutInflater)
@@ -54,13 +48,13 @@ class AMapActivity : BaseMapActivity()  {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         binding.apply {
             Glide.with(this@AMapActivity)
-                    .load(R.drawable.clean_air_spaces_logo_name)
-                    .into(toolbarLogo)
+                .load(R.drawable.clean_air_spaces_logo_name)
+                .into(toolbarLogo)
         }
 
         //location permission launcher must be set
         requestPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
+            ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
                 showUserLocation()
@@ -68,30 +62,32 @@ class AMapActivity : BaseMapActivity()  {
         }
 
         //scan-qr launcher must be set
-        scanQrCodeLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-        { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                //  you will get result here in result.data
-                handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+        scanQrCodeLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    //  you will get result here in result.data
+                    handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+                }
+
             }
 
-        }
-
-    initializeRecyclerViewForUserActions()
+        initializeRecyclerViewForUserActions()
         initializeMap(savedInstanceState)
     }
 
     /*************** USER ACTIONS ****************/
-    private fun initializeRecyclerViewForUserActions(){
-        binding.homeMapOverlay.apply {
+    private fun initializeRecyclerViewForUserActions() {
+        binding.homeMapOverlay.mapActionsRv.isVisible = false
+            /*.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
-                    this@AMapActivity,
-                    RecyclerView.HORIZONTAL,
-                    false
+                this@AMapActivity,
+                RecyclerView.HORIZONTAL,
+                false
             )
             mapActionsAdapter.setMapActionsList(viewModel.mapActions)
             mapActionsRv.adapter = mapActionsAdapter
-        }
+        }*/
 
     }
 
@@ -101,22 +97,29 @@ class AMapActivity : BaseMapActivity()  {
             mapView?.let { mMapView ->
                 mMapView.onCreate(savedInstanceState)
                 aMap = mMapView.map
-                aMap?.apply {
-                    //todo settings setMapLanguage(AMap.ENGLISH)
+                aMap?.apply{
+                    setMapLanguage(AMap.ENGLISH)
                     uiSettings.isZoomControlsEnabled = false
-                    requestPermissionsToShowUserLocation()
-                    observeOutDoorLocations()
+                    setOnMyLocationClickListener()
+                    //observeOutDoorLocations()
                 }
             }
         }
+    }
 
+    private fun setOnMyLocationClickListener(){
+        binding.myLocationBtn.setOnClickListener {
+            requestPermissionsToShowUserLocation()
+        }
     }
 
     private fun observeOutDoorLocations() {
         viewModel.observeLocations().observe(this, Observer {
             if (it != null) {
                 MyLogger.logThis(
-                        TAG, "observeOutDoorLocations() -> observeLocations()", " found in room ${it.size}"
+                    TAG,
+                    "observeOutDoorLocations() -> observeLocations()",
+                    " found in room ${it.size}"
                 )
                 aMap?.clear()
                 setupMarkers(locations = it)
@@ -125,34 +128,46 @@ class AMapActivity : BaseMapActivity()  {
     }
 
 
-        /****************** USER LOCATION ******************/
-        /* TODO request location LAT-LNG and reposition camera instead ******/
-        override fun showUserLocation() {
+    /****************** USER LOCATION ******************/
+    override fun showUserLocation() {
+        if (!viewModel.hasSetMyLocationStyle){
+            viewModel.hasSetMyLocationStyle = true
             val myLocationStyle = MyLocationStyle()
             myLocationStyle.apply {
                 myLocationIcon(
-                        BitmapDescriptorFactory.fromBitmap(
-                                BitmapFactory
-                                        .decodeResource(resources, R.drawable.my_location_icon)
-                        )
+                    BitmapDescriptorFactory.fromBitmap(
+                        BitmapFactory
+                            .decodeResource(resources, R.drawable.my_location_icon)
+                    )
                 )
-                interval(2000)
-                myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW)
+                interval(UPDATE_USER_LOCATION_INTERVAL)
+                myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER)
             }
             aMap?.apply {
                 setMyLocationStyle(myLocationStyle)
                 uiSettings?.isMyLocationButtonEnabled = false
                 isMyLocationEnabled = true
-                askUserToEnableGPS()
+                setOnMyLocationChangeListener {
+                    viewModel.setUserLastKnownALatLng(it)
+                }
             }
         }
+        //gps is required
+        askUserToEnableGPS()
 
-        private fun  askUserToEnableGPS(){
-            if (viewModel.hasPromptedForLocationSettings)
-                return
-            viewModel.hasPromptedForLocationSettings = true
-            promptMyLocationSettings()
+        //change to last known location
+       viewModel.getUserLastKnownALatLng()?.let {
+            aMap?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    it,
+                    10f
+                )
+            );
         }
+
+    }
+
+    private fun askUserToEnableGPS()  = super.promptMyLocationSettings()
 
 
     override fun hideMyLocations() {
@@ -165,91 +180,98 @@ class AMapActivity : BaseMapActivity()  {
     }
 
 
+    /**************** MARKERS & CIRCLES **************/
+    private fun setupMarkers(locations: List<OutDoorLocations>) {
+        for (location in locations) {
+            val mDrawable = getIconForMarker(location)
+            val mIcon = if (mDrawable == null) null else
+                BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory
+                        .decodeResource(resources, mDrawable)
+                )
 
-
-
-        /**************** MARKERS & CIRCLES **************/
-        private fun setupMarkers(locations: List<OutDoorLocations>) {
-            for (location in locations) {
-                val mDrawable = getIconForMarker(location)
-                val mIcon = if (mDrawable == null) null else
-                    BitmapDescriptorFactory.fromBitmap(
-                            BitmapFactory
-                                    .decodeResource(resources, mDrawable)
-                    )
-
-                val markerOptions = MarkerOptions()
-                markerOptions.apply {
-                    position(location.getAMapLocationLatLng())
-                    draggable(false)
-                    anchor(0.5f, 0.5f)
-                    mIcon?.let{
-                        icon(it)
-                    }
+            val markerOptions = MarkerOptions()
+            markerOptions.apply {
+                position(location.getAMapLocationLatLng())
+                draggable(false)
+                anchor(0.5f, 0.5f)
+                mIcon?.let {
+                    icon(it)
                 }
-                aMap?.addMarker(markerOptions)
             }
-            aMap?.setOnMarkerClickListener {
-                false
-            }
-
+            aMap?.addMarker(markerOptions)
+        }
+        aMap?.setOnMarkerClickListener {
+            false
         }
 
-        private fun getIconForMarker(location: OutDoorLocations): Int? {
-            val pm25 = if (location.pm2p5 != "") location.pm2p5 else location.reading
-            return when (AQI.getAQIColorFromPM25(pm25.toDouble())) {
-                UIColor.AQIGoodColor -> aQIGoodBitmap
-                UIColor.AQIModerateColor -> aQIModerateBitmap
-                UIColor.AQIGUnhealthyColor -> aQIGUnhealthyBitmap
-                UIColor.AQIUnhealthyColor -> aQIUnhealthyBitmap
-                UIColor.AQIVUnhealthyColor -> aQIVUnhealthyBitmap
-                UIColor.AQIHazardousColor -> aQIHazardousBitmap
-                UIColor.AQIBeyondColor -> aQIBeyondBitmap
-                UIColor.AQICNExcellentColor -> aQICNExcellentBitmap
-                else -> null
-            }
+    }
+
+    private fun getIconForMarker(location: OutDoorLocations): Int? {
+        val pm25 = if (location.pm2p5 != "") location.pm2p5 else location.reading
+        return when (AQI.getAQIColorFromPM25(pm25.toDouble())) {
+            UIColor.AQIGoodColor -> aQIGoodBitmap
+            UIColor.AQIModerateColor -> aQIModerateBitmap
+            UIColor.AQIGUnhealthyColor -> aQIGUnhealthyBitmap
+            UIColor.AQIUnhealthyColor -> aQIUnhealthyBitmap
+            UIColor.AQIVUnhealthyColor -> aQIVUnhealthyBitmap
+            UIColor.AQIHazardousColor -> aQIHazardousBitmap
+            UIColor.AQIBeyondColor -> aQIBeyondBitmap
+            UIColor.AQICNExcellentColor -> aQICNExcellentBitmap
+            else -> null
         }
+    }
 
 
     /************************** QR CODE SCANNING ***************/
 
 
-        /***** dialogs ******/
+    /***** dialogs ******/
     override fun showSnackBar(
-                msgRes: Int,
-                isError: Boolean,
-                actionRes: Int?
-        ) {
-            dismissPopUps()
-            binding.apply {
-                snackbar = homeMapOverlay.viewsContainer.showSnackBar(
-                        msgResId = msgRes,
-                        isErrorMsg = isError,
-                        actionMessage = actionRes
-                )
-            }
+        msgRes: Int,
+        isError: Boolean,
+        actionRes: Int?
+    ) {
+        dismissPopUps()
+        binding.apply {
+            snackbar = homeMapOverlay.viewsContainer.showSnackBar(
+                msgResId = msgRes,
+                isErrorMsg = isError,
+                actionMessage = actionRes
+            )
         }
+    }
 
     /************* forwarding life cycle methods & clearing *********/
-        override fun onSaveInstanceState(outState: Bundle) {
-            super.onSaveInstanceState(outState)
-            mapView?.onSaveInstanceState(outState)
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+    }
 
-        override fun onResume() {
-            super.onResume()
-            mapView?.onResume()
-        }
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+    }
 
-        override fun onPause() {
-            super.onPause()
-            mapView?.onPause()
-        }
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+
+    }
+
 
 
     override fun onDestroy() {
         super.onDestroy()
-            mapView?.onDestroy()
-            dismissPopUps()
-        }
+        mapView?.onDestroy()
+        dismissPopUps()
+    }
+
+
+
 }

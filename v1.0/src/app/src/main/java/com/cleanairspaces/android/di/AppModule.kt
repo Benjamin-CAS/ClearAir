@@ -40,19 +40,19 @@ class AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit =
-            Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(getLogger())
-                    .addConverterFactory(
-                        GsonConverterFactory.create(
-                            GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-                        )
-                    ).build()
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(getLogger())
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+                )
+            ).build()
 
     @Provides
     @Singleton
     fun provideOutDoorLocationsApiService(retrofit: Retrofit): OutDoorLocationsApiService =
-            retrofit.create(OutDoorLocationsApiService::class.java)
+        retrofit.create(OutDoorLocationsApiService::class.java)
 
     @Provides
     @Singleton
@@ -61,20 +61,20 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideCoroutineScopeIO() : CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    fun provideCoroutineScopeIO(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
 
     @Provides
     @Singleton
     fun provideDatabase(app: Application): CasDatabase =
-            Room.databaseBuilder(app, CasDatabase::class.java, DATABASE_NAME)
-                    .fallbackToDestructiveMigration()
-                    .build()
+        Room.databaseBuilder(app, CasDatabase::class.java, DATABASE_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton
     fun provideOutDoorLocationsDao(casDatabase: CasDatabase): OutDoorLocationsDao =
-            casDatabase.outDoorLocationsDao()
+        casDatabase.outDoorLocationsDao()
 
 
     @Provides
@@ -90,8 +90,8 @@ class AppModule {
         coroutineScope: CoroutineScope,
         outDoorLocationsDao: OutDoorLocationsDao
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
-        outDoorLocationsApiService =  outDoorLocationsApiService,
-        coroutineScope =  coroutineScope,
+        outDoorLocationsApiService = outDoorLocationsApiService,
+        coroutineScope = coroutineScope,
         outDoorLocationsDao = outDoorLocationsDao
     )
 
@@ -101,11 +101,11 @@ class AppModule {
     fun provideScannedDevicesRepo(
         qrScannedItemsApiService: QrScannedItemsApiService,
         coroutineScope: CoroutineScope,
-        customerDeviceDataDao : CustomerDeviceDataDao
-    ): ScannedDevicesRepo =  ScannedDevicesRepo(
-        qrScannedItemsApiService =  qrScannedItemsApiService,
+        customerDeviceDataDao: CustomerDeviceDataDao
+    ): ScannedDevicesRepo = ScannedDevicesRepo(
+        qrScannedItemsApiService = qrScannedItemsApiService,
         coroutineScope = coroutineScope,
-        customerDeviceDataDao =  customerDeviceDataDao
+        customerDeviceDataDao = customerDeviceDataDao
     )
 
 }

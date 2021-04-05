@@ -1,9 +1,8 @@
 package com.cleanairspaces.android.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.core.view.isVisible
+import androidx.appcompat.app.AppCompatActivity
 import com.cleanairspaces.android.databinding.ActivityMainBinding
 import com.cleanairspaces.android.ui.home.amap.AMapActivity
 import com.cleanairspaces.android.ui.home.gmap.GMapActivity
@@ -26,12 +25,16 @@ class MainActivity : AppCompatActivity() {
 
         if (false) {
             //TODO CALL checkForGooglePlayServices()
-           MyLogger.logThis(TAG, "onViewCreated()" , "google play services found & up to date")
+            MyLogger.logThis(TAG, "onViewCreated()", "google play services found & up to date")
             startActivity(Intent(this, GMapActivity::class.java))
-       } else {
-           MyLogger.logThis(TAG, "onViewCreated()" , "google play services not found & or out-dated")
+        } else {
+            MyLogger.logThis(
+                TAG,
+                "onViewCreated()",
+                "google play services not found & or out-dated"
+            )
             startActivity(Intent(this, AMapActivity::class.java))
-       }
+        }
 
         this.finish()
     }
@@ -40,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         //maybe need update?
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         return when (googleApiAvailability.isGooglePlayServicesAvailable(
-                this
+            this
         )) {
             ConnectionResult.SUCCESS -> true
             else -> false

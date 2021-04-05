@@ -10,14 +10,14 @@ interface CustomerDeviceDataDao {
     suspend fun insertDeviceData(deviceData: CustomerDeviceData)
 
     @Query("SELECT * FROM customer_device_data WHERE isMyDeviceData =:isTrue ")
-    fun getMyDevicesFlow(isTrue : Boolean = true): Flow<List<CustomerDeviceData>>
+    fun getMyDevicesFlow(isTrue: Boolean = true): Flow<List<CustomerDeviceData>>
 
 
     @Query("SELECT * FROM customer_device_data WHERE company_id =:companyId AND location_id =:locationId ")
-    fun getADeviceFlow(companyId : String, locationId  : String): Flow<CustomerDeviceData>
+    fun getADeviceFlow(companyId: String, locationId: String): Flow<CustomerDeviceData>
 
     @Query("SELECT * FROM customer_device_data WHERE monitor_id =:monitorId")
-    fun getADeviceFlowByMonitorId(monitorId : String): Flow<CustomerDeviceData>
+    fun getADeviceFlowByMonitorId(monitorId: String): Flow<CustomerDeviceData>
 
     @Query("DELETE FROM customer_device_data")
     suspend fun deleteAllDevices()
@@ -26,7 +26,11 @@ interface CustomerDeviceDataDao {
     suspend fun updateDevice(deviceData: CustomerDeviceData)
 
     @Query("SELECT COUNT(autoId) FROM customer_device_data WHERE company_id =:companyId AND location_id =:locationId AND isMyDeviceData =:isMine")
-    suspend fun checkIfIsMyLocation(companyId : String, locationId  : String, isMine : Boolean = true): Int
+    suspend fun checkIfIsMyLocation(
+        companyId: String,
+        locationId: String,
+        isMine: Boolean = true
+    ): Int
 
 
 }

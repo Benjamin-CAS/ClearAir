@@ -113,11 +113,17 @@ object AQI {
 
     fun getAQITextFromPM25(pm25: Double): ConditionResStrings {
         if (pm25 == 0.0) {
-            return ConditionResStrings(R.string.condition_good, commentRes= R.string.pm2_5_lvl_comment)
+            return ConditionResStrings(
+                R.string.condition_good,
+                commentRes = R.string.pm2_5_lvl_comment
+            )
         }
 
         if (pm25 >= 500) {
-            return ConditionResStrings(R.string.condition_beyond_rating, commentRes= R.string.pm2_5_lvl_comment)
+            return ConditionResStrings(
+                R.string.condition_beyond_rating,
+                commentRes = R.string.pm2_5_lvl_comment
+            )
         }
 
         var i: Int = 0
@@ -125,39 +131,51 @@ object AQI {
 
         when (i) {
             0 ->
-                return ConditionResStrings(R.string.condition_good, commentRes= R.string.pm2_5_lvl_aqi_us_comment
+                return ConditionResStrings(
+                    R.string.condition_good, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             1
             ->
-                return ConditionResStrings(R.string.condition_good, commentRes= R.string.pm2_5_lvl_aqi_us_comment
+                return ConditionResStrings(
+                    R.string.condition_good, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             2
             ->
-                return ConditionResStrings(R.string.condition_moderate, commentRes= R.string.pm2_5_lvl_aqi_us_comment
+                return ConditionResStrings(
+                    R.string.condition_moderate, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             3
             ->
-                return ConditionResStrings(R.string.condition_unhealthy_sensitive_groups, commentRes= R.string.condition_unhealthy_sensitive_groups_comment
+                return ConditionResStrings(
+                    R.string.condition_unhealthy_sensitive_groups,
+                    commentRes = R.string.condition_unhealthy_sensitive_groups_comment
                 )
             4
             ->
-                return ConditionResStrings(R.string.condition_unhealthy, commentRes= R.string.pm2_5_lvl_aqi_us_comment
+                return ConditionResStrings(
+                    R.string.condition_unhealthy, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             5
             ->
-                return ConditionResStrings(R.string.condition_very_unhealthy, commentRes= R.string.pm2_5_lvl_aqi_us_comment
+                return ConditionResStrings(
+                    R.string.condition_very_unhealthy,
+                    commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             6
             ->
-                return ConditionResStrings(R.string.condition_hazardous, commentRes= R.string.pm2_5_lvl_aqi_us_comment
+                return ConditionResStrings(
+                    R.string.condition_hazardous, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             7
             ->
-                return ConditionResStrings(R.string.condition_hazardous, commentRes= R.string.pm2_5_lvl_aqi_us_comment
+                return ConditionResStrings(
+                    R.string.condition_hazardous, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             else ->
-                return ConditionResStrings(R.string.condition_beyond_rating, commentRes=
-                R.string.pm2_5_lvl_aqi_us_comment)
+                return ConditionResStrings(
+                    R.string.condition_beyond_rating, commentRes =
+                    R.string.pm2_5_lvl_aqi_us_comment
+                )
         }
     }
 
@@ -239,7 +257,10 @@ object AQI {
 
     fun getAQICNTextFromPM25(pm25: Double): ConditionResStrings {
         when {
-            pm25 == 0.0 -> return ConditionResStrings(R.string.condition_excellent, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
+            pm25 == 0.0 -> return ConditionResStrings(
+                R.string.condition_excellent,
+                commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+            )
             pm25 >= 500 -> return ConditionResStrings(R.string.condition_beyond_rating)
         }
 
@@ -247,24 +268,51 @@ object AQI {
         while (PM25CN[i] < pm25) i += 1
 
         when (i) {
-            0 -> 
-                return ConditionResStrings(R.string.condition_excellent, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            1 -> 
-                return ConditionResStrings(R.string.condition_excellent, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            2 -> 
-                return ConditionResStrings(R.string.condition_good, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            3 -> 
-                return ConditionResStrings(R.string.condition_lightly, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            4 -> 
-                return ConditionResStrings(R.string.condition_moderate, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            5 -> 
-                return ConditionResStrings(R.string.condition_heavy, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            6 -> 
-                return ConditionResStrings(R.string.condition_severe, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            7 -> 
-                return ConditionResStrings(R.string.condition_beyond_rating, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
-            else -> 
-                return ConditionResStrings(R.string.condition_beyond_rating, commentRes= R.string.pm2_5_lvl_aqi_cn_comment)
+            0 ->
+                return ConditionResStrings(
+                    R.string.condition_excellent,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            1 ->
+                return ConditionResStrings(
+                    R.string.condition_excellent,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            2 ->
+                return ConditionResStrings(
+                    R.string.condition_good,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            3 ->
+                return ConditionResStrings(
+                    R.string.condition_lightly,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            4 ->
+                return ConditionResStrings(
+                    R.string.condition_moderate,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            5 ->
+                return ConditionResStrings(
+                    R.string.condition_heavy,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            6 ->
+                return ConditionResStrings(
+                    R.string.condition_severe,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            7 ->
+                return ConditionResStrings(
+                    R.string.condition_beyond_rating,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
+            else ->
+                return ConditionResStrings(
+                    R.string.condition_beyond_rating,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                )
         }
     }
 
@@ -294,13 +342,19 @@ object AQI {
 
     fun getAQITextFromCO2(co2: Double): ConditionResStrings {
         return if (co2 == 0.0) {
-            ConditionResStrings(R.string.condition_undetermined, commentRes= R.string.co_2_lvl_comment)
+            ConditionResStrings(
+                R.string.condition_undetermined,
+                commentRes = R.string.co_2_lvl_comment
+            )
         } else if (co2 > 0 && co2 < 700) {
-            ConditionResStrings(R.string.condition_good, commentRes= R.string.co_2_lvl_comment)
+            ConditionResStrings(R.string.condition_good, commentRes = R.string.co_2_lvl_comment)
         } else if (co2 >= 700 && co2 < 1000) {
-            ConditionResStrings(R.string.condition_moderate, commentRes= R.string.co_2_lvl_comment)
+            ConditionResStrings(R.string.condition_moderate, commentRes = R.string.co_2_lvl_comment)
         } else {
-            ConditionResStrings(R.string.condition_unhealthy, commentRes= R.string.co_2_lvl_comment)
+            ConditionResStrings(
+                R.string.condition_unhealthy,
+                commentRes = R.string.co_2_lvl_comment
+            )
         }
 
     }
@@ -333,13 +387,22 @@ object AQI {
 
     fun getAQITextFromVOC(voc: Double): ConditionResStrings {
         return if (voc <= 0) {
-            ConditionResStrings(R.string.condition_undetermined, commentRes= R.string.voc_lvl_comment)
+            ConditionResStrings(
+                R.string.condition_undetermined,
+                commentRes = R.string.voc_lvl_comment
+            )
         } else if (voc > 0 && voc < 0.55) {
-            ConditionResStrings(R.string.condition_good, commentRes= R.string.good_voc_lvl_comment)
+            ConditionResStrings(R.string.condition_good, commentRes = R.string.good_voc_lvl_comment)
         } else if (voc >= 0.55 && voc < 0.65) {
-            ConditionResStrings(R.string.condition_moderate, commentRes= R.string.moderate_voc_lvl_comment)
+            ConditionResStrings(
+                R.string.condition_moderate,
+                commentRes = R.string.moderate_voc_lvl_comment
+            )
         } else {
-            ConditionResStrings(R.string.condition_unhealthy, commentRes= R.string.unhealthy_voc_lvl_comment)
+            ConditionResStrings(
+                R.string.condition_unhealthy,
+                commentRes = R.string.unhealthy_voc_lvl_comment
+            )
         }
 
     }
@@ -378,6 +441,6 @@ object AQI {
 
 
 data class ConditionResStrings(
-        val conditionStrRes: Int,
-        val commentRes: Int? = null
+    val conditionStrRes: Int,
+    val commentRes: Int? = null
 )

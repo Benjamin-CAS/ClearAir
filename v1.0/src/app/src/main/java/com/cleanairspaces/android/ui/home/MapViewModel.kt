@@ -31,7 +31,9 @@ class MapViewModel @Inject constructor(
     private var userLastKnowALatLng: aLatLng? = null
     fun setUserLastKnownALatLng(it: Location?) {
         it?.let {
-            userLastKnowALatLng = aLatLng(it.latitude, it.longitude)
+            if(it.latitude != 0.0 && it.longitude != 0.0) {
+                userLastKnowALatLng = aLatLng(it.latitude, it.longitude)
+            }
             MyLogger.logThis(TAG, "userLastKnownLocale()" , "-- $it")
         }
     }

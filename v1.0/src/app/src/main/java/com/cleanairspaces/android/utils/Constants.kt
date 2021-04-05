@@ -20,3 +20,4 @@ const val NONCE = "aa"
 const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
 const val UPDATE_USER_LOCATION_INTERVAL = 300000L //5 minutes
+const val HEAT_MAP_CIRCLE_RADIUS = 25

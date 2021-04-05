@@ -7,8 +7,9 @@ import android.view.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.MapView
@@ -27,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AMapActivity : BaseMapActivity() {
 
+    private var tileOverlay: TileOverlay? = null
     private lateinit var binding: ActivityAmapBinding
 
     private val TAG = AMapActivity::class.java.simpleName
@@ -78,8 +80,7 @@ class AMapActivity : BaseMapActivity() {
 
     /*************** USER ACTIONS ****************/
     private fun initializeRecyclerViewForUserActions() {
-        binding.homeMapOverlay.mapActionsRv.isVisible = false
-            /*.apply {
+        binding.homeMapOverlay.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
                 this@AMapActivity,
                 RecyclerView.HORIZONTAL,
@@ -87,7 +88,7 @@ class AMapActivity : BaseMapActivity() {
             )
             mapActionsAdapter.setMapActionsList(viewModel.mapActions)
             mapActionsRv.adapter = mapActionsAdapter
-        }*/
+        }
 
     }
 
@@ -97,17 +98,17 @@ class AMapActivity : BaseMapActivity() {
             mapView?.let { mMapView ->
                 mMapView.onCreate(savedInstanceState)
                 aMap = mMapView.map
-                aMap?.apply{
+                aMap?.apply {
                     setMapLanguage(AMap.ENGLISH)
                     uiSettings.isZoomControlsEnabled = false
                     setOnMyLocationClickListener()
-                    //observeOutDoorLocations()
+                    observeOutDoorLocations()
                 }
             }
         }
     }
 
-    private fun setOnMyLocationClickListener(){
+    private fun setOnMyLocationClickListener() {
         binding.myLocationBtn.setOnClickListener {
             requestPermissionsToShowUserLocation()
         }
@@ -115,14 +116,13 @@ class AMapActivity : BaseMapActivity() {
 
     private fun observeOutDoorLocations() {
         viewModel.observeLocations().observe(this, Observer {
-            if (it != null) {
+            if (!it.isNullOrEmpty()) {
                 MyLogger.logThis(
                     TAG,
                     "observeOutDoorLocations() -> observeLocations()",
                     " found in room ${it.size}"
                 )
-                aMap?.clear()
-                setupMarkers(locations = it)
+                setupHeatMap(locations = it)
             }
         })
     }
@@ -130,7 +130,7 @@ class AMapActivity : BaseMapActivity() {
 
     /****************** USER LOCATION ******************/
     override fun showUserLocation() {
-        if (!viewModel.hasSetMyLocationStyle){
+        if (!viewModel.hasSetMyLocationStyle) {
             viewModel.hasSetMyLocationStyle = true
             val myLocationStyle = MyLocationStyle()
             myLocationStyle.apply {
@@ -156,7 +156,7 @@ class AMapActivity : BaseMapActivity() {
         askUserToEnableGPS()
 
         //change to last known location
-       viewModel.getUserLastKnownALatLng()?.let {
+        viewModel.getUserLastKnownALatLng()?.let {
             aMap?.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     it,
@@ -167,7 +167,7 @@ class AMapActivity : BaseMapActivity() {
 
     }
 
-    private fun askUserToEnableGPS()  = super.promptMyLocationSettings()
+    private fun askUserToEnableGPS() = super.promptMyLocationSettings()
 
 
     override fun hideMyLocations() {
@@ -181,30 +181,21 @@ class AMapActivity : BaseMapActivity() {
 
 
     /**************** MARKERS & CIRCLES **************/
-    private fun setupMarkers(locations: List<OutDoorLocations>) {
+
+    private fun setupHeatMap(locations: List<OutDoorLocations>) {
+        val locationsLatLng: MutableCollection<LatLng> = mutableListOf()
         for (location in locations) {
-            val mDrawable = getIconForMarker(location)
-            val mIcon = if (mDrawable == null) null else
-                BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory
-                        .decodeResource(resources, mDrawable)
-                )
-
-            val markerOptions = MarkerOptions()
-            markerOptions.apply {
-                position(location.getAMapLocationLatLng())
-                draggable(false)
-                anchor(0.5f, 0.5f)
-                mIcon?.let {
-                    icon(it)
-                }
-            }
-            aMap?.addMarker(markerOptions)
+            locationsLatLng.add(location.getAMapLocationLatLng())
         }
-        aMap?.setOnMarkerClickListener {
-            false
-        }
-
+        val builder = HeatmapTileProvider.Builder()
+        builder.data(locationsLatLng)
+        builder.radius(HEAT_MAP_CIRCLE_RADIUS)
+        tileOverlay?.clearTileCache()
+        tileOverlay?.remove()
+        val heatMapTileProvider: HeatmapTileProvider = builder.build()
+        val tileOverlayOptions = TileOverlayOptions()
+        tileOverlayOptions.tileProvider(heatMapTileProvider)
+        tileOverlay = aMap?.addTileOverlay(tileOverlayOptions)
     }
 
     private fun getIconForMarker(location: OutDoorLocations): Int? {
@@ -265,13 +256,9 @@ class AMapActivity : BaseMapActivity() {
     }
 
 
-
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
         dismissPopUps()
     }
-
-
-
 }

@@ -14,9 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
-import com.cleanairspaces.android.ui.home.smart_qr.CaptureQrCodeActivity
-import com.cleanairspaces.android.ui.home.smart_qr.QrCodeProcessingActivity
-import com.cleanairspaces.android.ui.home.smart_qr.QrCodeProcessingActivity.Companion.INTENT_EXTRA_TAG
+import com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity
+import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity
+import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity.Companion.INTENT_EXTRA_TAG
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.SCANNING_QR_TIMEOUT_MILLS
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -91,6 +91,7 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
             }
         }
     }
+
 
     /************ QR CODE ***********/
     private fun scanQRCode() {

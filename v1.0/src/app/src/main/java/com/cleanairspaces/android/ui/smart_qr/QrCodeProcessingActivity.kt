@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.home.smart_qr
+package com.cleanairspaces.android.ui.smart_qr
 
 import android.os.Bundle
 import android.view.View
@@ -142,7 +142,12 @@ class QrCodeProcessingActivity : AppCompatActivity() {
             infoText += "$locationInfoTitle\n$companyLblTxt: ${customerDeviceData.company}\n$locationLblTxt: ${customerDeviceData.location}"
             info.text = infoText
             addLocationBtn.isVisible = true
-            cancelBtn.isVisible = true
+            cancelBtn.apply {
+                isVisible = true
+                setOnClickListener {
+                    this@QrCodeProcessingActivity.finish()
+                }
+            }
 
             if (customerDeviceData.isMyDeviceData) {
                 addLocationBtn.apply {
@@ -158,15 +163,22 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                         null
                     )
                 }
+                removeLocationBtn.apply {
+                    isVisible = true
+                    setOnClickListener{
+                        toggleLocationIsMine(customerDeviceData, isMine = false)
+                    }
+                }
             } else {
                 addLocationBtn.apply {
                     setText(R.string.add_location_text)
                     isEnabled = true
                     setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
                     setOnClickListener {
-                        addLocationAsMine(customerDeviceData)
+                        toggleLocationIsMine(customerDeviceData, isMine = true)
                     }
                 }
+                removeLocationBtn.isVisible = false
             }
             if (customerDeviceData.isSecure) {
                 userName.isVisible = true
@@ -178,7 +190,7 @@ class QrCodeProcessingActivity : AppCompatActivity() {
         }
     }
 
-    private fun addLocationAsMine(customerDeviceData: CustomerDeviceData) {
+    private fun toggleLocationIsMine(customerDeviceData: CustomerDeviceData, isMine: Boolean) {
         if (customerDeviceData.isSecure) {
             val userName = binding.userName.myTxt(binding.userName)
             val userPassword = binding.password.myTxt(binding.password)
@@ -189,11 +201,11 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                 )
             } else {
                 binding.progressCircular.isVisible = true
-                viewModel.saveMyLocation(customerDeviceData, userName, userPassword)
+                viewModel.updateLocationIsMineStatus(customerDeviceData, userName, userPassword, isMine = isMine)
             }
         } else {
             binding.progressCircular.isVisible = true
-            viewModel.saveMyLocation(customerDeviceData)
+            viewModel.updateLocationIsMineStatus(customerDeviceData, isMine = isMine)
         }
     }
 

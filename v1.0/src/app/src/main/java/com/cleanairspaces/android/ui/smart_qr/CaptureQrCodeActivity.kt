@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.home.smart_qr
+package com.cleanairspaces.android.ui.smart_qr
 
 import com.journeyapps.barcodescanner.CaptureActivity
 

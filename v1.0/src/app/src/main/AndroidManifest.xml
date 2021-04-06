@@ -40,11 +40,11 @@
             android:value="${GMAPS_API_DEBUG_KEY}" />
 
         <activity
-            android:name=".ui.home.smart_qr.CaptureQrCodeActivity"
+            android:name="com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity"
             android:screenOrientation="portrait"
             android:stateNotNeeded="true"
             android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name=".ui.home.smart_qr.QrCodeProcessingActivity"/>
+        <activity android:name="com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity"/>
         <activity android:name=".ui.home.amap.AMapActivity" />
         <activity android:name=".ui.home.gmap.GMapActivity" />
         <activity android:name=".ui.MainActivity">

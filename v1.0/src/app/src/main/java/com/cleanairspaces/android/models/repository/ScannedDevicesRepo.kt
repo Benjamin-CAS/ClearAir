@@ -186,15 +186,16 @@ class ScannedDevicesRepo
         }
     }
 
-    suspend fun addMyLocationData(
-        customerDeviceData: CustomerDeviceData,
-        userName: String?,
-        userPassword: String?
+    suspend fun updateLocationIsMineStatus(
+            customerDeviceData: CustomerDeviceData,
+            userName: String?,
+            userPassword: String?,
+            isMine: Boolean
     ) {
         if (userName != null && userPassword != null && customerDeviceData.isSecure) {
             //todo validate credentials
         } else {
-            customerDeviceData.isMyDeviceData = true
+            customerDeviceData.isMyDeviceData = isMine
             customerDeviceDataDao.updateDevice(customerDeviceData)
         }
     }

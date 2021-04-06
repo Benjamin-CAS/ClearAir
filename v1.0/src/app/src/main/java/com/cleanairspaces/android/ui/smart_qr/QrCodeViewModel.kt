@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.home.smart_qr
+package com.cleanairspaces.android.ui.smart_qr
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -56,13 +56,14 @@ class QrCodeViewModel @Inject constructor(
         }
     }
 
-    fun saveMyLocation(
-        customerDeviceData: CustomerDeviceData,
-        userName: String? = null,
-        userPassword: String? = null
+    fun updateLocationIsMineStatus(
+            customerDeviceData: CustomerDeviceData,
+            userName: String? = null,
+            userPassword: String? = null,
+            isMine: Boolean
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            scannedDevicesRepo.addMyLocationData(customerDeviceData, userName, userPassword)
+            scannedDevicesRepo.updateLocationIsMineStatus(customerDeviceData, userName, userPassword, isMine = isMine)
         }
     }
 

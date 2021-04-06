@@ -75,5 +75,6 @@
     <string name="device_type_twelve">ductFIT Wall</string>
     <string name="device_info_lbl">Device Information</string>
     <string name="my_location_btn_desc">View My Location</string>
+    <string name="remove_location_text">Remove Location</string>
 
 </resources>

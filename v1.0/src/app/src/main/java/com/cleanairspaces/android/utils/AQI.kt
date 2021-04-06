@@ -78,6 +78,27 @@ object AQI {
 
     }
 
+    fun getAQIWeightFromPM25(pm25: Double): Int {
+        when {
+            pm25 == 0.0 -> return 1
+            pm25 >= 500 -> return 7
+        }
+
+        var i: Int = 0
+        while (PM25[i] < pm25) i += 1
+
+        return when (i) {
+            0 , 1 -> 1
+            2 -> 2
+            3 -> 3
+            4 -> 4
+            5 -> 5
+            6, 7 -> 6
+            else -> 7
+        }
+
+    }
+
     fun getAQITextColorFromPM25(pm25: Double): UIColor {
         when {
             pm25 == 0.0 -> return UIColor.AQIDarkTextColor

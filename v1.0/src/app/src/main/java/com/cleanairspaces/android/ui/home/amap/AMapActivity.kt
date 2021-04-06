@@ -22,6 +22,9 @@ import com.cleanairspaces.android.ui.home.BaseMapActivity
 import com.cleanairspaces.android.ui.home.MapViewModel
 import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
 import com.cleanairspaces.android.utils.*
+import com.cleanairspaces.android.utils.AQI.getAQIWeightFromPM25
+import com.cleanairspaces.android.utils.MyColorUtils.getGradientColors
+import com.cleanairspaces.android.utils.MyColorUtils.getGradientIntensities
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -183,13 +186,22 @@ class AMapActivity : BaseMapActivity() {
     /**************** MARKERS & CIRCLES **************/
 
     private fun setupHeatMap(locations: List<OutDoorLocations>) {
-        val locationsLatLng: MutableCollection<LatLng> = mutableListOf()
+        val locationsLatLng: MutableCollection<WeightedLatLng> = mutableListOf()
         for (location in locations) {
-            locationsLatLng.add(location.getAMapLocationLatLng())
+            val pm25 : Double = (if(location.pm2p5.isNotBlank())location.pm2p5 else location.reading).toDouble()
+            locationsLatLng.add(WeightedLatLng(location.getAMapLocationLatLng(), getAQIWeightFromPM25(pm25).toDouble()))
+            MyLogger.logThis(
+                    TAG, "setupHeatMap()", "pm is $pm25"
+            )
         }
+
+        val gradient = Gradient(getGradientColors(), getGradientIntensities())
         val builder = HeatmapTileProvider.Builder()
-        builder.data(locationsLatLng)
-        builder.radius(HEAT_MAP_CIRCLE_RADIUS)
+        builder.apply {
+            weightedData(locationsLatLng)
+            gradient(gradient)
+            radius(HEAT_MAP_CIRCLE_RADIUS)
+        }
         tileOverlay?.clearTileCache()
         tileOverlay?.remove()
         val heatMapTileProvider: HeatmapTileProvider = builder.build()
@@ -198,20 +210,6 @@ class AMapActivity : BaseMapActivity() {
         tileOverlay = aMap?.addTileOverlay(tileOverlayOptions)
     }
 
-    private fun getIconForMarker(location: OutDoorLocations): Int? {
-        val pm25 = if (location.pm2p5 != "") location.pm2p5 else location.reading
-        return when (AQI.getAQIColorFromPM25(pm25.toDouble())) {
-            UIColor.AQIGoodColor -> aQIGoodBitmap
-            UIColor.AQIModerateColor -> aQIModerateBitmap
-            UIColor.AQIGUnhealthyColor -> aQIGUnhealthyBitmap
-            UIColor.AQIUnhealthyColor -> aQIUnhealthyBitmap
-            UIColor.AQIVUnhealthyColor -> aQIVUnhealthyBitmap
-            UIColor.AQIHazardousColor -> aQIHazardousBitmap
-            UIColor.AQIBeyondColor -> aQIBeyondBitmap
-            UIColor.AQICNExcellentColor -> aQICNExcellentBitmap
-            else -> null
-        }
-    }
 
 
     /************************** QR CODE SCANNING ***************/

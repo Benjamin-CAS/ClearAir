@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.smart_qr.QrCodeProcessingActivity"
+    tools:context=".ui.smart_qr.QrCodeProcessingActivity"
     android:orientation="vertical"
     android:id="@+id/container"
     >
@@ -154,6 +154,22 @@
                 android:elevation="@dimen/std_space"/>
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/remove_location_btn"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Button"
+                android:paddingStart="@dimen/md_space"
+                android:paddingEnd="@dimen/md_space"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/md_space"
+                android:background="@color/orange"
+                android:textColor="@color/white"
+                android:text="@string/remove_location_text"
+                android:visibility="invisible"
+                app:layout_constraintTop_toBottomOf="@id/add_location_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                android:elevation="@dimen/std_space"/>
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/cancel_btn"
                 android:textAppearance="@style/Theme.CleanAirSpaces.Button"
                 android:paddingStart="@dimen/md_space"
@@ -165,9 +181,10 @@
                 android:textColor="@color/blue"
                 android:text="@string/cancel_text"
                 android:visibility="invisible"
-                app:layout_constraintTop_toBottomOf="@id/add_location_btn"
+                app:layout_constraintTop_toBottomOf="@id/remove_location_btn"
                 app:layout_constraintStart_toStartOf="parent"
                 android:elevation="@dimen/std_space"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

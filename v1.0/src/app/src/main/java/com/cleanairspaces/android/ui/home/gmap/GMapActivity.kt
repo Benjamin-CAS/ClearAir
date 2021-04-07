@@ -13,7 +13,7 @@ import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityGmapBinding
 import com.cleanairspaces.android.ui.home.MapActionChoices
 import com.cleanairspaces.android.ui.home.MapViewModel
-import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
 import com.cleanairspaces.android.utils.MyLogger
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar

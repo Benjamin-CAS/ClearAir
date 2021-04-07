@@ -5,11 +5,13 @@ import com.cleanairspaces.android.models.api.responses.OutDoorLocationAmerica
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationTaiwan
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOther
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOtherResponse
+import com.cleanairspaces.android.models.dao.MyLocationDetailsDao
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.entities.LocationAreas
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.utils.MyLogger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,6 +28,9 @@ class OutDoorLocationsRepo
     private val outDoorLocationsDao: OutDoorLocationsDao
 ) {
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
+
+
+
 
     fun getOutDoorLocationsLive() = outDoorLocationsDao.getOutDoorLocationsLive()
 

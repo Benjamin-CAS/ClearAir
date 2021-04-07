@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/views_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="460dp"
         android:padding="@dimen/std_space">
 
         <TextView
@@ -33,6 +33,7 @@
             android:id="@+id/locations_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/locations_tv" />
+            android:layout_below="@id/locations_tv"
+            android:layout_marginTop="@dimen/md_space"/>
 
     </RelativeLayout>

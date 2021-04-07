@@ -1,5 +1,6 @@
 package com.cleanairspaces.android.models.repository
 
+import androidx.lifecycle.MutableLiveData
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.DEVICE_INFO_METHOD
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.LOCATION_INFO_METHOD
@@ -9,6 +10,7 @@ import com.cleanairspaces.android.models.api.responses.ScannedDeviceQrResponse
 import com.cleanairspaces.android.models.dao.CustomerDeviceDataDao
 import com.cleanairspaces.android.models.dao.MyLocationDetailsDao
 import com.cleanairspaces.android.models.entities.CustomerDeviceData
+import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
 import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.utils.L_TIME_KEY
 import com.cleanairspaces.android.utils.MyLogger
@@ -18,6 +20,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
@@ -37,6 +42,30 @@ class ScannedDevicesRepo
 ) {
 
     private val recentlyFetchedDeviceData = arrayListOf<JsonObject>()
+
+
+    private val myLocationDetailsLive = MutableStateFlow<List<CustomerDeviceDataDetailed>>(
+        arrayListOf()
+    )
+
+    fun getMyLocations(): Flow<List<CustomerDeviceDataDetailed>> {
+       return myLocationDetailsDao.getMyLocationsFlow().flatMapLatest {
+            val myLocationDetails  = arrayListOf<CustomerDeviceDataDetailed>()
+            if (it.isNotEmpty()){
+                for (locationDetails in it){
+                    val foundCustomerDeviceData = customerDeviceDataDao.getDeviceBy(compId = locationDetails.company_id, locId = locationDetails.location_id)
+                    myLocationDetails.add(
+                        CustomerDeviceDataDetailed(
+                            locationDetails = locationDetails,
+                            deviceData = foundCustomerDeviceData[0]
+                        )
+                    )
+                }
+             myLocationDetailsLive.value = myLocationDetails
+            }
+            myLocationDetailsLive
+        }
+    }
 
     /************************ QR SCANNED ITEMS *********************/
     fun getADeviceFlow(compId: String, locId: String) =

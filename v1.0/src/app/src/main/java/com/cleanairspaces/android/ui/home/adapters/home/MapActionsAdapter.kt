@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.home.adapters
+package com.cleanairspaces.android.ui.home.adapters.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -33,13 +33,13 @@ class MapActionsAdapter(private val actionsListener: ClickListener) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): MapActionsAdapter.MapActionsViewHolder {
+    ): MapActionsViewHolder {
         val binding =
             MapActionsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MapActionsAdapter.MapActionsViewHolder(binding)
+        return MapActionsViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: MapActionsAdapter.MapActionsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MapActionsViewHolder, position: Int) {
         val action = mapActionsList[position]
         holder.bind(action, actionsListener)
     }

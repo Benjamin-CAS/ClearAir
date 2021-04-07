@@ -8,8 +8,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.MapView
@@ -17,10 +15,12 @@ import com.amap.api.maps.model.*
 import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityAmapBinding
+import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.BaseMapActivity
 import com.cleanairspaces.android.ui.home.MapViewModel
-import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
 import com.cleanairspaces.android.utils.*
 import com.cleanairspaces.android.utils.AQI.getAQIWeightFromPM25
 import com.cleanairspaces.android.utils.MyColorUtils.getGradientColors
@@ -42,6 +42,7 @@ class AMapActivity : BaseMapActivity() {
     private var aMap: AMap? = null
 
     override var mapActionsAdapter = MapActionsAdapter(this)
+    override var myLocationsAdapter = MyLocationsAdapter(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,24 +78,21 @@ class AMapActivity : BaseMapActivity() {
 
             }
 
-        initializeRecyclerViewForUserActions()
         initializeMap(savedInstanceState)
+        super.initializeRecyclerViewForUserActions(binding.homeMapOverlay, viewModel.mapActions)
+        super.initializeMyLocationRecycler(binding.homeMapOverlay)
+        observeMyLocations()
+    }
+
+    private fun observeMyLocations(){
+        viewModel.observeMyLocations().observe(this, Observer {
+            if (it != null){
+                super.updateMyLocationsList(it)
+            }
+        })
     }
 
     /*************** USER ACTIONS ****************/
-    private fun initializeRecyclerViewForUserActions() {
-        binding.homeMapOverlay.apply {
-            mapActionsRv.layoutManager = LinearLayoutManager(
-                this@AMapActivity,
-                RecyclerView.HORIZONTAL,
-                false
-            )
-            mapActionsAdapter.setMapActionsList(viewModel.mapActions)
-            mapActionsRv.adapter = mapActionsAdapter
-        }
-
-    }
-
     private fun initializeMap(savedInstanceState: Bundle?) {
         binding.apply {
             mapView = map
@@ -120,11 +118,6 @@ class AMapActivity : BaseMapActivity() {
     private fun observeOutDoorLocations() {
         viewModel.observeLocations().observe(this, Observer {
             if (!it.isNullOrEmpty()) {
-                MyLogger.logThis(
-                    TAG,
-                    "observeOutDoorLocations() -> observeLocations()",
-                    " found in room ${it.size}"
-                )
                 setupHeatMap(locations = it)
             }
         })
@@ -196,9 +189,6 @@ class AMapActivity : BaseMapActivity() {
                     getAQIWeightFromPM25(pm25).toDouble()
                 )
             )
-            MyLogger.logThis(
-                TAG, "setupHeatMap()", "pm is $pm25"
-            )
         }
 
         val gradient = Gradient(getGradientColors(), getGradientIntensities())
@@ -236,7 +226,10 @@ class AMapActivity : BaseMapActivity() {
         }
     }
 
+
+
     /************* forwarding life cycle methods & clearing *********/
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)

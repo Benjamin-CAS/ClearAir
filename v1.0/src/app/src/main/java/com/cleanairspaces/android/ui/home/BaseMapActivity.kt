@@ -12,13 +12,19 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.cleanairspaces.android.R
-import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.databinding.HomeMapOverlayBinding
+import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
+import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
 import com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity
 import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity
 import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity.Companion.INTENT_EXTRA_TAG
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.SCANNING_QR_TIMEOUT_MILLS
+import com.cleanairspaces.android.utils.VerticalSpaceItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
@@ -26,31 +32,62 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener {
+abstract class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener,
+    MyLocationsAdapter.MyLocationsClickListener {
 
     private val TAG = BaseMapActivity::class.java.simpleName
 
     var popUp: AlertDialog? = null
     var snackbar: Snackbar? = null
 
-    //prepare bitmaps
-    val aQIGoodBitmap = R.drawable.good_circle
-    val aQIModerateBitmap = R.drawable.moderate_circle
-    val aQIGUnhealthyBitmap = R.drawable.g_unhealthy_circle
-    val aQIUnhealthyBitmap = R.drawable.unhealthy_circle
-    val aQIVUnhealthyBitmap = R.drawable.v_unhealthy_circle
-    val aQIHazardousBitmap = R.drawable.hazardous_circle
-    val aQIBeyondBitmap = R.drawable.beyond_circle
-    val aQICNExcellentBitmap = R.drawable.excellent
-
-
     lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     lateinit var scanQrCodeLauncher: ActivityResultLauncher<Intent>
     open lateinit var mapActionsAdapter: MapActionsAdapter
+    open lateinit var myLocationsAdapter: MyLocationsAdapter
 
-    //TO BE IMPLEMENTED
-    open fun showUserLocation() {}
-    open fun hideMyLocations() {}
+    /** BE IMPLEMENTED **/
+    abstract fun showUserLocation()
+    abstract fun hideMyLocations()
+    abstract fun showSnackBar(
+        msgRes: Int,
+        isError: Boolean = false,
+        actionRes: Int? = null
+    )
+
+    /*********** ADD, SCAN & TOGGLE ACTIONS *********/
+    fun initializeRecyclerViewForUserActions(homeMapOverlay: HomeMapOverlayBinding, actions: List<MapActions>) {
+        homeMapOverlay.apply {
+            mapActionsRv.layoutManager = LinearLayoutManager(
+                this@BaseMapActivity,
+                RecyclerView.HORIZONTAL,
+                false
+            )
+            mapActionsAdapter.setMapActionsList(actions)
+            mapActionsRv.adapter = mapActionsAdapter
+        }
+
+    }
+
+    /************** MY LOCATIONS *********/
+    fun updateMyLocationsList(myLocations: List<CustomerDeviceDataDetailed>){
+        myLocationsAdapter.setMyLocationsList(myLocationsList = myLocations)
+    }
+
+    override fun onClickLocation(locationDetails: CustomerDeviceDataDetailed) {
+        //todo show location details & perhaps history
+    }
+
+    fun initializeMyLocationRecycler(homeMapOverlay: HomeMapOverlayBinding) {
+        homeMapOverlay.apply {
+            locationsRv.layoutManager = LinearLayoutManager(
+                    this@BaseMapActivity,
+            RecyclerView.VERTICAL,
+            false
+            )
+            locationsRv.addItemDecoration(VerticalSpaceItemDecoration(30))
+           locationsRv.adapter = myLocationsAdapter
+        }
+    }
 
     /********* PERMISSIONS ***************/
     fun requestPermissionsToShowUserLocation() {
@@ -182,12 +219,6 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
         popUp?.show()
     }
 
-    open fun showSnackBar(
-        msgRes: Int,
-        isError: Boolean = false,
-        actionRes: Int? = null
-    ) {
-    }
 
     /****************** MENU **************/
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -206,4 +237,5 @@ open class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListene
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

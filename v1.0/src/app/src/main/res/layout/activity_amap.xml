@@ -41,7 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <include layout="@layout/home_map_overlay" android:id="@+id/home_map_overlay"/>
+        <include layout="@layout/home_map_overlay"
+            android:id="@+id/home_map_overlay"/>
 
         <ImageView
             android:id="@+id/my_location_btn"

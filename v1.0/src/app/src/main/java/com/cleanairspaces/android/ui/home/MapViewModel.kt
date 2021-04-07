@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.cleanairspaces.android.R
+import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
+import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,12 +24,16 @@ import com.amap.api.maps.model.LatLng as aLatLng
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val locationsRepo: OutDoorLocationsRepo
+    private val locationsRepo: OutDoorLocationsRepo,
+    private val scannedDevicesRepo: ScannedDevicesRepo
 ) : ViewModel() {
 
     init {
         refreshOutDoorLocations()
     }
+
+    /******* my locations **********/
+    fun observeMyLocations() : LiveData<List<CustomerDeviceDataDetailed>> = scannedDevicesRepo.getMyLocations().asLiveData(viewModelScope.coroutineContext)
 
 
     /*********** AMAP SPECIFIC LOCATION *************/

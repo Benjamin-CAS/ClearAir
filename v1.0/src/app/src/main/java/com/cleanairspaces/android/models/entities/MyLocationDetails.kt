@@ -6,6 +6,9 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Entity(tableName = "my_location_details",
         indices = [androidx.room.Index(value = ["company_id", "location_id", "lastUpdated"], unique = true)]
@@ -22,7 +25,13 @@ class MyLocationDetails(
         @Embedded val energy: Energy,
         val ExpFilter: String? = "",
         val ExpEquip: String? = ""
-) : Parcelable
+) : Parcelable {
+        fun getFormattedUpdateTime(): String {
+                val date = Date(lastUpdated)
+                val dateFormat: DateFormat = SimpleDateFormat("dd - MM HH:mm", Locale.getDefault())
+                return dateFormat.format(date)
+        }
+}
 
 @Parcelize
 data class Indoor(
@@ -62,3 +71,11 @@ data class Energy(
         val current_used: String? = "",
         val current_max: String? = "",
 ) : Parcelable
+
+
+// for UI purposes only
+@Parcelize
+data class CustomerDeviceDataDetailed(
+        val locationDetails : MyLocationDetails,
+        val deviceData : CustomerDeviceData
+):Parcelable

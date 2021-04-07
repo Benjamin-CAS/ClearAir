@@ -4,6 +4,8 @@ import com.cleanairspaces.android.R
 
 object AQI {
 
+    private val TAG = AQI::class.java.simpleName
+
     val SO2 = doubleArrayOf(0.0, 50.0, 150.0, 475.0, 800.0, 1600.0, 2100.0, 2620.0)
     val NO2 = doubleArrayOf(0.0, 40.0, 80.0, 180.0, 280.0, 565.0, 750.0, 940.0)
     val PM10 = doubleArrayOf(0.0, 50.0, 150.0, 250.0, 350.0, 420.0, 500.0, 600.0)
@@ -59,6 +61,7 @@ object AQI {
         var i: Int = 0
         while (PM25[i] < pm25) i += 1
 
+
         when (i) {
             0, 1 ->
                 return UIColor.AQIGoodColor
@@ -73,7 +76,7 @@ object AQI {
             6, 7 ->
                 return UIColor.AQIHazardousColor
             else ->
-                return UIColor.AQIBeyondColor
+                return UIColor.AQIHazardousColor
         }
 
     }
@@ -88,7 +91,7 @@ object AQI {
         while (PM25[i] < pm25) i += 1
 
         return when (i) {
-            0 , 1 -> 1
+            0, 1 -> 1
             2 -> 2
             3 -> 3
             4 -> 4

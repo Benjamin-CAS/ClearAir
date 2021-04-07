@@ -39,7 +39,6 @@ enum class UIColor(val red: Double, val green: Double, val blue: Double) {
     AQIBeyondColor(red = 0.8, green = 0.8, blue = 0.8),
 
 
-
     AQIDarkTextColor(red = 0.0, green = 0.0, blue = 0.0),
 
     AQILightTextColor(red = 0.95, green = 0.95, blue = 0.95),
@@ -56,25 +55,25 @@ object MyColorUtils {
         val green = (uiColor.green * 255).toInt()
         val blue = (uiColor.blue * 255).toInt()
 
-        return Color.rgb( red, green, blue)
+        return Color.rgb(red, green, blue)
     }
 
     fun getGradientColors(): IntArray {
         return intArrayOf(
-                convertUIColorToRGB(UIColor.AQIGoodColor),
-                convertUIColorToRGB(UIColor.AQIModerateColor),
-                convertUIColorToRGB(UIColor.AQIGUnhealthyColor),
-                convertUIColorToRGB(UIColor.AQIUnhealthyColor),
-                convertUIColorToRGB(UIColor.AQIVUnhealthyColor),
-                convertUIColorToRGB(UIColor.AQIHazardousColor),
-                convertUIColorToRGB(UIColor.AQIBeyondColor)
+            convertUIColorToRGB(UIColor.AQIGoodColor),
+            convertUIColorToRGB(UIColor.AQIModerateColor),
+            convertUIColorToRGB(UIColor.AQIGUnhealthyColor),
+            convertUIColorToRGB(UIColor.AQIUnhealthyColor),
+            convertUIColorToRGB(UIColor.AQIVUnhealthyColor),
+            convertUIColorToRGB(UIColor.AQIHazardousColor),
+            convertUIColorToRGB(UIColor.AQIBeyondColor)
         )
     }
 
-   fun getGradientIntensities(): FloatArray {
-       //7 is 100 percent --- we have  1 to 7
-       return floatArrayOf(0.14f, 0.29f, 0.43f, 0.57f, 0.71f, 0.86f, 1f)
-   }
+    fun getGradientIntensities(): FloatArray {
+        //7 is 100 percent --- we have  1 to 7
+        return floatArrayOf(0.14f, 0.29f, 0.43f, 0.57f, 0.71f, 0.86f, 1f)
+    }
 
 
 }

@@ -1,11 +1,14 @@
 package com.cleanairspaces.android.utils
 
+
 import android.util.Base64
 import android.util.Base64.decode
 import android.util.Base64.encodeToString
 import com.cleanairspaces.android.R
+import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.DEVICE_INFO_METHOD_FOR_KEY
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.LOCATION_INFO_METHOD_FOR_KEY
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.MONITOR_INFO_METHOD_FOR_KEY
+
 
 /*
 **
@@ -140,18 +143,6 @@ object QrCodeProcessor {
             .trim()
     }
 
-    private fun getProperPayload(locId: Int, compId: Int): String {
-        return "{\"$COMP_ID_KEY\":$compId, \"$LOC_ID_KEY\":$locId}"
-    }
-
-
-    private fun getProperPayloadKeyForCompLocation(timeStamp: String): String {
-        return "${LOCATION_INFO_METHOD_FOR_KEY}$timeStamp"
-    }
-
-    private fun getProperPayloadKeyForMonitor(timeStamp: String): String {
-        return "${MONITOR_INFO_METHOD_FOR_KEY}$timeStamp"
-    }
 
     fun getEncryptedEncodedPayloadForLocation(locId: Int, compId: Int, timeStamp: String): String {
         val key = getProperPayloadKeyForCompLocation(timeStamp)
@@ -179,12 +170,86 @@ object QrCodeProcessor {
         return toBase64Encoding(casEncrypted)
     }
 
+    fun getEncryptedEncodedPayloadForDeviceDetails(
+        compId: String,
+        locId: String,
+        userName: String,
+        userPassword: String,
+        timeStamp: String
+    ): String {
+        val key = getProperPayloadKeyForDeviceDetails(timeStamp)
+        MyLogger.logThis(
+            TAG,
+            "getEncryptedEncodedPayloadForDeviceDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time)",
+            "true key $key"
+        )
+        val pl = getProperPayloadForDeviceDetails(
+            compId = compId,
+            locId = locId,
+            userName = userName,
+            userPassword = userPassword
+        )
+        val casEncrypted = doCASEncryptOrDecrypt(payload = pl, key = key)
+        MyLogger.logThis(
+            TAG,
+            "getEncryptedEncodedPayloadForDeviceDetails()",
+            "payload $pl   => encrypted $casEncrypted"
+        )
+        return toBase64Encoding(casEncrypted)
+    }
+
+
+    /***************** PAYLOADS *******************/
+    private fun getProperPayload(locId: Int, compId: Int): String {
+        return "{\"$COMP_ID_KEY\":$compId, \"$LOC_ID_KEY\":$locId}"
+    }
+
+    private fun getProperPayloadForDeviceDetails(
+        compId: String,
+        locId: String,
+        userName: String,
+        userPassword: String,
+        showHistory: Boolean = false,
+        pmStandard: String = PM2_5_STD_PARAM
+    ): String {
+        //todo determine PM25_TYPE_PARAM_KEY from settings
+        return "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"0\",\"$HISTORY_WEEK_KEY\":\"0\",\"$HISTORY_DAY_KEY\":\"0\",\"$PM25_TYPE_PARAM_KEY\":\"$pmStandard\"}"
+    }
+
+
+    /***************** KEYS *******************/
+    private fun getProperPayloadKeyForCompLocation(timeStamp: String): String {
+        return "${LOCATION_INFO_METHOD_FOR_KEY}$timeStamp"
+    }
+
+    private fun getProperPayloadKeyForMonitor(timeStamp: String): String {
+        return "${MONITOR_INFO_METHOD_FOR_KEY}$timeStamp"
+    }
+
+    private fun getProperPayloadKeyForDeviceDetails(timeStamp: String): String {
+        return "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
+    }
+
+    /********************** UN ENCRYPTIONS **************/
+
     fun getUnEncryptedPayload(encPayload: String, lTime: String, forCompLocation: Boolean): String {
         val decoded = fromBase64Encoding(encPayload)
         val key = if (forCompLocation) getProperPayloadKeyForCompLocation(lTime)
         else getProperPayloadKeyForMonitor(lTime)
         val casDecrypted = doCASEncryptOrDecrypt(payload = decoded, key = key)
         MyLogger.logThis(TAG, "getUnEncryptedPayload...", "decrypted $casDecrypted")
+        return casDecrypted
+    }
+
+    fun getUnEncryptedPayloadForLocationDetails(payload: String, timeStmp: String): String {
+        val decoded = fromBase64Encoding(payload)
+        val key = getProperPayloadKeyForDeviceDetails(timeStmp)
+        val casDecrypted = doCASEncryptOrDecrypt(payload = decoded, key = key)
+        MyLogger.logThis(
+            TAG,
+            "etUnEncryptedPayloadForLocationDetails...",
+            "decrypted $casDecrypted"
+        )
         return casDecrypted
     }
 
@@ -198,3 +263,7 @@ data class ParserResult(
     val monitorId: String? = null,
     val extraData: String = ""
 )
+
+const val PM2_5_STD_PARAM = "0"
+const val AQI_US_STD_PARAM = "1"
+const val AQI_CN_STD_PARAM = "2"

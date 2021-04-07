@@ -76,5 +76,6 @@
     <string name="device_info_lbl">Device Information</string>
     <string name="my_location_btn_desc">View My Location</string>
     <string name="remove_location_text">Remove Location</string>
+    <string name="failed_to_add_location_check_credentials">Adding location failed. Check your credentials</string>
 
 </resources>

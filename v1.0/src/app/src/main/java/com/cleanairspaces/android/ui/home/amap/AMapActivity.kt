@@ -165,7 +165,7 @@ class AMapActivity : BaseMapActivity() {
                     it,
                     10f
                 )
-            );
+            )
         }
 
     }
@@ -188,10 +188,16 @@ class AMapActivity : BaseMapActivity() {
     private fun setupHeatMap(locations: List<OutDoorLocations>) {
         val locationsLatLng: MutableCollection<WeightedLatLng> = mutableListOf()
         for (location in locations) {
-            val pm25 : Double = (if(location.pm2p5.isNotBlank())location.pm2p5 else location.reading).toDouble()
-            locationsLatLng.add(WeightedLatLng(location.getAMapLocationLatLng(), getAQIWeightFromPM25(pm25).toDouble()))
+            val pm25: Double =
+                (if (location.pm2p5.isNotBlank()) location.pm2p5 else location.reading).toDouble()
+            locationsLatLng.add(
+                WeightedLatLng(
+                    location.getAMapLocationLatLng(),
+                    getAQIWeightFromPM25(pm25).toDouble()
+                )
+            )
             MyLogger.logThis(
-                    TAG, "setupHeatMap()", "pm is $pm25"
+                TAG, "setupHeatMap()", "pm is $pm25"
             )
         }
 
@@ -209,7 +215,6 @@ class AMapActivity : BaseMapActivity() {
         tileOverlayOptions.tileProvider(heatMapTileProvider)
         tileOverlay = aMap?.addTileOverlay(tileOverlayOptions)
     }
-
 
 
     /************************** QR CODE SCANNING ***************/

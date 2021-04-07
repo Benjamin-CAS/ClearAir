@@ -32,5 +32,8 @@ interface CustomerDeviceDataDao {
         isMine: Boolean = true
     ): Int
 
+    @Query("UPDATE customer_device_data SET isMyDeviceData =:isMine WHERE company_id =:compId AND location_id =:locId")
+    suspend fun updateIsMyLocation(compId: String, locId: String, isMine: Boolean = true)
+
 
 }

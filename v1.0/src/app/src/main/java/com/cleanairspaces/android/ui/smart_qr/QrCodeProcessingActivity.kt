@@ -50,6 +50,21 @@ class QrCodeProcessingActivity : AppCompatActivity() {
 
         val scannedQrContent = intent.getStringExtra(INTENT_EXTRA_TAG)
         handleQrCode(scannedQrContent)
+        observeMyLocationAdd()
+    }
+
+    private fun observeMyLocationAdd() {
+        viewModel.observeMyLocationOperation().observe(this, Observer { isSuccessful ->
+            if (!isSuccessful) {
+                binding.progressCircular.isVisible = false
+                binding.container.showSnackBar(
+                    msgResId = R.string.failed_to_add_location_check_credentials,
+                    isErrorMsg = true,
+                    actionMessage = R.string.dismiss,
+                    actionToTake = {}
+                )
+            }
+        })
     }
 
     private fun handleQrCode(scannedQrContent: String?) {
@@ -165,7 +180,7 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                 }
                 removeLocationBtn.apply {
                     isVisible = true
-                    setOnClickListener{
+                    setOnClickListener {
                         toggleLocationIsMine(customerDeviceData, isMine = false)
                     }
                 }
@@ -191,7 +206,7 @@ class QrCodeProcessingActivity : AppCompatActivity() {
     }
 
     private fun toggleLocationIsMine(customerDeviceData: CustomerDeviceData, isMine: Boolean) {
-        if (customerDeviceData.isSecure) {
+        if (customerDeviceData.isSecure && isMine) {
             val userName = binding.userName.myTxt(binding.userName)
             val userPassword = binding.password.myTxt(binding.password)
             if (userName.isNullOrBlank() || userPassword.isNullOrBlank()) {
@@ -201,7 +216,12 @@ class QrCodeProcessingActivity : AppCompatActivity() {
                 )
             } else {
                 binding.progressCircular.isVisible = true
-                viewModel.updateLocationIsMineStatus(customerDeviceData, userName, userPassword, isMine = isMine)
+                viewModel.updateLocationIsMineStatus(
+                    customerDeviceData,
+                    userName,
+                    userPassword,
+                    isMine = isMine
+                )
             }
         } else {
             binding.progressCircular.isVisible = true

@@ -6,8 +6,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.cleanairspaces.android.utils.DEFAULT_LOCATION_EN_NAME
 import kotlinx.parcelize.Parcelize
+import com.amap.api.maps.model.LatLng as aMapLatLng
 import com.google.android.gms.maps.model.LatLng as gMapLatLng
-import  com.amap.api.maps.model.LatLng as aMapLatLng
 
 @Parcelize
 @Entity(

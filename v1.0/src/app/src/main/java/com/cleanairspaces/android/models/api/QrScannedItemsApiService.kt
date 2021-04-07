@@ -18,10 +18,20 @@ interface QrScannedItemsApiService {
         const val LOCATION_INFO_METHOD_FOR_KEY = "GetDevInfoByIdCAS"
         const val MONITOR_INFO_METHOD_FOR_KEY = "GetDevInfoCAS"
         const val MONITOR_INFO_METHOD = "GetDevInfo"
+        const val DEVICE_INFO_METHOD_FOR_KEY = "LocDataGetCAS"
+        const val DEVICE_INFO_METHOD = "LocDataGet"
     }
 
     @POST("index.php/api/approuter")
     fun fetchScannedDeviceQrResponse(
+        @Query("app_id") app_id: Int = 1,
+        @Query("method") method: String,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
+    ): Call<ScannedDeviceQrResponse>
+
+    @POST("index.php/api/approuter")
+    fun fetchDetailsForMyLocation(
         @Query("app_id") app_id: Int = 1,
         @Query("method") method: String,
         @Query("nonce") nonce: String = NONCE,

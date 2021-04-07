@@ -2,8 +2,10 @@ package com.cleanairspaces.android.ui.home
 
 import android.location.Location
 import android.os.Parcelable
-import androidx.lifecycle.*
-import com.amap.api.maps.model.LatLng as aLatLng
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
@@ -16,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import com.amap.api.maps.model.LatLng as aLatLng
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
@@ -31,12 +34,13 @@ class MapViewModel @Inject constructor(
     private var userLastKnowALatLng: aLatLng? = null
     fun setUserLastKnownALatLng(it: Location?) {
         it?.let {
-            if(it.latitude != 0.0 && it.longitude != 0.0) {
+            if (it.latitude != 0.0 && it.longitude != 0.0) {
                 userLastKnowALatLng = aLatLng(it.latitude, it.longitude)
             }
-            MyLogger.logThis(TAG, "userLastKnownLocale()" , "-- $it")
+            MyLogger.logThis(TAG, "userLastKnownLocale()", "-- $it")
         }
     }
+
     fun getUserLastKnownALatLng(): aLatLng? = userLastKnowALatLng
 
 
@@ -60,8 +64,6 @@ class MapViewModel @Inject constructor(
             }
         }
     }
-
-
 
 
     companion object {

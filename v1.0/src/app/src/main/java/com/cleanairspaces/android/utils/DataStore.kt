@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.cleanairspaces.android.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -13,11 +14,12 @@ private val Context.dataStore by preferencesDataStore("settings")
 class DataStoreManager(appContext: Context) {
 
     private val mDataStore = appContext.dataStore
+    private val defaultAqi = appContext.getString(R.string.default_pm_index_value)
 
-    fun getAqiIndex(): Flow<String?> {
+    fun getAqiIndex(): Flow<String> {
         return mDataStore.data
             .map { preferences ->
-                preferences[AQI_INDEX_KEY]
+                preferences[AQI_INDEX_KEY]?:defaultAqi
             }
     }
 

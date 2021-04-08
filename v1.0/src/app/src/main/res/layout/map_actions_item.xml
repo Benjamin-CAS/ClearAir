@@ -10,7 +10,7 @@
         android:paddingStart="@dimen/std_space"
         android:paddingEnd="@dimen/std_space"
         style="@style/Theme.CleanAirSpaces.Button"
-        android:background="@drawable/round_whitish_bg"
+        android:background="@drawable/round_footer_bg"
         android:textColor="?colorOnPrimary"
         android:layout_marginStart="@dimen/md_space"
         android:elevation="@dimen/std_space"/>

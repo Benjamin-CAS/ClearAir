@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="blue">#066aad</color>
-    <color name="blue_dark">#004181</color>
+    <color name="blue_dark">#2D4287</color>
     <color name="blue_light">#2898ce</color>
     <color name="friar_grey">#858481</color>
     <color name="black">#000000</color>
-    <color name="green">#319442</color>
-    <color name="yellow">#cbb71a</color>
-    <color name="orange">#e3945c</color>
 
-    <color name="transparent_green">#33319442</color>
-    <color name="transparent_yellow">#66cbb71a</color>
-    <color name="transparent_orange">#55e3945c</color>
 
     <color name="white">#ffffff</color>
     <color name="whitish">#f3f3f3</color>
-    <color name="blueish_grey">#f1f0f5</color>
+
+    <!-- from ios -->
+    <color name="green">#00FF33</color>
+    <color name="dark_green">#33B266</color>
+    <color name="light_green">#8CCC72</color>
+    <color name="orange">#E5663F</color>
+    <color name="red">#E51926</color>
+    <color name="yellow">#E5CC00</color>
+    <color name="footer_color">#D8D8E5</color>
+    <color name="transparent_green">#3300FF33</color>
+    <color name="transparent_yellow">#66E5CC00</color>
+    <color name="transparent_orange">#55E5663F</color>
+
+    <!--- AQI COLORS -->
+    <color name="aqi_good">#33B266</color>
+    <color name="aqi_moderate">#E5D800</color>
+    <color name="aqi_g_unhealthy">#FF9900</color>
+    <color name="aqi_unhealthy">#FF0000</color>
+    <color name="aqi_v_unhealthy">#B200B2</color>
+    <color name="aqi_hazardous">#CC1919</color>
+    <color name="aqi_beyond">#CCCCCC</color>
 </resources>

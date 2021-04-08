@@ -11,6 +11,8 @@ import com.cleanairspaces.android.databinding.ActivityGmapBinding
 import com.cleanairspaces.android.ui.home.BaseMapActivity
 import com.cleanairspaces.android.ui.home.MapActionChoices
 import com.cleanairspaces.android.ui.home.MapViewModel
+import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
 import com.cleanairspaces.android.utils.MyLogger
 import com.google.android.gms.maps.SupportMapFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,6 +26,10 @@ class GMapActivity : BaseMapActivity() {
 
     private val TAG = GMapActivity::class.java.simpleName
 
+    override val mapActionsAdapter = MapActionsAdapter(this)
+    override val myLocationsAdapter : MyLocationsAdapter by lazy {
+        MyLocationsAdapter(this, viewModel.getSelectedAqiIndex())
+    }
 
     private var mapFragment: SupportMapFragment? = null
 

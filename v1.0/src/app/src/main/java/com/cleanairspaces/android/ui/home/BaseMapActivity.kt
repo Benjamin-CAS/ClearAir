@@ -39,13 +39,24 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
 
     private val TAG = BaseMapActivity::class.java.simpleName
 
+    //prepare bitmaps
+    val aQIGoodBitmap = R.drawable.good_circle
+    val aQIModerateBitmap = R.drawable.moderate_circle
+    val aQIGUnhealthyBitmap = R.drawable.g_unhealthy_circle
+    val aQIUnhealthyBitmap = R.drawable.unhealthy_circle
+    val aQIVUnhealthyBitmap = R.drawable.v_unhealthy_circle
+    val aQIHazardousBitmap = R.drawable.hazardous_circle
+    val aQIBeyondBitmap = R.drawable.beyond_circle
+    val aQICNExcellentBitmap = R.drawable.excellent
+
+
     var popUp: AlertDialog? = null
     var snackbar: Snackbar? = null
 
     lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     lateinit var scanQrCodeLauncher: ActivityResultLauncher<Intent>
-    open lateinit var mapActionsAdapter: MapActionsAdapter
-    open lateinit var myLocationsAdapter: MyLocationsAdapter
+    abstract val mapActionsAdapter: MapActionsAdapter
+    abstract val myLocationsAdapter: MyLocationsAdapter
 
     /** BE IMPLEMENTED **/
     abstract fun showUserLocation()

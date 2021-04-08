@@ -38,6 +38,28 @@ object AQI {
 
     }
 
+    fun getAQICNFromPM25(pm25: Double): Int {
+        when {
+            pm25 == 0.0 -> return 0
+            pm25 < 0 -> return -1
+            pm25 > 500 -> return 500
+        }
+
+
+        var i: Int = 0
+        while (PM25CN[i] < pm25) i += 1
+
+        val clow: Double = PM25CN[i - 1]
+        val chigh: Double = PM25CN[i]
+        val ilow: Double = IAQI[i - 1]
+        val ihigh: Double = IAQI[i]
+
+
+        val aqi = ((ihigh - ilow) / (chigh - clow) * (pm25 - clow)) + ilow
+        return aqi.toInt()
+
+    }
+
     fun getAQILevelFromPM25(pm25: Double): Int {
         when {
             pm25 == 0.0 -> return 0
@@ -52,7 +74,7 @@ object AQI {
 
     }
 
-    fun getAQIColorFromPM25(pm25: Double): UIColor {
+    fun getAQIStatusColorFromPM25(pm25: Double): UIColor {
         when {
             pm25 == 0.0 -> return UIColor.AQIGoodColor
             pm25 >= 500 -> return UIColor.AQIBeyondColor
@@ -81,6 +103,7 @@ object AQI {
 
     }
 
+    //heat map
     fun getAQIWeightFromPM25(pm25: Double): Int {
         when {
             pm25 == 0.0 -> return 1
@@ -135,7 +158,7 @@ object AQI {
 
     }
 
-    fun getAQITextFromPM25(pm25: Double): ConditionResStrings {
+    fun getAQIStatusTextFromPM25(pm25: Double): ConditionResStrings {
         if (pm25 == 0.0) {
             return ConditionResStrings(
                 R.string.condition_good,
@@ -203,27 +226,6 @@ object AQI {
         }
     }
 
-    fun getAQICNFromPM25(pm25: Double): Int {
-        when {
-            pm25 == 0.0 -> return 0
-            pm25 < 0 -> return -1
-            pm25 > 500 -> return 500
-        }
-
-
-        var i: Int = 0
-        while (PM25CN[i] < pm25) i += 1
-
-        val clow: Double = PM25CN[i - 1]
-        val chigh: Double = PM25CN[i]
-        val ilow: Double = IAQI[i - 1]
-        val ihigh: Double = IAQI[i]
-
-
-        val aqi = ((ihigh - ilow) / (chigh - clow) * (pm25 - clow)) + ilow
-        return aqi.toInt()
-
-    }
 
     fun getAQICNTextColorFromPM25(pm25: Double): UIColor {
         when {
@@ -256,7 +258,7 @@ object AQI {
         }
     }
 
-    fun getAQICNColorFromPM25(pm25: Double): UIColor {
+    fun getAQICNStatusColorFromPM25(pm25: Double): UIColor {
         when {
             pm25 == 0.0 -> return UIColor.AQICNExcellentColor
             pm25 >= 500 -> return UIColor.AQIBeyondColor
@@ -279,7 +281,7 @@ object AQI {
         }
     }
 
-    fun getAQICNTextFromPM25(pm25: Double): ConditionResStrings {
+    fun getAQICNStatusTextFromPM25(pm25: Double): ConditionResStrings {
         when {
             pm25 == 0.0 -> return ConditionResStrings(
                 R.string.condition_excellent,

@@ -39,11 +39,11 @@ class MyLocationDetails(
 
 @Parcelize
 data class Indoor(
-    val indoor_pm: String? = "",
-    val indoor_co2: String? = "",
-    val indoor_voc: String? = "",
-    val indoor_temperature: String? = "",
-    val indoor_humidity: String? = "",
+    val indoor_pm: String = "",
+    val indoor_co2: String = "",
+    val indoor_voc: String = "",
+    val indoor_temperature: String = "",
+    val indoor_humidity: String = "",
     val indoor_time: String? = "",
     val param_label: String? = "",
     val display_param: String? = "",
@@ -57,7 +57,7 @@ data class Indoor(
 
 @Parcelize
 data class Outdoor(
-    val outdoor_pm: String? = "",
+    val outdoor_pm: String = "",
     val outdoor_time: String? = "",
     val outdoor_display_param: String? = "",
     @ColumnInfo(name = "outdoor_name_en")

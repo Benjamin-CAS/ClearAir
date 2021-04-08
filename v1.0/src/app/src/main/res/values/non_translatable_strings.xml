@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_pm_index_value" translatable="false">PM 2.5</string>
+    <string-array name="aqi_indexes">
+        <item>PM 2.5</item>
+        <item>AQI US</item>
+        <item>PM 2.5 CN</item>
+        <item>AQI CN</item>
+    </string-array>
+</resources>

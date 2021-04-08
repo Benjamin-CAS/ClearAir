@@ -76,13 +76,18 @@ class AMapActivity : BaseMapActivity() {
             initializeMap(savedInstanceState)
             super.initializeRecyclerViewForUserActions(binding.homeMapOverlay, viewModel.mapActions)
             super.initializeMyLocationRecycler(binding.homeMapOverlay)
-            observeMyLocations()
         }
 
         private fun observeMyLocations() {
-            viewModel.observeMyLocations().observe(this, Observer {
+            viewModel.refreshMyLocationsFlow().observe(this, Observer {
                 if (it != null) {
-                    super.updateMyLocationsList(it)
+                   viewModel.updateMyLocationsDetails(it)
+                }
+            })
+
+            viewModel.observeMyLocationDetails().observe(this, Observer {
+                if (it != null){
+                    myLocationsAdapter.setMyLocationsList(it)
                 }
             })
         }
@@ -113,8 +118,8 @@ class AMapActivity : BaseMapActivity() {
         private fun observeOutDoorLocations() {
             viewModel.observeLocations().observe(this, Observer {
                 if (!it.isNullOrEmpty()) {
-                    //setupHeatMap(locations = it)
-                    setupMarkers(locations = it)
+                    setupHeatMap(locations = it)
+
                 }
             })
         }
@@ -173,7 +178,7 @@ class AMapActivity : BaseMapActivity() {
 
 
         /**************** MARKERS & CIRCLES & HEAT MAPS **************/
-        /*private fun setupHeatMap(locations: List<OutDoorLocations>) {
+        private fun setupHeatMap(locations: List<OutDoorLocations>) {
             val locationsLatLng: MutableCollection<WeightedLatLng> = mutableListOf()
             for (location in locations) {
                 val pm25: Double =
@@ -199,45 +204,8 @@ class AMapActivity : BaseMapActivity() {
             val tileOverlayOptions = TileOverlayOptions()
             tileOverlayOptions.tileProvider(heatMapTileProvider)
             tileOverlay = aMap?.addTileOverlay(tileOverlayOptions)
-        }*/
-
-
-        private fun setupMarkers(locations: List<OutDoorLocations>) {
-            for (location in locations) {
-                val mDrawable = getIconForMarker(location)
-                val mIcon = if (mDrawable == null) null else
-                    BitmapDescriptorFactory.fromBitmap(
-                        BitmapFactory
-                            .decodeResource(resources, mDrawable)
-                    )
-
-                val markerOptions = MarkerOptions()
-                markerOptions.apply {
-                    position(location.getAMapLocationLatLng())
-                    draggable(false)
-                    anchor(0.5f, 0.5f)
-                    mIcon?.let {
-                        icon(it)
-                    }
-                    aMap?.addMarker(markerOptions)
-                }
-            }
         }
 
-        private fun getIconForMarker(location: OutDoorLocations): Int? {
-            val pm25 = if (location.pm2p5 != "") location.pm2p5 else location.reading
-            return when (AQI.getAQIStatusColorFromPM25(pm25.toDouble())) {
-                UIColor.AQIGoodColor -> aQIGoodBitmap
-                UIColor.AQIModerateColor -> aQIModerateBitmap
-                UIColor.AQIGUnhealthyColor -> aQIGUnhealthyBitmap
-                UIColor.AQIUnhealthyColor -> aQIUnhealthyBitmap
-                UIColor.AQIVUnhealthyColor -> aQIVUnhealthyBitmap
-                UIColor.AQIHazardousColor -> aQIHazardousBitmap
-                UIColor.AQIBeyondColor -> aQIBeyondBitmap
-                UIColor.AQICNExcellentColor -> aQICNExcellentBitmap
-                else -> null
-            }
-        }
 
         /************************** QR CODE SCANNING ***************/
 
@@ -269,6 +237,7 @@ class AMapActivity : BaseMapActivity() {
         override fun onResume() {
             super.onResume()
             mapView?.onResume()
+            observeMyLocations()
         }
 
         override fun onPause() {

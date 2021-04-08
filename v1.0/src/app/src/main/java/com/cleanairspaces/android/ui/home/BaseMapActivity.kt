@@ -39,15 +39,6 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
 
     private val TAG = BaseMapActivity::class.java.simpleName
 
-    //prepare bitmaps
-    val aQIGoodBitmap = R.drawable.good_circle
-    val aQIModerateBitmap = R.drawable.moderate_circle
-    val aQIGUnhealthyBitmap = R.drawable.g_unhealthy_circle
-    val aQIUnhealthyBitmap = R.drawable.unhealthy_circle
-    val aQIVUnhealthyBitmap = R.drawable.v_unhealthy_circle
-    val aQIHazardousBitmap = R.drawable.hazardous_circle
-    val aQIBeyondBitmap = R.drawable.beyond_circle
-    val aQICNExcellentBitmap = R.drawable.excellent
 
 
     var popUp: AlertDialog? = null

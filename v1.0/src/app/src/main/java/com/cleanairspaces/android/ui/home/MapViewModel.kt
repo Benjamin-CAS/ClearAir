@@ -2,12 +2,10 @@ package com.cleanairspaces.android.ui.home
 
 import android.location.Location
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
+import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
 import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
@@ -17,6 +15,8 @@ import com.cleanairspaces.android.utils.OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -42,16 +42,50 @@ class MapViewModel @Inject constructor(
     fun getSelectedAqiIndex(): String? = selectedAqiIndex
 
     /******* my locations **********/
-    fun observeMyLocations(): LiveData<List<CustomerDeviceDataDetailed>> =
-        scannedDevicesRepo.getMyLocations().asLiveData(viewModelScope.coroutineContext)
+    private val myLocationDetailsLive = MutableLiveData<List<CustomerDeviceDataDetailed>>(
+        arrayListOf()
+    )
+    fun refreshMyLocationsFlow() : LiveData<List<MyLocationDetails>> {
+       return  scannedDevicesRepo.getMyLocations().asLiveData()
+    }
 
+    fun updateMyLocationsDetails(it: List<MyLocationDetails>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val myLocationDetails = arrayListOf<CustomerDeviceDataDetailed>()
+            if (it.isNotEmpty()) {
+                for (locationDetails in it) {
+                    val foundCustomerDeviceData = scannedDevicesRepo.getMyDeviceBy(
+                        compId = locationDetails.company_id,
+                        locId = locationDetails.location_id
+                    )
+                    if (foundCustomerDeviceData.isNotEmpty()) {
+                        myLocationDetails.add(
+                            CustomerDeviceDataDetailed(
+                                locationDetails = locationDetails,
+                                deviceData = foundCustomerDeviceData[0]
+                            )
+                        )
+                    }
+                }
+            }
+            withContext(Dispatchers.Main) {
+                MyLogger.logThis(TAG, "updateMyLocationsDetails()",  "called")
+                myLocationDetailsLive.value = myLocationDetails
+            }
+        }
+    }
+
+    fun observeMyLocationDetails() : LiveData<List<CustomerDeviceDataDetailed>> = myLocationDetailsLive
 
     /*********** AMAP SPECIFIC LOCATION *************/
     private var userLastKnowALatLng: aLatLng? = null
     fun setUserLastKnownALatLng(it: Location?) {
         it?.let {
-            if (it.latitude != 0.0 && it.longitude != 0.0) {
-                userLastKnowALatLng = aLatLng(it.latitude, it.longitude)
+            userLastKnowALatLng = if (it.latitude != 0.0 && it.longitude != 0.0) {
+                aLatLng(it.latitude, it.longitude)
+            }else {
+                //todo remove in production
+                aLatLng(SHANGHAI_LAT, SHANGHAI_LON)
             }
             MyLogger.logThis(TAG, "userLastKnownLocale()", "-- $it")
         }
@@ -81,6 +115,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
+
     companion object {
         private val TAG = MapViewModel::class.java.simpleName
     }
@@ -96,3 +131,6 @@ enum class MapActionChoices(val strRes: Int) {
     MAP_VIEW(strRes = R.string.map_view_txt),
     ADD(strRes = R.string.add_txt)
 }
+
+const val SHANGHAI_LAT : Double = 31.224361
+const val SHANGHAI_LON : Double = 121.469170

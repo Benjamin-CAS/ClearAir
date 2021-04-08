@@ -13,7 +13,7 @@ import java.util.*
 @Entity(
     tableName = "my_location_details",
     indices = [androidx.room.Index(
-        value = ["company_id", "location_id", "lastUpdated"],
+        value = ["company_id", "location_id"],
         unique = true
     )]
 )

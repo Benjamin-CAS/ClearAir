@@ -43,31 +43,11 @@ class ScannedDevicesRepo
     private val recentlyFetchedDeviceData = arrayListOf<JsonObject>()
 
 
-    private val myLocationDetailsLive = MutableStateFlow<List<CustomerDeviceDataDetailed>>(
-        arrayListOf()
+    fun getMyLocations() = myLocationDetailsDao.getMyLocationsFlow()
+    suspend fun getMyDeviceBy(compId: String, locId: String) = customerDeviceDataDao.getMyDeviceBy(
+        compId =compId,
+        locId = locId
     )
-
-    fun getMyLocations(): Flow<List<CustomerDeviceDataDetailed>> {
-        return myLocationDetailsDao.getMyLocationsFlow().flatMapLatest {
-            val myLocationDetails = arrayListOf<CustomerDeviceDataDetailed>()
-            if (it.isNotEmpty()) {
-                for (locationDetails in it) {
-                    val foundCustomerDeviceData = customerDeviceDataDao.getDeviceBy(
-                        compId = locationDetails.company_id,
-                        locId = locationDetails.location_id
-                    )
-                    myLocationDetails.add(
-                        CustomerDeviceDataDetailed(
-                            locationDetails = locationDetails,
-                            deviceData = foundCustomerDeviceData[0]
-                        )
-                    )
-                }
-                myLocationDetailsLive.value = myLocationDetails
-            }
-            myLocationDetailsLive
-        }
-    }
 
     /************************ QR SCANNED ITEMS *********************/
     fun getADeviceFlow(compId: String, locId: String) =
@@ -382,6 +362,8 @@ class ScannedDevicesRepo
         customerDeviceData.isMyDeviceData = isMine
         customerDeviceDataDao.updateDevice(customerDeviceData)
     }
+
+
 
 
     companion object {

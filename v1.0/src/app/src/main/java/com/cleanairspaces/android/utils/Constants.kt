@@ -25,3 +25,55 @@ const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
 const val UPDATE_USER_LOCATION_INTERVAL = 300000L //5 minutes
 const val HEAT_MAP_CIRCLE_RADIUS = 50
+
+
+
+
+//todo code to remove
+/*
+    //prepare bitmaps
+    val aQIGoodBitmap = R.drawable.good_circle
+    val aQIModerateBitmap = R.drawable.moderate_circle
+    val aQIGUnhealthyBitmap = R.drawable.g_unhealthy_circle
+    val aQIUnhealthyBitmap = R.drawable.unhealthy_circle
+    val aQIVUnhealthyBitmap = R.drawable.v_unhealthy_circle
+    val aQIHazardousBitmap = R.drawable.hazardous_circle
+    val aQIBeyondBitmap = R.drawable.beyond_circle
+    val aQICNExcellentBitmap = R.drawable.excellent
+ */
+/*private fun setupMarkers(locations: List<OutDoorLocations>) {
+    for (location in locations) {
+        val mDrawable = getIconForMarker(location)
+        val mIcon = if (mDrawable == null) null else
+            BitmapDescriptorFactory.fromBitmap(
+                BitmapFactory
+                    .decodeResource(resources, mDrawable)
+            )
+
+        val markerOptions = MarkerOptions()
+        markerOptions.apply {
+            position(location.getAMapLocationLatLng())
+            draggable(false)
+            anchor(0.5f, 0.5f)
+            mIcon?.let {
+                icon(it)
+            }
+            aMap?.addMarker(markerOptions)
+        }
+    }
+}
+
+private fun getIconForMarker(location: OutDoorLocations): Int? {
+    val pm25 = if (location.pm2p5 != "") location.pm2p5 else location.reading
+    return when (AQI.getAQIStatusColorFromPM25(pm25.toDouble())) {
+        UIColor.AQIGoodColor -> aQIGoodBitmap
+        UIColor.AQIModerateColor -> aQIModerateBitmap
+        UIColor.AQIGUnhealthyColor -> aQIGUnhealthyBitmap
+        UIColor.AQIUnhealthyColor -> aQIUnhealthyBitmap
+        UIColor.AQIVUnhealthyColor -> aQIVUnhealthyBitmap
+        UIColor.AQIHazardousColor -> aQIHazardousBitmap
+        UIColor.AQIBeyondColor -> aQIBeyondBitmap
+        UIColor.AQICNExcellentColor -> aQICNExcellentBitmap
+        else -> null
+    }
+}*/

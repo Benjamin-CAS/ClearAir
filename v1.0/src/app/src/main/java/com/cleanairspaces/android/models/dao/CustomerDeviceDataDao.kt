@@ -36,5 +36,5 @@ interface CustomerDeviceDataDao {
     suspend fun updateIsMyLocation(compId: String, locId: String, isMine: Boolean = true)
 
     @Query("SELECT * FROM customer_device_data WHERE company_id =:compId AND location_id =:locId LIMIT 1")
-    suspend fun getDeviceBy(compId: String, locId: String) : List<CustomerDeviceData>
+    suspend fun getDeviceBy(compId: String, locId: String): List<CustomerDeviceData>
 }

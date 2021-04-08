@@ -8,7 +8,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/aboutAppFragment"
+        android:id="@+id/settingsMenu"
+        android:title="@string/map_menu_settings_txt"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/aboutAppMenu"
         android:title="@string/map_menu_about_app_txt"
         app:showAsAction="never"/>
 </menu>

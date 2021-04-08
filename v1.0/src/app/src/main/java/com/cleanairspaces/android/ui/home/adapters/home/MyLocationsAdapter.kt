@@ -9,18 +9,21 @@ import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.MyLocationMapOverlayItemBinding
 import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
 
-class MyLocationsAdapter (private val actionsListener:  MyLocationsClickListener) :
-    RecyclerView.Adapter< MyLocationsAdapter.MyLocationsViewHolder>() {
+class MyLocationsAdapter(private val actionsListener: MyLocationsClickListener) :
+    RecyclerView.Adapter<MyLocationsAdapter.MyLocationsViewHolder>() {
 
-    private val  myLocationsList = ArrayList<CustomerDeviceDataDetailed>()
+    private val myLocationsList = ArrayList<CustomerDeviceDataDetailed>()
 
-    interface  MyLocationsClickListener {
+    interface MyLocationsClickListener {
         fun onClickLocation(locationDetails: CustomerDeviceDataDetailed)
     }
 
-    class  MyLocationsViewHolder(private val binding:  MyLocationMapOverlayItemBinding) :
+    class MyLocationsViewHolder(private val binding: MyLocationMapOverlayItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(dataDetailed: CustomerDeviceDataDetailed, actionsListener:  MyLocationsClickListener) {
+        fun bind(
+            dataDetailed: CustomerDeviceDataDetailed,
+            actionsListener: MyLocationsClickListener
+        ) {
             val myLocationDetails = dataDetailed.locationDetails
             val location = dataDetailed.deviceData
 
@@ -47,32 +50,36 @@ class MyLocationsAdapter (private val actionsListener:  MyLocationsClickListener
                     actionsListener.onClickLocation(dataDetailed)
                 }
                 itemCard.setBackgroundColor(ContextCompat.getColor(ctx, R.color.green))
-                }
             }
         }
+    }
 
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ):  MyLocationsViewHolder {
+    ): MyLocationsViewHolder {
         val binding =
-            MyLocationMapOverlayItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return  MyLocationsViewHolder(binding)
+            MyLocationMapOverlayItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        return MyLocationsViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder:  MyLocationsViewHolder, position: Int) {
-        val action =  myLocationsList[position]
+    override fun onBindViewHolder(holder: MyLocationsViewHolder, position: Int) {
+        val action = myLocationsList[position]
         holder.bind(action, actionsListener)
     }
 
     fun setMyLocationsList(myLocationsList: List<CustomerDeviceDataDetailed>) {
-        this. myLocationsList.clear()
-        this. myLocationsList.addAll(myLocationsList)
+        this.myLocationsList.clear()
+        this.myLocationsList.addAll(myLocationsList)
         notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
-        return  myLocationsList.size
+        return myLocationsList.size
     }
 }

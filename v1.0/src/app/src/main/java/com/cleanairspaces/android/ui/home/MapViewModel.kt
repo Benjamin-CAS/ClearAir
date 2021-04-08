@@ -33,7 +33,8 @@ class MapViewModel @Inject constructor(
     }
 
     /******* my locations **********/
-    fun observeMyLocations() : LiveData<List<CustomerDeviceDataDetailed>> = scannedDevicesRepo.getMyLocations().asLiveData(viewModelScope.coroutineContext)
+    fun observeMyLocations(): LiveData<List<CustomerDeviceDataDetailed>> =
+        scannedDevicesRepo.getMyLocations().asLiveData(viewModelScope.coroutineContext)
 
 
     /*********** AMAP SPECIFIC LOCATION *************/

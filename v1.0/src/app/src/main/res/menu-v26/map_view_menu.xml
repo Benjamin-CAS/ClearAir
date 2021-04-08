@@ -8,6 +8,12 @@
         app:showAsAction="ifRoom"
         android:iconTint="@color/blue"/>
 
+
+    <item
+        android:id="@+id/settingsMenu"
+        android:title="@string/map_menu_settings_txt"
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/aboutAppFragment"
         android:title="@string/map_menu_about_app_txt"

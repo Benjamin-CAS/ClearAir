@@ -8,34 +8,16 @@
     android:orientation="vertical"
     android:id="@+id/container"
     >
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/appToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="0dp"
-        app:popupTheme="@style/appToolbarPopUpMenu">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/toolbar_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/clickable_std"
-                android:layout_gravity="start|center_vertical"
-                android:contentDescription="@string/tool_bar_logo_desc"
-                android:scaleType="fitStart" />
-        </FrameLayout>
-    </androidx.appcompat.widget.Toolbar>
+    <include layout="@layout/toolbar_layout"
+        android:id="@+id/toolbar_layout" />
 
     <ProgressBar
         android:id="@+id/progress_circular"
         android:layout_marginTop="@dimen/md_space"
         android:layout_gravity="center_horizontal"
         android:layout_width="@dimen/std_icon"
-        android:layout_height="@dimen/std_icon" />
+        android:layout_height="@dimen/std_icon"
+        />
 
     <ScrollView
         android:layout_width="match_parent"

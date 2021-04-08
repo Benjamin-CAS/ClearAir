@@ -78,5 +78,15 @@
     <string name="remove_location_text">Remove Location</string>
     <string name="failed_to_add_location_check_credentials">Adding location failed. Check your credentials</string>
     <string name="updated_on_prefix">Updated On</string>
-
+    <string name="map_menu_settings_txt">Settings</string>
+    <string name="air_quality_index_txt">Air Quality Index</string>
+    <string name="default_pm_text">PM 2.5 is used by default</string>
+    <string name="save_changes_txt">Save Changes</string>
+    <string name="default_pm_index_value" translatable="false">PM 2.5</string>
+    <string-array name="aqi_indexes">
+        <item>PM 2.5</item>
+        <item>AQI US</item>
+        <item>PM 2.5 CN</item>
+        <item>AQI CN</item>
+    </string-array>
 </resources>

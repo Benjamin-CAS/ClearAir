@@ -10,15 +10,17 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.HomeMapOverlayBinding
 import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
+import com.cleanairspaces.android.ui.BaseActivity
+import com.cleanairspaces.android.ui.about.AboutAppActivity
 import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
 import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
+import com.cleanairspaces.android.ui.settings.SettingsActivity
 import com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity
 import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity
 import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity.Companion.INTENT_EXTRA_TAG
@@ -32,7 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-abstract class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickListener,
+abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener,
     MyLocationsAdapter.MyLocationsClickListener {
 
     private val TAG = BaseMapActivity::class.java.simpleName
@@ -54,8 +56,13 @@ abstract class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickLis
         actionRes: Int? = null
     )
 
+    abstract fun gotToActivity(toAct: Class<*>)
+
     /*********** ADD, SCAN & TOGGLE ACTIONS *********/
-    fun initializeRecyclerViewForUserActions(homeMapOverlay: HomeMapOverlayBinding, actions: List<MapActions>) {
+    fun initializeRecyclerViewForUserActions(
+        homeMapOverlay: HomeMapOverlayBinding,
+        actions: List<MapActions>
+    ) {
         homeMapOverlay.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
                 this@BaseMapActivity,
@@ -69,7 +76,7 @@ abstract class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickLis
     }
 
     /************** MY LOCATIONS *********/
-    fun updateMyLocationsList(myLocations: List<CustomerDeviceDataDetailed>){
+    fun updateMyLocationsList(myLocations: List<CustomerDeviceDataDetailed>) {
         myLocationsAdapter.setMyLocationsList(myLocationsList = myLocations)
     }
 
@@ -80,12 +87,12 @@ abstract class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickLis
     fun initializeMyLocationRecycler(homeMapOverlay: HomeMapOverlayBinding) {
         homeMapOverlay.apply {
             locationsRv.layoutManager = LinearLayoutManager(
-                    this@BaseMapActivity,
-            RecyclerView.VERTICAL,
-            false
+                this@BaseMapActivity,
+                RecyclerView.VERTICAL,
+                false
             )
             locationsRv.addItemDecoration(VerticalSpaceItemDecoration(30))
-           locationsRv.adapter = myLocationsAdapter
+            locationsRv.adapter = myLocationsAdapter
         }
     }
 
@@ -232,6 +239,15 @@ abstract class BaseMapActivity : AppCompatActivity(), MapActionsAdapter.ClickLis
         return when (item.itemId) {
             R.id.action_help -> {
                 showDialog(msgRes = R.string.map_menu_help_desc_txt, positiveAction = {})
+                true
+            }
+            R.id.aboutAppMenu -> {
+
+                gotToActivity(AboutAppActivity::class.java)
+                true
+            }
+            R.id.settingsMenu -> {
+                gotToActivity(SettingsActivity::class.java)
                 true
             }
             else -> super.onOptionsItemSelected(item)

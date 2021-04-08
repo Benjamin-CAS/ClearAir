@@ -8,27 +8,7 @@
     tools:context=".ui.home.amap.AMapActivity"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/appToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="0dp"
-        app:popupTheme="@style/appToolbarPopUpMenu">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/toolbar_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/clickable_std"
-                android:layout_gravity="start|center_vertical"
-                android:contentDescription="@string/tool_bar_logo_desc"
-                android:scaleType="fitStart" />
-        </FrameLayout>
-    </androidx.appcompat.widget.Toolbar>
+    <include layout="@layout/toolbar_layout" android:id="@+id/toolbar_layout" />
 
     <FrameLayout
         android:layout_width="match_parent"

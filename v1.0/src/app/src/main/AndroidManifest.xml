@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.cleanairspaces.android">
-    <!-- QR CODE -->
+    package="com.cleanairspaces.android"> <!-- QR CODE -->
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -28,6 +27,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CleanAirSpaces">
+        <activity android:name=".ui.about.AboutAppActivity"></activity>
+        <activity android:name=".ui.settings.SettingsActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -40,11 +41,11 @@
             android:value="${GMAPS_API_DEBUG_KEY}" />
 
         <activity
-            android:name="com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity"
+            android:name=".ui.smart_qr.CaptureQrCodeActivity"
             android:screenOrientation="portrait"
             android:stateNotNeeded="true"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name="com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".ui.smart_qr.QrCodeProcessingActivity" />
         <activity android:name=".ui.home.amap.AMapActivity" />
         <activity android:name=".ui.home.gmap.GMapActivity" />
         <activity android:name=".ui.MainActivity">

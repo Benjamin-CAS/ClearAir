@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.settings.SettingsActivity"
+    android:background="@color/blueish_grey">
+
+    <include
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/toolbar_layout" android:id="@+id/toolbar_layout" />
+
+    <TextView
+        android:id="@+id/settings_title"
+        style="@style/Theme.CleanAirSpaces.Title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        android:text="@string/map_menu_settings_txt"
+        android:layout_margin="@dimen/std_space"
+        android:textSize="@dimen/lg_txt"/>
+
+    <ProgressBar
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_title"
+        android:id="@+id/progress_circular"
+        android:layout_marginTop="@dimen/md_space"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon"
+        android:visibility="gone"/>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/aqi_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/md_space"
+        app:layout_constraintStart_toStartOf="parent"
+        app:boxBackgroundColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/progress_circular"
+        app:helperTextEnabled="true"
+        app:hintTextColor="?colorOnPrimary"
+        app:helperText="@string/default_pm_text">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="?colorOnPrimary"
+            android:hint="@string/air_quality_index_txt"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

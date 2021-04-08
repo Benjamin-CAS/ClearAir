@@ -1,9 +1,10 @@
 package com.cleanairspaces.android.ui.home.amap
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.*
+import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -12,19 +13,19 @@ import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.MapView
 import com.amap.api.maps.model.*
-import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityAmapBinding
-import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.BaseMapActivity
 import com.cleanairspaces.android.ui.home.MapViewModel
 import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
 import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
-import com.cleanairspaces.android.utils.*
 import com.cleanairspaces.android.utils.AQI.getAQIWeightFromPM25
+import com.cleanairspaces.android.utils.HEAT_MAP_CIRCLE_RADIUS
 import com.cleanairspaces.android.utils.MyColorUtils.getGradientColors
 import com.cleanairspaces.android.utils.MyColorUtils.getGradientIntensities
+import com.cleanairspaces.android.utils.UPDATE_USER_LOCATION_INTERVAL
+import com.cleanairspaces.android.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -50,13 +51,7 @@ class AMapActivity : BaseMapActivity() {
         binding = ActivityAmapBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.apply {
-            Glide.with(this@AMapActivity)
-                .load(R.drawable.clean_air_spaces_logo_name)
-                .into(toolbarLogo)
-        }
+        super.setToolBar(binding.toolbarLayout, true)
 
         //location permission launcher must be set
         requestPermissionLauncher = registerForActivityResult(
@@ -84,9 +79,9 @@ class AMapActivity : BaseMapActivity() {
         observeMyLocations()
     }
 
-    private fun observeMyLocations(){
+    private fun observeMyLocations() {
         viewModel.observeMyLocations().observe(this, Observer {
-            if (it != null){
+            if (it != null) {
                 super.updateMyLocationsList(it)
             }
         })
@@ -227,7 +222,6 @@ class AMapActivity : BaseMapActivity() {
     }
 
 
-
     /************* forwarding life cycle methods & clearing *********/
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -256,5 +250,14 @@ class AMapActivity : BaseMapActivity() {
         super.onDestroy()
         mapView?.onDestroy()
         dismissPopUps()
+    }
+
+    override fun gotToActivity(toAct: Class<*>) {
+        startActivity(
+            Intent(
+                this,
+                toAct
+            )
+        )
     }
 }

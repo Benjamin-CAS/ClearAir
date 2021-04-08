@@ -3,7 +3,6 @@ package com.cleanairspaces.android.ui.smart_qr
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -11,12 +10,13 @@ import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityQrCodeProcessingBinding
 import com.cleanairspaces.android.models.entities.CustomerDeviceData
+import com.cleanairspaces.android.ui.BaseActivity
 import com.cleanairspaces.android.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class QrCodeProcessingActivity : AppCompatActivity() {
+class QrCodeProcessingActivity : BaseActivity() {
     companion object {
         private val TAG = QrCodeProcessingActivity::class.java.simpleName
         val INTENT_EXTRA_TAG = "qrContent"
@@ -34,23 +34,15 @@ class QrCodeProcessingActivity : AppCompatActivity() {
         setContentView(view)
 
         //toolbar
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-        binding.apply {
-            Glide.with(this@QrCodeProcessingActivity)
-                .load(R.drawable.clean_air_spaces_logo_name)
-                .into(toolbarLogo)
-            toolbar.setNavigationIcon(R.drawable.ic_back)
-            toolbar.setNavigationOnClickListener(
-                View.OnClickListener {
-                    this@QrCodeProcessingActivity.finish()
-                }
-            )
-        }
+        super.setToolBar(binding.toolbarLayout, isHomeAct = false)
 
         val scannedQrContent = intent.getStringExtra(INTENT_EXTRA_TAG)
         handleQrCode(scannedQrContent)
         observeMyLocationAdd()
+    }
+
+    override fun handleBackPress() {
+        this@QrCodeProcessingActivity.finish()
     }
 
     private fun observeMyLocationAdd() {

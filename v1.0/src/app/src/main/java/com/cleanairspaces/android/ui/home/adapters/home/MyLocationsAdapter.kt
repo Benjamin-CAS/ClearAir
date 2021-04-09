@@ -8,11 +8,8 @@ import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.MyLocationMapOverlayItemBinding
 import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
-import com.cleanairspaces.android.utils.AQI
-import com.cleanairspaces.android.utils.MyColorUtils
-import com.cleanairspaces.android.utils.MyLogger
-import com.cleanairspaces.android.utils.UIColor
-import java.lang.Exception
+import com.cleanairspaces.android.utils.LocationDetailsInfo
+import com.cleanairspaces.android.utils.getLocationInfoDetails
 
 class MyLocationsAdapter(
     private val actionsListener: MyLocationsClickListener,
@@ -23,7 +20,7 @@ class MyLocationsAdapter(
     private val myLocationsList = ArrayList<CustomerDeviceDataDetailed>()
 
     interface MyLocationsClickListener {
-        fun onClickLocation(locationDetails: CustomerDeviceDataDetailed)
+        fun onClickLocation(locationDetails: LocationDetailsInfo)
     }
 
     class MyLocationsViewHolder(private val binding: MyLocationMapOverlayItemBinding) :
@@ -33,106 +30,38 @@ class MyLocationsAdapter(
             actionsListener: MyLocationsClickListener,
             selectedAqiIndex: String?
         ) {
-            val myLocationDetails = dataDetailed.locationDetails
-            val location = dataDetailed.deviceData
-
 
                 binding.apply {
                     val ctx = itemView.context
-                    val aqiIndex: String =
-                        selectedAqiIndex ?: ctx.getString(R.string.default_pm_index_value)
+                    val displayInfo = getLocationInfoDetails(ctx = ctx,
+                        dataDetailed = dataDetailed,
+                        selectedAqiIndex = selectedAqiIndex
+                    )
+                    val location = displayInfo.dataDetailed.deviceData
                     locationNameTv.text = location.company
-                    val locationArea =
-                        ctx.getString(R.string.outdoor_txt) + ": " + location.location
-                    locationAreaTv.text = locationArea
-
-                    outdoorPmTv.text = aqiIndex
-                    indoorPmTv.text = aqiIndex
-
-                    val outDoorPm = myLocationDetails.outdoor.outdoor_pm.toDouble()
-                    val (statusIndicatorRes, statusText, pmValue) =
-                        if (aqiIndex == "PM2.5" || aqiIndex == "AQI US") {
-                            Triple(
-                                MyColorUtils.convertUIColorToStatusRes(
-                                    AQI.getAQIStatusColorFromPM25(
-                                        outDoorPm
-                                    )
-                                ),
-                                AQI.getAQIStatusTextFromPM25(outDoorPm),
-                                outDoorPm.toString()
-                            )
-                        } else {
-                            Triple(
-                                MyColorUtils.convertUIColorToStatusRes(
-                                    AQI.getAQICNStatusColorFromPM25(
-                                        outDoorPm
-                                    )
-                                ),
-                                AQI.getAQICNStatusTextFromPM25(outDoorPm),
-                                AQI.getAQICNFromPM25(outDoorPm).toString()
-                            )
-                        }
-                    outdoorPointsTv.text = pmValue
-                    outdoorStatusIndicatorTv.text =
-                        ctx.getString(statusText.conditionStrRes) //todo? use comment!
-                    outdoorStatusIndicatorIv.setImageResource(statusIndicatorRes)
-
-
-                    val inDoorPm = myLocationDetails.indoor.indoor_pm.toDouble()
-                    val (inStatusIndicatorRes, inStatusText, inPmValue) =
-                        if (aqiIndex == "PM2.5" || aqiIndex == "AQI US") {
-                            Triple(
-                                MyColorUtils.convertUIColorToStatusRes(
-                                    AQI.getAQIStatusColorFromPM25(
-                                        inDoorPm
-                                    )
-                                ),
-                                AQI.getAQIStatusTextFromPM25(inDoorPm),
-                                inDoorPm.toString()
-                            )
-                        } else {
-                            Triple(
-                                MyColorUtils.convertUIColorToStatusRes(
-                                    AQI.getAQICNStatusColorFromPM25(
-                                        inDoorPm
-                                    )
-                                ),
-                                AQI.getAQICNStatusTextFromPM25(inDoorPm),
-                                AQI.getAQICNFromPM25(inDoorPm).toString()
-                            )
-                        }
-                    indoorPointsTv.text = inPmValue
-                    indoorStatusIndicatorTv.text =
-                        ctx.getString(inStatusText.conditionStrRes) //todo? use comment!
-                    indoorStatusIndicatorIv.setImageResource(inStatusIndicatorRes)
-
-                    val bgColor = if (aqiIndex == "PM2.5" || aqiIndex == "AQI US") {
-                        when {
-                            AQI.getAQIFromPM25(inDoorPm) < 100 -> R.color.dark_green
-
-                            AQI.getAQIFromPM25(inDoorPm) > 150 -> R.color.red
-                            else -> R.color.orange
-                        }
-
-                    } else {
-                        when {
-                            AQI.getAQICNFromPM25(inDoorPm) < 150 -> R.color.dark_green
-                            AQI.getAQICNFromPM25(inDoorPm) > 200 -> R.color.red
-                            else -> R.color.orange
-                        }
-                    }
-                    itemCard.setCardBackgroundColor(ContextCompat.getColor(ctx, bgColor))
+                    locationAreaTv.text = displayInfo.locationArea
+                    outdoorPmTv.text = displayInfo.aqiIndex
+                    indoorPmTv.text =  displayInfo.aqiIndex
+                    outdoorPointsTv.text =  displayInfo.outPmValue
+                    outdoorStatusIndicatorTv.text =  displayInfo.outStatusTvTxt //todo? use comment!
+                    outdoorStatusIndicatorIv.setImageResource( displayInfo.outStatusIndicatorRes)
+                    indoorPointsTv.text =  displayInfo.inPmValue
+                    indoorStatusIndicatorTv.text =  displayInfo.inStatusTvTxt//todo? use comment!
+                    indoorStatusIndicatorIv.setImageResource( displayInfo.inStatusIndicatorRes)
+                    itemCard.setCardBackgroundColor(ContextCompat.getColor(ctx,  displayInfo.bgColor))
 
                     Glide.with(ctx)
                         .load(location.getFullLogoUrl())
                         .error(R.drawable.clean_air_spaces_logo_name)
                         .into(locationLogoIv)
-                    val updatedOn =
-                        ctx.getString(R.string.updated_on_prefix) + "\n" + myLocationDetails.getFormattedUpdateTime()
-                    updatedTv.text = updatedOn
+                    updatedTv.text =  displayInfo.updatedOnTxt
+
+
                     itemCard.setOnClickListener {
-                        actionsListener.onClickLocation(dataDetailed)
+                        actionsListener.onClickLocation(displayInfo)
                     }
+
+
                 }
         }
     }

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.details.LocationDetailsActivity"
+        android:orientation="vertical"
+        android:id="@+id/container"
+        >
+        <include layout="@layout/toolbar_layout"
+            android:id="@+id/toolbar_layout" />
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_marginTop="@dimen/md_space"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="@dimen/std_icon"
+            android:layout_height="@dimen/std_icon"
+            />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false">
+
+                <ImageView
+                    android:id="@+id/comp_logo"
+                    android:contentDescription="@string/location_logo_image_desc"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:scaleType="fitCenter"
+                    tools:src="@drawable/clean_air_spaces_logo_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/half_location_logo_size"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/comp_name"
+                    style="@style/Theme.CleanAirSpaces.Title2"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/comp_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Saint Gobain"
+                    android:layout_marginTop="@dimen/std_space"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/aqi_index"
+                    tools:text="@string/default_pm_index_value"
+                    style="@style/Theme.CleanAirSpaces.Subtitle2"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/comp_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/std_space"/>
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintBottom_toBottomOf="@id/aqi_index"
+                 android:id="@+id/pm_info_container"
+                 android:orientation="vertical">
+                 <include layout="@layout/location_details_inout_layout"
+                     android:id="@+id/in_out_door_layout"
+                     android:visibility="gone"/>
+
+                 <include layout="@layout/location_details_out_layout"
+                     android:id="@+id/out_door_layout"
+                     android:visibility="gone"/>
+             </LinearLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/recommendations_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/pm_info_container"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="@dimen/md_icon"
+                    android:text="@string/recommendations_txt"
+                    style="@style/Theme.CleanAirSpaces.Title2"
+                    android:gravity="center"/>
+                <View
+                    android:id="@+id/line3"
+                    app:layout_constraintTop_toBottomOf="@id/recommendations_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/footer_color"/>
+
+                <ImageView
+                    android:id="@+id/mask_iv"
+                    tools:src="@drawable/mask_inactive"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/line3"
+                    android:layout_width="@dimen/clickable_std"
+                    android:layout_height="@dimen/clickable_std"
+                    android:scaleType="fitCenter"
+                    android:padding="@dimen/std_space"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/mask_status"
+                    tools:text="No masks necessary"
+                    app:layout_constraintStart_toEndOf="@+id/mask_iv"
+                    app:layout_constraintTop_toBottomOf="@id/line3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.CleanAirSpaces.Body1"
+                    android:paddingStart="@dimen/std_space"
+                    android:paddingEnd="@dimen/std_space"
+                    android:minHeight="@dimen/clickable_std"
+                    android:gravity="center_vertical"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+                <ImageView
+                    android:id="@+id/can_go_out_iv"
+                    tools:src="@drawable/outdoors_go"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mask_iv"
+                    android:layout_width="@dimen/clickable_std"
+                    android:layout_height="@dimen/clickable_std"
+                    android:scaleType="fitCenter"
+                    android:padding="@dimen/std_space"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/can_go_out_status"
+                    tools:text="No masks necessary"
+                    app:layout_constraintStart_toEndOf="@+id/can_go_out_iv"
+                    app:layout_constraintTop_toBottomOf="@id/mask_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.CleanAirSpaces.Body1"
+                    android:paddingStart="@dimen/std_space"
+                    android:paddingEnd="@dimen/std_space"
+                    android:minHeight="@dimen/clickable_std"
+                    android:gravity="center_vertical"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+                <ImageView
+                    android:id="@+id/windows_iv"
+                    tools:src="@drawable/windows"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/can_go_out_iv"
+                    android:layout_width="@dimen/clickable_std"
+                    android:layout_height="@dimen/clickable_std"
+                    android:scaleType="fitCenter"
+                    android:padding="@dimen/std_space"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/windows_status"
+                    tools:text="No masks necessary"
+                    app:layout_constraintStart_toEndOf="@+id/windows_iv"
+                    app:layout_constraintTop_toBottomOf="@id/can_go_out_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.CleanAirSpaces.Body1"
+                    android:paddingStart="@dimen/std_space"
+                    android:paddingEnd="@dimen/std_space"
+                    android:minHeight="@dimen/clickable_std"
+                    android:gravity="center_vertical"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+                <ImageView
+                    android:id="@+id/fan_iv"
+                    tools:src="@drawable/fan_inactive"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/windows_iv"
+                    android:layout_width="@dimen/clickable_std"
+                    android:layout_height="@dimen/clickable_std"
+                    android:scaleType="fitCenter"
+                    android:padding="@dimen/std_space"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/fan_status"
+                    tools:text="No masks necessary"
+                    app:layout_constraintStart_toEndOf="@+id/fan_iv"
+                    app:layout_constraintTop_toBottomOf="@id/windows_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.CleanAirSpaces.Body1"
+                    android:paddingStart="@dimen/std_space"
+                    android:paddingEnd="@dimen/std_space"
+                    android:minHeight="@dimen/clickable_std"
+                    android:gravity="center_vertical"
+                    android:contentDescription="@string/mask_image_txt"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+</LinearLayout>

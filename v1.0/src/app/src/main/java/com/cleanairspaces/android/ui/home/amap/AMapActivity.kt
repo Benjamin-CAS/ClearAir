@@ -87,7 +87,7 @@ class AMapActivity : BaseMapActivity() {
 
             viewModel.observeMyLocationDetails().observe(this, Observer {
                 if (it != null){
-                    myLocationsAdapter.setMyLocationsList(it)
+                    super.updateMyLocationsList(it)
                 }
             })
         }
@@ -102,14 +102,14 @@ class AMapActivity : BaseMapActivity() {
                     aMap?.apply {
                         setMapLanguage(AMap.ENGLISH)
                         uiSettings.isZoomControlsEnabled = false
-                        setOnMyLocationClickListener()
+                        setOnShowMyLocationClickListener()
                         observeOutDoorLocations()
                     }
                 }
             }
         }
 
-        private fun setOnMyLocationClickListener() {
+        private fun setOnShowMyLocationClickListener() {
             binding.myLocationBtn.setOnClickListener {
                 requestPermissionsToShowUserLocation()
             }

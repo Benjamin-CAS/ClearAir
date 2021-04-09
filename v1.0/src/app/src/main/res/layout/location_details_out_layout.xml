@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/oudoor_lbl"
+        android:text="@string/outdoor_txt"
+        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        android:textStyle="bold"
+        android:textSize="@dimen/xlg_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"/>
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/points_tv"
+        style="@style/Theme.CleanAirSpaces.Title2"
+        tools:text="29"
+        android:textStyle="bold"
+        android:textSize="@dimen/xlg_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/oudoor_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        tools:textColor="@color/yellow"/>
+
+    <ImageView
+        android:id="@+id/status_iv"
+        android:contentDescription="@string/air_status_indicator_desc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/points_tv"
+        android:layout_width="0dp"
+        tools:src="@drawable/aqi_moderate_status"
+        app:layout_constraintWidth_percent=".6"
+        android:layout_height="@dimen/std_space"
+        android:layout_marginTop="@dimen/std_space"/>
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/status_tv"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/last_update_tv"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        tools:text="Updated on 12 April"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

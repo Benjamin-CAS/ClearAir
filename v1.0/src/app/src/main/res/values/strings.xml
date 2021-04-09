@@ -82,4 +82,15 @@
     <string name="air_quality_index_txt">Air Quality Index</string>
     <string name="default_pm_text">PM 2.5 is used by default</string>
     <string name="save_changes_txt">Save Changes</string>
+    <string name="indoor_details_txt">indoor details</string>
+    <string name="co_lbl">CO2</string>
+    <string name="tvoc_lbl">TVOC</string>
+    <string name="tmp_lbl">Temperature</string>
+    <string name="humidity_lbl">Humidity</string>
+    <string name="indoor_energy_title_txt"><![CDATA[Energy Efficiency & Impact]]></string>
+    <string name="co_saved_lbl">Carbon Saved</string>
+    <string name="last_thirty_lbl">Last 30 Days</string>
+    <string name="enery_saved_lbl">Energy Saved</string>
+    <string name="recommendations_txt">Recommendations</string>
+    <string name="mask_image_txt">Mask Image</string>
 </resources>

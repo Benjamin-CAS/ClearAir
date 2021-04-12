@@ -9,7 +9,6 @@ import com.cleanairspaces.android.models.api.responses.ScannedDeviceQrResponse
 import com.cleanairspaces.android.models.dao.CustomerDeviceDataDao
 import com.cleanairspaces.android.models.dao.MyLocationDetailsDao
 import com.cleanairspaces.android.models.entities.CustomerDeviceData
-import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
 import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.utils.L_TIME_KEY
 import com.cleanairspaces.android.utils.MyLogger
@@ -19,9 +18,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
@@ -254,12 +250,16 @@ class ScannedDevicesRepo
                 if (!forCompLocation) unEncJson.getString(CustomerDeviceData.RESPONSE_MONITOR_TYPE_KEY)
                 else ""
             val customerDeviceData = Gson().fromJson(companyData, CustomerDeviceData::class.java)
+            customerDeviceData.deviceId = requestedData.get(DEVICE_ID_KEY).asString
             coroutineScope.launch(Dispatchers.IO) {
+                //check if user has marked this as their location
                 val isFound = customerDeviceDataDao.checkIfIsMyLocation(
                     companyId = customerDeviceData.company_id,
                     locationId = customerDeviceData.location_id
                 )
                 customerDeviceData.isMyDeviceData = (isFound > 0)
+
+                //check if the device is a monitor
                 if (!forCompLocation && requestedData.has(MONITOR_ID_KEY)) {
                     val forMonitorId = requestedData.get(MONITOR_ID_KEY).asString
                     customerDeviceData.monitor_id = forMonitorId
@@ -288,15 +288,17 @@ class ScannedDevicesRepo
 
     /******************* fetch *************/
     fun fetchDataFromScannedDeviceQr(
+        deviceId : String,
         base64Str: String,
         payLoadTimeStamp: String,
         forCompLocation: Boolean,
-        monitorId: String? = null
+        isMonitor : Boolean
     ) {
         try {
             val method = if (forCompLocation) LOCATION_INFO_METHOD
             else MONITOR_INFO_METHOD
             val data = JsonObject()
+            data.addProperty(DEVICE_ID_KEY, deviceId)
             data.addProperty(L_TIME_KEY, payLoadTimeStamp)
             data.addProperty(PAYLOAD_KEY, base64Str)
             val response = qrScannedItemsApiService.fetchScannedDeviceQrResponse(
@@ -306,7 +308,7 @@ class ScannedDevicesRepo
 
             // keep track of this request data ---
             data.addProperty(IS_COMP_LOC_KEY, forCompLocation)
-            if (monitorId != null) data.addProperty(MONITOR_ID_KEY, monitorId)
+            if (isMonitor) data.addProperty(MONITOR_ID_KEY, deviceId)
             recentlyFetchedDeviceData.add(data)
 
             response.enqueue(getScannedDeviceQrResponseCallback())
@@ -372,5 +374,6 @@ class ScannedDevicesRepo
         private const val COMP_ID_KEY = "compId"
         private const val LOC_ID_KEY = "locId"
         private val TAG = ScannedDevicesRepo::class.java.simpleName
+        private const val DEVICE_ID_KEY = "device_id"
     }
 }

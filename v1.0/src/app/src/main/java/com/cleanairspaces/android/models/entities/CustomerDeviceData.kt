@@ -13,8 +13,8 @@ import kotlinx.parcelize.Parcelize
 )
 @Parcelize
 data class CustomerDeviceData(
-    @PrimaryKey(autoGenerate = true)
-    val autoId: Int,
+    @PrimaryKey(autoGenerate = false)
+    var deviceId: String,
     val company_id: String,
     val location_id: String,
     @ColumnInfo(name = "company_name")

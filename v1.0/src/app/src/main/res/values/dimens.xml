@@ -11,4 +11,5 @@
     <dimen name="md_txt">18sp</dimen>
     <dimen name="xlg_txt">26sp</dimen>
     <dimen name="sm_icon">18dp</dimen>
+    <dimen name="sm_space">4dp</dimen>
 </resources>

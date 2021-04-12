@@ -30,9 +30,11 @@ class QrCodeViewModel @Inject constructor(
         val pl = QrCodeProcessor.getEncryptedEncodedPayloadForLocation(locId, compId, timeStamp)
         viewModelScope.launch(Dispatchers.IO) {
             scannedDevicesRepo.fetchDataFromScannedDeviceQr(
+                deviceId = "$compId$locId",
                 base64Str = pl,
                 payLoadTimeStamp = timeStamp,
-                forCompLocation = true
+                forCompLocation = true,
+                isMonitor  = false
             )
         }
     }
@@ -49,7 +51,8 @@ class QrCodeViewModel @Inject constructor(
                 base64Str = pl,
                 payLoadTimeStamp = timeStamp,
                 forCompLocation = false,
-                monitorId = monitorId
+                deviceId= monitorId,
+                isMonitor = true
             )
         }
     }

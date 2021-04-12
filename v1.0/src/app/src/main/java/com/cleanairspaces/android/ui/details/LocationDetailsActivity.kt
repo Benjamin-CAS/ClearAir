@@ -59,14 +59,6 @@ class LocationDetailsActivity : BaseActivity() {
             Glide.with(this@LocationDetailsActivity).load(location.getFullLogoUrl())
                 .into(compLogo)
             compName.text = location.company
-            outInPmTv.text = locationDetailsInfo.locationArea
-            pointsTv.text = locationDetailsInfo.outPmValue
-            lastUpdateTv.text = locationDetailsInfo.updatedOnTxt
-            statusIv.setImageResource(locationDetailsInfo.outStatusIndicatorRes)
-            statusTv.text = locationDetailsInfo.outStatusTvTxt
-            val txtColor = ContextCompat.getColor(this@LocationDetailsActivity, locationDetailsInfo.bgColor)
-            statusTv.setTextColor(txtColor)
-
         }
     }
 

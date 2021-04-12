@@ -31,8 +31,12 @@ fun getLocationInfoDetails(ctx : Context,
     val myLocationDetails = dataDetailed.locationDetails
     val location = dataDetailed.deviceData
 
+    val pm25Default =  ctx.getString(R.string.default_pm_index_value)
+    val pmCn = ctx.getString(R.string.cn_pm_index_value)
+    val aqiCn = ctx.getString(R.string.cn_aqi_index_value)
+    val aqiUs = ctx.getString(R.string.us_aqi_index_value)
     val aqiIndex: String =
-        selectedAqiIndex ?: ctx.getString(R.string.default_pm_index_value)
+        selectedAqiIndex ?: pm25Default
 
     val locationArea =
         ctx.getString(R.string.outdoor_txt) + ": " + location.location
@@ -40,7 +44,7 @@ fun getLocationInfoDetails(ctx : Context,
 
     val outDoorPm = myLocationDetails.outdoor.outdoor_pm.toDouble()
     val (outStatusIndicatorRes, outStatusText, outPmValue) =
-        if (aqiIndex == "PM2.5" || aqiIndex == "AQI US") {
+        if (aqiIndex == pm25Default || aqiIndex == aqiUs) {
             Triple(
                 MyColorUtils.convertUIColorToStatusRes(
                     AQI.getAQIStatusColorFromPM25(
@@ -64,11 +68,9 @@ fun getLocationInfoDetails(ctx : Context,
 
 
     val outStatusTvTxt = ctx.getString(outStatusText.conditionStrRes)
-
-
     val inDoorPm = myLocationDetails.indoor.indoor_pm.toDouble()
     val (inStatusIndicatorRes, inStatusText, inPmValue) =
-        if (aqiIndex == "PM2.5" || aqiIndex == "AQI US") {
+        if (aqiIndex == pm25Default || aqiIndex == aqiUs ) {
             Triple(
                 MyColorUtils.convertUIColorToStatusRes(
                     AQI.getAQIStatusColorFromPM25(
@@ -95,7 +97,7 @@ fun getLocationInfoDetails(ctx : Context,
 
 
 
-    val bgColor = if (aqiIndex == "PM2.5" || aqiIndex == "AQI US") {
+    val bgColor = if (aqiIndex == pm25Default || aqiIndex == aqiUs ) {
         when {
             AQI.getAQIFromPM25(inDoorPm) < 100 -> R.color.dark_green
 

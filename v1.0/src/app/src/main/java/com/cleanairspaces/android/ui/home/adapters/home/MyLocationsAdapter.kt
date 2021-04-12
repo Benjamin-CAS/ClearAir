@@ -13,11 +13,11 @@ import com.cleanairspaces.android.utils.getLocationInfoDetails
 
 class MyLocationsAdapter(
     private val actionsListener: MyLocationsClickListener,
-    private val selectedAqiIndex: String?
-) :
-    RecyclerView.Adapter<MyLocationsAdapter.MyLocationsViewHolder>() {
+) : RecyclerView.Adapter<MyLocationsAdapter.MyLocationsViewHolder>() {
 
     private val myLocationsList = ArrayList<CustomerDeviceDataDetailed>()
+
+    private var selectedAqiIndex: String? = null
 
     interface MyLocationsClickListener {
         fun onClickLocation(locationDetails: LocationDetailsInfo)
@@ -93,5 +93,10 @@ class MyLocationsAdapter(
 
     override fun getItemCount(): Int {
         return myLocationsList.size
+    }
+
+    fun setAQIIndex(newAQIIndex: String?) {
+        selectedAqiIndex =  newAQIIndex
+        notifyDataSetChanged()
     }
 }

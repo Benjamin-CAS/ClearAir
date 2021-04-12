@@ -42,7 +42,7 @@ class AMapActivity : BaseMapActivity() {
 
     override val mapActionsAdapter = MapActionsAdapter(this)
     override val myLocationsAdapter : MyLocationsAdapter by lazy {
-        MyLocationsAdapter(this, viewModel.getSelectedAqiIndex())
+        MyLocationsAdapter(this )
     }
 
 
@@ -78,21 +78,27 @@ class AMapActivity : BaseMapActivity() {
             super.initializeMyLocationRecycler(binding.homeMapOverlay)
         }
 
-        private fun observeMyLocations() {
-            viewModel.refreshMyLocationsFlow().observe(this, Observer {
-                if (it != null) {
-                   viewModel.updateMyLocationsDetails(it)
-                }
-            })
 
-            viewModel.observeMyLocationDetails().observe(this, Observer {
-                if (it != null){
-                    super.updateMyLocationsList(it)
-                }
-            })
-        }
+    /********* OBSERVE DATA ****/
+    private fun observeMyLocations() {
+        viewModel.getSelectedAqiIndex().observe(this, Observer {
+            myLocationsAdapter.setAQIIndex(it)
+        })
+        viewModel.refreshMyLocationsFlow().observe(this, Observer {
+            if (it != null) {
+                viewModel.updateMyLocationsDetails(it)
+            }
+        })
 
-        /*************** USER ACTIONS ****************/
+        viewModel.observeMyLocationDetails().observe(this, Observer {
+            if (it != null){
+                super.updateMyLocationsList(it)
+            }
+        })
+    }
+
+
+    /*************** USER ACTIONS ****************/
         private fun initializeMap(savedInstanceState: Bundle?) {
             binding.apply {
                 mapView = map

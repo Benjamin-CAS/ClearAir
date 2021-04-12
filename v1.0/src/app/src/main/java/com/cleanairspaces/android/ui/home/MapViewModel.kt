@@ -31,15 +31,11 @@ class MapViewModel @Inject constructor(
 ) : ViewModel() {
 
     init {
-        setSelectedAqiIndex()
         refreshOutDoorLocations()
     }
 
-    private var selectedAqiIndex  : String? = null
-    private fun setSelectedAqiIndex() {
-        selectedAqiIndex  = dataStoreManager.getAqiIndex().asLiveData().value
-    }
-    fun getSelectedAqiIndex(): String? = selectedAqiIndex
+
+    fun getSelectedAqiIndex(): LiveData<String?> = dataStoreManager.getAqiIndex().asLiveData()
 
     /******* my locations **********/
     private val myLocationDetailsLive = MutableLiveData<List<CustomerDeviceDataDetailed>>(

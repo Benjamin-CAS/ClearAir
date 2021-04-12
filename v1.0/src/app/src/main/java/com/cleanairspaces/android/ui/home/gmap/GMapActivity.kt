@@ -28,7 +28,7 @@ class GMapActivity : BaseMapActivity() {
 
     override val mapActionsAdapter = MapActionsAdapter(this)
     override val myLocationsAdapter : MyLocationsAdapter by lazy {
-        MyLocationsAdapter(this, viewModel.getSelectedAqiIndex())
+        MyLocationsAdapter(this)
     }
 
     private var mapFragment: SupportMapFragment? = null

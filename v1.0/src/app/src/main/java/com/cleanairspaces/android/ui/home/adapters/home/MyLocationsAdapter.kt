@@ -7,26 +7,26 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.MyLocationMapOverlayItemBinding
-import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
-import com.cleanairspaces.android.utils.LocationDetailsInfo
+import com.cleanairspaces.android.models.entities.LocationDetailsGeneralDataWrapper
+import com.cleanairspaces.android.utils.MyLocationDetailsWrapper
 import com.cleanairspaces.android.utils.getLocationInfoDetails
 
 class MyLocationsAdapter(
     private val actionsListener: MyLocationsClickListener,
 ) : RecyclerView.Adapter<MyLocationsAdapter.MyLocationsViewHolder>() {
 
-    private val myLocationsList = ArrayList<CustomerDeviceDataDetailed>()
+    private val myLocationsList = ArrayList<LocationDetailsGeneralDataWrapper>()
 
     private var selectedAqiIndex: String? = null
 
     interface MyLocationsClickListener {
-        fun onClickLocation(locationDetails: LocationDetailsInfo)
+        fun onClickLocation(myLocationDetails: MyLocationDetailsWrapper)
     }
 
     class MyLocationsViewHolder(private val binding: MyLocationMapOverlayItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            dataDetailed: CustomerDeviceDataDetailed,
+            dataWrapper: LocationDetailsGeneralDataWrapper,
             actionsListener: MyLocationsClickListener,
             selectedAqiIndex: String?
         ) {
@@ -34,10 +34,10 @@ class MyLocationsAdapter(
                 binding.apply {
                     val ctx = itemView.context
                     val displayInfo = getLocationInfoDetails(ctx = ctx,
-                        dataDetailed = dataDetailed,
+                        dataWrapper = dataWrapper,
                         selectedAqiIndex = selectedAqiIndex
                     )
-                    val location = displayInfo.dataDetailed.deviceData
+                    val location = displayInfo.wrappedData.generalData
                     locationNameTv.text = location.company
                     locationAreaTv.text = displayInfo.locationArea
                     outdoorPmTv.text = displayInfo.aqiIndex
@@ -85,7 +85,7 @@ class MyLocationsAdapter(
         holder.bind(action, actionsListener, selectedAqiIndex)
     }
 
-    fun setMyLocationsList(myLocationsList: List<CustomerDeviceDataDetailed>) {
+    fun setMyLocationsList(myLocationsList: List<LocationDetailsGeneralDataWrapper>) {
         this.myLocationsList.clear()
         this.myLocationsList.addAll(myLocationsList)
         notifyDataSetChanged()

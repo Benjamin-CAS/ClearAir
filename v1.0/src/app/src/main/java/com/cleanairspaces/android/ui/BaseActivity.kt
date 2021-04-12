@@ -5,7 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ToolbarLayoutBinding
-import com.cleanairspaces.android.utils.LocationDetailsInfo
+import com.cleanairspaces.android.models.entities.CustomerDeviceData
+import com.cleanairspaces.android.models.entities.MyLocationDetails
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,5 +31,7 @@ abstract class BaseActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
 }

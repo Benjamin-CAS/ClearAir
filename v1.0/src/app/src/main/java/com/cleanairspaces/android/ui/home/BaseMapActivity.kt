@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.HomeMapOverlayBinding
-import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
+import com.cleanairspaces.android.models.entities.LocationDetailsGeneralDataWrapper
 import com.cleanairspaces.android.ui.BaseActivity
 import com.cleanairspaces.android.ui.about.AboutAppActivity
 import com.cleanairspaces.android.ui.details.LocationDetailsActivity
@@ -25,7 +25,7 @@ import com.cleanairspaces.android.ui.settings.SettingsActivity
 import com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity
 import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity
 import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity.Companion.INTENT_EXTRA_TAG
-import com.cleanairspaces.android.utils.LocationDetailsInfo
+import com.cleanairspaces.android.utils.MyLocationDetailsWrapper
 import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.SCANNING_QR_TIMEOUT_MILLS
 import com.cleanairspaces.android.utils.VerticalSpaceItemDecoration
@@ -80,12 +80,12 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
     }
 
     /************** MY LOCATIONS *********/
-    fun updateMyLocationsList(myLocations: List<CustomerDeviceDataDetailed>) {
+    fun updateMyLocationsList(myLocations: List<LocationDetailsGeneralDataWrapper>) {
         myLocationsAdapter.setMyLocationsList(myLocationsList = myLocations)
     }
 
-    override fun onClickLocation(locationDetails: LocationDetailsInfo) {
-        startActivity(Intent(this, LocationDetailsActivity::class.java).putExtra(LocationDetailsActivity.INTENT_EXTRA_TAG, locationDetails))
+    override fun onClickLocation(myLocationDetails: MyLocationDetailsWrapper) {
+        startActivity(Intent(this, LocationDetailsActivity::class.java).putExtra(LocationDetailsActivity.INTENT_EXTRA_TAG, myLocationDetails))
     }
 
     fun initializeMyLocationRecycler(homeMapOverlay: HomeMapOverlayBinding) {

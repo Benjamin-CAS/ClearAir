@@ -93,4 +93,9 @@
     <string name="enery_saved_lbl">Energy Saved</string>
     <string name="recommendations_txt">Recommendations</string>
     <string name="mask_image_txt">Mask Image</string>
+    <string name="co2_units">ppm</string>
+    <string name="vco_units">mg/m³</string>
+    <string name="tmp_units">&#xb0;C</string>
+    <string name="humid_units">%</string>
+    <string name="pm_units">µg/m³</string>
 </resources>

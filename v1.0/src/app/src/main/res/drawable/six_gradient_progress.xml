@@ -3,7 +3,6 @@
     <item
         android:gravity="center_vertical"
         android:id="@android:id/background"
-        android:drawable="@drawable/pm_index_gradient_progress_fill"/>
-
+        android:drawable="@drawable/six_gradient_progress_fill"/>
 
 </layer-list>

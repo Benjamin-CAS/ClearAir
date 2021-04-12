@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent=".45"
-        android:background="@color/transparent_green">
+        tools:background="@color/transparent_green">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/indoor_tv"
@@ -74,9 +74,8 @@
             tools:text="Last Updated 09-April..."
             android:gravity="end|center_vertical"
             android:textColor="@color/black"
-            android:textSize="@dimen/md_txt"
-            style="@style/Theme.CleanAirSpaces.Subtitle1"
-            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/Theme.CleanAirSpaces.Body2"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/indoor_pm_status_tv"
             android:layout_width="match_parent"
             android:background="@color/white"
@@ -93,7 +92,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent=".45"
-        android:background="@color/transparent_yellow">
+        tools:background="@color/transparent_yellow">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/outdoor_tv"
@@ -154,8 +153,7 @@
             tools:text="Shanghai"
             android:gravity="start|center_vertical"
             android:textColor="@color/black"
-            android:textSize="@dimen/md_txt"
-            style="@style/Theme.CleanAirSpaces.Subtitle1"
+            style="@style/Theme.CleanAirSpaces.Body2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/outdoor_pm_status_tv"
             android:layout_width="match_parent"
@@ -340,9 +338,9 @@
         app:layout_constraintBottom_toBottomOf="@id/indoor_pm_index"
         android:layout_marginTop="@dimen/std_space"
         android:layout_marginStart="@dimen/std_space"
-        android:progressDrawable="@drawable/pm_index_gradient_progress"
-        android:thumb="@drawable/pm_index_gradient_yellow_thumb"
-        android:focusable="false"/>
+        android:progressDrawable="@drawable/three_gradient_progress"
+        tools:thumb="@drawable/yellow_seekbar_thumb"
+        />
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/indoor_co_gradient"
@@ -354,9 +352,9 @@
         app:layout_constraintBottom_toBottomOf="@id/indoor_co_lbl"
         android:layout_marginTop="@dimen/std_space"
         android:layout_marginStart="@dimen/std_space"
-        android:progressDrawable="@drawable/pm_index_gradient_progress"
-        android:thumb="@drawable/pm_index_gradient_green_thumb"
-        android:focusable="false"/>
+        android:progressDrawable="@drawable/three_gradient_progress"
+        tools:thumb="@drawable/green_seekbar_thumb"
+        />
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/indoor_tvoc_gradient"
@@ -368,9 +366,9 @@
         app:layout_constraintBottom_toBottomOf="@id/indoor_tvoc_lbl"
         android:layout_marginTop="@dimen/std_space"
         android:layout_marginStart="@dimen/std_space"
-        android:progressDrawable="@drawable/pm_index_gradient_progress"
-        android:thumb="@drawable/pm_index_gradient_red_thumb"
-        android:focusable="false"/>
+        android:progressDrawable="@drawable/three_gradient_progress"
+        tools:thumb="@drawable/red_seekbar_thumb"
+        />
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/indoor_tmp_gradient"
@@ -382,9 +380,9 @@
         app:layout_constraintBottom_toBottomOf="@id/indoor_tmp_lbl"
         android:layout_marginTop="@dimen/std_space"
         android:layout_marginStart="@dimen/std_space"
-        android:progressDrawable="@drawable/pm_index_gradient_progress"
-        android:thumb="@drawable/pm_index_gradient_yellow_thumb"
-        android:focusable="false"/>
+        android:progressDrawable="@drawable/six_gradient_progress"
+        tools:thumb="@drawable/yellow_seekbar_thumb"
+        />
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/indoor_humiditygradient"
@@ -396,9 +394,9 @@
         app:layout_constraintBottom_toBottomOf="@id/indoor_humidity_lbl"
         android:layout_marginTop="@dimen/std_space"
         android:layout_marginStart="@dimen/std_space"
-        android:progressDrawable="@drawable/pm_index_gradient_progress"
-        android:thumb="@drawable/pm_index_gradient_green_thumb"
-        android:focusable="false"/>
+        android:progressDrawable="@drawable/six_gradient_progress"
+        tools:thumb="@drawable/green_seekbar_thumb"
+        />
 
 
     <com.google.android.material.textview.MaterialTextView

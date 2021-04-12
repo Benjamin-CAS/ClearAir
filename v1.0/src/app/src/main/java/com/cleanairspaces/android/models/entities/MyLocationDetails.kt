@@ -79,7 +79,7 @@ data class Energy(
 
 // for UI purposes only
 @Parcelize
-data class CustomerDeviceDataDetailed(
+data class LocationDetailsGeneralDataWrapper(
     val locationDetails: MyLocationDetails,
-    val deviceData: CustomerDeviceData
+    val generalData: CustomerDeviceData
 ) : Parcelable

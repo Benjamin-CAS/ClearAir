@@ -4,7 +4,7 @@ import android.location.Location
 import android.os.Parcelable
 import androidx.lifecycle.*
 import com.cleanairspaces.android.R
-import com.cleanairspaces.android.models.entities.CustomerDeviceDataDetailed
+import com.cleanairspaces.android.models.entities.LocationDetailsGeneralDataWrapper
 import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
@@ -15,8 +15,6 @@ import com.cleanairspaces.android.utils.OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -38,7 +36,7 @@ class MapViewModel @Inject constructor(
     fun getSelectedAqiIndex(): LiveData<String?> = dataStoreManager.getAqiIndex().asLiveData()
 
     /******* my locations **********/
-    private val myLocationDetailsLive = MutableLiveData<List<CustomerDeviceDataDetailed>>(
+    private val myLocationDetailsLive = MutableLiveData<List<LocationDetailsGeneralDataWrapper>>(
         arrayListOf()
     )
     fun refreshMyLocationsFlow() : LiveData<List<MyLocationDetails>> {
@@ -47,7 +45,7 @@ class MapViewModel @Inject constructor(
 
     fun updateMyLocationsDetails(it: List<MyLocationDetails>) {
         viewModelScope.launch(Dispatchers.IO) {
-            val myLocationDetails = arrayListOf<CustomerDeviceDataDetailed>()
+            val myLocationDetails = arrayListOf<LocationDetailsGeneralDataWrapper>()
             if (it.isNotEmpty()) {
                 for (locationDetails in it) {
                     val foundCustomerDeviceData = scannedDevicesRepo.getMyDeviceBy(
@@ -56,9 +54,9 @@ class MapViewModel @Inject constructor(
                     )
                     if (foundCustomerDeviceData.isNotEmpty()) {
                         myLocationDetails.add(
-                            CustomerDeviceDataDetailed(
+                            LocationDetailsGeneralDataWrapper(
                                 locationDetails = locationDetails,
-                                deviceData = foundCustomerDeviceData[0]
+                                generalData = foundCustomerDeviceData[0]
                             )
                         )
                     }
@@ -71,7 +69,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun observeMyLocationDetails() : LiveData<List<CustomerDeviceDataDetailed>> = myLocationDetailsLive
+    fun observeMyLocationDetails() : LiveData<List<LocationDetailsGeneralDataWrapper>> = myLocationDetailsLive
 
     /*********** AMAP SPECIFIC LOCATION *************/
     private var userLastKnowALatLng: aLatLng? = null

@@ -69,13 +69,13 @@
                  app:layout_constraintTop_toBottomOf="@id/aqi_index"
                  android:id="@+id/pm_info_container"
                  android:orientation="vertical">
-                 <include layout="@layout/location_details_inout_layout"
+                 <include layout="@layout/location_details_in_out_layout"
                      android:id="@+id/in_out_door_layout"
                      android:visibility="gone"/>
 
                  <include layout="@layout/location_details_out_layout"
                      android:id="@+id/out_door_layout"
-                     android:visibility="visible"/>
+                     android:visibility="gone"/>
              </LinearLayout>
 
                 <com.google.android.material.textview.MaterialTextView

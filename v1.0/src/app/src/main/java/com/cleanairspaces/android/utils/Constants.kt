@@ -5,6 +5,7 @@ const val BASE_URL = "https://monitor.cleanairspaces.com/"
 const val DEFAULT_LOCATION_EN_NAME = "Unspecified Location"
 const val DATABASE_NAME = "clean_air_spaces_db"
 const val OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS = 1800000L //30 minutes
+const val INDOOR_LOCATIONS_REFRESH_RATE_MILLS = 5000L
 const val SCANNING_QR_TIMEOUT_MILLS = 60000L //1 minute
 const val DEFAULT_QR_LOCATION_ID = "LOCID"
 const val DEFAULT_QR_LOCATION_ID_L_PAD = "X"
@@ -25,8 +26,6 @@ const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
 const val UPDATE_USER_LOCATION_INTERVAL = 300000L //5 minutes
 const val HEAT_MAP_CIRCLE_RADIUS = 50
-
-
 
 
 //todo code to remove

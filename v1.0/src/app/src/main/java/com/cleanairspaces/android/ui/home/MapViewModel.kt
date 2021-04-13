@@ -9,9 +9,7 @@ import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
 import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
-import com.cleanairspaces.android.utils.DataStoreManager
-import com.cleanairspaces.android.utils.MyLogger
-import com.cleanairspaces.android.utils.OUTDOOR_LOCATIONS_REFRESH_RATE_MILLS
+import com.cleanairspaces.android.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,9 +21,9 @@ import com.amap.api.maps.model.LatLng as aLatLng
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val locationsRepo: OutDoorLocationsRepo,
-    private val scannedDevicesRepo: ScannedDevicesRepo,
-    private val dataStoreManager: DataStoreManager
+        private val locationsRepo: OutDoorLocationsRepo,
+        private val scannedDevicesRepo: ScannedDevicesRepo,
+        private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     init {
@@ -37,39 +35,78 @@ class MapViewModel @Inject constructor(
 
     /******* my locations **********/
     private val myLocationDetailsLive = MutableLiveData<List<LocationDetailsGeneralDataWrapper>>(
-        arrayListOf()
+            arrayListOf()
     )
-    fun refreshMyLocationsFlow() : LiveData<List<MyLocationDetails>> {
-       return  scannedDevicesRepo.getMyLocations().asLiveData()
+
+    fun refreshMyLocationsFlow(): LiveData<List<MyLocationDetails>> {
+        return scannedDevicesRepo.getMyLocations().asLiveData()
     }
 
-    fun updateMyLocationsDetails(it: List<MyLocationDetails>) {
+
+    fun updateMyLocationsDetails(myLocations: List<MyLocationDetails>) {
         viewModelScope.launch(Dispatchers.IO) {
             val myLocationDetails = arrayListOf<LocationDetailsGeneralDataWrapper>()
-            if (it.isNotEmpty()) {
-                for (locationDetails in it) {
+            if (myLocations.isNotEmpty()) {
+                for (locationDetails in myLocations) {
                     val foundCustomerDeviceData = scannedDevicesRepo.getMyDeviceBy(
-                        compId = locationDetails.company_id,
-                        locId = locationDetails.location_id
+                            compId = locationDetails.company_id,
+                            locId = locationDetails.location_id
                     )
                     if (foundCustomerDeviceData.isNotEmpty()) {
                         myLocationDetails.add(
-                            LocationDetailsGeneralDataWrapper(
-                                locationDetails = locationDetails,
-                                generalData = foundCustomerDeviceData[0]
-                            )
+                                LocationDetailsGeneralDataWrapper(
+                                        locationDetails = locationDetails,
+                                        generalData = foundCustomerDeviceData[0]
+                                )
                         )
                     }
                 }
             }
             withContext(Dispatchers.Main) {
-                MyLogger.logThis(TAG, "updateMyLocationsDetails()",  "called")
+                MyLogger.logThis(TAG, "updateMyLocationsDetails()", "called")
                 myLocationDetailsLive.value = myLocationDetails
+                if (myLocations.isNotEmpty()) {
+                    //TODO refresh startServeRefreshCallsForMyLocations(myLocations = myLocations)
+                }
             }
         }
     }
 
-    fun observeMyLocationDetails() : LiveData<List<LocationDetailsGeneralDataWrapper>> = myLocationDetailsLive
+    private lateinit var locationsToRefresh : List<MyLocationDetails>
+    private fun startServeRefreshCallsForMyLocations(myLocations: List<MyLocationDetails>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            for (myLocation in myLocations) {
+                val timeStamp = System.currentTimeMillis().toString()
+                val compId = myLocation.company_id
+                val locId = myLocation.location_id
+                val userName = myLocation.lastKnownUserName
+                val userPassword = myLocation.lastKnownPassword
+                val pl = QrCodeProcessor.getEncryptedEncodedPayloadForDeviceDetails(
+                        compId = compId,
+                        locId = locId,
+                        userName = userName,
+                        userPassword = userPassword,
+                        timeStamp = timeStamp
+                )
+                scannedDevicesRepo.fetchDataForMyLocation(
+                        compId = compId,
+                        locId = locId,
+                        payload = pl,
+                        ltime = timeStamp,
+                        userName = userName,
+                        userPassword = userPassword,
+                )
+            }
+
+            delay(INDOOR_LOCATIONS_REFRESH_RATE_MILLS)
+            locationsToRefresh = myLocations
+            withContext(Dispatchers.Main) {
+                startServeRefreshCallsForMyLocations(locationsToRefresh)
+            }
+        }
+    }
+
+    fun observeMyLocationDetails(): LiveData<List<LocationDetailsGeneralDataWrapper>> = myLocationDetailsLive
 
     /*********** AMAP SPECIFIC LOCATION *************/
     private var userLastKnowALatLng: aLatLng? = null
@@ -77,7 +114,7 @@ class MapViewModel @Inject constructor(
         it?.let {
             userLastKnowALatLng = if (it.latitude != 0.0 && it.longitude != 0.0) {
                 aLatLng(it.latitude, it.longitude)
-            }else {
+            } else {
                 //todo remove in production
                 aLatLng(SHANGHAI_LAT, SHANGHAI_LON)
             }
@@ -90,13 +127,13 @@ class MapViewModel @Inject constructor(
 
     var hasSetMyLocationStyle = false
     val mapActions = arrayListOf(
-        MapActions(action = MapActionChoices.SMART_QR),
-        MapActions(action = MapActionChoices.MAP_VIEW),
-        MapActions(action = MapActionChoices.ADD),
+            MapActions(action = MapActionChoices.SMART_QR),
+            MapActions(action = MapActionChoices.MAP_VIEW),
+            MapActions(action = MapActionChoices.ADD),
     )
 
     fun observeLocations(): LiveData<List<OutDoorLocations>> =
-        locationsRepo.getOutDoorLocationsLive().asLiveData()
+            locationsRepo.getOutDoorLocationsLive().asLiveData()
 
     private fun refreshOutDoorLocations() {
         MyLogger.logThis(TAG, "refreshOutDoorLocations()", "called --")
@@ -117,7 +154,7 @@ class MapViewModel @Inject constructor(
 
 @Parcelize
 class MapActions(
-    val action: MapActionChoices
+        val action: MapActionChoices
 ) : Parcelable
 
 enum class MapActionChoices(val strRes: Int) {
@@ -126,5 +163,5 @@ enum class MapActionChoices(val strRes: Int) {
     ADD(strRes = R.string.add_txt)
 }
 
-const val SHANGHAI_LAT : Double = 31.224361
-const val SHANGHAI_LON : Double = 121.469170
+const val SHANGHAI_LAT: Double = 31.224361
+const val SHANGHAI_LON: Double = 121.469170

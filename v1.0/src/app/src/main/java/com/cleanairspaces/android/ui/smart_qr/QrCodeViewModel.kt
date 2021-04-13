@@ -13,28 +13,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QrCodeViewModel @Inject constructor(
-    private val scannedDevicesRepo: ScannedDevicesRepo
+        private val scannedDevicesRepo: ScannedDevicesRepo
 ) : ViewModel() {
 
     private val TAG = QrCodeViewModel::class.java.simpleName
 
     fun observeLocationFromCompanyInfo(compId: Int, locId: Int): LiveData<CustomerDeviceData> =
-        scannedDevicesRepo.getADeviceFlow(compId = compId.toString(), locId = locId.toString())
-            .asLiveData()
+            scannedDevicesRepo.getADeviceFlow(compId = compId.toString(), locId = locId.toString())
+                    .asLiveData()
 
     fun observeLocationFromMonitorInfo(monitorId: String): LiveData<CustomerDeviceData> =
-        scannedDevicesRepo.getADeviceFlowByMonitorId(monitorId = monitorId).asLiveData()
+            scannedDevicesRepo.getADeviceFlowByMonitorId(monitorId = monitorId).asLiveData()
 
     fun addLocationFromCompanyInfo(locId: Int, compId: Int) {
         val timeStamp = System.currentTimeMillis().toString()
         val pl = QrCodeProcessor.getEncryptedEncodedPayloadForLocation(locId, compId, timeStamp)
         viewModelScope.launch(Dispatchers.IO) {
             scannedDevicesRepo.fetchDataFromScannedDeviceQr(
-                deviceId = "$compId$locId",
-                base64Str = pl,
-                payLoadTimeStamp = timeStamp,
-                forCompLocation = true,
-                isMonitor  = false
+                    deviceId = "$compId$locId",
+                    base64Str = pl,
+                    payLoadTimeStamp = timeStamp,
+                    forCompLocation = true,
+                    isMonitor = false
             )
         }
     }
@@ -42,17 +42,17 @@ class QrCodeViewModel @Inject constructor(
     fun addLocationFromMonitorId(monitorId: String) {
         val timeStamp = System.currentTimeMillis().toString()
         val pl = QrCodeProcessor.getEncryptedEncodedPayloadForMonitor(
-            monitorId = monitorId,
-            timeStamp = timeStamp
+                monitorId = monitorId,
+                timeStamp = timeStamp
         )
         MyLogger.logThis(TAG, "addLocationFromMonitorId($monitorId)", "called")
         viewModelScope.launch(Dispatchers.IO) {
             scannedDevicesRepo.fetchDataFromScannedDeviceQr(
-                base64Str = pl,
-                payLoadTimeStamp = timeStamp,
-                forCompLocation = false,
-                deviceId= monitorId,
-                isMonitor = true
+                    base64Str = pl,
+                    payLoadTimeStamp = timeStamp,
+                    forCompLocation = false,
+                    deviceId = monitorId,
+                    isMonitor = true
             )
         }
     }
@@ -66,10 +66,10 @@ class QrCodeViewModel @Inject constructor(
     private val isMyLocationAddedSuccessful = MutableLiveData<Boolean>()
     fun observeMyLocationOperation(): LiveData<Boolean> = isMyLocationAddedSuccessful
     fun updateLocationIsMineStatus(
-        customerDeviceData: CustomerDeviceData,
-        userName: String = "",
-        userPassword: String = "",
-        isMine: Boolean
+            customerDeviceData: CustomerDeviceData,
+            userName: String = "",
+            userPassword: String = "",
+            isMine: Boolean
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             if (isMine) {
@@ -79,18 +79,20 @@ class QrCodeViewModel @Inject constructor(
                 val compId = customerDeviceData.company_id
                 val locId = customerDeviceData.location_id
                 val pl = QrCodeProcessor.getEncryptedEncodedPayloadForDeviceDetails(
-                    compId = compId,
-                    locId = locId,
-                    userName = userName,
-                    userPassword = userPassword,
-                    timeStamp = timeStamp
+                        compId = compId,
+                        locId = locId,
+                        userName = userName,
+                        userPassword = userPassword,
+                        timeStamp = timeStamp
                 )
                 scannedDevicesRepo.fetchDataForMyLocation(
-                    compId = compId,
-                    locId = locId,
-                    payload = pl,
-                    ltime = timeStamp,
-                    getMyLocationDataListener = getMyLocationDataListener
+                        compId = compId,
+                        locId = locId,
+                        payload = pl,
+                        ltime = timeStamp,
+                        getMyLocationDataListener = getMyLocationDataListener,
+                        userName = userName,
+                        userPassword = userPassword
                 )
             } else {
                 scannedDevicesRepo.updateLocationIsMineStatus(customerDeviceData, isMine = isMine)

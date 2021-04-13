@@ -10,15 +10,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LocationDetailsModel @Inject constructor(
-    private val scannedDevicesRepo: ScannedDevicesRepo
+        private val scannedDevicesRepo: ScannedDevicesRepo
 ) : ViewModel() {
 
     private val locationDetailsInfoLive = MutableLiveData<MyLocationDetailsWrapper>()
     fun setCustomerDeviceDataDetailed(
-        myLocationDetailsWrapper: MyLocationDetailsWrapper
+            myLocationDetailsWrapper: MyLocationDetailsWrapper
     ) {
         locationDetailsInfoLive.value = myLocationDetailsWrapper
     }
 
-    fun observeLocationDetails() : LiveData<MyLocationDetailsWrapper> = locationDetailsInfoLive
+    fun observeLocationDetails(): LiveData<MyLocationDetailsWrapper> = locationDetailsInfoLive
 }

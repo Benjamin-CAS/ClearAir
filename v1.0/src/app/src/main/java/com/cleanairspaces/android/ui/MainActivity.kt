@@ -29,9 +29,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, GMapActivity::class.java))
         } else {
             MyLogger.logThis(
-                TAG,
-                "onViewCreated()",
-                "google play services not found & or out-dated"
+                    TAG,
+                    "onViewCreated()",
+                    "google play services not found & or out-dated"
             )
             startActivity(Intent(this, AMapActivity::class.java))
         }
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         //maybe need update?
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         return when (googleApiAvailability.isGooglePlayServicesAvailable(
-            this
+                this
         )) {
             ConnectionResult.SUCCESS -> true
             else -> false

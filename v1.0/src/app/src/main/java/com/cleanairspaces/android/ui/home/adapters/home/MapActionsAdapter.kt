@@ -9,7 +9,7 @@ import com.cleanairspaces.android.ui.home.MapActions
 
 
 class MapActionsAdapter(private val actionsListener: ClickListener) :
-    RecyclerView.Adapter<MapActionsAdapter.MapActionsViewHolder>() {
+        RecyclerView.Adapter<MapActionsAdapter.MapActionsViewHolder>() {
 
     private val mapActionsList = ArrayList<MapActions>()
 
@@ -18,7 +18,7 @@ class MapActionsAdapter(private val actionsListener: ClickListener) :
     }
 
     class MapActionsViewHolder(private val binding: MapActionsItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+            RecyclerView.ViewHolder(binding.root) {
         fun bind(action: MapActions, actionsListener: ClickListener) {
             binding.apply {
                 actionBtn.setText(action.action.strRes)
@@ -31,11 +31,11 @@ class MapActionsAdapter(private val actionsListener: ClickListener) :
 
 
     override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
+            parent: ViewGroup,
+            viewType: Int
     ): MapActionsViewHolder {
         val binding =
-            MapActionsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                MapActionsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MapActionsViewHolder(binding)
     }
 

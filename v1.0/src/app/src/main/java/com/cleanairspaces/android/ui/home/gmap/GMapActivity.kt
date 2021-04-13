@@ -27,7 +27,7 @@ class GMapActivity : BaseMapActivity() {
     private val TAG = GMapActivity::class.java.simpleName
 
     override val mapActionsAdapter = MapActionsAdapter(this)
-    override val myLocationsAdapter : MyLocationsAdapter by lazy {
+    override val myLocationsAdapter: MyLocationsAdapter by lazy {
         MyLocationsAdapter(this)
     }
 
@@ -54,9 +54,9 @@ class GMapActivity : BaseMapActivity() {
     private fun initializeRecyclerViewForUserActions() {
         binding.homeMapOverlay.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
-                this@GMapActivity,
-                RecyclerView.HORIZONTAL,
-                false
+                    this@GMapActivity,
+                    RecyclerView.HORIZONTAL,
+                    false
             )
             mapActionsAdapter.setMapActionsList(viewModel.mapActions)
             mapActionsRv.adapter = mapActionsAdapter
@@ -86,10 +86,10 @@ class GMapActivity : BaseMapActivity() {
 
     override fun gotToActivity(toAct: Class<*>) {
         startActivity(
-            Intent(
-                this,
-                toAct
-            )
+                Intent(
+                        this,
+                        toAct
+                )
         )
     }
 }

@@ -51,11 +51,10 @@ data class MyLocationDetailsWrapper(
         val humidSliderDiskRes: Int,
         val carbonSavedStr: String = "",
         val energySavedStr: String = "",
-        val outDoorPmTxtColor : Int = UNSET_PARAM_VAL,
+        val outDoorPmTxtColor: Int = UNSET_PARAM_VAL,
         val indoorPmValue: Int = UNSET_PARAM_VAL
 
-        ) : Parcelable {
-}
+) : Parcelable
 
 /********* parses location info into text suitable for display in the ui ******/
 fun getLocationInfoDetails(

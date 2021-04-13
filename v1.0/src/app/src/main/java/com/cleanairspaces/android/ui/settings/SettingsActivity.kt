@@ -46,15 +46,15 @@ class SettingsActivity : BaseActivity() {
         viewModel.getSelectedAqi().observe(this, Observer { selectedAqi ->
             if (displayedSavedSettings) return@Observer
             binding.progressCircular.isVisible = false
-            val defaultPM  = aqiIndexesAdapter.getItem(0)
+            val defaultPM = aqiIndexesAdapter.getItem(0)
             if (selectedAqi.isNullOrBlank()) {
                 aqiTypeSelector?.setText(defaultPM, false)
             } else {
                 val index = aqiIndexesAdapter.getPosition(selectedAqi)
-                val indexTxt  =  if (index != -1) selectedAqi else defaultPM
+                val indexTxt = if (index != -1) selectedAqi else defaultPM
                 aqiTypeSelector?.setText(indexTxt, false)
             }
-            displayedSavedSettings  = true
+            displayedSavedSettings = true
         })
     }
 
@@ -62,11 +62,12 @@ class SettingsActivity : BaseActivity() {
         aqiTypeSelector = (binding.aqiSelect.editText as? AutoCompleteTextView)
         aqiTypeSelector?.setAdapter(aqiIndexesAdapter)
         aqiTypeSelector?.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-                val selectedAqi: String =
-                    aqiIndexesAdapter.getItem(position) ?: getString(R.string.default_pm_index_value)
-                viewModel.setSelectedAqi(selectedAqi)
-            }
+                AdapterView.OnItemClickListener { _, _, position, _ ->
+                    val selectedAqi: String =
+                            aqiIndexesAdapter.getItem(position)
+                                    ?: getString(R.string.default_pm_index_value)
+                    viewModel.setSelectedAqi(selectedAqi)
+                }
     }
 
 

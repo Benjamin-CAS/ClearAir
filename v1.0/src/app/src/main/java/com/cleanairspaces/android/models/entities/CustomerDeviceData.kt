@@ -8,26 +8,26 @@ import com.cleanairspaces.android.utils.BASE_URL
 import kotlinx.parcelize.Parcelize
 
 @Entity(
-    tableName = "customer_device_data",
-    indices = [androidx.room.Index(value = ["company_id", "location_id"], unique = true)]
+        tableName = "customer_device_data",
+        indices = [androidx.room.Index(value = ["company_id", "location_id"], unique = true)]
 )
 @Parcelize
 data class CustomerDeviceData(
-    @PrimaryKey(autoGenerate = false)
-    var deviceId: String,
-    val company_id: String,
-    val location_id: String,
-    @ColumnInfo(name = "company_name")
-    val company: String,
-    val location: String,
-    val dev_name: String,
-    val isSecure: Boolean,
-    @ColumnInfo(name = "logo_file_name")
-    val logo: String,
-    val reference_mon: String,
-    var isMyDeviceData: Boolean = false,
-    var monitor_id: String?,
-    var type: String?,
+        @PrimaryKey(autoGenerate = false)
+        var device_id: String,
+        val company_id: String,
+        val location_id: String,
+        @ColumnInfo(name = "company_name")
+        val company: String,
+        val location: String,
+        val dev_name: String,
+        val isSecure: Boolean,
+        @ColumnInfo(name = "logo_file_name")
+        val logo: String,
+        val reference_mon: String,
+        var isMyDeviceData: Boolean = false,
+        var monitor_id: String?,
+        var type: String?,
 ) : Parcelable {
 
     fun getFullLogoUrl(): String {

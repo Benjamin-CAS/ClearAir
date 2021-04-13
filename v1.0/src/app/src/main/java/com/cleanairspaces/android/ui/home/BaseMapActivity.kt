@@ -37,10 +37,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener,
-    MyLocationsAdapter.MyLocationsClickListener {
+        MyLocationsAdapter.MyLocationsClickListener {
 
     private val TAG = BaseMapActivity::class.java.simpleName
-
 
 
     var popUp: AlertDialog? = null
@@ -55,23 +54,23 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
     abstract fun showUserLocation()
     abstract fun hideMyLocations()
     abstract fun showSnackBar(
-        msgRes: Int,
-        isError: Boolean = false,
-        actionRes: Int? = null
+            msgRes: Int,
+            isError: Boolean = false,
+            actionRes: Int? = null
     )
 
     abstract fun gotToActivity(toAct: Class<*>)
 
     /*********** ADD, SCAN & TOGGLE ACTIONS *********/
     fun initializeRecyclerViewForUserActions(
-        homeMapOverlay: HomeMapOverlayBinding,
-        actions: List<MapActions>
+            homeMapOverlay: HomeMapOverlayBinding,
+            actions: List<MapActions>
     ) {
         homeMapOverlay.apply {
             mapActionsRv.layoutManager = LinearLayoutManager(
-                this@BaseMapActivity,
-                RecyclerView.HORIZONTAL,
-                false
+                    this@BaseMapActivity,
+                    RecyclerView.HORIZONTAL,
+                    false
             )
             mapActionsAdapter.setMapActionsList(actions)
             mapActionsRv.adapter = mapActionsAdapter
@@ -91,9 +90,9 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
     fun initializeMyLocationRecycler(homeMapOverlay: HomeMapOverlayBinding) {
         homeMapOverlay.apply {
             locationsRv.layoutManager = LinearLayoutManager(
-                this@BaseMapActivity,
-                RecyclerView.VERTICAL,
-                false
+                    this@BaseMapActivity,
+                    RecyclerView.VERTICAL,
+                    false
             )
             locationsRv.addItemDecoration(VerticalSpaceItemDecoration(30))
             locationsRv.adapter = myLocationsAdapter
@@ -105,8 +104,8 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             when {
                 ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     showUserLocation()
                 }
@@ -166,20 +165,20 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
                 val qrContent = intentResult.contents
                 val qrFormatName = intentResult.formatName
                 MyLogger.logThis(
-                    TAG, " handleScannedQrIntent($resultCode : Int, $data : Intent?)",
-                    "qrContent $qrContent , qrFormatName $qrFormatName"
+                        TAG, " handleScannedQrIntent($resultCode : Int, $data : Intent?)",
+                        "qrContent $qrContent , qrFormatName $qrFormatName"
                 )
                 startActivity(
-                    Intent(this@BaseMapActivity, QrCodeProcessingActivity::class.java).putExtra(
-                        INTENT_EXTRA_TAG, qrContent
-                    )
+                        Intent(this@BaseMapActivity, QrCodeProcessingActivity::class.java).putExtra(
+                                INTENT_EXTRA_TAG, qrContent
+                        )
                 )
 
             }
         } else {
             MyLogger.logThis(
-                TAG, " handleScannedQrIntent($resultCode : Int, $data : Intent?)",
-                "qrContent $intentResult is null"
+                    TAG, " handleScannedQrIntent($resultCode : Int, $data : Intent?)",
+                    "qrContent $intentResult is null"
             )
             showSnackBar(msgRes = R.string.scan_qr_code_unknown)
         }
@@ -192,9 +191,9 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
             //showTurnOnGPSDialog
             showDialog(msgRes = R.string.turn_on_gps_prompt, positiveAction = {
                 startActivity(
-                    Intent(
-                        Settings.ACTION_LOCATION_SOURCE_SETTINGS
-                    )
+                        Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                        )
                 )
             })
         }
@@ -214,18 +213,18 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
     private fun showDialog(msgRes: Int, positiveAction: () -> Unit) {
         dismissPopUps()
         popUp = MaterialAlertDialogBuilder(this)
-            .setTitle(msgRes)
-            .setPositiveButton(
-                R.string.got_it
-            ) { dialog, _ ->
-                positiveAction.invoke()
-                dialog.dismiss()
-            }
-            .setNeutralButton(
-                R.string.dismiss
-            ) { dialog, _ ->
-                dialog.dismiss()
-            }.create()
+                .setTitle(msgRes)
+                .setPositiveButton(
+                        R.string.got_it
+                ) { dialog, _ ->
+                    positiveAction.invoke()
+                    dialog.dismiss()
+                }
+                .setNeutralButton(
+                        R.string.dismiss
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
 
         popUp?.show()
     }

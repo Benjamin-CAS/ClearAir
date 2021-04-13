@@ -62,24 +62,24 @@ class LocationDetailsActivity : BaseActivity() {
     }
 
 
-    private fun observeLocationDetailsInfo(){
+    private fun observeLocationDetailsInfo() {
         viewModel.observeLocationDetails().observe(this, Observer { myLocationDetailsWrapper ->
-            if (myLocationDetailsWrapper != null){
+            if (myLocationDetailsWrapper != null) {
                 val generalData = myLocationDetailsWrapper.wrappedData.generalData
                 val locationDetailsInfo = myLocationDetailsWrapper.wrappedData.locationDetails
                 binding.apply {
                     Glide.with(this@LocationDetailsActivity).load(generalData.getFullLogoUrl())
-                        .into(compLogo)
+                            .into(compLogo)
                     compName.text = generalData.company
                     progressCircular.isVisible = false
                 }
                 if (myLocationDetailsWrapper.indoorPmValue == UNSET_PARAM_VAL) {
                     displayOutDoorInfo(myLocationDetailsWrapper)
-                }else{
+                } else {
                     displayIndoorInfo(myLocationDetailsWrapper)
                 }
                 displayRecommendations(locationDetailsInfo.outdoor.outdoor_pm)
-            }else{
+            } else {
                 binding.progressCircular.isVisible = true
             }
         })
@@ -88,7 +88,7 @@ class LocationDetailsActivity : BaseActivity() {
     private fun displayRecommendations(outDoorPm: String) {
         var hasRecommendations = false
         if (outDoorPm.isNotBlank()) {
-         val recommendations = AQI.getRecommendationsGivePm25(outDoorPm.toDouble())
+            val recommendations = AQI.getRecommendationsGivePm25(outDoorPm.toDouble())
             if (recommendations.size == 4) {
                 binding.apply {
                     maskIv.setImageResource(recommendations[0].resourceId)
@@ -103,7 +103,7 @@ class LocationDetailsActivity : BaseActivity() {
                 }
             }
         }
-        if (!hasRecommendations){
+        if (!hasRecommendations) {
             binding.apply {
                 recommendationsTitle.isVisible = false
                 line3.isVisible = false
@@ -120,9 +120,9 @@ class LocationDetailsActivity : BaseActivity() {
     }
 
     private fun displayIndoorInfo(
-        uiReadyPmInfo: MyLocationDetailsWrapper) {
+            uiReadyPmInfo: MyLocationDetailsWrapper) {
         val root = binding.pmInfoContainer
-        val inOutLayoutView : View = root.findViewById(R.id.in_out_door_layout)
+        val inOutLayoutView: View = root.findViewById(R.id.in_out_door_layout)
         inOutLayoutView.isVisible = true
         val inOutLayoutBinding = LocationDetailsInOutLayoutBinding.bind(inOutLayoutView)
         disableSliders(inOutLayoutBinding)
@@ -146,54 +146,54 @@ class LocationDetailsActivity : BaseActivity() {
             indoorPmIndexGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.pmSliderDiskRes)
 
             //co2
-            if(uiReadyPmInfo.co2Slider != UNSET_PARAM_VAL){
+            if (uiReadyPmInfo.co2Slider != UNSET_PARAM_VAL) {
                 indoorCoVal.text = uiReadyPmInfo.co2LvlTxt
                 indoorCoGradient.max = uiReadyPmInfo.co2SliderMax
                 indoorCoGradient.progress = uiReadyPmInfo.co2Slider
                 indoorCoGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.coSliderDiskRes)
-            }else{
+            } else {
                 indoorCoLbl.isVisible = false
                 indoorCoVal.isVisible = false
                 indoorCoGradient.isVisible = false
             }
 
             //tmp
-            if(uiReadyPmInfo.tmpSlider != UNSET_PARAM_VAL){
+            if (uiReadyPmInfo.tmpSlider != UNSET_PARAM_VAL) {
                 indoorTmpValue.text = uiReadyPmInfo.tmpLvl
                 indoorTmpGradient.max = uiReadyPmInfo.tmpSliderMax
                 indoorTmpGradient.progress = uiReadyPmInfo.tmpSlider
                 indoorTmpGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.tmpSliderDiskRes)
-            }else{
+            } else {
                 indoorTmpLbl.isVisible = false
                 indoorTmpValue.isVisible = false
                 indoorTmpGradient.isVisible = false
             }
 
             //tvoc
-            if(uiReadyPmInfo.vocSlider != UNSET_PARAM_VAL){
+            if (uiReadyPmInfo.vocSlider != UNSET_PARAM_VAL) {
                 indoorTvocVal.text = uiReadyPmInfo.vocLvlTxt
                 indoorTvocGradient.max = uiReadyPmInfo.vocSliderMax
                 indoorTvocGradient.progress = uiReadyPmInfo.vocSlider
                 indoorTvocGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.vocSliderDiskRes)
-            }else{
+            } else {
                 indoorTvocLbl.isVisible = false
                 indoorTvocVal.isVisible = false
                 indoorTvocGradient.isVisible = false
             }
 
             //humidity
-            if(uiReadyPmInfo.humidSlider != UNSET_PARAM_VAL){
+            if (uiReadyPmInfo.humidSlider != UNSET_PARAM_VAL) {
                 indoorHumidityVal.text = uiReadyPmInfo.humidLvl
                 indoorHumiditygradient.max = uiReadyPmInfo.humidSliderMax
                 indoorHumiditygradient.progress = uiReadyPmInfo.humidSlider
                 indoorHumiditygradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.humidSliderDiskRes)
-            }else{
+            } else {
                 indoorHumidityLbl.isVisible = false
                 indoorHumidityVal.isVisible = false
                 indoorHumiditygradient.isVisible = false
             }
             //energy savings
-            if (uiReadyPmInfo.carbonSavedStr.isBlank() || uiReadyPmInfo.energySavedStr.isBlank()){
+            if (uiReadyPmInfo.carbonSavedStr.isBlank() || uiReadyPmInfo.energySavedStr.isBlank()) {
                 //hide related views
                 indoorEnergyTitle.isVisible = false
                 energySavedLbl.isVisible = false
@@ -202,7 +202,7 @@ class LocationDetailsActivity : BaseActivity() {
                 carbonSavedInfoContainer.isVisible = false
                 carbonSavedLbl.isVisible = false
                 lastThirtyLbl.isVisible = false
-            }else{
+            } else {
                 energySavedValue.text = uiReadyPmInfo.energySavedStr
                 carbonSavedValue.text = uiReadyPmInfo.carbonSavedStr
             }
@@ -211,10 +211,10 @@ class LocationDetailsActivity : BaseActivity() {
     }
 
     private fun displayOutDoorInfo(
-        uiReadyInfo: MyLocationDetailsWrapper
-    ){
+            uiReadyInfo: MyLocationDetailsWrapper
+    ) {
         val root = binding.pmInfoContainer
-        val outLayoutView : View = root.findViewById(R.id.out_door_layout)
+        val outLayoutView: View = root.findViewById(R.id.out_door_layout)
         outLayoutView.isVisible = true
         val outLayoutBinding = LocationDetailsOutLayoutBinding.bind(outLayoutView)
         outLayoutBinding.apply {
@@ -223,7 +223,7 @@ class LocationDetailsActivity : BaseActivity() {
             statusIv.setImageResource(uiReadyInfo.outStatusIndicatorRes)
             statusTv.text = uiReadyInfo.outStatusTvTxt
             lastUpdateTv.text = uiReadyInfo.updatedOnTxt
-            if (uiReadyInfo.outDoorPmTxtColor != UNSET_PARAM_VAL){
+            if (uiReadyInfo.outDoorPmTxtColor != UNSET_PARAM_VAL) {
                 val txtColor = ContextCompat.getColor(this@LocationDetailsActivity, uiReadyInfo.outDoorPmTxtColor)
                 pointsTv.setTextColor(txtColor)
                 statusTv.setTextColor(txtColor)

@@ -25,11 +25,10 @@ interface CustomerDeviceDataDao {
     @Update
     suspend fun updateDevice(deviceData: CustomerDeviceData)
 
-    @Query("SELECT COUNT(deviceId) FROM customer_device_data WHERE company_id =:companyId AND location_id =:locationId AND isMyDeviceData =:isMine")
+    @Query("SELECT COUNT(device_id) FROM customer_device_data WHERE device_id  = :deviceId AND isMyDeviceData =:isMine")
     suspend fun checkIfIsMyLocation(
-        companyId: String,
-        locationId: String,
-        isMine: Boolean = true
+            deviceId : String,
+            isMine: Boolean = true
     ): Int
 
     @Query("UPDATE customer_device_data SET isMyDeviceData =:isMine WHERE company_id =:compId AND location_id =:locId")

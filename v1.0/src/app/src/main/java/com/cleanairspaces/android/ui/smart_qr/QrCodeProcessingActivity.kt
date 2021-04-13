@@ -1,7 +1,6 @@
 package com.cleanairspaces.android.ui.smart_qr
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -50,10 +49,10 @@ class QrCodeProcessingActivity : BaseActivity() {
             if (!isSuccessful) {
                 binding.progressCircular.isVisible = false
                 binding.container.showSnackBar(
-                    msgResId = R.string.failed_to_add_location_check_credentials,
-                    isErrorMsg = true,
-                    actionMessage = R.string.dismiss,
-                    actionToTake = {}
+                        msgResId = R.string.failed_to_add_location_check_credentials,
+                        isErrorMsg = true,
+                        actionMessage = R.string.dismiss,
+                        actionToTake = {}
                 )
             }
         })
@@ -69,17 +68,17 @@ class QrCodeProcessingActivity : BaseActivity() {
                 info.text = infoTxt
                 if (parsedResult.monitorId != null) {
                     observeScannedLocation(
-                        monitorId = parsedResult.monitorId
+                            monitorId = parsedResult.monitorId
                     )
                     viewModel.addLocationFromMonitorId(monitorId = parsedResult.monitorId)
                 } else if (parsedResult.locId != null && parsedResult.compId != null) {
                     observeScannedLocation(
-                        locId = parsedResult.locId,
-                        compId = parsedResult.compId
+                            locId = parsedResult.locId,
+                            compId = parsedResult.compId
                     )
                     viewModel.addLocationFromCompanyInfo(
-                        locId = parsedResult.locId,
-                        compId = parsedResult.compId
+                            locId = parsedResult.locId,
+                            compId = parsedResult.compId
                     )
                 }
             } else {
@@ -90,28 +89,28 @@ class QrCodeProcessingActivity : BaseActivity() {
     }
 
     private fun observeScannedLocation(
-        locId: Int? = null,
-        compId: Int? = null,
-        monitorId: String? = null
+            locId: Int? = null,
+            compId: Int? = null,
+            monitorId: String? = null
     ) {
         if (compId != null && locId != null) {
             viewModel.observeLocationFromCompanyInfo(locId = locId, compId = compId).observe(
-                this, Observer {
-                    if (it != null) {
-                        displayLocationInfo(it)
+                    this, Observer {
+                if (it != null) {
+                    displayLocationInfo(it)
 
-                    }
                 }
+            }
             )
         }
         if (monitorId != null) {
             viewModel.observeLocationFromMonitorInfo(monitorId = monitorId).observe(
-                this, Observer {
-                    if (it != null) {
-                        displayLocationInfo(it)
+                    this, Observer {
+                if (it != null) {
+                    displayLocationInfo(it)
 
-                    }
                 }
+            }
             )
         }
     }
@@ -127,10 +126,10 @@ class QrCodeProcessingActivity : BaseActivity() {
                 if (deviceInfo != null) {
                     binding.deviceLogo.isVisible = true
                     Glide.with(this@QrCodeProcessingActivity)
-                        .load(customerDeviceData.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
-                        .into(binding.deviceLogo)
+                            .load(customerDeviceData.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
+                            .into(binding.deviceLogo)
                     val deviceInfoTxt =
-                        getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
+                            getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
                     val deviceIdLbl = getString(R.string.device_id_lbl)
                     infoText += "$deviceInfoTxt\n$deviceIdLbl: ${customerDeviceData.monitor_id}\n"
 
@@ -140,8 +139,8 @@ class QrCodeProcessingActivity : BaseActivity() {
             }
 
             Glide.with(this@QrCodeProcessingActivity)
-                .load(customerDeviceData.getFullLogoUrl())
-                .into(logo)
+                    .load(customerDeviceData.getFullLogoUrl())
+                    .into(logo)
             MyLogger.logThis(TAG, "displaying", customerDeviceData.getFullLogoUrl())
             val locationInfoTitle = getString(R.string.location_information)
             val companyLblTxt = getString(R.string.company_name_lbl)
@@ -161,13 +160,13 @@ class QrCodeProcessingActivity : BaseActivity() {
                     setText(R.string.location_added_text)
                     isEnabled = false
                     setCompoundDrawablesWithIntrinsicBounds(
-                        null,
-                        null,
-                        ContextCompat.getDrawable(
-                            this@QrCodeProcessingActivity,
-                            R.drawable.ic_on_secondary_check
-                        ),
-                        null
+                            null,
+                            null,
+                            ContextCompat.getDrawable(
+                                    this@QrCodeProcessingActivity,
+                                    R.drawable.ic_on_secondary_check
+                            ),
+                            null
                     )
                 }
                 removeLocationBtn.apply {
@@ -203,16 +202,16 @@ class QrCodeProcessingActivity : BaseActivity() {
             val userPassword = binding.password.myTxt(binding.password)
             if (userName.isNullOrBlank() || userPassword.isNullOrBlank()) {
                 binding.container.showSnackBar(
-                    msgResId = R.string.enter_username_password,
-                    isErrorMsg = true
+                        msgResId = R.string.enter_username_password,
+                        isErrorMsg = true
                 )
             } else {
                 binding.progressCircular.isVisible = true
                 viewModel.updateLocationIsMineStatus(
-                    customerDeviceData,
-                    userName,
-                    userPassword,
-                    isMine = isMine
+                        customerDeviceData,
+                        userName,
+                        userPassword,
+                        isMine = isMine
                 )
             }
         } else {

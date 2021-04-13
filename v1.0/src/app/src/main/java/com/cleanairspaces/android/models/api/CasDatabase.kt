@@ -12,12 +12,12 @@ import com.cleanairspaces.android.models.entities.MyLocationDetails
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 
 @Database(
-    entities = [OutDoorLocations::class, CustomerDeviceData::class, MyLocationDetails::class],
-    version = 1,
-    exportSchema = false
+        entities = [OutDoorLocations::class, CustomerDeviceData::class, MyLocationDetails::class],
+        version = 1,
+        exportSchema = false
 )
 @TypeConverters(
-    CustomTypeConverters::class
+        CustomTypeConverters::class
 )
 abstract class CasDatabase : RoomDatabase() {
     abstract fun outDoorLocationsDao(): OutDoorLocationsDao

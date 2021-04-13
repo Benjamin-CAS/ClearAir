@@ -18,12 +18,12 @@ class DataStoreManager(appContext: Context) {
 
     fun getAqiIndex(): Flow<String> {
         return mDataStore.data
-            .map { preferences ->
-                preferences[AQI_INDEX_KEY]?:defaultAqi
-            }
+                .map { preferences ->
+                    preferences[AQI_INDEX_KEY] ?: defaultAqi
+                }
     }
 
-    suspend fun saveAqiIndex(newAqiIndex  :String) {
+    suspend fun saveAqiIndex(newAqiIndex: String) {
         mDataStore.edit { settings ->
             settings[AQI_INDEX_KEY] = newAqiIndex
         }

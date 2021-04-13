@@ -42,10 +42,10 @@ class MyLocationsAdapter(
                     locationAreaTv.text = displayInfo.locationArea
                     outdoorPmTv.text = displayInfo.aqiIndex
                     indoorPmTv.text =  displayInfo.aqiIndex
-                    outdoorPointsTv.text =  displayInfo.outPmValue
+                    outdoorPointsTv.text =  displayInfo.outPmValueTxt
                     outdoorStatusIndicatorTv.text =  displayInfo.outStatusTvTxt //todo? use comment!
                     outdoorStatusIndicatorIv.setImageResource( displayInfo.outStatusIndicatorRes)
-                    indoorPointsTv.text =  displayInfo.inPmValue
+                    indoorPointsTv.text =  displayInfo.inPmValueTxt
                     indoorStatusIndicatorTv.text =  displayInfo.inStatusTvTxt//todo? use comment!
                     indoorStatusIndicatorIv.setImageResource( displayInfo.inStatusIndicatorRes)
                     itemCard.setCardBackgroundColor(ContextCompat.getColor(ctx,  displayInfo.bgColor))

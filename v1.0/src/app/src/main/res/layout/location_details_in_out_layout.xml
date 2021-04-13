@@ -419,25 +419,25 @@
         android:background="@color/footer_color"/>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/co_saved_lbl"
+        android:id="@+id/carbon_saved_lbl"
         android:layout_width="0dp"
         app:layout_constraintWidth_percent=".5"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/line2"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/std_space"
-        android:text="@string/co_saved_lbl"
+        android:text="@string/carbon_saved_lbl"
         style="@style/Theme.CleanAirSpaces.Subtitle1"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginStart="@dimen/std_space" />
 
     <FrameLayout
-        android:id="@+id/co_saved_info_container"
+        android:id="@+id/carbon_saved_info_container"
         android:layout_width="0dp"
         app:layout_constraintWidth_percent=".5"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/co_saved_lbl"
+        app:layout_constraintTop_toBottomOf="@id/carbon_saved_lbl"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/std_space"
         android:layout_marginStart="@dimen/std_space">
@@ -445,13 +445,13 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="@dimen/location_logo_size"
-            android:contentDescription="@string/co_saved_lbl"
+            android:contentDescription="@string/carbon_saved_lbl"
             android:scaleType="fitCenter"
             android:layout_gravity="center"
             android:src="@drawable/carbon"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/co_saved_value"
+            android:id="@+id/carbon_saved_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -470,7 +470,7 @@
         android:layout_width="0dp"
         app:layout_constraintWidth_percent=".5"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/co_saved_info_container"
+        app:layout_constraintTop_toBottomOf="@id/carbon_saved_info_container"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/std_space"
         android:text="@string/last_thirty_lbl"
@@ -484,9 +484,9 @@
         app:layout_constraintWidth_percent=".5"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/line2"
-        app:layout_constraintStart_toEndOf="@id/co_saved_lbl"
+        app:layout_constraintStart_toEndOf="@id/carbon_saved_lbl"
         android:layout_marginTop="@dimen/std_space"
-        android:text="@string/enery_saved_lbl"
+        android:text="@string/energy_saved_lbl"
         style="@style/Theme.CleanAirSpaces.Subtitle1"
         android:textStyle="bold"
         android:gravity="center"
@@ -498,15 +498,15 @@
         app:layout_constraintWidth_percent=".5"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/energy_saved_lbl"
-        app:layout_constraintStart_toEndOf="@id/co_saved_info_container"
-        app:layout_constraintBottom_toBottomOf="@id/co_saved_info_container"
+        app:layout_constraintStart_toEndOf="@id/carbon_saved_info_container"
+        app:layout_constraintBottom_toBottomOf="@id/carbon_saved_info_container"
         android:layout_marginTop="@dimen/std_space"
         android:layout_marginStart="@dimen/std_space">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="@dimen/location_logo_size"
-            android:contentDescription="@string/co_saved_lbl"
+            android:contentDescription="@string/energy_saved_lbl"
             android:scaleType="fitCenter"
             android:layout_gravity="center"
             android:src="@drawable/green"/>
@@ -531,7 +531,7 @@
         android:layout_width="0dp"
         app:layout_constraintWidth_percent=".5"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/co_saved_info_container"
+        app:layout_constraintTop_toBottomOf="@id/carbon_saved_info_container"
         app:layout_constraintStart_toEndOf="@+id/last_thirty_lbl"
         android:layout_marginTop="@dimen/std_space"
         android:text="@string/last_thirty_lbl"

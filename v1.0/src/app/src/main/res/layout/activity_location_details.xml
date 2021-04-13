@@ -25,7 +25,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clipToPadding="false">
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/clickable_std">
 
                 <ImageView
                     android:id="@+id/comp_logo"
@@ -99,7 +100,6 @@
 
                 <ImageView
                     android:id="@+id/mask_iv"
-                    tools:src="@drawable/mask_inactive"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/line3"
                     android:layout_width="@dimen/clickable_std"
@@ -124,7 +124,6 @@
 
                 <ImageView
                     android:id="@+id/can_go_out_iv"
-                    tools:src="@drawable/outdoors_go"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/mask_iv"
                     android:layout_width="@dimen/clickable_std"
@@ -149,7 +148,6 @@
 
                 <ImageView
                     android:id="@+id/windows_iv"
-                    tools:src="@drawable/windows"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/can_go_out_iv"
                     android:layout_width="@dimen/clickable_std"
@@ -174,7 +172,7 @@
 
                 <ImageView
                     android:id="@+id/fan_iv"
-                    tools:src="@drawable/fan_inactive"
+                    tools:src="@drawable/fan_off"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/windows_iv"
                     android:layout_width="@dimen/clickable_std"

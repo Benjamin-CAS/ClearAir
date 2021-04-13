@@ -8,7 +8,7 @@
 
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/oudoor_lbl"
+        android:id="@+id/outdoor_lbl"
         android:text="@string/outdoor_txt"
         style="@style/Theme.CleanAirSpaces.Subtitle1"
         android:textStyle="bold"
@@ -20,16 +20,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/std_space"/>
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/pm_index"
+        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        android:textStyle="bold"
+        android:textSize="@dimen/lg_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/outdoor_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"/>
+
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/points_tv"
-        style="@style/Theme.CleanAirSpaces.Title2"
+        style="@style/Theme.CleanAirSpaces.Title1"
         tools:text="29"
         android:textStyle="bold"
         android:textSize="@dimen/xlg_txt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/oudoor_lbl"
+        app:layout_constraintTop_toBottomOf="@id/pm_index"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/std_space"
@@ -50,7 +62,9 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/status_tv"
-        style="@style/Theme.CleanAirSpaces.Body2"
+        style="@style/Theme.CleanAirSpaces.Body1"
+        android:textSize="@dimen/md_txt"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/status_iv"

@@ -24,6 +24,12 @@ class SettingsActivityViewModel @Inject constructor(
     }
 
     fun getSelectedAqi(): LiveData<String?> = dataStoreManager.getAqiIndex().asLiveData()
+    fun setSelectedMapLang(selectedMapLang: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreManager.saveMapLang(selectedMapLang= selectedMapLang)
+        }
+    }
 
+    fun getSelectedMapLang(): LiveData<String?> = dataStoreManager.getMapLang().asLiveData()
 
 }

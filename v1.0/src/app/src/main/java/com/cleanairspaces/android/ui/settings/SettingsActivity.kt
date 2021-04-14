@@ -22,11 +22,17 @@ class SettingsActivity : BaseActivity() {
     private val TAG = SettingsActivity::class.java.simpleName
     private val viewModel: SettingsActivityViewModel by viewModels()
     private var aqiTypeSelector: AutoCompleteTextView? = null
+    private var mapLangSelector: AutoCompleteTextView? = null
 
 
     private lateinit var aqiIndexesAdapter: ArrayAdapter<String>
     private lateinit var aqiIndexes: Array<String>
-    private var displayedSavedSettings = false
+
+    private lateinit var mapLangAdapter : ArrayAdapter<String>
+    private lateinit var mapLangArr : Array<String>
+
+    private var displayedAqiSettings = false
+    private var displayedMapLangSettings = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,16 +42,21 @@ class SettingsActivity : BaseActivity() {
         super.setToolBar(binding.toolbarLayout, false)
 
         aqiIndexes = resources.getStringArray(R.array.aqi_indexes)
-        aqiIndexesAdapter = ArrayAdapter(this@SettingsActivity, R.layout.aqi_index_item, aqiIndexes)
-        binding.progressCircular.isVisible = true
+        aqiIndexesAdapter = ArrayAdapter(this@SettingsActivity, R.layout.settings_drop_down_item, aqiIndexes)
+
+
+        mapLangArr = resources.getStringArray(R.array.map_languages)
+        mapLangAdapter = ArrayAdapter(this@SettingsActivity, R.layout.settings_drop_down_item, mapLangArr)
+
+
         setupPMAdapter()
+        setupMapLanguageAdapter()
         observeSettings()
     }
 
     private fun observeSettings() {
         viewModel.getSelectedAqi().observe(this, Observer { selectedAqi ->
-            if (displayedSavedSettings) return@Observer
-            binding.progressCircular.isVisible = false
+            if (displayedAqiSettings) return@Observer
             val defaultPM = aqiIndexesAdapter.getItem(0)
             if (selectedAqi.isNullOrBlank()) {
                 aqiTypeSelector?.setText(defaultPM, false)
@@ -54,7 +65,21 @@ class SettingsActivity : BaseActivity() {
                 val indexTxt = if (index != -1) selectedAqi else defaultPM
                 aqiTypeSelector?.setText(indexTxt, false)
             }
-            displayedSavedSettings = true
+            displayedAqiSettings = true
+        })
+
+        viewModel.getSelectedMapLang().observe(this, Observer { selectedMapLang ->
+            if (displayedMapLangSettings) return@Observer
+            val defaultMapLang = mapLangAdapter.getItem(0)
+            if (selectedMapLang.isNullOrBlank()){
+                mapLangSelector?.setText(defaultMapLang)
+            }else{
+                val index = mapLangAdapter.getPosition(selectedMapLang)
+                val indexTxt = if (index != -1) selectedMapLang else defaultMapLang
+                mapLangSelector?.setText(indexTxt, false)
+            }
+            displayedMapLangSettings = true
+
         })
     }
 
@@ -70,6 +95,17 @@ class SettingsActivity : BaseActivity() {
             }
     }
 
+    private fun setupMapLanguageAdapter(){
+      mapLangSelector = (binding.mapLanguageSelect.editText as? AutoCompleteTextView)
+        mapLangSelector?.setAdapter(mapLangAdapter)
+        mapLangSelector?.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+            val selectedMapLang: String =
+                mapLangAdapter.getItem(position)
+                    ?: getString(R.string.default_map_language)
+            viewModel.setSelectedMapLang(selectedMapLang)
+        }
+    }
 
     override fun handleBackPress() {
         this.finish()

@@ -17,6 +17,7 @@ class DataStoreManager(appContext: Context) {
     private val mDataStore = appContext.dataStore
     private val defaultAqi = appContext.getString(R.string.default_pm_index_value)
     private val defaultMap = appContext.getString(R.string.a_map_preferred)
+    private val  defaultMapLang = appContext.getString(R.string.default_map_language)
 
     fun getAqiIndex(): Flow<String> {
         return mDataStore.data
@@ -39,7 +40,21 @@ class DataStoreManager(appContext: Context) {
             }
     }
 
+    suspend fun saveMapLang(selectedMapLang: String) {
+        mDataStore.edit { settings ->
+            settings[mapLang] = selectedMapLang
+        }
+    }
+
+    fun getMapLang(): Flow<String> {
+        return mDataStore.data
+            .map { preferences ->
+                preferences[mapLang] ?: defaultMapLang
+            }
+    }
+
     private val aqiIndexKey = stringPreferencesKey("api_index")
     private val mapToUseKey = stringPreferencesKey("map_to_use")
+    private val mapLang = stringPreferencesKey("map_language")
 
 }

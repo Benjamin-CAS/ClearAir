@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/footer_color"
-    tools:context=".ui.settings.SettingsActivity">
+    tools:context=".ui.settings.SettingsActivity"
+    android:background="@color/whitish">
 
     <include
         android:id="@+id/toolbar_layout"
@@ -60,4 +60,24 @@
     </com.google.android.material.textfield.TextInputLayout>
 
 
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/map_language_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/md_space"
+        app:boxBackgroundColor="@color/white"
+        app:hintTextColor="?colorOnPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/aqi_select">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/map_language"
+            android:inputType="none"
+            android:textColorHint="?colorOnPrimary" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -267,4 +267,8 @@ class OutDoorLocationsRepo
         }
     }
 
+    fun refreshInDoorLocations() {
+
+    }
+
 }

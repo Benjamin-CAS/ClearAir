@@ -84,6 +84,16 @@ class AMapActivity : BaseMapActivity() {
 
         super.initializeRecyclerViewForUserActions()
         super.initializeMyLocationsRecycler()
+
+        viewModel.getSelectedMapLang().observe(this, { selectedMapLang ->
+            aMap?.let { map ->
+                if (selectedMapLang.equals(getString(R.string.default_map_language))) {
+                    map.setMapLanguage(AMap.CHINESE)
+                } else {
+                    map.setMapLanguage(AMap.ENGLISH)
+                }
+            }
+        })
     }
 
     private fun initializeMap(savedInstanceState: Bundle?) {
@@ -93,7 +103,6 @@ class AMapActivity : BaseMapActivity() {
                 mMapView.onCreate(savedInstanceState)
                 aMap = mMapView.map
                 aMap?.apply {
-                    setMapLanguage(AMap.ENGLISH)
                     uiSettings.isZoomControlsEnabled = false
                     onShowMyLocationOnMapClicked()
                     observeOutDoorLocations()

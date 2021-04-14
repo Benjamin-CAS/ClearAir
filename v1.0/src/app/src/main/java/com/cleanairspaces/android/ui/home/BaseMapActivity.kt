@@ -266,6 +266,7 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
                 updateMyLocationsListForAdapter(it)
             }
         })
+
     }
 
 

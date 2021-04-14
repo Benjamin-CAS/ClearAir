@@ -27,6 +27,6 @@ class IndoorLocationsRefresher @AssistedInject constructor(
     }
 
     private fun refreshInDoorLocations() {
-        //TODO locationsRepo.refreshInDoorLocations()
+        locationsRepo.refreshInDoorLocations()
     }
 }

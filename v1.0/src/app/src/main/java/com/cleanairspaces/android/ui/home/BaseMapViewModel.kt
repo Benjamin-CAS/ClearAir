@@ -27,7 +27,8 @@ class BaseMapViewModel @Inject constructor(
 ) : ViewModel() {
 
     //listening to the aqi-index in settings
-    fun getSelectedAqiIndex(): LiveData<String?> = dataStoreManager.getAqiIndex().asLiveData()
+    fun getSelectedAqiIndex(): LiveData<String> = dataStoreManager.getAqiIndex().asLiveData()
+    fun getSelectedMapLang(): LiveData<String> = dataStoreManager.getMapLang().asLiveData()
 
     //observing my locations
     fun refreshMyLocationsFlow() = scannedDevicesRepo.getMyLocations().asLiveData()

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/round_green_bg"
@@ -12,16 +11,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle2"/>
+        android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle2"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/snippet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textAppearance="@style/Theme.CleanAirSpaces.Body2"/>
+        android:textAppearance="@style/Theme.CleanAirSpaces.Body2"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/tip"
@@ -29,6 +28,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/click_to_view_info_txt"
-        android:textColor="@color/white"
-        android:textAppearance="@style/Theme.CleanAirSpaces.Body2"/>
+        android:textAppearance="@style/Theme.CleanAirSpaces.Body2"
+        android:textColor="@color/white" />
 </LinearLayout>

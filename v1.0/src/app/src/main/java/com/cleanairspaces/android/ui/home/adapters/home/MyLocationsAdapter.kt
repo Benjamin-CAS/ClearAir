@@ -12,7 +12,7 @@ import com.cleanairspaces.android.utils.MyLocationDetailsWrapper
 import com.cleanairspaces.android.utils.getLocationInfoDetails
 
 class MyLocationsAdapter(
-        private val actionsListener: MyLocationsClickListener,
+    private val actionsListener: MyLocationsClickListener,
 ) : RecyclerView.Adapter<MyLocationsAdapter.MyLocationsViewHolder>() {
 
     private val myLocationsList = ArrayList<LocationDetailsGeneralDataWrapper>()
@@ -24,20 +24,21 @@ class MyLocationsAdapter(
     }
 
     class MyLocationsViewHolder(private val binding: MyLocationMapOverlayItemBinding) :
-            RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(
-                dataWrapper: LocationDetailsGeneralDataWrapper,
-                actionsListener: MyLocationsClickListener,
-                selectedAqiIndex: String?
+            dataWrapper: LocationDetailsGeneralDataWrapper,
+            actionsListener: MyLocationsClickListener,
+            selectedAqiIndex: String?
         ) {
 
             binding.apply {
                 val ctx = itemView.context
-                val displayInfo = getLocationInfoDetails(ctx = ctx,
-                        dataWrapper = dataWrapper,
-                        selectedAqiIndex = selectedAqiIndex
+                val displayInfo = getLocationInfoDetails(
+                    ctx = ctx,
+                    dataWrapper = dataWrapper,
+                    selectedAqiIndex = selectedAqiIndex
                 )
-                val location = displayInfo.wrappedData.generalData
+                val location = displayInfo.wrappedData.generalDataFromQr
                 locationNameTv.text = location.company
                 locationAreaTv.text = displayInfo.locationArea
                 outdoorPmTv.text = displayInfo.aqiIndex
@@ -51,9 +52,9 @@ class MyLocationsAdapter(
                 itemCard.setCardBackgroundColor(ContextCompat.getColor(ctx, displayInfo.bgColor))
 
                 Glide.with(ctx)
-                        .load(location.getFullLogoUrl())
-                        .error(R.drawable.clean_air_spaces_logo_name)
-                        .into(locationLogoIv)
+                    .load(location.getFullLogoUrl())
+                    .error(R.drawable.clean_air_spaces_logo_name)
+                    .into(locationLogoIv)
                 updatedTv.text = displayInfo.updatedOnTxt
 
 
@@ -68,15 +69,15 @@ class MyLocationsAdapter(
 
 
     override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
+        parent: ViewGroup,
+        viewType: Int
     ): MyLocationsViewHolder {
         val binding =
-                MyLocationMapOverlayItemBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                )
+            MyLocationMapOverlayItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
         return MyLocationsViewHolder(binding)
     }
 
@@ -99,4 +100,5 @@ class MyLocationsAdapter(
         selectedAqiIndex = newAQIIndex
         notifyDataSetChanged()
     }
+
 }

@@ -17,14 +17,14 @@ abstract class BaseActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbarLayout.apply {
             Glide.with(toolbarLayout.toolbar.context)
-                    .load(R.drawable.clean_air_spaces_logo_name)
-                    .into(toolbarLogo)
+                .load(R.drawable.clean_air_spaces_logo_name)
+                .into(toolbarLogo)
             if (!isHomeAct) {
                 toolbar.setNavigationIcon(R.drawable.ic_back)
                 toolbar.setNavigationOnClickListener(
-                        View.OnClickListener {
-                            handleBackPress()
-                        }
+                    View.OnClickListener {
+                        handleBackPress()
+                    }
                 )
             }
         }

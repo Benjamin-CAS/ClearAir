@@ -28,35 +28,35 @@ object QrCodeProcessor {
             qrContent.contains(DEFAULT_QR_LOCATION_ID) -> {
                 val startIndexOfLocIdentifier = qrContent.indexOf(DEFAULT_QR_LOCATION_ID)
                 val lastIndexOfLocIdentifier =
-                        (startIndexOfLocIdentifier + DEFAULT_QR_LOCATION_ID.length) - 1
+                    (startIndexOfLocIdentifier + DEFAULT_QR_LOCATION_ID.length) - 1
                 if (startIndexOfLocIdentifier == -1 || lastIndexOfLocIdentifier == -1) return ParserResult(
-                        codeRes = QR_LOCATION_ERR
+                    codeRes = QR_LOCATION_ERR
                 )
 
                 val firstIndexOfLocId =
-                        qrContent.indexOf(
-                                DEFAULT_QR_LOCATION_ID_L_PAD,
-                                startIndex = lastIndexOfLocIdentifier
-                        ) + 1
+                    qrContent.indexOf(
+                        DEFAULT_QR_LOCATION_ID_L_PAD,
+                        startIndex = lastIndexOfLocIdentifier
+                    ) + 1
                 val lastIndexOfLocId =
-                        qrContent.indexOf(
-                                DEFAULT_QR_LOCATION_ID_R_PAD,
-                                startIndex = lastIndexOfLocIdentifier
-                        )
+                    qrContent.indexOf(
+                        DEFAULT_QR_LOCATION_ID_R_PAD,
+                        startIndex = lastIndexOfLocIdentifier
+                    )
 
                 if (firstIndexOfLocId == -1 || lastIndexOfLocIdentifier == -1) return ParserResult(
-                        codeRes = QR_LOCATION_ERR
+                    codeRes = QR_LOCATION_ERR
                 )
 
 
                 val companyId =
-                        qrContent.substring(
-                                startIndex = lastIndexOfLocIdentifier + 1,
-                                endIndex = firstIndexOfLocId - 1
-                        )
+                    qrContent.substring(
+                        startIndex = lastIndexOfLocIdentifier + 1,
+                        endIndex = firstIndexOfLocId - 1
+                    )
 
                 val locationId =
-                        qrContent.substring(startIndex = firstIndexOfLocId, endIndex = lastIndexOfLocId)
+                    qrContent.substring(startIndex = firstIndexOfLocId, endIndex = lastIndexOfLocId)
 
                 if (locationId.isEmpty() || companyId.isEmpty()) return ParserResult(codeRes = QR_LOCATION_ERR)
 
@@ -69,28 +69,28 @@ object QrCodeProcessor {
                     return ParserResult(codeRes = QR_LOCATION_ERR)
 
                 MyLogger.logThis(
-                        TAG, "identifyQrCode($qrContent : String)",
-                        "locationId $locationId companyId $companyId " +
-                                "locAsInt $asciiViableLocIdAsInt compAsInt $asciiViableCompIdAsInt"
+                    TAG, "identifyQrCode($qrContent : String)",
+                    "locationId $locationId companyId $companyId " +
+                            "locAsInt $asciiViableLocIdAsInt compAsInt $asciiViableCompIdAsInt"
                 )
                 return ParserResult(
-                        codeRes = SUCCESS,
-                        locId = asciiViableLocIdAsInt,
-                        compId = asciiViableCompIdAsInt,
-                        extraData = "company ID $companyId @location ID $locationId"
+                    codeRes = SUCCESS,
+                    locId = asciiViableLocIdAsInt,
+                    compId = asciiViableCompIdAsInt,
+                    extraData = "company ID $companyId @location ID $locationId"
                 )
             }
             qrContent.length == QR_MONITOR_ID_PADDED_LENGTH || qrContent.length == QR_MONITOR_ID_TRUE_LENGTH -> {
                 // This is a monitorID, let's get the location and try to add it
                 val properMonitorId =
-                        if (qrContent.length == QR_MONITOR_ID_PADDED_LENGTH) {
-                            qrContent.substring(QR_MONITOR_ID_PAD_LENGTH until QR_MONITOR_ID_PADDED_LENGTH - QR_MONITOR_ID_PAD_LENGTH)
-                        } else qrContent
+                    if (qrContent.length == QR_MONITOR_ID_PADDED_LENGTH) {
+                        qrContent.substring(QR_MONITOR_ID_PAD_LENGTH until QR_MONITOR_ID_PADDED_LENGTH - QR_MONITOR_ID_PAD_LENGTH)
+                    } else qrContent
 
                 return ParserResult(
-                        codeRes = SUCCESS,
-                        monitorId = properMonitorId,
-                        extraData = properMonitorId
+                    codeRes = SUCCESS,
+                    monitorId = properMonitorId,
+                    extraData = properMonitorId
                 )
             }
             else -> return ParserResult(codeRes = QR_UNKNOWN_ERR)
@@ -140,16 +140,16 @@ object QrCodeProcessor {
 
     private fun fromBase64Encoding(base64EncodeStr: String): String {
         return decode(base64EncodeStr.encodeToByteArray(), Base64.NO_PADDING).decodeToString()
-                .trim()
+            .trim()
     }
 
 
     fun getEncryptedEncodedPayloadForLocation(locId: Int, compId: Int, timeStamp: String): String {
         val key = getProperPayloadKeyForCompLocation(timeStamp)
         MyLogger.logThis(
-                TAG,
-                "getEncryptedEncodedPayload($locId : L, $compId : C, $timeStamp : t)",
-                "true key $key"
+            TAG,
+            "getEncryptedEncodedPayload($locId : L, $compId : C, $timeStamp : t)",
+            "true key $key"
         )
         val payload = getProperPayload(locId, compId)
         MyLogger.logThis(TAG, "getEncryptedEncodedPayload()", "payload $payload")
@@ -161,9 +161,9 @@ object QrCodeProcessor {
     fun getEncryptedEncodedPayloadForMonitor(monitorId: String, timeStamp: String): String {
         val key = getProperPayloadKeyForMonitor(timeStamp)
         MyLogger.logThis(
-                TAG,
-                "getEncryptedEncodedPayloadForMonitor(monitorId: $monitorId, $timeStamp : time)",
-                "true key $key"
+            TAG,
+            "getEncryptedEncodedPayloadForMonitor(monitorId: $monitorId, $timeStamp : time)",
+            "true key $key"
         )
         val casEncrypted = doCASEncryptOrDecrypt(payload = monitorId, key = key)
         MyLogger.logThis(TAG, "getEncryptedEncodedPayloadForMonitor()", "encrypted $casEncrypted")
@@ -171,29 +171,29 @@ object QrCodeProcessor {
     }
 
     fun getEncryptedEncodedPayloadForDeviceDetails(
-            compId: String,
-            locId: String,
-            userName: String,
-            userPassword: String,
-            timeStamp: String
+        compId: String,
+        locId: String,
+        userName: String,
+        userPassword: String,
+        timeStamp: String
     ): String {
         val key = getProperPayloadKeyForDeviceDetails(timeStamp)
         MyLogger.logThis(
-                TAG,
-                "getEncryptedEncodedPayloadForDeviceDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time)",
-                "true key $key"
+            TAG,
+            "getEncryptedEncodedPayloadForDeviceDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time)",
+            "true key $key"
         )
         val pl = getProperPayloadForDeviceDetails(
-                compId = compId,
-                locId = locId,
-                userName = userName,
-                userPassword = userPassword
+            compId = compId,
+            locId = locId,
+            userName = userName,
+            userPassword = userPassword
         )
         val casEncrypted = doCASEncryptOrDecrypt(payload = pl, key = key)
         MyLogger.logThis(
-                TAG,
-                "getEncryptedEncodedPayloadForDeviceDetails()",
-                "payload $pl   => encrypted $casEncrypted"
+            TAG,
+            "getEncryptedEncodedPayloadForDeviceDetails()",
+            "payload $pl   => encrypted $casEncrypted"
         )
         return toBase64Encoding(casEncrypted)
     }
@@ -205,12 +205,12 @@ object QrCodeProcessor {
     }
 
     private fun getProperPayloadForDeviceDetails(
-            compId: String,
-            locId: String,
-            userName: String,
-            userPassword: String,
-            showHistory: Boolean = false,
-            pmStandard: String = PM2_5_STD_PARAM
+        compId: String,
+        locId: String,
+        userName: String,
+        userPassword: String,
+        showHistory: Boolean = false,
+        pmStandard: String = PM2_5_STD_PARAM
     ): String {
         //todo determine PM25_TYPE_PARAM_KEY from settings
         return "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"0\",\"$HISTORY_WEEK_KEY\":\"0\",\"$HISTORY_DAY_KEY\":\"0\",\"$PM25_TYPE_PARAM_KEY\":\"$pmStandard\"}"
@@ -238,12 +238,12 @@ object QrCodeProcessor {
         return decoded
     }
 
-    fun getUnEncryptedPayloadForLocationDetails(payload: String, timeStmp: String): String {
+    fun getUnEncryptedPayloadForLocationDetails(payload: String, lTime: String): String {
         val decoded = fromBase64Encoding(payload)
         MyLogger.logThis(
-                TAG,
-                "etUnEncryptedPayloadForLocationDetails...",
-                "decoded $decoded"
+            TAG,
+            "etUnEncryptedPayloadForLocationDetails...",
+            "decoded $decoded"
         )
         return decoded
     }
@@ -252,11 +252,11 @@ object QrCodeProcessor {
 }
 
 data class ParserResult(
-        val codeRes: Int,
-        val locId: Int? = null,
-        val compId: Int? = null,
-        val monitorId: String? = null,
-        val extraData: String = ""
+    val codeRes: Int,
+    val locId: Int? = null,
+    val compId: Int? = null,
+    val monitorId: String? = null,
+    val extraData: String = ""
 )
 
 const val PM2_5_STD_PARAM = "0"

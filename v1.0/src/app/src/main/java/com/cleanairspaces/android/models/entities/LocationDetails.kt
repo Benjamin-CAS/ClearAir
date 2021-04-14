@@ -13,14 +13,14 @@ import java.util.*
 @Entity(
         tableName = "my_location_details",
         indices = [androidx.room.Index(
-                value = ["company_id", "location_id"],
+                value = ["company_id", "location_id", "bound_to_scanned_device_id"],
                 unique = true
         )]
 )
 @Parcelize
-class MyLocationDetails(
+class LocationDetails(
         @PrimaryKey(autoGenerate = true)
-        val autoId: Long,
+        val autoId: Int,
         var company_id: String = "",
         var location_id: String = "",
         var lastUpdated: Long = System.currentTimeMillis(),
@@ -30,13 +30,22 @@ class MyLocationDetails(
         val ExpFilter: String? = "",
         val ExpEquip: String? = "",
         var lastKnownUserName: String = "", //for refreshing
-        var lastKnownPassword: String = "" //for refreshing
+        var lastKnownPassword: String = "", //for refreshing
+        var is_mine: Boolean = true,
+        var bound_to_scanned_device_id: String //mapped as compIdLocIdMonitorId --of LocationDataFromQr
 ) : Parcelable {
     fun getFormattedUpdateTime(): String {
         val date = Date(lastUpdated)
         val dateFormat: DateFormat = SimpleDateFormat("dd - MMMM HH:mm", Locale.getDefault())
         return dateFormat.format(date)
     }
+
+        fun deConstructDeviceIdBoundedTo(): Triple<String, String, String> {
+               val compIdLocId = "$company_id$location_id"
+               val monitorId = bound_to_scanned_device_id.substringAfter(compIdLocId)
+               return Triple(company_id, location_id, monitorId)
+        }
+
 }
 
 @Parcelize
@@ -82,6 +91,12 @@ data class Energy(
 // for UI purposes only
 @Parcelize
 data class LocationDetailsGeneralDataWrapper(
-        val locationDetails: MyLocationDetails,
-        val generalData: CustomerDeviceData
+        val locationDetails: LocationDetails,
+        val generalDataFromQr: LocationDataFromQr
 ) : Parcelable
+
+
+fun createDeviceIdToBindTo(compId: String, locId: String, monitorId: String): String {
+        //to be used as  bound_to_scanned_device_id mapped as compIdLocIdMonitorId --of LocationDataFromQr
+        return "$compId$locId$monitorId"
+}

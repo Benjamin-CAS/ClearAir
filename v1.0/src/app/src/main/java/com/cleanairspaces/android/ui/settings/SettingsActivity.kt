@@ -62,12 +62,12 @@ class SettingsActivity : BaseActivity() {
         aqiTypeSelector = (binding.aqiSelect.editText as? AutoCompleteTextView)
         aqiTypeSelector?.setAdapter(aqiIndexesAdapter)
         aqiTypeSelector?.onItemClickListener =
-                AdapterView.OnItemClickListener { _, _, position, _ ->
-                    val selectedAqi: String =
-                            aqiIndexesAdapter.getItem(position)
-                                    ?: getString(R.string.default_pm_index_value)
-                    viewModel.setSelectedAqi(selectedAqi)
-                }
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                val selectedAqi: String =
+                    aqiIndexesAdapter.getItem(position)
+                        ?: getString(R.string.default_pm_index_value)
+                viewModel.setSelectedAqi(selectedAqi)
+            }
     }
 
 

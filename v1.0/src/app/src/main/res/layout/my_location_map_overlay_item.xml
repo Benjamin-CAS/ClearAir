@@ -6,17 +6,17 @@
         android:id="@+id/item_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="@dimen/std_space"
-        app:cardCornerRadius="@dimen/std_space"
-        android:focusable="true"
+        android:checkable="true"
         android:clickable="true"
-        android:checkable="true">
+        android:focusable="true"
+        app:cardCornerRadius="@dimen/std_space"
+        app:cardElevation="@dimen/std_space">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:padding="@dimen/std_space"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="false">
+            android:clipToPadding="false"
+            android:padding="@dimen/std_space">
 
             <TextView
                 android:id="@+id/location_name_tv"
@@ -29,13 +29,13 @@
 
             <ImageView
                 android:id="@+id/location_logo_iv"
-                android:paddingStart="@dimen/std_space"
-                android:paddingEnd="@dimen/std_space"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/location_logo_size"
                 android:layout_marginTop="@dimen/std_space"
                 android:background="@drawable/round_whitish_img_bg"
                 android:contentDescription="@string/location_logo_image_desc"
+                android:paddingStart="@dimen/std_space"
+                android:paddingEnd="@dimen/std_space"
                 android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/location_name_tv"

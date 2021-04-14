@@ -27,7 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CleanAirSpaces">
-        <activity android:name=".ui.details.LocationDetailsActivity"></activity>
+        <activity android:name=".ui.details.LocationDetailsActivity" />
         <activity android:name=".ui.about.AboutAppActivity" />
         <activity android:name=".ui.settings.SettingsActivity" />
 
@@ -49,13 +49,20 @@
         <activity android:name=".ui.smart_qr.QrCodeProcessingActivity" />
         <activity android:name=".ui.home.amap.AMapActivity" />
         <activity android:name=".ui.home.gmap.GMapActivity" />
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- work manager remove default initializer-->
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            android:exported="false"
+            tools:node="remove" />
     </application>
 
 </manifest>

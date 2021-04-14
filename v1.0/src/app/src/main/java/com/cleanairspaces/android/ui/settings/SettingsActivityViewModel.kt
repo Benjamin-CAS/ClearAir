@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsActivityViewModel @Inject constructor(
-        private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     private val TAG = SettingsActivityViewModel::class.java.simpleName

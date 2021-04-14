@@ -6,8 +6,8 @@
     android:viewportWidth="16"
     android:viewportHeight="16">
     <group
-        android:translateX="16"
-        android:rotation="90">
+        android:rotation="90"
+        android:translateX="16">
         <path android:pathData="M0,870l0,-870l987,0l0,870z">
             <aapt:attr name="android:fillColor">
                 <gradient
@@ -15,8 +15,7 @@
                     android:endY="16"
                     android:startX="24"
                     android:startY="2.6645353E-14"
-                    android:type="linear"
-                    >
+                    android:type="linear">
                     <item
                         android:color="#E51926"
                         android:offset="0" />

@@ -4,10 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
@@ -17,7 +15,6 @@ import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityAmapBinding
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.BaseMapActivity
-import com.cleanairspaces.android.ui.home.MapViewModel
 import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
 import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
 import com.cleanairspaces.android.utils.AQI.getAQIWeightFromPM25
@@ -25,7 +22,6 @@ import com.cleanairspaces.android.utils.HEAT_MAP_CIRCLE_RADIUS
 import com.cleanairspaces.android.utils.MyColorUtils.getGradientColors
 import com.cleanairspaces.android.utils.MyColorUtils.getGradientIntensities
 import com.cleanairspaces.android.utils.UPDATE_USER_LOCATION_INTERVAL
-import com.cleanairspaces.android.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -37,70 +33,59 @@ class AMapActivity : BaseMapActivity() {
 
     private val TAG = AMapActivity::class.java.simpleName
 
-    private val viewModel: MapViewModel by viewModels()
 
     private var mapView: MapView? = null
     private var aMap: AMap? = null
 
-    override val mapActionsAdapter = MapActionsAdapter(this)
+    override val mapActionsAdapter: MapActionsAdapter by lazy {
+        MapActionsAdapter(this)
+    }
     override val myLocationsAdapter: MyLocationsAdapter by lazy {
         MyLocationsAdapter(this)
     }
 
+    private fun initPermissionsLauncher() {
+        //location permission launcher must be set
+        requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                showUserLocation()
+            }
+        }
+    }
+
+    private fun initQrScannerLauncher() {
+        //scan-qr launcher must be set
+        scanQrCodeLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    //  you will get result here in result.data
+                    handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+                }
+
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAmapBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        initPermissionsLauncher()
+        initQrScannerLauncher()
+
         super.setToolBar(binding.toolbarLayout, true)
-
-        //location permission launcher must be set
-        requestPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                showUserLocation()
-            }
-        }
-
-        //scan-qr launcher must be set
-        scanQrCodeLauncher =
-                registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-                { result: ActivityResult ->
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        //  you will get result here in result.data
-                        handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
-                    }
-
-                }
+        super.homeMapOverlay = binding.homeMapOverlay
 
         initializeMap(savedInstanceState)
-        super.initializeRecyclerViewForUserActions(binding.homeMapOverlay, viewModel.mapActions)
-        super.initializeMyLocationRecycler(binding.homeMapOverlay)
+
+        super.initializeRecyclerViewForUserActions()
+        super.initializeMyLocationsRecycler()
     }
 
-
-    /********* OBSERVE DATA ****/
-    private fun observeMyLocations() {
-        viewModel.getSelectedAqiIndex().observe(this, Observer {
-            myLocationsAdapter.setAQIIndex(it)
-        })
-        viewModel.refreshMyLocationsFlow().observe(this, Observer {
-            if (it != null) {
-                viewModel.updateMyLocationsDetails(it)
-            }
-        })
-
-        viewModel.observeMyLocationDetails().observe(this, Observer {
-            if (it != null) {
-                super.updateMyLocationsList(it)
-            }
-        })
-    }
-
-
-    /*************** USER ACTIONS ****************/
     private fun initializeMap(savedInstanceState: Bundle?) {
         binding.apply {
             mapView = map
@@ -110,40 +95,37 @@ class AMapActivity : BaseMapActivity() {
                 aMap?.apply {
                     setMapLanguage(AMap.ENGLISH)
                     uiSettings.isZoomControlsEnabled = false
-                    setOnShowMyLocationClickListener()
+                    onShowMyLocationOnMapClicked()
                     observeOutDoorLocations()
                 }
             }
         }
     }
 
-    private fun setOnShowMyLocationClickListener() {
+    private fun onShowMyLocationOnMapClicked() {
         binding.myLocationBtn.setOnClickListener {
             requestPermissionsToShowUserLocation()
         }
     }
 
     private fun observeOutDoorLocations() {
-        viewModel.observeLocations().observe(this, Observer {
+        viewModel.observeOutDoorLocations().observe(this, Observer {
             if (!it.isNullOrEmpty()) {
                 setupHeatMap(locations = it)
-
             }
         })
     }
 
-
-    /****************** USER LOCATION ******************/
     override fun showUserLocation() {
         if (!viewModel.hasSetMyLocationStyle) {
             viewModel.hasSetMyLocationStyle = true
             val myLocationStyle = MyLocationStyle()
             myLocationStyle.apply {
                 myLocationIcon(
-                        BitmapDescriptorFactory.fromBitmap(
-                                BitmapFactory
-                                        .decodeResource(resources, R.drawable.my_location_icon)
-                        )
+                    BitmapDescriptorFactory.fromBitmap(
+                        BitmapFactory
+                            .decodeResource(resources, R.drawable.my_location_icon)
+                    )
                 )
                 interval(UPDATE_USER_LOCATION_INTERVAL)
                 myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER)
@@ -158,30 +140,18 @@ class AMapActivity : BaseMapActivity() {
             }
         }
         //gps is required
-        askUserToEnableGPS()
+        super.promptMyLocationSettings()
 
         //change to last known location
         viewModel.getUserLastKnownALatLng()?.let {
             aMap?.animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                            it,
-                            10f
-                    )
+                CameraUpdateFactory.newLatLngZoom(
+                    it,
+                    10f
+                )
             )
         }
 
-    }
-
-    private fun askUserToEnableGPS() = super.promptMyLocationSettings()
-
-
-    override fun hideMyLocations() {
-        binding.homeMapOverlay.apply {
-            if (locationsRv.visibility == View.VISIBLE)
-                locationsRv.visibility = View.INVISIBLE
-            else
-                locationsRv.visibility = View.VISIBLE
-        }
     }
 
 
@@ -190,12 +160,12 @@ class AMapActivity : BaseMapActivity() {
         val locationsLatLng: MutableCollection<WeightedLatLng> = mutableListOf()
         for (location in locations) {
             val pm25: Double =
-                    (if (location.pm2p5.isNotBlank()) location.pm2p5 else location.reading).toDouble()
+                (if (location.pm2p5.isNotBlank()) location.pm2p5 else location.reading).toDouble()
             locationsLatLng.add(
-                    WeightedLatLng(
-                            location.getAMapLocationLatLng(),
-                            getAQIWeightFromPM25(pm25).toDouble()
-                    )
+                WeightedLatLng(
+                    location.getAMapLocationLatLng(),
+                    getAQIWeightFromPM25(pm25).toDouble()
+                )
             )
         }
 
@@ -215,28 +185,7 @@ class AMapActivity : BaseMapActivity() {
     }
 
 
-    /************************** QR CODE SCANNING ***************/
-
-
-    /***** dialogs ******/
-    override fun showSnackBar(
-            msgRes: Int,
-            isError: Boolean,
-            actionRes: Int?
-    ) {
-        dismissPopUps()
-        binding.apply {
-            snackbar = homeMapOverlay.viewsContainer.showSnackBar(
-                    msgResId = msgRes,
-                    isErrorMsg = isError,
-                    actionMessage = actionRes
-            )
-        }
-    }
-
-
     /************* forwarding life cycle methods & clearing *********/
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
@@ -245,12 +194,13 @@ class AMapActivity : BaseMapActivity() {
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
-        observeMyLocations()
+        super.observeMyLocations(this)
     }
 
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
+
     }
 
     override fun onLowMemory() {
@@ -266,12 +216,15 @@ class AMapActivity : BaseMapActivity() {
         dismissPopUps()
     }
 
+
     override fun gotToActivity(toAct: Class<*>) {
         startActivity(
-                Intent(
-                        this,
-                        toAct
-                )
+            Intent(
+                this,
+                toAct
+            )
         )
+
     }
 }
+

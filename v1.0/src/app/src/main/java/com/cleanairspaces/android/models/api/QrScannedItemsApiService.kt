@@ -24,18 +24,18 @@ interface QrScannedItemsApiService {
 
     @POST("index.php/api/approuter")
     fun fetchScannedDeviceQrResponse(
-            @Query("app_id") app_id: Int = 1,
-            @Query("method") method: String,
-            @Query("nonce") nonce: String = NONCE,
-            @Body data: JsonObject
+        @Query("app_id") app_id: Int = 1,
+        @Query("method") method: String,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
     ): Call<ScannedDeviceQrResponse>
 
     @POST("index.php/api/approuter")
     fun fetchDetailsForMyLocation(
-            @Query("app_id") app_id: Int = 1,
-            @Query("method") method: String,
-            @Query("nonce") nonce: String = NONCE,
-            @Body data: JsonObject
+        @Query("app_id") app_id: Int = 1,
+        @Query("method") method: String,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
     ): Call<ScannedDeviceQrResponse>
 
 }

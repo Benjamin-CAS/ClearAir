@@ -43,13 +43,13 @@ object MyColorUtils {
 
     fun getGradientColors(): IntArray {
         return intArrayOf(
-                convertUIColorToRGB(UIColor.AQIGoodColor),
-                convertUIColorToRGB(UIColor.AQIModerateColor),
-                convertUIColorToRGB(UIColor.AQIGUnhealthyColor),
-                convertUIColorToRGB(UIColor.AQIUnhealthyColor),
-                convertUIColorToRGB(UIColor.AQIVUnhealthyColor),
-                convertUIColorToRGB(UIColor.AQIHazardousColor),
-                convertUIColorToRGB(UIColor.AQIBeyondColor)
+            convertUIColorToRGB(UIColor.AQIGoodColor),
+            convertUIColorToRGB(UIColor.AQIModerateColor),
+            convertUIColorToRGB(UIColor.AQIGUnhealthyColor),
+            convertUIColorToRGB(UIColor.AQIUnhealthyColor),
+            convertUIColorToRGB(UIColor.AQIVUnhealthyColor),
+            convertUIColorToRGB(UIColor.AQIHazardousColor),
+            convertUIColorToRGB(UIColor.AQIBeyondColor)
         )
     }
 

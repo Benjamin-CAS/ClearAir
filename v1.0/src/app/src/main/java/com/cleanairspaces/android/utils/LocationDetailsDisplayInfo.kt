@@ -11,68 +11,68 @@ import kotlin.math.truncate
 
 @Parcelize
 data class MyLocationDetailsWrapper(
-        val locationArea: String,
-        val wrappedData: LocationDetailsGeneralDataWrapper,
-        val aqiIndex: String,
-        val bgColor: Int,
-        val inStatusIndicatorRes: Int,
-        val inStatusTvTxt: String,
-        val inPmValueTxt: String,
-        val outStatusIndicatorRes: Int,
-        val outStatusTvTxt: String,
-        val outPmValueTxt: String,
-        val updatedOnTxt: String,
-        var inBgTransparent: Int = 0,
-        var outBgTransparent: Int = 0,
-        val co2LvlTxt: String = "",
-        val vocLvlTxt: String = "",
-        val tmpLvl: String = "",
-        val humidLvl: String = "",
-        val ogInPmTxt: String,
-        val pmSliderDiskRes: Int,
-        val pmSliderMin: Int,
-        val pmSliderMax: Int,
-        val pmSliderValue: Int,
-        val co2SliderMin: Int,
-        val co2SliderMax: Int,
-        val co2Slider: Int = UNSET_PARAM_VAL,
-        val coSliderDiskRes: Int,
-        val tmpSliderMin: Int,
-        val tmpSliderMax: Int,
-        val tmpSlider: Int = UNSET_PARAM_VAL,
-        val tmpSliderDiskRes: Int,
-        val vocSliderMin: Int,
-        val vocSliderMax: Int,
-        val vocSlider: Int = UNSET_PARAM_VAL,
-        val vocSliderDiskRes: Int,
-        val humidSliderMin: Int,
-        val humidSliderMax: Int,
-        val humidSlider: Int = UNSET_PARAM_VAL,
-        val humidSliderDiskRes: Int,
-        val carbonSavedStr: String = "",
-        val energySavedStr: String = "",
-        val outDoorPmTxtColor: Int = UNSET_PARAM_VAL,
-        val indoorPmValue: Int = UNSET_PARAM_VAL
+    val locationArea: String,
+    val wrappedData: LocationDetailsGeneralDataWrapper,
+    val aqiIndex: String,
+    val bgColor: Int,
+    val inStatusIndicatorRes: Int,
+    val inStatusTvTxt: String,
+    val inPmValueTxt: String,
+    val outStatusIndicatorRes: Int,
+    val outStatusTvTxt: String,
+    val outPmValueTxt: String,
+    val updatedOnTxt: String,
+    var inBgTransparent: Int = 0,
+    var outBgTransparent: Int = 0,
+    val co2LvlTxt: String = "",
+    val vocLvlTxt: String = "",
+    val tmpLvl: String = "",
+    val humidLvl: String = "",
+    val ogInPmTxt: String,
+    val pmSliderDiskRes: Int,
+    val pmSliderMin: Int,
+    val pmSliderMax: Int,
+    val pmSliderValue: Int,
+    val co2SliderMin: Int,
+    val co2SliderMax: Int,
+    val co2Slider: Int = UNSET_PARAM_VAL,
+    val coSliderDiskRes: Int,
+    val tmpSliderMin: Int,
+    val tmpSliderMax: Int,
+    val tmpSlider: Int = UNSET_PARAM_VAL,
+    val tmpSliderDiskRes: Int,
+    val vocSliderMin: Int,
+    val vocSliderMax: Int,
+    val vocSlider: Int = UNSET_PARAM_VAL,
+    val vocSliderDiskRes: Int,
+    val humidSliderMin: Int,
+    val humidSliderMax: Int,
+    val humidSlider: Int = UNSET_PARAM_VAL,
+    val humidSliderDiskRes: Int,
+    val carbonSavedStr: String = "",
+    val energySavedStr: String = "",
+    val outDoorPmTxtColor: Int = UNSET_PARAM_VAL,
+    val indoorPmValue: Int = UNSET_PARAM_VAL
 
 ) : Parcelable
 
 /********* parses location info into text suitable for display in the ui ******/
 fun getLocationInfoDetails(
-        ctx: Context,
-        dataWrapper: LocationDetailsGeneralDataWrapper,
-        selectedAqiIndex: String?
+    ctx: Context,
+    dataWrapper: LocationDetailsGeneralDataWrapper,
+    selectedAqiIndex: String?
 ): MyLocationDetailsWrapper {
 
     val myLocationDetails = dataWrapper.locationDetails
-    val location = dataWrapper.generalData
+    val location = dataWrapper.generalDataFromQr
 
     val pm25Default = ctx.getString(R.string.default_pm_index_value)
     val aqiUs = ctx.getString(R.string.us_aqi_index_value)
     val aqiIndex: String =
-            selectedAqiIndex ?: pm25Default
+        selectedAqiIndex ?: pm25Default
 
     val locationArea =
-            ctx.getString(R.string.outdoor_txt) + ": " + location.location
+        ctx.getString(R.string.outdoor_txt) + ": " + location.location
 
     var inDoorPmValue: Double = UNSET_PARAM_VAL.toDouble()
     var inDoorPmTxt = ""
@@ -89,18 +89,18 @@ fun getLocationInfoDetails(
         inDoorPmTxt = "$inDoorPmValue ${ctx.getString(R.string.pm_units)}"
         if (aqiIndex == pm25Default || aqiIndex == aqiUs) {
             inStatusIndicatorRes = MyColorUtils.convertUIColorToStatusRes(
-                    AQI.getAQIStatusColorFromPM25(
-                            inDoorPmValue
-                    )
+                AQI.getAQIStatusColorFromPM25(
+                    inDoorPmValue
+                )
             )
             inStatusText = AQI.getAQIStatusTextFromPM25(inDoorPmValue)
             inPmValueTxt = inDoorPmValue.toString()
         } else {
 
             inStatusIndicatorRes = MyColorUtils.convertUIColorToStatusRes(
-                    AQI.getAQICNStatusColorFromPM25(
-                            inDoorPmValue
-                    )
+                AQI.getAQICNStatusColorFromPM25(
+                    inDoorPmValue
+                )
             )
             inStatusText = AQI.getAQICNStatusTextFromPM25(inDoorPmValue)
             inPmValueTxt = AQI.getAQICNFromPM25(inDoorPmValue).toString()
@@ -147,31 +147,31 @@ fun getLocationInfoDetails(
     val outDoorPm = myLocationDetails.outdoor.outdoor_pm.toDouble()
     var outDoorPmTxtColor = UNSET_PARAM_VAL
     val (outStatusIndicatorRes, outStatusText, outPmValueTxt) =
-            if (aqiIndex == pm25Default || aqiIndex == aqiUs) {
-                val statusColor = AQI.getAQIStatusColorFromPM25(
-                        outDoorPm
-                )
-                outDoorPmTxtColor = convertUIColorToColorRes(statusColor)
-                Triple(
-                        MyColorUtils.convertUIColorToStatusRes(
-                                statusColor
-                        ),
-                        AQI.getAQIStatusTextFromPM25(outDoorPm),
-                        outDoorPm.toString()
-                )
-            } else {
-                val statusColor = AQI.getAQICNStatusColorFromPM25(
-                        outDoorPm
-                )
-                outDoorPmTxtColor = convertUIColorToColorRes(statusColor)
-                Triple(
-                        MyColorUtils.convertUIColorToStatusRes(
-                                statusColor
-                        ),
-                        AQI.getAQICNStatusTextFromPM25(outDoorPm),
-                        AQI.getAQICNFromPM25(outDoorPm).toString()
-                )
-            }
+        if (aqiIndex == pm25Default || aqiIndex == aqiUs) {
+            val statusColor = AQI.getAQIStatusColorFromPM25(
+                outDoorPm
+            )
+            outDoorPmTxtColor = convertUIColorToColorRes(statusColor)
+            Triple(
+                MyColorUtils.convertUIColorToStatusRes(
+                    statusColor
+                ),
+                AQI.getAQIStatusTextFromPM25(outDoorPm),
+                outDoorPm.toString()
+            )
+        } else {
+            val statusColor = AQI.getAQICNStatusColorFromPM25(
+                outDoorPm
+            )
+            outDoorPmTxtColor = convertUIColorToColorRes(statusColor)
+            Triple(
+                MyColorUtils.convertUIColorToStatusRes(
+                    statusColor
+                ),
+                AQI.getAQICNStatusTextFromPM25(outDoorPm),
+                AQI.getAQICNFromPM25(outDoorPm).toString()
+            )
+        }
 
 
     val outStatusTvTxt = ctx.getString(outStatusText.resourceId)
@@ -181,21 +181,30 @@ fun getLocationInfoDetails(
             AQI.getAQIFromPM25(outDoorPm) < 100 ->
                 Pair(R.color.transparent_green, R.drawable.green_seekbar_thumb)
 
-            AQI.getAQIFromPM25(outDoorPm) > 150 -> Pair(R.color.transparent_red, R.drawable.red_seekbar_thumb)
+            AQI.getAQIFromPM25(outDoorPm) > 150 -> Pair(
+                R.color.transparent_red,
+                R.drawable.red_seekbar_thumb
+            )
             else -> Pair(R.color.transparent_orange, R.drawable.yellow_seekbar_thumb)
         }
 
     } else {
         when {
-            AQI.getAQICNFromPM25(outDoorPm) < 150 -> Pair(R.color.transparent_green, R.drawable.green_seekbar_thumb)
-            AQI.getAQICNFromPM25(outDoorPm) > 200 -> Pair(R.color.transparent_red, R.drawable.red_seekbar_thumb)
+            AQI.getAQICNFromPM25(outDoorPm) < 150 -> Pair(
+                R.color.transparent_green,
+                R.drawable.green_seekbar_thumb
+            )
+            AQI.getAQICNFromPM25(outDoorPm) > 200 -> Pair(
+                R.color.transparent_red,
+                R.drawable.red_seekbar_thumb
+            )
             else -> Pair(R.color.transparent_orange, R.drawable.yellow_seekbar_thumb)
         }
     }
 
 
     val updatedOnTxt =
-            ctx.getString(R.string.updated_on_prefix) + "\n" + myLocationDetails.getFormattedUpdateTime()
+        ctx.getString(R.string.updated_on_prefix) + "\n" + myLocationDetails.getFormattedUpdateTime()
 
 
     /********** EXTRAS *********/
@@ -322,48 +331,48 @@ fun getLocationInfoDetails(
     }
 
     return MyLocationDetailsWrapper(
-            locationArea = locationArea,
-            wrappedData = dataWrapper,
-            aqiIndex = aqiIndex,
-            bgColor = bgColor,
-            inStatusIndicatorRes = inStatusIndicatorRes,
-            inStatusTvTxt = inStatusTvTxt,
-            inPmValueTxt = inPmValueTxt,
-            outStatusIndicatorRes = outStatusIndicatorRes,
-            outStatusTvTxt = outStatusTvTxt,
-            outPmValueTxt = outPmValueTxt,
-            updatedOnTxt = updatedOnTxt,
-            inBgTransparent = inBgTransparent,
-            outBgTransparent = outBgTransparent,
-            co2LvlTxt = co2LvlTxt,
-            vocLvlTxt = vocLvlTxt,
-            tmpLvl = tmpLvlTxt,
-            humidLvl = humidLvlTxt,
-            ogInPmTxt = inDoorPmTxt,
-            pmSliderDiskRes = pmSliderDiskRes,
-            pmSliderMin = pmSliderMin,
-            pmSliderMax = pmSliderMax,
-            pmSliderValue = pmSliderValue,
-            co2SliderMin = co2SliderMin,
-            co2SliderMax = co2SliderMax,
-            co2Slider = co2Slider,
-            coSliderDiskRes = coSliderDiskRes,
-            tmpSliderMin = tmpSliderMin,
-            tmpSliderMax = tmpSliderMax,
-            tmpSlider = tmpSlider,
-            tmpSliderDiskRes = tmpSliderDiskRes,
-            vocSliderMin = vocSliderMin,
-            vocSliderMax = vocSliderMax,
-            vocSlider = vocSlider,
-            vocSliderDiskRes = vocSliderDiskRes,
-            humidSliderMin = humidSliderMin,
-            humidSliderMax = humidSliderMax,
-            humidSlider = humidSlider,
-            humidSliderDiskRes = humidSliderDiskRes,
-            carbonSavedStr = carbonSavedStr,
-            energySavedStr = energySavedStr,
-            outDoorPmTxtColor = outDoorPmTxtColor,
-            indoorPmValue = inDoorPmValue.toInt()
+        locationArea = locationArea,
+        wrappedData = dataWrapper,
+        aqiIndex = aqiIndex,
+        bgColor = bgColor,
+        inStatusIndicatorRes = inStatusIndicatorRes,
+        inStatusTvTxt = inStatusTvTxt,
+        inPmValueTxt = inPmValueTxt,
+        outStatusIndicatorRes = outStatusIndicatorRes,
+        outStatusTvTxt = outStatusTvTxt,
+        outPmValueTxt = outPmValueTxt,
+        updatedOnTxt = updatedOnTxt,
+        inBgTransparent = inBgTransparent,
+        outBgTransparent = outBgTransparent,
+        co2LvlTxt = co2LvlTxt,
+        vocLvlTxt = vocLvlTxt,
+        tmpLvl = tmpLvlTxt,
+        humidLvl = humidLvlTxt,
+        ogInPmTxt = inDoorPmTxt,
+        pmSliderDiskRes = pmSliderDiskRes,
+        pmSliderMin = pmSliderMin,
+        pmSliderMax = pmSliderMax,
+        pmSliderValue = pmSliderValue,
+        co2SliderMin = co2SliderMin,
+        co2SliderMax = co2SliderMax,
+        co2Slider = co2Slider,
+        coSliderDiskRes = coSliderDiskRes,
+        tmpSliderMin = tmpSliderMin,
+        tmpSliderMax = tmpSliderMax,
+        tmpSlider = tmpSlider,
+        tmpSliderDiskRes = tmpSliderDiskRes,
+        vocSliderMin = vocSliderMin,
+        vocSliderMax = vocSliderMax,
+        vocSlider = vocSlider,
+        vocSliderDiskRes = vocSliderDiskRes,
+        humidSliderMin = humidSliderMin,
+        humidSliderMax = humidSliderMax,
+        humidSlider = humidSlider,
+        humidSliderDiskRes = humidSliderDiskRes,
+        carbonSavedStr = carbonSavedStr,
+        energySavedStr = energySavedStr,
+        outDoorPmTxtColor = outDoorPmTxtColor,
+        indoorPmValue = inDoorPmValue.toInt()
     )
 
 }

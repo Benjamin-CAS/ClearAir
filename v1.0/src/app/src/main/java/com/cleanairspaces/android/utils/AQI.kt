@@ -161,15 +161,15 @@ object AQI {
     fun getAQIStatusTextFromPM25(pm25: Double): ResourceCommentWrapper {
         if (pm25 == 0.0) {
             return ResourceCommentWrapper(
-                    R.string.condition_good,
-                    commentRes = R.string.pm2_5_lvl_comment
+                R.string.condition_good,
+                commentRes = R.string.pm2_5_lvl_comment
             )
         }
 
         if (pm25 >= 500) {
             return ResourceCommentWrapper(
-                    R.string.condition_beyond_rating,
-                    commentRes = R.string.pm2_5_lvl_comment
+                R.string.condition_beyond_rating,
+                commentRes = R.string.pm2_5_lvl_comment
             )
         }
 
@@ -179,49 +179,49 @@ object AQI {
         when (i) {
             0 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_good, commentRes = R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_good, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             1
             ->
                 return ResourceCommentWrapper(
-                        R.string.condition_good, commentRes = R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_good, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             2
             ->
                 return ResourceCommentWrapper(
-                        R.string.condition_moderate, commentRes = R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_moderate, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             3
             ->
                 return ResourceCommentWrapper(
-                        R.string.condition_unhealthy_sensitive_groups,
-                        commentRes = R.string.condition_unhealthy_sensitive_groups_comment
+                    R.string.condition_unhealthy_sensitive_groups,
+                    commentRes = R.string.condition_unhealthy_sensitive_groups_comment
                 )
             4
             ->
                 return ResourceCommentWrapper(
-                        R.string.condition_unhealthy, commentRes = R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_unhealthy, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             5
             ->
                 return ResourceCommentWrapper(
-                        R.string.condition_very_unhealthy,
-                        commentRes = R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_very_unhealthy,
+                    commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             6
             ->
                 return ResourceCommentWrapper(
-                        R.string.condition_hazardous, commentRes = R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_hazardous, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             7
             ->
                 return ResourceCommentWrapper(
-                        R.string.condition_hazardous, commentRes = R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_hazardous, commentRes = R.string.pm2_5_lvl_aqi_us_comment
                 )
             else ->
                 return ResourceCommentWrapper(
-                        R.string.condition_beyond_rating, commentRes =
-                R.string.pm2_5_lvl_aqi_us_comment
+                    R.string.condition_beyond_rating, commentRes =
+                    R.string.pm2_5_lvl_aqi_us_comment
                 )
         }
     }
@@ -284,8 +284,8 @@ object AQI {
     fun getAQICNStatusTextFromPM25(pm25: Double): ResourceCommentWrapper {
         when {
             pm25 == 0.0 -> return ResourceCommentWrapper(
-                    R.string.condition_excellent,
-                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                R.string.condition_excellent,
+                commentRes = R.string.pm2_5_lvl_aqi_cn_comment
             )
             pm25 >= 500 -> return ResourceCommentWrapper(R.string.condition_beyond_rating)
         }
@@ -296,48 +296,48 @@ object AQI {
         when (i) {
             0 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_excellent,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_excellent,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             1 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_excellent,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_excellent,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             2 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_good,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_good,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             3 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_lightly,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_lightly,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             4 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_moderate,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_moderate,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             5 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_heavy,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_heavy,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             6 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_severe,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_severe,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             7 ->
                 return ResourceCommentWrapper(
-                        R.string.condition_beyond_rating,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_beyond_rating,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
             else ->
                 return ResourceCommentWrapper(
-                        R.string.condition_beyond_rating,
-                        commentRes = R.string.pm2_5_lvl_aqi_cn_comment
+                    R.string.condition_beyond_rating,
+                    commentRes = R.string.pm2_5_lvl_aqi_cn_comment
                 )
         }
     }
@@ -405,44 +405,60 @@ object AQI {
         return when {
             aqi < 35 -> {
 
-                arrayOf(ResourceCommentWrapper(
+                arrayOf(
+                    ResourceCommentWrapper(
                         resourceId = R.drawable.mask_off,
-                        commentRes = R.string.no_mask), ResourceCommentWrapper(
+                        commentRes = R.string.no_mask
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.outdoors_on,
-                        commentRes = R.string.outdoor_acts_suitable), ResourceCommentWrapper(
+                        commentRes = R.string.outdoor_acts_suitable
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.windows_open,
-                        commentRes = R.string.windoors_open), ResourceCommentWrapper(
+                        commentRes = R.string.windoors_open
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.fan_off,
-                        commentRes = R.string.air_purify_not_needed))
+                        commentRes = R.string.air_purify_not_needed
+                    )
+                )
 
 
             }
             aqi > 180 -> {
 
                 arrayOf(
-                        ResourceCommentWrapper(
-                                resourceId = R.drawable.mask_on,
-                                commentRes = R.string.masks_recommended), ResourceCommentWrapper(
+                    ResourceCommentWrapper(
+                        resourceId = R.drawable.mask_on,
+                        commentRes = R.string.masks_recommended
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.outdoors_off,
-                        commentRes = R.string.avoid_outdoors), ResourceCommentWrapper(
+                        commentRes = R.string.avoid_outdoors
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.windows_close,
-                        commentRes = R.string.close_windows), ResourceCommentWrapper(
+                        commentRes = R.string.close_windows
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.fan_on,
-                        commentRes = R.string.air_purify_needed))
+                        commentRes = R.string.air_purify_needed
+                    )
+                )
 
             }
             else -> {
 
                 arrayOf(
-                        ResourceCommentWrapper(
-                                resourceId = R.drawable.mask_on,
-                                commentRes = R.string.masks_recommended_sensitive), ResourceCommentWrapper(
+                    ResourceCommentWrapper(
+                        resourceId = R.drawable.mask_on,
+                        commentRes = R.string.masks_recommended_sensitive
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.outdoors_off,
-                        commentRes = R.string.minimal_outdoor_acts), ResourceCommentWrapper(
+                        commentRes = R.string.minimal_outdoor_acts
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.windows_close,
-                        commentRes = R.string.close_windows), ResourceCommentWrapper(
+                        commentRes = R.string.close_windows
+                    ), ResourceCommentWrapper(
                         resourceId = R.drawable.fan_on,
-                        commentRes = R.string.air_purify_recommended))
+                        commentRes = R.string.air_purify_recommended
+                    )
+                )
             }
         }
     }
@@ -572,6 +588,6 @@ object AQI {
 
 //generic class that ties a resource drawable/color/string value to an optional comment string
 data class ResourceCommentWrapper(
-        val resourceId: Int,
-        val commentRes: Int? = null
+    val resourceId: Int,
+    val commentRes: Int? = null
 )

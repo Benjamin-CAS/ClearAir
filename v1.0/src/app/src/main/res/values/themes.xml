@@ -18,9 +18,9 @@
         <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>
     </style>
 
-     <style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
+    <style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_settings_gear</item>
-         <item name="android:tint">@color/blue</item>
+        <item name="android:tint">@color/blue</item>
     </style>
 
     <!-- material dialog -->
@@ -37,6 +37,7 @@
         <item name="fontWeight">500</item>
         <item name="android:textSize">20sp</item>
     </style>
+
     <style name="CustomDialogBtn" parent="Widget.AppCompat.Button">
         <item name="fontFamily">@font/open_sans_condensed_light</item>
         <item name="android:fontFamily">@font/open_sans_condensed_light</item>
@@ -66,8 +67,6 @@
         <item name="boxStrokeColor">@color/text_input_box_stroke_color</item>
         <item name="android:paddingBottom">@dimen/std_space</item>
     </style>
-
-
 
 
 </resources>

@@ -112,4 +112,6 @@
     <string name="masks_recommended_sensitive">Masks recommended for sensitive groups</string>
     <string name="minimal_outdoor_acts">Limit outdoor activities</string>
     <string name="air_purify_recommended">Air purification recommended\"</string>
+    <string name="a_map_preferred">A Map</string>
+    <string name="g_map_preferred">Google Maps</string>
 </resources>

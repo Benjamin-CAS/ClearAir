@@ -3,11 +3,12 @@ package com.cleanairspaces.android.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.cleanairspaces.android.models.api.CasDatabase
 import com.cleanairspaces.android.models.api.OutDoorLocationsApiService
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService
-import com.cleanairspaces.android.models.dao.CustomerDeviceDataDao
-import com.cleanairspaces.android.models.dao.MyLocationDetailsDao
+import com.cleanairspaces.android.models.dao.LocDataFromQrDao
+import com.cleanairspaces.android.models.dao.LocationDetailsDao
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
 import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
@@ -34,7 +35,9 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
-    //todo remove in production
+    /* DEBUG ONLY
+      for provideRetrofit() when building retrofit .client(getLogger())
+     */
     private fun getLogger(): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -44,24 +47,23 @@ class AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit =
-            Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(getLogger())
-                    .addConverterFactory(
-                            GsonConverterFactory.create(
-                                    GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-                            )
-                    ).build()
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
+                )
+            ).build()
 
     @Provides
     @Singleton
     fun provideOutDoorLocationsApiService(retrofit: Retrofit): OutDoorLocationsApiService =
-            retrofit.create(OutDoorLocationsApiService::class.java)
+        retrofit.create(OutDoorLocationsApiService::class.java)
 
     @Provides
     @Singleton
     fun provideQrScannedItemsApiService(retrofit: Retrofit): QrScannedItemsApiService =
-            retrofit.create(QrScannedItemsApiService::class.java)
+        retrofit.create(QrScannedItemsApiService::class.java)
 
     @Provides
     @Singleton
@@ -71,58 +73,63 @@ class AppModule {
     @Provides
     @Singleton
     fun provideDatabase(app: Application): CasDatabase =
-            Room.databaseBuilder(app, CasDatabase::class.java, DATABASE_NAME)
-                    .fallbackToDestructiveMigration()
-                    .build()
+        Room.databaseBuilder(app, CasDatabase::class.java, DATABASE_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(app: Application): WorkManager =
+        WorkManager.getInstance(app.applicationContext)
 
     @Provides
     @Singleton
     fun provideOutDoorLocationsDao(casDatabase: CasDatabase): OutDoorLocationsDao =
-            casDatabase.outDoorLocationsDao()
+        casDatabase.outDoorLocationsDao()
 
 
     @Provides
     @Singleton
-    fun provideCustomerDeviceDataDao(casDatabase: CasDatabase): CustomerDeviceDataDao =
-            casDatabase.customerDeviceDataDao()
+    fun provideCustomerDeviceDataDao(casDatabase: CasDatabase): LocDataFromQrDao =
+        casDatabase.customerDeviceDataDao()
 
     @Provides
     @Singleton
-    fun provideMyLocationDetailsDao(casDatabase: CasDatabase): MyLocationDetailsDao =
-            casDatabase.myLocationDetailsDao()
+    fun provideMyLocationDetailsDao(casDatabase: CasDatabase): LocationDetailsDao =
+        casDatabase.myLocationDetailsDao()
 
 
     @Provides
     @Singleton
     fun provideLocationsRepo(
-            outDoorLocationsApiService: OutDoorLocationsApiService,
-            coroutineScope: CoroutineScope,
-            outDoorLocationsDao: OutDoorLocationsDao
+        outDoorLocationsApiService: OutDoorLocationsApiService,
+        coroutineScope: CoroutineScope,
+        outDoorLocationsDao: OutDoorLocationsDao
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
-            outDoorLocationsApiService = outDoorLocationsApiService,
-            coroutineScope = coroutineScope,
-            outDoorLocationsDao = outDoorLocationsDao
+        outDoorLocationsApiService = outDoorLocationsApiService,
+        coroutineScope = coroutineScope,
+        outDoorLocationsDao = outDoorLocationsDao
     )
 
 
     @Provides
     @Singleton
     fun provideScannedDevicesRepo(
-            qrScannedItemsApiService: QrScannedItemsApiService,
-            coroutineScope: CoroutineScope,
-            customerDeviceDataDao: CustomerDeviceDataDao,
-            myLocationDetailsDao: MyLocationDetailsDao
+        qrScannedItemsApiService: QrScannedItemsApiService,
+        coroutineScope: CoroutineScope,
+        locDataFromQrDao: LocDataFromQrDao,
+        locationDetailsDao: LocationDetailsDao
     ): ScannedDevicesRepo = ScannedDevicesRepo(
-            qrScannedItemsApiService = qrScannedItemsApiService,
-            coroutineScope = coroutineScope,
-            customerDeviceDataDao = customerDeviceDataDao,
-            myLocationDetailsDao = myLocationDetailsDao
+        qrScannedItemsApiService = qrScannedItemsApiService,
+        coroutineScope = coroutineScope,
+        locDataFromQrDao = locDataFromQrDao,
+        locationDetailsDao = locationDetailsDao
     )
 
     @Singleton
     @Provides
     fun provideDataStoreMgr(
-            @ApplicationContext context: Context
+        @ApplicationContext context: Context
     ): DataStoreManager {
         return DataStoreManager(context)
     }

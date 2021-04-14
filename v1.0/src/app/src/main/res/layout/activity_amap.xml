@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.amap.AMapActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.home.amap.AMapActivity">
 
-    <include layout="@layout/toolbar_layout" android:id="@+id/toolbar_layout" />
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -21,19 +22,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <include layout="@layout/home_map_overlay"
-            android:id="@+id/home_map_overlay"/>
+        <include
+            android:id="@+id/home_map_overlay"
+            layout="@layout/home_map_overlay" />
 
         <ImageView
             android:id="@+id/my_location_btn"
-            android:layout_gravity="bottom|start"
             android:layout_width="@dimen/clickable_std"
             android:layout_height="@dimen/clickable_std"
-            android:contentDescription="@string/my_location_btn_desc"
-            android:src="@drawable/ic_show_my_location"
-            android:scaleType="center"
-            android:background="@drawable/round_footer_bg"
+            android:layout_gravity="bottom|start"
             android:layout_margin="@dimen/md_space"
-            android:elevation="@dimen/md_space"/>
+            android:background="@drawable/round_footer_bg"
+            android:contentDescription="@string/my_location_btn_desc"
+            android:elevation="@dimen/md_space"
+            android:scaleType="center"
+            android:src="@drawable/ic_show_my_location" />
     </FrameLayout>
 </LinearLayout>

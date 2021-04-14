@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/views_container"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/views_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/std_space">
+
+    <TextView
+        android:id="@+id/locations_tv"
+        style="@style/Theme.CleanAirSpaces.Title1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/map_actions_rv"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:paddingStart="@dimen/std_space"
+        android:paddingTop="0dp"
+        android:paddingEnd="@dimen/std_space"
+        android:paddingBottom="0dp"
+        android:text="@string/locations_txt" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/map_actions_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/std_space">
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/locations_tv" />
 
-        <TextView
-            android:id="@+id/locations_tv"
-            style="@style/Theme.CleanAirSpaces.Title1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/map_actions_rv"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/transparent"
-            android:gravity="start|center_vertical"
-            android:paddingStart="@dimen/std_space"
-            android:paddingTop="0dp"
-            android:paddingEnd="@dimen/std_space"
-            android:paddingBottom="0dp"
-            android:text="@string/locations_txt" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/locations_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/locations_tv"
+        android:layout_marginTop="@dimen/md_space" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/map_actions_rv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/locations_tv" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/locations_rv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/locations_tv"
-            android:layout_marginTop="@dimen/md_space"/>
-
-    </RelativeLayout>
+</RelativeLayout>

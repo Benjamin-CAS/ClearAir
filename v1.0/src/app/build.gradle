@@ -25,7 +25,7 @@ android {
         targetSdkVersion 28 //keep this for a-map compatibility
         versionCode 1
         versionName "1.0"
-        ndk.abiFilters 'armeabi, armeabi-v7a','arm64-v8a','x86','x86_64'
+        ndk.abiFilters 'armeabi, armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -94,10 +94,10 @@ dependencies {
 
 
     //A MAP
-    implementation (fileTree(include: ['*.jar'], dir: 'libs'))
+    implementation(fileTree(include: ['*.jar'], dir: 'libs'))
 
     //gmap
-    implementation ('com.google.android.gms:play-services-maps:17.0.0')
+    implementation('com.google.android.gms:play-services-maps:17.0.0')
 
     //qr code scanner
     implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
@@ -107,6 +107,11 @@ dependencies {
 
     //graphs
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    //work manager
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+    implementation "androidx.hilt:hilt-work:$work_version_hilt"
+    kapt "androidx.hilt:hilt-compiler:$work_version_hilt"
 
 
 }

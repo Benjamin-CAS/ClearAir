@@ -21,9 +21,9 @@ import javax.inject.Singleton
 @Singleton
 class OutDoorLocationsRepo
 @Inject constructor(
-        private val outDoorLocationsApiService: OutDoorLocationsApiService,
-        private val coroutineScope: CoroutineScope,
-        private val outDoorLocationsDao: OutDoorLocationsDao
+    private val outDoorLocationsApiService: OutDoorLocationsApiService,
+    private val coroutineScope: CoroutineScope,
+    private val outDoorLocationsDao: OutDoorLocationsDao
 ) {
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
 
@@ -33,8 +33,8 @@ class OutDoorLocationsRepo
     private fun getOtherOutDoorLocationsResponseCallback(): Callback<OutDoorLocationsOtherResponse> {
         return object : Callback<OutDoorLocationsOtherResponse> {
             override fun onResponse(
-                    call: Call<OutDoorLocationsOtherResponse>,
-                    response: Response<OutDoorLocationsOtherResponse>
+                call: Call<OutDoorLocationsOtherResponse>,
+                response: Response<OutDoorLocationsOtherResponse>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -43,32 +43,32 @@ class OutDoorLocationsRepo
                             val locations = responseBody!!.data
                             if (locations.isNullOrEmpty()) {
                                 MyLogger.logThis(
-                                        TAG,
-                                        "getOtherOutDoorLocationsResponseCallback()",
-                                        "locations in response are null or empty"
+                                    TAG,
+                                    "getOtherOutDoorLocationsResponseCallback()",
+                                    "locations in response are null or empty"
                                 )
                             } else {
                                 MyLogger.logThis(
-                                        TAG,
-                                        "getOtherOutDoorLocationsResponseCallback()",
-                                        "total ${locations.size}"
+                                    TAG,
+                                    "getOtherOutDoorLocationsResponseCallback()",
+                                    "total ${locations.size}"
                                 )
                                 saveOutDoorLocations(locations, location_area = LocationAreas.OTHER)
                             }
                         } catch (e: Exception) {
                             MyLogger.logThis(
-                                    TAG,
-                                    "getOtherOutDoorLocationsResponseCallback()",
-                                    "exception ${e.message}",
-                                    e
+                                TAG,
+                                "getOtherOutDoorLocationsResponseCallback()",
+                                "exception ${e.message}",
+                                e
                             )
                         }
                     }
                     else -> {
                         MyLogger.logThis(
-                                TAG,
-                                "getOtherOutDoorLocationsResponseCallback()",
-                                "response code not 200, $response"
+                            TAG,
+                            "getOtherOutDoorLocationsResponseCallback()",
+                            "response code not 200, $response"
                         )
                     }
                 }
@@ -76,9 +76,9 @@ class OutDoorLocationsRepo
 
             override fun onFailure(call: Call<OutDoorLocationsOtherResponse>, e: Throwable) {
                 MyLogger.logThis(
-                        TAG,
-                        "getOtherOutDoorLocationsResponseCallback()",
-                        "OnFailure-exception ${e.message}"
+                    TAG,
+                    "getOtherOutDoorLocationsResponseCallback()",
+                    "OnFailure-exception ${e.message}"
                 )
             }
         }
@@ -87,8 +87,8 @@ class OutDoorLocationsRepo
     private fun getAmericaOutDoorLocationsResponseCallback(): Callback<List<OutDoorLocationAmerica>> {
         return object : Callback<List<OutDoorLocationAmerica>> {
             override fun onResponse(
-                    call: Call<List<OutDoorLocationAmerica>>,
-                    response: Response<List<OutDoorLocationAmerica>>
+                call: Call<List<OutDoorLocationAmerica>>,
+                response: Response<List<OutDoorLocationAmerica>>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -96,35 +96,35 @@ class OutDoorLocationsRepo
                         try {
                             if (responseBody.isNullOrEmpty()) {
                                 MyLogger.logThis(
-                                        TAG,
-                                        "getAmericaOutDoorLocationsResponseCallback()",
-                                        "locations in response are null or empty"
+                                    TAG,
+                                    "getAmericaOutDoorLocationsResponseCallback()",
+                                    "locations in response are null or empty"
                                 )
                             } else {
                                 MyLogger.logThis(
-                                        TAG,
-                                        "getAmericaOutDoorLocationsResponseCallback()",
-                                        "total ${responseBody.size}"
+                                    TAG,
+                                    "getAmericaOutDoorLocationsResponseCallback()",
+                                    "total ${responseBody.size}"
                                 )
                                 saveOutDoorLocations(
-                                        responseBody,
-                                        location_area = LocationAreas.AMERICA
+                                    responseBody,
+                                    location_area = LocationAreas.AMERICA
                                 )
                             }
                         } catch (e: Exception) {
                             MyLogger.logThis(
-                                    TAG,
-                                    "getAmericaOutDoorLocationsResponseCallback()",
-                                    "exception ${e.message}",
-                                    e
+                                TAG,
+                                "getAmericaOutDoorLocationsResponseCallback()",
+                                "exception ${e.message}",
+                                e
                             )
                         }
                     }
                     else -> {
                         MyLogger.logThis(
-                                TAG,
-                                "getAmericaOutDoorLocationsResponseCallback()",
-                                "response code not 200, $response"
+                            TAG,
+                            "getAmericaOutDoorLocationsResponseCallback()",
+                            "response code not 200, $response"
                         )
                     }
                 }
@@ -132,9 +132,9 @@ class OutDoorLocationsRepo
 
             override fun onFailure(call: Call<List<OutDoorLocationAmerica>>, e: Throwable) {
                 MyLogger.logThis(
-                        TAG,
-                        "getAmericaOutDoorLocationsResponseCallback()",
-                        "OnFailure-exception ${e.message}"
+                    TAG,
+                    "getAmericaOutDoorLocationsResponseCallback()",
+                    "OnFailure-exception ${e.message}"
                 )
             }
         }
@@ -143,8 +143,8 @@ class OutDoorLocationsRepo
     private fun getTaiwanOutDoorLocationsResponseCallback(): Callback<List<OutDoorLocationTaiwan>> {
         return object : Callback<List<OutDoorLocationTaiwan>> {
             override fun onResponse(
-                    call: Call<List<OutDoorLocationTaiwan>>,
-                    response: Response<List<OutDoorLocationTaiwan>>
+                call: Call<List<OutDoorLocationTaiwan>>,
+                response: Response<List<OutDoorLocationTaiwan>>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -152,35 +152,35 @@ class OutDoorLocationsRepo
                         try {
                             if (responseBody.isNullOrEmpty()) {
                                 MyLogger.logThis(
-                                        TAG,
-                                        "getTaiwanOutDoorLocationsResponseCallback()",
-                                        "locations in response are null or empty"
+                                    TAG,
+                                    "getTaiwanOutDoorLocationsResponseCallback()",
+                                    "locations in response are null or empty"
                                 )
                             } else {
                                 MyLogger.logThis(
-                                        TAG,
-                                        "getTaiwanOutDoorLocationsResponseCallback()",
-                                        "total ${responseBody.size}"
+                                    TAG,
+                                    "getTaiwanOutDoorLocationsResponseCallback()",
+                                    "total ${responseBody.size}"
                                 )
                                 saveOutDoorLocations(
-                                        responseBody,
-                                        location_area = LocationAreas.TAIWAN
+                                    responseBody,
+                                    location_area = LocationAreas.TAIWAN
                                 )
                             }
                         } catch (e: Exception) {
                             MyLogger.logThis(
-                                    TAG,
-                                    "getTaiwanOutDoorLocationsResponseCallback()",
-                                    "exception ${e.message}",
-                                    e
+                                TAG,
+                                "getTaiwanOutDoorLocationsResponseCallback()",
+                                "exception ${e.message}",
+                                e
                             )
                         }
                     }
                     else -> {
                         MyLogger.logThis(
-                                TAG,
-                                "getTaiwanOutDoorLocationsResponseCallback()",
-                                "response code not 200, $response"
+                            TAG,
+                            "getTaiwanOutDoorLocationsResponseCallback()",
+                            "response code not 200, $response"
                         )
                     }
                 }
@@ -188,9 +188,9 @@ class OutDoorLocationsRepo
 
             override fun onFailure(call: Call<List<OutDoorLocationTaiwan>>, e: Throwable) {
                 MyLogger.logThis(
-                        TAG,
-                        "getTaiwanOutDoorLocationsResponseCallback()",
-                        "OnFailure-exception ${e.message}"
+                    TAG,
+                    "getTaiwanOutDoorLocationsResponseCallback()",
+                    "OnFailure-exception ${e.message}"
                 )
             }
         }
@@ -222,10 +222,10 @@ class OutDoorLocationsRepo
                     for (loc in locationsList) {
                         val location = loc as OutDoorLocationAmerica
                         val outDoorLocation = OutDoorLocations(
-                                pm2p5 = location.pm2p5,
-                                lon = location.sta_lon,
-                                lat = location.sta_lat,
-                                location_area = LocationAreas.AMERICA
+                            pm2p5 = location.pm2p5,
+                            lon = location.sta_lon,
+                            lat = location.sta_lat,
+                            location_area = LocationAreas.AMERICA
                         )
                         newOutDoorLocations.add(outDoorLocation)
 
@@ -236,10 +236,10 @@ class OutDoorLocationsRepo
                     for (loc in locationsList) {
                         val location = loc as OutDoorLocationTaiwan
                         val outDoorLocation = OutDoorLocations(
-                                pm2p5 = location.pm2p5,
-                                lon = location.lon,
-                                lat = location.lat,
-                                location_area = LocationAreas.TAIWAN
+                            pm2p5 = location.pm2p5,
+                            lon = location.lon,
+                            lat = location.lat,
+                            location_area = LocationAreas.TAIWAN
                         )
                         newOutDoorLocations.add(outDoorLocation)
                     }
@@ -250,14 +250,14 @@ class OutDoorLocationsRepo
                     for (loc in locationsList) {
                         val location = loc as OutDoorLocationsOther
                         val outDoorLocation = OutDoorLocations(
-                                location_id = location.location_id,
-                                monitor_id = location.monitor_id,
-                                name_en = location.name_en,
-                                reading = location.reading,
-                                date_reading = location.date_reading,
-                                lon = location.lon,
-                                lat = location.lat,
-                                location_area = LocationAreas.OTHER
+                            location_id = location.location_id,
+                            monitor_id = location.monitor_id,
+                            name_en = location.name_en,
+                            reading = location.reading,
+                            date_reading = location.date_reading,
+                            lon = location.lon,
+                            lat = location.lat,
+                            location_area = LocationAreas.OTHER
                         )
                         newOutDoorLocations.add(outDoorLocation)
                     }

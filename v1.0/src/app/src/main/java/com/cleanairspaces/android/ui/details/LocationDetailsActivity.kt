@@ -41,7 +41,8 @@ class LocationDetailsActivity : BaseActivity() {
 
         //toolbar
         super.setToolBar(binding.toolbarLayout, isHomeAct = false)
-        val locationDetailsInfo = intent.getParcelableExtra<MyLocationDetailsWrapper>(INTENT_EXTRA_TAG)
+        val locationDetailsInfo =
+            intent.getParcelableExtra<MyLocationDetailsWrapper>(INTENT_EXTRA_TAG)
         locationDetailsInfo?.let {
             viewModel.setCustomerDeviceDataDetailed(myLocationDetailsWrapper = locationDetailsInfo)
         }
@@ -65,11 +66,11 @@ class LocationDetailsActivity : BaseActivity() {
     private fun observeLocationDetailsInfo() {
         viewModel.observeLocationDetails().observe(this, Observer { myLocationDetailsWrapper ->
             if (myLocationDetailsWrapper != null) {
-                val generalData = myLocationDetailsWrapper.wrappedData.generalData
+                val generalData = myLocationDetailsWrapper.wrappedData.generalDataFromQr
                 val locationDetailsInfo = myLocationDetailsWrapper.wrappedData.locationDetails
                 binding.apply {
                     Glide.with(this@LocationDetailsActivity).load(generalData.getFullLogoUrl())
-                            .into(compLogo)
+                        .into(compLogo)
                     compName.text = generalData.company
                     progressCircular.isVisible = false
                 }
@@ -120,7 +121,8 @@ class LocationDetailsActivity : BaseActivity() {
     }
 
     private fun displayIndoorInfo(
-            uiReadyPmInfo: MyLocationDetailsWrapper) {
+        uiReadyPmInfo: MyLocationDetailsWrapper
+    ) {
         val root = binding.pmInfoContainer
         val inOutLayoutView: View = root.findViewById(R.id.in_out_door_layout)
         inOutLayoutView.isVisible = true
@@ -143,14 +145,20 @@ class LocationDetailsActivity : BaseActivity() {
             //pm values
             indoorPmIndexGradient.max = uiReadyPmInfo.pmSliderMax
             indoorPmIndexGradient.progress = uiReadyPmInfo.pmSliderValue
-            indoorPmIndexGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.pmSliderDiskRes)
+            indoorPmIndexGradient.thumb = ContextCompat.getDrawable(
+                this@LocationDetailsActivity,
+                uiReadyPmInfo.pmSliderDiskRes
+            )
 
             //co2
             if (uiReadyPmInfo.co2Slider != UNSET_PARAM_VAL) {
                 indoorCoVal.text = uiReadyPmInfo.co2LvlTxt
                 indoorCoGradient.max = uiReadyPmInfo.co2SliderMax
                 indoorCoGradient.progress = uiReadyPmInfo.co2Slider
-                indoorCoGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.coSliderDiskRes)
+                indoorCoGradient.thumb = ContextCompat.getDrawable(
+                    this@LocationDetailsActivity,
+                    uiReadyPmInfo.coSliderDiskRes
+                )
             } else {
                 indoorCoLbl.isVisible = false
                 indoorCoVal.isVisible = false
@@ -162,7 +170,10 @@ class LocationDetailsActivity : BaseActivity() {
                 indoorTmpValue.text = uiReadyPmInfo.tmpLvl
                 indoorTmpGradient.max = uiReadyPmInfo.tmpSliderMax
                 indoorTmpGradient.progress = uiReadyPmInfo.tmpSlider
-                indoorTmpGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.tmpSliderDiskRes)
+                indoorTmpGradient.thumb = ContextCompat.getDrawable(
+                    this@LocationDetailsActivity,
+                    uiReadyPmInfo.tmpSliderDiskRes
+                )
             } else {
                 indoorTmpLbl.isVisible = false
                 indoorTmpValue.isVisible = false
@@ -174,7 +185,10 @@ class LocationDetailsActivity : BaseActivity() {
                 indoorTvocVal.text = uiReadyPmInfo.vocLvlTxt
                 indoorTvocGradient.max = uiReadyPmInfo.vocSliderMax
                 indoorTvocGradient.progress = uiReadyPmInfo.vocSlider
-                indoorTvocGradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.vocSliderDiskRes)
+                indoorTvocGradient.thumb = ContextCompat.getDrawable(
+                    this@LocationDetailsActivity,
+                    uiReadyPmInfo.vocSliderDiskRes
+                )
             } else {
                 indoorTvocLbl.isVisible = false
                 indoorTvocVal.isVisible = false
@@ -186,7 +200,10 @@ class LocationDetailsActivity : BaseActivity() {
                 indoorHumidityVal.text = uiReadyPmInfo.humidLvl
                 indoorHumiditygradient.max = uiReadyPmInfo.humidSliderMax
                 indoorHumiditygradient.progress = uiReadyPmInfo.humidSlider
-                indoorHumiditygradient.thumb = ContextCompat.getDrawable(this@LocationDetailsActivity, uiReadyPmInfo.humidSliderDiskRes)
+                indoorHumiditygradient.thumb = ContextCompat.getDrawable(
+                    this@LocationDetailsActivity,
+                    uiReadyPmInfo.humidSliderDiskRes
+                )
             } else {
                 indoorHumidityLbl.isVisible = false
                 indoorHumidityVal.isVisible = false
@@ -211,7 +228,7 @@ class LocationDetailsActivity : BaseActivity() {
     }
 
     private fun displayOutDoorInfo(
-            uiReadyInfo: MyLocationDetailsWrapper
+        uiReadyInfo: MyLocationDetailsWrapper
     ) {
         val root = binding.pmInfoContainer
         val outLayoutView: View = root.findViewById(R.id.out_door_layout)
@@ -224,7 +241,10 @@ class LocationDetailsActivity : BaseActivity() {
             statusTv.text = uiReadyInfo.outStatusTvTxt
             lastUpdateTv.text = uiReadyInfo.updatedOnTxt
             if (uiReadyInfo.outDoorPmTxtColor != UNSET_PARAM_VAL) {
-                val txtColor = ContextCompat.getColor(this@LocationDetailsActivity, uiReadyInfo.outDoorPmTxtColor)
+                val txtColor = ContextCompat.getColor(
+                    this@LocationDetailsActivity,
+                    uiReadyInfo.outDoorPmTxtColor
+                )
                 pointsTv.setTextColor(txtColor)
                 statusTv.setTextColor(txtColor)
             }

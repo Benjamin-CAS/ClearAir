@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -12,194 +12,29 @@
         android:id="@+id/toolbar_layout"
         layout="@layout/toolbar_layout" />
 
-    <ProgressBar
-        android:id="@+id/progress_circular"
-        android:layout_width="@dimen/std_icon"
-        android:layout_height="@dimen/std_icon"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/md_space" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/location_details_nav" />
 
-    <ScrollView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/bottom_nav_bg"
+        app:itemIconTint="@color/bottom_nav_icons_color"
+        app:itemTextColor="@color/bottom_nav_icons_color"
+        app:menu="@menu/details_menu"
+        app:itemTextAppearanceActive="@style/Theme.CleanAirSpaces.Subtitle2"
+        app:itemTextAppearanceInactive="@style/Theme.CleanAirSpaces.Subtitle2"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/clickable_std">
-
-            <ImageView
-                android:id="@+id/comp_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/half_location_logo_size"
-                android:contentDescription="@string/location_logo_image_desc"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/clean_air_spaces_logo_name" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/comp_name"
-                style="@style/Theme.CleanAirSpaces.Title2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/std_space"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/comp_logo"
-                tools:text="Saint Gobain" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/aqi_index"
-                style="@style/Theme.CleanAirSpaces.Subtitle2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/std_space"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/comp_name"
-                tools:text="@string/default_pm_index_value" />
-
-            <LinearLayout
-                android:id="@+id/pm_info_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/aqi_index">
-
-                <include
-                    android:id="@+id/in_out_door_layout"
-                    layout="@layout/location_details_in_out_layout"
-                    android:visibility="gone" />
-
-                <include
-                    android:id="@+id/out_door_layout"
-                    layout="@layout/location_details_out_layout"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/recommendations_title"
-                style="@style/Theme.CleanAirSpaces.Title2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/md_icon"
-                android:gravity="center"
-                android:text="@string/recommendations_txt"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pm_info_container" />
-
-            <View
-                android:id="@+id/line3"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/footer_color"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/recommendations_title" />
-
-            <ImageView
-                android:id="@+id/mask_iv"
-                android:layout_width="@dimen/clickable_std"
-                android:layout_height="@dimen/clickable_std"
-                android:contentDescription="@string/mask_image_txt"
-                android:padding="@dimen/std_space"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/line3" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/mask_status"
-                style="@style/Theme.CleanAirSpaces.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/mask_image_txt"
-                android:gravity="center_vertical"
-                android:minHeight="@dimen/clickable_std"
-                android:paddingStart="@dimen/std_space"
-                android:paddingEnd="@dimen/std_space"
-                app:layout_constraintStart_toEndOf="@+id/mask_iv"
-                app:layout_constraintTop_toBottomOf="@id/line3"
-                tools:text="No masks necessary" />
-
-            <ImageView
-                android:id="@+id/can_go_out_iv"
-                android:layout_width="@dimen/clickable_std"
-                android:layout_height="@dimen/clickable_std"
-                android:contentDescription="@string/mask_image_txt"
-                android:padding="@dimen/std_space"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mask_iv" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/can_go_out_status"
-                style="@style/Theme.CleanAirSpaces.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/mask_image_txt"
-                android:gravity="center_vertical"
-                android:minHeight="@dimen/clickable_std"
-                android:paddingStart="@dimen/std_space"
-                android:paddingEnd="@dimen/std_space"
-                app:layout_constraintStart_toEndOf="@+id/can_go_out_iv"
-                app:layout_constraintTop_toBottomOf="@id/mask_status"
-                tools:text="No masks necessary" />
-
-            <ImageView
-                android:id="@+id/windows_iv"
-                android:layout_width="@dimen/clickable_std"
-                android:layout_height="@dimen/clickable_std"
-                android:contentDescription="@string/mask_image_txt"
-                android:padding="@dimen/std_space"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/can_go_out_iv" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/windows_status"
-                style="@style/Theme.CleanAirSpaces.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/mask_image_txt"
-                android:gravity="center_vertical"
-                android:minHeight="@dimen/clickable_std"
-                android:paddingStart="@dimen/std_space"
-                android:paddingEnd="@dimen/std_space"
-                app:layout_constraintStart_toEndOf="@+id/windows_iv"
-                app:layout_constraintTop_toBottomOf="@id/can_go_out_status"
-                tools:text="No masks necessary" />
-
-            <ImageView
-                android:id="@+id/fan_iv"
-                android:layout_width="@dimen/clickable_std"
-                android:layout_height="@dimen/clickable_std"
-                android:contentDescription="@string/mask_image_txt"
-                android:padding="@dimen/std_space"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/windows_iv"
-                tools:src="@drawable/fan_off" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/fan_status"
-                style="@style/Theme.CleanAirSpaces.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/mask_image_txt"
-                android:gravity="center_vertical"
-                android:minHeight="@dimen/clickable_std"
-                android:paddingStart="@dimen/std_space"
-                android:paddingEnd="@dimen/std_space"
-                app:layout_constraintStart_toEndOf="@+id/fan_iv"
-                app:layout_constraintTop_toBottomOf="@id/windows_status"
-                tools:text="No masks necessary" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

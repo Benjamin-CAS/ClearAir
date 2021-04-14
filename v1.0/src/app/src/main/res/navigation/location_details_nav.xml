@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/location_details_nav"
+    app:startDestination="@id/detailsFragment">
+
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.cleanairspaces.android.ui.details.overview_fragment.DetailsFragment"
+        android:label="@string/details_fragment_lbl"
+        tools:layout="@layout/fragment_details" />
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.cleanairspaces.android.ui.details.history_fragment.HistoryFragment"
+        android:label="@string/history_fragment_lbl"
+        tools:layout="@layout/fragment_history" />
+</navigation>

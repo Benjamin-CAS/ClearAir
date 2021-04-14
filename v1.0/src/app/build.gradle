@@ -5,6 +5,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id "kotlin-parcelize"
     id "com.google.secrets_gradle_plugin" version '0.5'
+    id "androidx.navigation.safeargs.kotlin"
 
 }
 
@@ -61,7 +62,6 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_vm_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_vm_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -113,6 +113,11 @@ dependencies {
     implementation "androidx.hilt:hilt-work:$work_version_hilt"
     kapt "androidx.hilt:hilt-compiler:$work_version_hilt"
 
+
+
+    // Navigation Component
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
 }
 

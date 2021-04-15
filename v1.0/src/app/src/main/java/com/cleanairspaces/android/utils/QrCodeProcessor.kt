@@ -171,11 +171,12 @@ object QrCodeProcessor {
     }
 
     fun getEncryptedEncodedPayloadForDeviceDetails(
-        compId: String,
-        locId: String,
-        userName: String,
-        userPassword: String,
-        timeStamp: String
+            compId: String,
+            locId: String,
+            userName: String,
+            userPassword: String,
+            timeStamp: String,
+            showHistory: Boolean = false
     ): String {
         val key = getProperPayloadKeyForDeviceDetails(timeStamp)
         MyLogger.logThis(
@@ -187,7 +188,8 @@ object QrCodeProcessor {
             compId = compId,
             locId = locId,
             userName = userName,
-            userPassword = userPassword
+            userPassword = userPassword,
+                showHistory = showHistory
         )
         val casEncrypted = doCASEncryptOrDecrypt(payload = pl, key = key)
         MyLogger.logThis(
@@ -212,8 +214,11 @@ object QrCodeProcessor {
         showHistory: Boolean = false,
         pmStandard: String = PM2_5_STD_PARAM
     ): String {
-        //todo determine PM25_TYPE_PARAM_KEY from settings
-        return "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"0\",\"$HISTORY_WEEK_KEY\":\"0\",\"$HISTORY_DAY_KEY\":\"0\",\"$PM25_TYPE_PARAM_KEY\":\"$pmStandard\"}"
+        return if (!showHistory)
+            "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"0\",\"$HISTORY_WEEK_KEY\":\"0\",\"$HISTORY_DAY_KEY\":\"0\",\"$PM25_TYPE_PARAM_KEY\":\"$pmStandard\"}"
+        else
+            "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"1\",\"$HISTORY_WEEK_KEY\":\"1\",\"$HISTORY_DAY_KEY\":\"1\",\"$PM25_TYPE_PARAM_KEY\":\"$pmStandard\"}"
+
     }
 
 
@@ -231,21 +236,16 @@ object QrCodeProcessor {
     }
 
     /********************** UN ENCRYPTIONS **************/
-
     fun getUnEncryptedPayload(encPayload: String, lTime: String, forCompLocation: Boolean): String {
-        val decoded = fromBase64Encoding(encPayload)
-        MyLogger.logThis(TAG, "getUnEncryptedPayload... $forCompLocation", "decoded $decoded")
-        return decoded
+        return fromBase64Encoding(encPayload)
     }
 
     fun getUnEncryptedPayloadForLocationDetails(payload: String, lTime: String): String {
-        val decoded = fromBase64Encoding(payload)
-        MyLogger.logThis(
-            TAG,
-            "etUnEncryptedPayloadForLocationDetails...",
-            "decoded $decoded"
-        )
-        return decoded
+        return fromBase64Encoding(payload)
+    }
+
+    fun getUnEncryptedPayloadForHistory(payload: String, lTime: String): String {
+        return fromBase64Encoding(payload)
     }
 
 

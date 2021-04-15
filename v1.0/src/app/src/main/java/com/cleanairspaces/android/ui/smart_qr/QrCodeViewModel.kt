@@ -3,7 +3,6 @@ package com.cleanairspaces.android.ui.smart_qr
 import androidx.lifecycle.*
 import com.cleanairspaces.android.models.api.listeners.AsyncResultListener
 import com.cleanairspaces.android.models.entities.LocationDataFromQr
-import com.cleanairspaces.android.models.entities.LocationDetails
 import com.cleanairspaces.android.models.entities.createDeviceIdToBindTo
 import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
 import com.cleanairspaces.android.utils.QrCodeProcessor
@@ -76,11 +75,12 @@ class QrCodeViewModel @Inject constructor(
                 val monitorId = locationDataFromQr.monitor_id
                 val forScannedDeviceId = createDeviceIdToBindTo(compId,locId,monitorId)
                 val pl = QrCodeProcessor.getEncryptedEncodedPayloadForDeviceDetails(
-                    compId = compId,
-                    locId = locId,
-                    userName = userName,
-                    userPassword = userPassword,
-                    timeStamp = timeStamp
+                        compId = compId,
+                        locId = locId,
+                        userName = userName,
+                        userPassword = userPassword,
+                        timeStamp = timeStamp,
+                        showHistory = true
                 )
                 scannedDevicesRepo.fetchLocationDetails(
                     compId = compId,

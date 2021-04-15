@@ -7,6 +7,7 @@ const val DATABASE_NAME = "clean_air_spaces_db"
 const val OUTDOOR_LOCATIONS_REFRESH_RATE_MIN = 30L // 30 minutes
 const val MY_LOCATIONS_REFRESH_RATE_MIN = 15L // 15 minutes
 const val SCANNING_QR_TIMEOUT_MILLS = 60000L //1 minute
+const val HISTORY_EXPIRE_TIME_MILLS = 60000L //TODO 900000L 15 minutes
 const val DEFAULT_QR_LOCATION_ID = "LOCID"
 const val DEFAULT_QR_LOCATION_ID_L_PAD = "X"
 const val DEFAULT_QR_LOCATION_ID_R_PAD = "Y"

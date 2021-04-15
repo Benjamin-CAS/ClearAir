@@ -10,6 +10,6 @@ data class ScannedDeviceQrResponse(
     val code: String,
 
     @Expose
-    val ltime: String
+    val ltime: String?
 
 )

@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
+import androidx.lifecycle.Observer
 import com.cleanairspaces.android.databinding.FragmentHistoryBinding
+import com.cleanairspaces.android.models.entities.LocationHistoryMonth
+import com.cleanairspaces.android.models.entities.LocationHistoryThreeDays
+import com.cleanairspaces.android.models.entities.LocationHistoryWeek
 import com.cleanairspaces.android.ui.details.LocationDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,8 +37,43 @@ class HistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.observeLocationDaysHistory().observe(
+                viewLifecycleOwner, Observer { list ->
+            list?.let {
+                        drawDaysHistoryChart(it)
+                    }
+             }
+        )
+
+        viewModel.observeLocationWeekHistory().observe(
+                viewLifecycleOwner, Observer { list ->
+            list?.let {
+                drawWeekHistoryChart(it)
+            }
+        }
+        )
+
+        viewModel.observeLocationMonthHistory().observe(
+                viewLifecycleOwner, Observer { list ->
+            list?.let {
+                drawMonthHistoryChart(it)
+            }
+        }
+        )
     }
 
+
+    private fun drawDaysHistoryChart(daysHistory: List<LocationHistoryThreeDays>) {
+        
+    }
+
+    private fun drawWeekHistoryChart(weekHistory: List<LocationHistoryWeek>) {
+
+    }
+
+    private fun drawMonthHistoryChart(monthHistory: List<LocationHistoryMonth>) {
+
+    }
 
 
     override fun onDestroyView() {

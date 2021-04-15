@@ -6,11 +6,8 @@ import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.MONITOR_INFO_METHOD
 import com.cleanairspaces.android.models.api.listeners.AsyncResultListener
 import com.cleanairspaces.android.models.api.responses.ScannedDeviceQrResponse
-import com.cleanairspaces.android.models.dao.LocDataFromQrDao
-import com.cleanairspaces.android.models.dao.LocationDetailsDao
-import com.cleanairspaces.android.models.entities.LocationDataFromQr
-import com.cleanairspaces.android.models.entities.LocationDetails
-import com.cleanairspaces.android.models.entities.createDeviceIdToBindTo
+import com.cleanairspaces.android.models.dao.*
+import com.cleanairspaces.android.models.entities.*
 import com.cleanairspaces.android.utils.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -29,11 +26,16 @@ import javax.inject.Singleton
 @Singleton
 class ScannedDevicesRepo
 @Inject constructor(
-    private val qrScannedItemsApiService: QrScannedItemsApiService,
-    private val coroutineScope: CoroutineScope,
-    private val locDataFromQrDao: LocDataFromQrDao,
-    private val locationDetailsDao: LocationDetailsDao
-) {
+        private val qrScannedItemsApiService: QrScannedItemsApiService,
+        private val coroutineScope: CoroutineScope,
+        private val locDataFromQrDao: LocDataFromQrDao,
+        private val locationDetailsDao: LocationDetailsDao,
+        private val  locationHistoryThreeDaysDao : LocationHistoryThreeDaysDao,
+        private val  locationHistoryWeekDao : LocationHistoryWeekDao,
+        private val  locationHistoryMonthDao : LocationHistoryMonthDao,
+        private val  locationHistoryUpdatesTrackerDao : LocationHistoryUpdatesTrackerDao
+
+        ) {
 
     /*********** GETTERS *************/
     suspend fun getMyLocationsOnce(): List<LocationDetails> =
@@ -56,7 +58,71 @@ class ScannedDevicesRepo
         locDataFromQrDao.getADeviceFlow(monitorId = monitorId)
 
 
+    /** history getters ***/
+    fun getLastDaysHistory(deviceId  : String) = locationHistoryThreeDaysDao.getLastDaysHistory(deviceId)
+    fun getLastWeekHistory(deviceId  : String) = locationHistoryWeekDao.getLastWeekHistory(deviceId)
+    fun getLastMonthHistory(deviceId  : String) = locationHistoryMonthDao.getLastMonthHistory(deviceId)
+    suspend fun getLastTimeUpdatedHistory(deviceId: String) = locationHistoryUpdatesTrackerDao.getLastUpdatedTimeForDevice(deviceId)
+
     /************ FETCH CALL BACKS ********************/
+    private fun getMyLocationHistoryCallback() : Callback<ScannedDeviceQrResponse>{
+        return object : Callback<ScannedDeviceQrResponse>{
+            override fun onResponse(call: Call<ScannedDeviceQrResponse>, response: Response<ScannedDeviceQrResponse>) {
+                when {
+                    response.code() == 200 -> {
+                        val responseBody = response.body()
+                        try {
+                            if (responseBody == null) {
+                                MyLogger.logThis(
+                                        TAG,
+                                        "getMyLocationHistoryCallback() -> onResponse()",
+                                        "response is OK but body is null"
+                                )
+                            } else {
+                                if (responseBody.payload != null) {
+                                    val lTime = responseBody.ltime?:"0"
+                                    unEncryptHistoryPayload(
+                                            responseBody.payload,
+                                            lTime
+                                    )
+                                } else {
+                                    MyLogger.logThis(
+                                            TAG,
+                                            "getMyLocationHistoryCallback() -> onResponse()",
+                                            "response is OK but payload is null - $responseBody"
+                                    )
+                                }
+                            }
+                        } catch (e: Exception) {
+                            MyLogger.logThis(
+                                    TAG,
+                                    "getMyLocationHistoryCallback() -> onResponse()",
+                                    "response is OK but an exception occurred ${e.message}",
+                                    e
+                            )
+                        }
+                    }
+                    else -> {
+                        MyLogger.logThis(
+                                TAG,
+                                "getMyLocationHistoryCallback() -> onResponse()",
+                                "response code is not 200 OK $response"
+                        )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ScannedDeviceQrResponse>, t: Throwable) {
+                MyLogger.logThis(
+                        TAG,
+                        "getMyLocationHistoryCallback() -> onFailure()",
+                        "exc ${t.message}"
+                )
+            }
+
+        }
+    }
+
     private fun getScannedDeviceQrResponseCallback(): Callback<ScannedDeviceQrResponse> {
         return object : Callback<ScannedDeviceQrResponse> {
             override fun onResponse(
@@ -136,9 +202,10 @@ class ScannedDevicesRepo
                                 )
                                 optionalResultWaiter?.onAsyncComplete(isSuccess = false)
                             } else {
+                                val lTime = responseBody.ltime?:"0"
                                 unEncryptLocationDetailsPayload(
                                     payload = responseBody.payload,
-                                    lTime = responseBody.ltime,
+                                    lTime = lTime,
                                     resultListener = optionalResultWaiter,
                                     ignoreResultIfNotMyLocation = ignoreResultIfNotMyLocation
                                 )
@@ -253,10 +320,122 @@ class ScannedDevicesRepo
         }
     }
 
+    fun fetchLocationHistory(compId: String, locId: String, payload: String, lTime: String, userName: String, userPassword: String, forScannedDeviceId: String) {
+        try {
+            val method = DEVICE_INFO_METHOD
+            val data = JsonObject()
+            data.addProperty(L_TIME_KEY, lTime)
+            data.addProperty(PAYLOAD_KEY, payload)
+            val response = qrScannedItemsApiService.fetchLocationHistory(
+                    data = data,
+                    method = method
+            )
+
+            // keep track of this request data ---
+            data.addProperty(COMP_ID_KEY, compId)
+            data.addProperty(LOC_ID_KEY, locId)
+            data.addProperty(USER_KEY, userName)
+            data.addProperty(PASSWORD_KEY, userPassword)
+            data.addProperty(DEVICE_ID_KEY, forScannedDeviceId)
+            recentlyFetchedDeviceData.add(data)
+            response.enqueue(
+                    getMyLocationHistoryCallback()
+            )
+        } catch (e: Exception) {
+            MyLogger.logThis(
+                    TAG,
+                    "fetchLocationHistory()",
+                    "exc ${e.message}",
+                    e
+            )
+        }
+    }
+
+
 
     /************ local updates **********/
 
     /*************** PROCESSING -- UN-ENCRYPTING --**************/
+
+    private fun unEncryptHistoryPayload(payload: String, lTime: String) {
+        try {
+           val dataMatchingLTime = recentlyFetchedDeviceData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+             if (dataMatchingLTime.isNullOrEmpty()) return
+             val requestedData = dataMatchingLTime[0]
+             val forScannedDeviceId = requestedData.get(DEVICE_ID_KEY).asString
+
+            val unEncryptedPayload: String =
+                    QrCodeProcessor.getUnEncryptedPayloadForHistory(payload, lTime)
+            val unEncJson = JSONObject(unEncryptedPayload)
+
+            /** last 72 hours history */
+            val sevenTwoHrsJsonArray = unEncJson.getJSONArray(LocationHistoryThreeDays.responseKey)
+            val sevenTwoHrsArr = arrayListOf<LocationHistoryThreeDays>()
+            val sevenTwoHrsTotal = sevenTwoHrsJsonArray.length()
+            var i = 0
+            while (i < sevenTwoHrsTotal) {
+                val sevenTwoHrsData =
+                        Gson().fromJson(unEncJson.toString(), LocationHistoryThreeDays::class.java)
+                sevenTwoHrsData.forScannedDeviceId = forScannedDeviceId
+                sevenTwoHrsArr.add(sevenTwoHrsData)
+                i++
+            }
+
+            /** last week history */
+            val weekJsonArray = unEncJson.getJSONArray(LocationHistoryWeek.responseKey)
+            val weekArr = arrayListOf<LocationHistoryWeek>()
+            val weekTotal = weekJsonArray.length()
+            var j = 0
+            while (j < weekTotal) {
+                val weekData =
+                        Gson().fromJson(unEncJson.toString(), LocationHistoryWeek::class.java)
+                weekData.forScannedDeviceId = forScannedDeviceId
+                weekArr.add(weekData)
+                j++
+            }
+
+            /** last month history */
+            val monthJsonArray = unEncJson.getJSONArray(LocationHistoryMonth.responseKey)
+            val monthArr = arrayListOf<LocationHistoryMonth>()
+            val monthTotal = monthJsonArray.length()
+            var k = 0
+            while (k < monthTotal) {
+                val monthData =
+                        Gson().fromJson(unEncJson.toString(), LocationHistoryMonth::class.java)
+                monthData.forScannedDeviceId = forScannedDeviceId
+                monthArr.add(monthData)
+                k++
+            }
+
+            coroutineScope.launch(Dispatchers.IO) {
+                if (sevenTwoHrsArr.isNotEmpty()){
+                    locationHistoryThreeDaysDao.deleteAll()
+                    locationHistoryThreeDaysDao.insert(sevenTwoHrsArr.toList())
+                }
+
+                if (weekArr.isNotEmpty()){
+                    locationHistoryWeekDao.deleteAll()
+                    locationHistoryWeekDao.insert(weekArr.toList())
+                }
+
+                if (monthArr.isEmpty()){
+                    locationHistoryMonthDao.deleteAll()
+                    locationHistoryMonthDao.insert(monthArr.toList())
+                }
+
+                locationHistoryUpdatesTrackerDao.insertNewOrReplace(
+                        LocationHistoryUpdatesTracker(forScannedDeviceId = forScannedDeviceId)
+                )
+            }
+        }catch (e : Exception){
+            MyLogger.logThis(
+                    TAG,
+                    "unEncryptHistoryPayload(payload - , lTime $lTime)",
+                    "exception thrown ${e.message}", e
+            )
+        }
+    }
+
     private fun unEncryptLocationDetailsPayload(
         payload: String,
         lTime: String,
@@ -285,7 +464,7 @@ class ScannedDevicesRepo
 
                 MyLogger.logThis(
                     TAG,
-                    "unEncryptLocationDetailsPayload(payload: $payload, lTime  : $lTime)",
+                    "unEncryptLocationDetailsPayload(payload: , lTime  : $lTime)",
                     "encrypted data for company ${locationDetails.company_id} & location ${locationDetails.location_id}",
                 )
                 if (ignoreResultIfNotMyLocation) {
@@ -306,7 +485,7 @@ class ScannedDevicesRepo
         } catch (e: java.lang.Exception) {
             MyLogger.logThis(
                 TAG,
-                "unEncryptLocationDetailsPayload(payload: $payload, lTime  : $lTime)",
+                "unEncryptLocationDetailsPayload(payload: , lTime  : $lTime)",
                 "failed ${e.message}",
                 e
             )
@@ -343,7 +522,7 @@ class ScannedDevicesRepo
             customerDeviceData.monitor_id = monitor_id
             MyLogger.logThis(
                 TAG,
-                "processEncryptedPayload(payload: $payload, lTime  : $lTime)",
+                "processEncryptedPayload(payload: , lTime  : $lTime)",
                 "success -- SAVING DATA $customerDeviceData"
             )
             insertOrUpdateCustomerDeviceData(
@@ -355,7 +534,7 @@ class ScannedDevicesRepo
         } catch (e: java.lang.Exception) {
             MyLogger.logThis(
                 TAG,
-                "processEncryptedPayload(payload: $payload, lTime  : $lTime)",
+                "processEncryptedPayload(payload: , lTime  : $lTime)",
                 "failed ${e.message}",
                 e
             )
@@ -441,10 +620,6 @@ class ScannedDevicesRepo
             locationDetailsDao.deleteAll(locationsDetails)
         }
         MyLogger.logThis(TAG, "removing devices", "${locationsDetails.size}  $forScannedDeviceId")
-    }
-
-    suspend fun updateMyDevice(locationDataFromQr: LocationDataFromQr) {
-        locDataFromQrDao.updateDevice(locationDataFromQr)
     }
 
 

@@ -43,11 +43,12 @@ class MyLocationsRefresher @AssistedInject constructor(
                 "companyId $compId and locationId $locId",
             )
             val pl = QrCodeProcessor.getEncryptedEncodedPayloadForDeviceDetails(
-                compId = compId,
-                locId = locId,
-                userName = userName,
-                userPassword = userPassword,
-                timeStamp = timeStamp
+                    compId = compId,
+                    locId = locId,
+                    userName = userName,
+                    userPassword = userPassword,
+                    timeStamp = timeStamp,
+                    showHistory = true
             )
             scannedDevicesRepo.fetchLocationDetails(
                 compId = compId,

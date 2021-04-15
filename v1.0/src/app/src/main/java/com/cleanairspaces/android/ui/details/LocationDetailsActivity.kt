@@ -13,6 +13,7 @@ import com.cleanairspaces.android.databinding.ActivityLocationDetailsBinding
 import com.cleanairspaces.android.ui.BaseActivity
 import com.cleanairspaces.android.utils.MyLocationDetailsWrapper
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 
 @AndroidEntryPoint
@@ -47,23 +48,40 @@ class LocationDetailsActivity : BaseActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()
-        //specify home fragments
+        //no home fragments
         appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.detailsFragment,
-            )
+            setOf()
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.bottomNav.setupWithNavController(navController)
 
         locationDetailsInfo?.let { info ->
-            viewModel.setCustomerDeviceDataDetailed(myLocationDetailsWrapper = info)
+         val deviceId =  viewModel.setCustomerDeviceDataDetailedNGetDeviceId(myLocationDetailsWrapper = info)
+         observeHistories(deviceId)
         }
 
     }
 
     override fun handleBackPress() {
         this@LocationDetailsActivity.finish()
+    }
+
+
+    private fun observeHistories(deviceId: String) {
+        viewModel.observeHistories(deviceId).days.observe(this, androidx.lifecycle.Observer {
+            if (it != null)
+            viewModel.setDaysHistory(it)
+        })
+        viewModel.observeHistories(deviceId).week.observe(this, androidx.lifecycle.Observer {
+            if (it != null)
+            viewModel.setWeekHistory(it)
+        })
+
+        viewModel.observeHistories(deviceId).month.observe(this, androidx.lifecycle.Observer {
+            if (it != null)
+            viewModel.setMonthHistory(it)
+        })
+
     }
 
     //toolbar handle back navigation

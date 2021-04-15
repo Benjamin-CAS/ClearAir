@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.FragmentHistoryBinding
 import com.cleanairspaces.android.models.entities.LocationHistoryMonth
@@ -15,6 +18,7 @@ import com.cleanairspaces.android.models.entities.LocationHistoryThreeDays
 import com.cleanairspaces.android.models.entities.LocationHistoryWeek
 import com.cleanairspaces.android.ui.details.LocationDetailsViewModel
 import com.cleanairspaces.android.utils.MyLogger
+import com.cleanairspaces.android.utils.UNSET_PARAM_VAL
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Legend
@@ -33,6 +37,7 @@ class HistoryFragment : Fragment() {
         private val TAG = HistoryFragment::class.java.simpleName
     }
 
+    private var graphParamSelected: TextView? = null
     private var _binding: FragmentHistoryBinding? = null
     private val binding get() = _binding!!
     private val viewModel: LocationDetailsViewModel by activityViewModels()
@@ -51,6 +56,8 @@ class HistoryFragment : Fragment() {
     private val redColor by lazy { ContextCompat.getColor(requireContext(), R.color.red) }
     private val blackColor by lazy { ContextCompat.getColor(requireContext(), R.color.black) }
 
+    private val checkIcon by lazy { ContextCompat.getDrawable(requireContext(), R.drawable.ic_blue_check) }
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -64,11 +71,26 @@ class HistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setParametersClickListeners()
+        setSelectedParamView(binding.aqiTv)
         styleBarChart(binding.daysChart)
         styleBarChart(binding.weekChart)
         styleBarChart(binding.monthChart)
 
-        viewModel.observeLocationDaysHistory().observe(
+        viewModel.observeLocationDetails().observe(viewLifecycleOwner, Observer {
+            if (!viewModel.graphParamsSet) {
+                //we only want to listen once
+                viewModel.graphParamsSet = true
+                val showIndoor = (it.indoorPmValue != UNSET_PARAM_VAL)
+                toggleIndoorParameters(show = showIndoor)
+                observeHistory() //TODO not correct ---
+            }
+        })
+
+    }
+
+    private fun observeHistory(){
+           viewModel.observeLocationDaysHistory().observe(
                 viewLifecycleOwner, { list ->
             list?.let {
                 updateDaysHistoryChart(it)
@@ -93,6 +115,52 @@ class HistoryFragment : Fragment() {
         )
     }
 
+    /*********** graph controls ***********/
+    private fun setParametersClickListeners(){
+        binding.apply {
+            aqiTv.setOnClickListener {
+                setSelectedParamView(aqiTv)
+            }
+            tvocTv.setOnClickListener {
+                setSelectedParamView(tvocTv)
+            }
+            tmpTv.setOnClickListener {
+                setSelectedParamView(tmpTv)
+            }
+            humidityTv.setOnClickListener {
+                setSelectedParamView(humidityTv)
+            }
+            co2Tv.setOnClickListener {
+                setSelectedParamView(co2Tv)
+            }
+            outdoorsTv.setOnClickListener {
+                setSelectedParamView(outdoorsTv)
+            }
+        }
+    }
+    private fun clearSelectedParamView(){
+            graphParamSelected?.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+    }
+
+    private fun setSelectedParamView(selectedTv: TextView) {
+        clearSelectedParamView()
+        selectedTv.setCompoundDrawablesWithIntrinsicBounds(null, null, checkIcon, null)
+        graphParamSelected = selectedTv
+    }
+
+    private fun toggleIndoorParameters(show : Boolean){
+        binding.apply {
+            pmCard.isVisible = show
+            tmpCard.isVisible = show
+            co2Card.isVisible = show
+            humidityCard.isVisible = show
+            tvocCard.isVisible = show
+        }
+    }
+
+
+
+    /********** bar chart **********/
     private fun styleBarChart(barChart: BarChart) {
         barChart.apply {
             axisRight.isEnabled = false

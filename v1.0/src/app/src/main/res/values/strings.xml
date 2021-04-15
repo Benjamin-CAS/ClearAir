@@ -121,6 +121,8 @@
     <string name="last_seven_two_hours">Last 72 hours</string>
     <string name="loading_graph_data">Loading data ...</string>
     <string name="last_week_lbl">Last week</string>
+    <string name="air_quality_txt">Air Quality</string>
+    <string name="outdoors_air_quality_txt">Outdoor Air Quality</string>
     <string-array name="map_languages">
         <item>Chinese</item>
         <item>English</item>

@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/action_btn"
-        style="@style/Theme.CleanAirSpaces.Button"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/md_space"
-        android:background="@drawable/round_footer_bg"
-        android:elevation="@dimen/std_space"
-        android:paddingStart="@dimen/std_space"
-        android:paddingTop="0dp"
-        android:paddingEnd="@dimen/std_space"
-        android:paddingBottom="0dp"
-        android:textColor="?colorOnPrimary" />
+        android:focusable="true"
+        android:clickable="true"
+        app:cardBackgroundColor="@color/aqi_beyond"
+        app:cardElevation="@dimen/std_space"
+        app:cardCornerRadius="@dimen/std_space"
+        android:layout_margin="@dimen/std_space">
+        <TextView
+            android:id="@+id/action_tv"
+            android:padding="@dimen/std_space"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Theme.CleanAirSpaces.Button"
+            android:textStyle="bold"
+            android:textColor="?colorOnPrimary"
+            android:textSize="@dimen/md_txt"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+    </com.google.android.material.card.MaterialCardView>
+
 </layout>

@@ -1,5 +1,7 @@
 package com.cleanairspaces.android.ui.details
 
+import android.view.View
+import android.widget.TextView
 import androidx.lifecycle.*
 import com.cleanairspaces.android.models.entities.*
 import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
@@ -41,6 +43,7 @@ class LocationDetailsViewModel @Inject constructor(
 
 
     /******** history *****/
+    var graphParamsSet: Boolean = false
     private fun getCompIdLocIdMonitorId(scannedDevice: LocationDataFromQr): Triple<String, String, String> {
         return Triple(scannedDevice.company_id, scannedDevice.location_id,scannedDevice.monitor_id)
     }

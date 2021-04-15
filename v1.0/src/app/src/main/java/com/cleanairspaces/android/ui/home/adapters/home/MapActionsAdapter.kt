@@ -21,8 +21,8 @@ class MapActionsAdapter(private val actionsListener: ClickListener) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(action: MapActions, actionsListener: ClickListener) {
             binding.apply {
-                actionBtn.setText(action.action.strRes)
-                actionBtn.setOnClickListener {
+                actionTv.setText(action.action.strRes)
+                actionTv.setOnClickListener {
                     actionsListener.onClickAction(action.action)
                 }
             }

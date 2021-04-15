@@ -229,10 +229,10 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_help -> {
+                /*  R.id.action_help -> {
                 showDialog(msgRes = R.string.map_menu_help_desc_txt, positiveAction = {})
                 true
-            }
+            } */
             R.id.aboutAppMenu -> {
 
                 gotToActivity(AboutAppActivity::class.java)

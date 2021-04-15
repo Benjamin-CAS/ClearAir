@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_help"
-        android:icon="@drawable/ic_question_circled"
-        android:iconTint="@color/blue"
-        android:title="@string/map_menu_help_txt"
-        app:showAsAction="ifRoom" />
+    <!-- <item
+       android:id="@+id/action_help"
+       android:icon="@drawable/ic_question_circled"
+       android:iconTint="@color/blue"
+       android:title="@string/map_menu_help_txt"
+       app:showAsAction="ifRoom" /> -->
 
 
-    <item
-        android:id="@+id/settingsMenu"
-        android:title="@string/map_menu_settings_txt"
-        app:showAsAction="never" />
+   <item
+       android:id="@+id/settingsMenu"
+       android:title="@string/map_menu_settings_txt"
+       app:showAsAction="never" />
 
-    <item
-        android:id="@+id/aboutAppFragment"
-        android:title="@string/map_menu_about_app_txt"
-        app:showAsAction="never" />
+   <item
+       android:id="@+id/aboutAppMenu"
+       android:title="@string/map_menu_about_app_txt"
+       app:showAsAction="never" />
 </menu>

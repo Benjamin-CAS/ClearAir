@@ -118,6 +118,9 @@
     <string name="default_map_language">Chinese</string>
     <string name="details_fragment_lbl">Latest Info</string>
     <string name="history_fragment_lbl">History</string>
+    <string name="last_seven_two_hours">Last 72 hours</string>
+    <string name="loading_graph_data">Loading data ...</string>
+    <string name="last_week_lbl">Last week</string>
     <string-array name="map_languages">
         <item>Chinese</item>
         <item>English</item>

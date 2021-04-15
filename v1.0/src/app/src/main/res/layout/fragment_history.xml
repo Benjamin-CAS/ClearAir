@@ -21,7 +21,7 @@
         android:background="@drawable/chart_bg"
         android:orientation="vertical">
 
-        <com.github.mikephil.charting.charts.LineChart
+        <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/days_chart"
             android:layout_marginTop="@dimen/md_space"
             android:layout_marginBottom="@dimen/md_space"
@@ -44,7 +44,7 @@
         android:background="@drawable/chart_bg"
         android:orientation="vertical">
 
-        <com.github.mikephil.charting.charts.LineChart
+        <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/week_chart"
             android:layout_marginTop="@dimen/md_space"
             android:layout_marginBottom="@dimen/md_space"
@@ -68,7 +68,7 @@
         android:background="@drawable/chart_bg"
         android:orientation="vertical">
 
-        <com.github.mikephil.charting.charts.LineChart
+        <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/month_chart"
             android:layout_marginTop="@dimen/md_space"
             android:layout_marginBottom="@dimen/md_space"

@@ -4,9 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.FragmentHistoryBinding
 import com.cleanairspaces.android.models.entities.LocationHistoryMonth
@@ -15,11 +16,15 @@ import com.cleanairspaces.android.models.entities.LocationHistoryWeek
 import com.cleanairspaces.android.ui.details.LocationDetailsViewModel
 import com.cleanairspaces.android.utils.MyLogger
 import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.LegendEntry
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
+
 
 @AndroidEntryPoint
 class HistoryFragment : Fragment() {
@@ -31,6 +36,20 @@ class HistoryFragment : Fragment() {
     private var _binding: FragmentHistoryBinding? = null
     private val binding get() = _binding!!
     private val viewModel: LocationDetailsViewModel by activityViewModels()
+
+    private val openSansLight by lazy {
+        ResourcesCompat.getFont(requireContext(), R.font.open_sans_condensed_light)
+    }
+
+    private val openSans by lazy {
+        ResourcesCompat.getFont(requireContext(), R.font.open_sans)
+    }
+
+
+    private val greenColor by lazy { ContextCompat.getColor(requireContext(), R.color.green) }
+    private val yellowColor by lazy { ContextCompat.getColor(requireContext(), R.color.yellow) }
+    private val redColor by lazy { ContextCompat.getColor(requireContext(), R.color.red) }
+    private val blackColor by lazy { ContextCompat.getColor(requireContext(), R.color.black) }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -44,8 +63,13 @@ class HistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        styleBarChart(binding.daysChart)
+        styleBarChart(binding.weekChart)
+        styleBarChart(binding.monthChart)
+
         viewModel.observeLocationDaysHistory().observe(
-                viewLifecycleOwner, Observer { list ->
+                viewLifecycleOwner, { list ->
             list?.let {
                 updateDaysHistoryChart(it)
             }
@@ -53,7 +77,7 @@ class HistoryFragment : Fragment() {
         )
 
         viewModel.observeLocationWeekHistory().observe(
-                viewLifecycleOwner, Observer { list ->
+                viewLifecycleOwner, { list ->
             list?.let {
                 updateWeekHistoryChart(it)
             }
@@ -61,7 +85,7 @@ class HistoryFragment : Fragment() {
         )
 
         viewModel.observeLocationMonthHistory().observe(
-                viewLifecycleOwner, Observer { list ->
+                viewLifecycleOwner, { list ->
             list?.let {
                 updateMonthHistoryChart(it)
             }
@@ -69,34 +93,92 @@ class HistoryFragment : Fragment() {
         )
     }
 
+    private fun styleBarChart(barChart: BarChart) {
+        barChart.apply {
+            axisRight.isEnabled = false
+            axisLeft.isEnabled = false
+
+            val legendGood = LegendEntry()
+            legendGood.label = getString(R.string.good_air_status_txt)
+            legendGood.formColor = greenColor
+
+            val legendModerate = LegendEntry()
+            legendModerate.label = getString(R.string.moderate_air_status_txt)
+            legendModerate.formColor = yellowColor
+
+            val legendBad = LegendEntry()
+            legendBad.label = getString(R.string.danger_txt)
+            legendBad.formColor = redColor
+
+            legend.apply {
+                typeface = openSans
+                horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+                yOffset = 0f
+                setCustom(listOf(legendGood, legendModerate, legendBad))
+            }
+
+            xAxis.apply {
+                labelRotationAngle = 0f
+                setDrawGridLines(false)
+                axisMaximum = 4.0f
+                axisMinimum = 0.0f
+                position = XAxis.XAxisPosition.BOTTOM
+                typeface = openSansLight
+                textSize = 12f
+            }
+
+            setNoDataTextTypeface(openSansLight)
+
+
+            setTouchEnabled(true)
+            setPinchZoom(true)
+            description.isEnabled = false
+            setNoDataText(getString(R.string.loading_graph_data))
+            setNoDataTextTypeface(openSans)
+            setNoDataTextColor(blackColor)
+            animateX(1000, Easing.EaseInExpo)
+        }
+    }
+
+    private fun styleDataSet(barDataSet: BarDataSet, valColorMap: ArrayList<Int>) {
+        barDataSet.apply {
+            //color of the bar
+            colors = valColorMap
+            //Setting the size of the legend box
+            formSize = 10f
+            //showing the value of the bar, default true if not set
+            setDrawValues(true)
+            //setting the text size of the value of the bar
+            valueTextSize = 12f
+            valueTextColor = blackColor
+            valueTypeface = openSansLight
+
+        }
+    }
 
     private fun updateDaysHistoryChart(daysHistory: List<LocationHistoryThreeDays>) {
         try {
-            val entries = ArrayList<Entry>()
-            for ((i, day) in daysHistory.withIndex()) {
-                if(day.reading_comp != null)
-                    entries.add(Entry(i.toFloat(), day.reading_comp!!.toFloat()))
+            val title = getString(R.string.last_seven_two_hours)
+            val entries = ArrayList<BarEntry>()
+            val trial = arrayOf(10, 20, 30, 40, 50) //Y AXIS
+            val valColorMap = ArrayList<Int>()
+            for ((i, day) in trial.withIndex()) {
+                val entry = BarEntry(i.toFloat(), day.toFloat())
+                entries.add(entry)
+                when {
+                    day <= 20 -> valColorMap.add(greenColor)
+                    day in 21..40 -> valColorMap.add(yellowColor)
+                    else -> valColorMap.add(redColor)
+                }
             }
-            val daysHistoryDataSet = LineDataSet(entries, LocationHistoryThreeDays.responseKey)
-            daysHistoryDataSet.setDrawValues(false)
-            daysHistoryDataSet.setDrawFilled(true)
-            daysHistoryDataSet.lineWidth = 3f
-            daysHistoryDataSet.fillColor = R.color.green
-            daysHistoryDataSet.fillAlpha = R.color.yellow
+            val daysHistoryDataSet = MyBarDataSet(entries, title)
+            styleDataSet(daysHistoryDataSet, valColorMap)
 
             binding.daysChart.apply {
-                xAxis.labelRotationAngle = 0f
-                data = LineData(daysHistoryDataSet)
-                axisRight.isEnabled = false
-                xAxis.axisMaximum = 1 + 0.1f
-                setTouchEnabled(true)
-                setPinchZoom(true)
-                description.text = "Days"
-                setNoDataText("Loading data ...")
-                animateX(1000, Easing.EaseInExpo)
+                data = BarData(daysHistoryDataSet)
+                notifyDataSetChanged()
             }
-
-        }catch (e : Exception){
+        } catch (e: Exception) {
             MyLogger.logThis(
                     TAG, "updateDaysHistoryChart()",
                     "new data ${daysHistory.size} in size ${e.message}",
@@ -107,31 +189,27 @@ class HistoryFragment : Fragment() {
 
     private fun updateWeekHistoryChart(weekHistory: List<LocationHistoryWeek>) {
         try {
-            val entries = ArrayList<Entry>()
-            for ((i, day) in weekHistory.withIndex()) {
-                if(day.reading_comp != null)
-                    entries.add(Entry(i.toFloat(), day.reading_comp!!.toFloat()))
+            val title = getString(R.string.last_week_lbl)
+            val entries = ArrayList<BarEntry>()
+            val trial = arrayOf(10, 20, 30, 40, 50) //Y AXIS
+            val valColorMap = ArrayList<Int>()
+            for ((i, day) in trial.withIndex()) {
+                val entry = BarEntry(i.toFloat(), day.toFloat())
+                entries.add(entry)
+                when {
+                    day <= 20 -> valColorMap.add(greenColor)
+                    day in 21..40 -> valColorMap.add(yellowColor)
+                    else -> valColorMap.add(redColor)
+                }
             }
-            val daysHistoryDataSet = LineDataSet(entries, LocationHistoryThreeDays.responseKey)
-            daysHistoryDataSet.setDrawValues(false)
-            daysHistoryDataSet.setDrawFilled(true)
-            daysHistoryDataSet.lineWidth = 3f
-            daysHistoryDataSet.fillColor = R.color.green
-            daysHistoryDataSet.fillAlpha = R.color.yellow
+            val daysHistoryDataSet = MyBarDataSet(entries, title)
+            styleDataSet(daysHistoryDataSet, valColorMap)
 
             binding.weekChart.apply {
-                xAxis.labelRotationAngle = 0f
-                data = LineData(daysHistoryDataSet)
-                axisRight.isEnabled = false
-                xAxis.axisMaximum = 1 + 0.1f
-                setTouchEnabled(true)
-                setPinchZoom(true)
-                description.text = "Week"
-                setNoDataText("Loading data ...")
-                animateX(1000, Easing.EaseInExpo)
+                data = BarData(daysHistoryDataSet)
+                notifyDataSetChanged()
             }
-
-        }catch (e : Exception){
+        } catch (e: Exception) {
             MyLogger.logThis(
                     TAG, "updateWeekHistoryChart()",
                     "new data ${weekHistory.size} in size ${e.message}",
@@ -142,31 +220,27 @@ class HistoryFragment : Fragment() {
 
     private fun updateMonthHistoryChart(monthHistory: List<LocationHistoryMonth>) {
         try {
-            val entries = ArrayList<Entry>()
-            for ((i, day) in monthHistory.withIndex()) {
-                if(day.reading_comp != null)
-                    entries.add(Entry(i.toFloat(), day.reading_comp!!.toFloat()))
+            val title = getString(R.string.last_thirty_lbl)
+            val entries = ArrayList<BarEntry>()
+            val trial = arrayOf(10, 20, 30, 40, 50) //Y AXIS
+            val valColorMap = ArrayList<Int>()
+            for ((i, day) in trial.withIndex()) {
+                val entry = BarEntry(i.toFloat(), day.toFloat())
+                entries.add(entry)
+                when {
+                    day <= 20 -> valColorMap.add(greenColor)
+                    day in 21..40 -> valColorMap.add(yellowColor)
+                    else -> valColorMap.add(redColor)
+                }
             }
-            val daysHistoryDataSet = LineDataSet(entries, LocationHistoryThreeDays.responseKey)
-            daysHistoryDataSet.setDrawValues(false)
-            daysHistoryDataSet.setDrawFilled(true)
-            daysHistoryDataSet.lineWidth = 3f
-            daysHistoryDataSet.fillColor = R.color.green
-            daysHistoryDataSet.fillAlpha = R.color.yellow
+            val daysHistoryDataSet = MyBarDataSet(entries, title)
+            styleDataSet(daysHistoryDataSet, valColorMap)
 
             binding.monthChart.apply {
-                xAxis.labelRotationAngle = 0f
-                data = LineData(daysHistoryDataSet)
-                axisRight.isEnabled = false
-                xAxis.axisMaximum = 1 + 0.1f
-                setTouchEnabled(true)
-                setPinchZoom(true)
-                description.text = "Month"
-                setNoDataText("Loading data ...")
-                animateX(1000, Easing.EaseInExpo)
+                data = BarData(daysHistoryDataSet)
+                notifyDataSetChanged()
             }
-
-        }catch (e : Exception){
+        } catch (e: Exception) {
             MyLogger.logThis(
                     TAG, "updateMonthHistoryChart()",
                     "new data ${monthHistory.size} in size ${e.message}",
@@ -180,5 +254,16 @@ class HistoryFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+}
 
+internal class MyBarDataSet(yVals: List<BarEntry?>?,
+                            label: String?) : BarDataSet(yVals, label) {
+    override fun getEntryIndex(e: BarEntry?): Int {
+        return super.getEntryIndex(e)
+    }
+
+    override fun getColor(index: Int): Int {
+        MyLogger.logThis("coloring bar", "called", "$index")
+        return mColors[index]
+    }
 }

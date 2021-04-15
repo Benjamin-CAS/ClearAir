@@ -16,12 +16,12 @@ data class LocationHistoryThreeDays(
         var autoId: Int,
         var forScannedDeviceId: String = "",
         var date_reading: String?,
-        var avg_reading: Long?,
+        var avg_reading: Long?,//indoor
         var avg_tvoc: String?,
         var avg_co2: Long?,
         var avg_temperature: Long?,
         var avg_humidity: Long?,
-        var reading_comp: Long?,
+        var reading_comp: Long?,//outdoor
 ) : Parcelable {
 
     companion object {
@@ -38,12 +38,12 @@ data class LocationHistoryWeek(
         var autoId: Int,
         var forScannedDeviceId: String = "",
         var date_reading: String?,
-        var avg_reading: Long?,
+        var avg_reading: Long?, //indoor
         var avg_tvoc: String?,
         var avg_co2: Long?,
         var avg_temperature: Long?,
         var avg_humidity: Long?,
-        var reading_comp: Long?,
+        var reading_comp: Long?,//outdoor
 ) : Parcelable {
 
     companion object {
@@ -60,12 +60,12 @@ data class LocationHistoryMonth(
         var autoId: Int,
         var forScannedDeviceId: String = "",
         var date_reading: String?,
-        var avg_reading: Long?,
+        var avg_reading: Long?, //indoor
         var avg_tvoc: String?,
         var avg_co2: Long?,
         var avg_temperature: Long?,
         var avg_humidity: Long?,
-        var reading_comp: Long?,
+        var reading_comp: Long?, //outdoor
 ) : Parcelable {
 
     companion object {

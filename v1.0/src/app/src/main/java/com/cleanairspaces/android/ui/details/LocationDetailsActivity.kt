@@ -12,7 +12,9 @@ import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityLocationDetailsBinding
 import com.cleanairspaces.android.ui.BaseActivity
 import com.cleanairspaces.android.utils.MyLocationDetailsWrapper
+import com.cleanairspaces.android.utils.MyLogger
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.Exception
 import java.util.*
 
 
@@ -56,8 +58,8 @@ class LocationDetailsActivity : BaseActivity() {
         binding.bottomNav.setupWithNavController(navController)
 
         locationDetailsInfo?.let { info ->
-         val deviceId =  viewModel.setCustomerDeviceDataDetailedNGetDeviceId(myLocationDetailsWrapper = info)
-         observeHistories(deviceId)
+                val deviceId =  viewModel.setCustomerDeviceDataDetailedNGetDeviceId(myLocationDetailsWrapper = info)
+                observeHistories(deviceId)
         }
 
     }

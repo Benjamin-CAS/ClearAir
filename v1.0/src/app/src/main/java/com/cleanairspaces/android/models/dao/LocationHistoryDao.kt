@@ -14,7 +14,7 @@ interface LocationHistoryThreeDaysDao {
     suspend fun deleteAll()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(locationHistoryThreeDays: List<LocationHistoryThreeDays>)
+    suspend fun insert(locationHistoryThreeDays: LocationHistoryThreeDays)
 
     @Query("SELECT * FROM location_history_last_three WHERE forScannedDeviceId =:forScannedDeviceId ORDER BY date_reading DESC")
     fun getLastDaysHistory(forScannedDeviceId : String) : Flow<List<LocationHistoryThreeDays>>
@@ -27,7 +27,7 @@ interface LocationHistoryWeekDao{
     suspend fun deleteAll()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(locationHistoryWeek: List<LocationHistoryWeek>)
+    suspend fun insert(locationHistoryWeek: LocationHistoryWeek)
 
     @Query("SELECT * FROM location_history_last_week WHERE forScannedDeviceId =:forScannedDeviceId ORDER BY date_reading DESC")
     fun getLastWeekHistory(forScannedDeviceId : String)  : Flow<List<LocationHistoryWeek>>
@@ -41,7 +41,7 @@ interface LocationHistoryMonthDao{
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(locationHistoryMonth: List<LocationHistoryMonth>)
+    suspend fun insert(locationHistoryMonth: LocationHistoryMonth)
 
     @Query("SELECT * FROM location_history_last_month WHERE forScannedDeviceId =:forScannedDeviceId ORDER BY date_reading DESC")
     fun getLastMonthHistory(forScannedDeviceId : String) : Flow<List<LocationHistoryMonth>>

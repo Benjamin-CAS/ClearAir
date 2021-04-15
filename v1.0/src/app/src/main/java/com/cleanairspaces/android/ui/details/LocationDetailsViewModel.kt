@@ -5,6 +5,7 @@ import com.cleanairspaces.android.models.entities.*
 import com.cleanairspaces.android.models.repository.ScannedDevicesRepo
 import com.cleanairspaces.android.utils.HISTORY_EXPIRE_TIME_MILLS
 import com.cleanairspaces.android.utils.MyLocationDetailsWrapper
+import com.cleanairspaces.android.utils.MyLogger
 import com.cleanairspaces.android.utils.QrCodeProcessor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,8 @@ import javax.inject.Inject
 class LocationDetailsViewModel @Inject constructor(
         private val scannedDevicesRepo: ScannedDevicesRepo
 ) : ViewModel() {
+
+    private val TAG  = LocationDetailsViewModel::class.java.simpleName
 
     private val locationDetailsInfoLive = MutableLiveData<MyLocationDetailsWrapper>()
     fun setCustomerDeviceDataDetailedNGetDeviceId(
@@ -66,8 +69,8 @@ class LocationDetailsViewModel @Inject constructor(
 
     fun observeHistories(forScannedDeviceId : String): TripleHistoryFlow {
         return TripleHistoryFlow(
-                week = scannedDevicesRepo.getLastWeekHistory(forScannedDeviceId).asLiveData(),
                 days = scannedDevicesRepo.getLastDaysHistory(forScannedDeviceId).asLiveData(),
+                week = scannedDevicesRepo.getLastWeekHistory(forScannedDeviceId).asLiveData(),
                 month = scannedDevicesRepo.getLastMonthHistory(forScannedDeviceId).asLiveData()
         )
     }
@@ -78,6 +81,10 @@ class LocationDetailsViewModel @Inject constructor(
             if (lastUpdate == null
                     ||  hasExpired(timeNow, lastUpdate) ) {
                 withContext(Dispatchers.Main) {
+                    MyLogger.logThis(
+                            TAG,
+                            "refreshHistoryIfNecessary()", "refreshing history"
+                    )
                     fetchHistory(
                             compId = compId,
                             locId = locId,

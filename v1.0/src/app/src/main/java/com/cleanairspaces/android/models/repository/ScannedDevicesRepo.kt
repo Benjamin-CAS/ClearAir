@@ -341,6 +341,11 @@ class ScannedDevicesRepo
             response.enqueue(
                     getMyLocationHistoryCallback()
             )
+            MyLogger.logThis(
+                    TAG,
+                    "fetchLocationHistory()",
+                    "data passed ${data.toString()}",
+            )
         } catch (e: Exception) {
             MyLogger.logThis(
                     TAG,
@@ -359,9 +364,10 @@ class ScannedDevicesRepo
 
     private fun unEncryptHistoryPayload(payload: String, lTime: String) {
         try {
-           val dataMatchingLTime = recentlyFetchedDeviceData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+            val dataMatchingLTime = recentlyFetchedDeviceData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
              if (dataMatchingLTime.isNullOrEmpty()) return
              val requestedData = dataMatchingLTime[0]
+                recentlyFetchedDeviceData.remove(requestedData)
              val forScannedDeviceId = requestedData.get(DEVICE_ID_KEY).asString
 
             val unEncryptedPayload: String =
@@ -375,11 +381,12 @@ class ScannedDevicesRepo
             var i = 0
             while (i < sevenTwoHrsTotal) {
                 val sevenTwoHrsData =
-                        Gson().fromJson(unEncJson.toString(), LocationHistoryThreeDays::class.java)
+                        Gson().fromJson(sevenTwoHrsJsonArray.getJSONObject(i).toString(), LocationHistoryThreeDays::class.java)
                 sevenTwoHrsData.forScannedDeviceId = forScannedDeviceId
                 sevenTwoHrsArr.add(sevenTwoHrsData)
                 i++
             }
+
 
             /** last week history */
             val weekJsonArray = unEncJson.getJSONArray(LocationHistoryWeek.responseKey)
@@ -388,7 +395,7 @@ class ScannedDevicesRepo
             var j = 0
             while (j < weekTotal) {
                 val weekData =
-                        Gson().fromJson(unEncJson.toString(), LocationHistoryWeek::class.java)
+                        Gson().fromJson(weekJsonArray.getJSONObject(j).toString(), LocationHistoryWeek::class.java)
                 weekData.forScannedDeviceId = forScannedDeviceId
                 weekArr.add(weekData)
                 j++
@@ -401,32 +408,46 @@ class ScannedDevicesRepo
             var k = 0
             while (k < monthTotal) {
                 val monthData =
-                        Gson().fromJson(unEncJson.toString(), LocationHistoryMonth::class.java)
+                        Gson().fromJson(monthJsonArray.getJSONObject(k).toString(), LocationHistoryMonth::class.java)
                 monthData.forScannedDeviceId = forScannedDeviceId
                 monthArr.add(monthData)
                 k++
             }
 
+
             coroutineScope.launch(Dispatchers.IO) {
-                if (sevenTwoHrsArr.isNotEmpty()){
-                    locationHistoryThreeDaysDao.deleteAll()
-                    locationHistoryThreeDaysDao.insert(sevenTwoHrsArr.toList())
-                }
 
-                if (weekArr.isNotEmpty()){
-                    locationHistoryWeekDao.deleteAll()
-                    locationHistoryWeekDao.insert(weekArr.toList())
-                }
+                try {
+                    if (sevenTwoHrsArr.isNotEmpty()) {
+                        locationHistoryThreeDaysDao.deleteAll()
+                        for (data in sevenTwoHrsArr) {
+                            locationHistoryThreeDaysDao.insert(data)
+                        }
+                    }
 
-                if (monthArr.isEmpty()){
-                    locationHistoryMonthDao.deleteAll()
-                    locationHistoryMonthDao.insert(monthArr.toList())
-                }
+                    if (weekArr.isNotEmpty()) {
+                        locationHistoryWeekDao.deleteAll()
+                        for (data in weekArr) {
+                            locationHistoryWeekDao.insert(data)
+                        }
+                    }
 
-                locationHistoryUpdatesTrackerDao.insertNewOrReplace(
-                        LocationHistoryUpdatesTracker(forScannedDeviceId = forScannedDeviceId)
-                )
+                    if (monthArr.isNotEmpty()) {
+                        locationHistoryMonthDao.deleteAll()
+                        for(data in monthArr) {
+                            locationHistoryMonthDao.insert(data)
+                        }
+                    }
+
+                    locationHistoryUpdatesTrackerDao.insertNewOrReplace(
+                            LocationHistoryUpdatesTracker(forScannedDeviceId = forScannedDeviceId)
+                    )
+                }catch (e : java.lang.Exception){
+                    MyLogger.logThis(TAG, "unEncryptHistoryPayload()" ,"saving threw an exception ${e.message}", e)
+                }
             }
+
+
         }catch (e : Exception){
             MyLogger.logThis(
                     TAG,

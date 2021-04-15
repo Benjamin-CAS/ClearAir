@@ -1,9 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.details.history_fragment.HistoryFragment">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/md_space">
+
+    <LinearLayout
+        android:id="@+id/days_chart_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/chart_height"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/chart_bg"
+        android:orientation="vertical">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/days_chart"
+            android:layout_marginTop="@dimen/md_space"
+            android:layout_marginBottom="@dimen/md_space"
+            android:layout_marginStart="@dimen/std_space"
+            android:layout_marginEnd="@dimen/std_space"
+            android:padding="@dimen/std_space"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/week_chart_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/chart_height"
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="@dimen/md_space"
+        app:layout_constraintTop_toBottomOf="@id/days_chart_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/chart_bg"
+        android:orientation="vertical">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/week_chart"
+            android:layout_marginTop="@dimen/md_space"
+            android:layout_marginBottom="@dimen/md_space"
+            android:layout_marginStart="@dimen/std_space"
+            android:layout_marginEnd="@dimen/std_space"
+            android:padding="@dimen/std_space"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/month_chart_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/chart_height"
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="@dimen/md_space"
+        app:layout_constraintTop_toBottomOf="@id/week_chart_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/chart_bg"
+        android:orientation="vertical">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/month_chart"
+            android:layout_marginTop="@dimen/md_space"
+            android:layout_marginBottom="@dimen/md_space"
+            android:layout_marginStart="@dimen/std_space"
+            android:layout_marginEnd="@dimen/std_space"
+            android:padding="@dimen/std_space"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

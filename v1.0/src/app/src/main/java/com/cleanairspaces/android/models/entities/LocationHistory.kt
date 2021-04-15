@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import javax.annotation.Nullable
 
 @Parcelize
 @Entity(
@@ -14,8 +15,13 @@ data class LocationHistoryThreeDays(
         @PrimaryKey(autoGenerate = true)
         var autoId: Int,
         var forScannedDeviceId: String = "",
-        @Embedded
-        var data: CommonHistoryData
+        var date_reading: String?,
+        var avg_reading: Long?,
+        var avg_tvoc: String?,
+        var avg_co2: Long?,
+        var avg_temperature: Long?,
+        var avg_humidity: Long?,
+        var reading_comp: Long?,
 ) : Parcelable {
 
     companion object {
@@ -31,8 +37,13 @@ data class LocationHistoryWeek(
         @PrimaryKey(autoGenerate = true)
         var autoId: Int,
         var forScannedDeviceId: String = "",
-        @Embedded
-        var data: CommonHistoryData
+        var date_reading: String?,
+        var avg_reading: Long?,
+        var avg_tvoc: String?,
+        var avg_co2: Long?,
+        var avg_temperature: Long?,
+        var avg_humidity: Long?,
+        var reading_comp: Long?,
 ) : Parcelable {
 
     companion object {
@@ -48,8 +59,13 @@ data class LocationHistoryMonth(
         @PrimaryKey(autoGenerate = true)
         var autoId: Int,
         var forScannedDeviceId: String = "",
-        @Embedded
-        var data: CommonHistoryData
+        var date_reading: String?,
+        var avg_reading: Long?,
+        var avg_tvoc: String?,
+        var avg_co2: Long?,
+        var avg_temperature: Long?,
+        var avg_humidity: Long?,
+        var reading_comp: Long?,
 ) : Parcelable {
 
     companion object {
@@ -57,22 +73,11 @@ data class LocationHistoryMonth(
     }
 }
 
-@Parcelize
-data class CommonHistoryData(
-        val date_reading: String,
-        val avg_reading: Long,
-        val avg_tvoc: String,
-        val avg_co2: Long,
-        val avg_temperature: Long,
-        val avg_humidity: Long,
-        val reading_comp: Long,
-) : Parcelable
-
 
 @Parcelize
 @Entity(tableName = "location_history_updates_tracker")
 data class LocationHistoryUpdatesTracker(
         @PrimaryKey(autoGenerate = false)
         var forScannedDeviceId: String = "",
-        val lastUpdated: Long = System.currentTimeMillis()
+        var lastUpdated: Long = System.currentTimeMillis()
 ) : Parcelable

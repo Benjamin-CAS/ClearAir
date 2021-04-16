@@ -22,14 +22,14 @@ import com.cleanairspaces.android.databinding.HomeMapOverlayBinding
 import com.cleanairspaces.android.models.entities.LocationDetailsGeneralDataWrapper
 import com.cleanairspaces.android.ui.BaseActivity
 import com.cleanairspaces.android.ui.about.AboutAppActivity
-import com.cleanairspaces.android.ui.add_locations.AddLocationActivity
+import com.cleanairspaces.android.ui.add_locations.SearchLocationActivity
 import com.cleanairspaces.android.ui.details.LocationDetailsActivity
 import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
 import com.cleanairspaces.android.ui.home.adapters.MyLocationsAdapter
 import com.cleanairspaces.android.ui.settings.SettingsActivity
 import com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity
-import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity
-import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity.Companion.INTENT_EXTRA_TAG
+import com.cleanairspaces.android.ui.smart_qr.AddLocationActivity
+import com.cleanairspaces.android.ui.smart_qr.AddLocationActivity.Companion.INTENT_EXTRA_QR_CONTENT_TAG
 import com.cleanairspaces.android.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -117,7 +117,7 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
                 hideMyLocationsView()
             }
             MapActionChoices.ADD -> {
-                gotToActivity(AddLocationActivity::class.java)
+                gotToActivity(SearchLocationActivity::class.java)
             }
         }
     }
@@ -148,8 +148,8 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
                 val qrContent = intentResult.contents
                 val qrFormatName = intentResult.formatName
                 startActivity(
-                    Intent(this@BaseMapActivity, QrCodeProcessingActivity::class.java).putExtra(
-                        INTENT_EXTRA_TAG, qrContent
+                    Intent(this@BaseMapActivity, AddLocationActivity::class.java).putExtra(
+                        INTENT_EXTRA_QR_CONTENT_TAG, qrContent
                     )
                 )
 

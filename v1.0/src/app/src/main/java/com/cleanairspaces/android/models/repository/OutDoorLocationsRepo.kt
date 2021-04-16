@@ -1,17 +1,16 @@
 package com.cleanairspaces.android.models.repository
 
-import com.cleanairspaces.android.models.api.OutDoorLocationsApiService
-import com.cleanairspaces.android.models.api.responses.OutDoorLocationAmerica
-import com.cleanairspaces.android.models.api.responses.OutDoorLocationTaiwan
-import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOther
-import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOtherResponse
+import com.cleanairspaces.android.models.api.InOutDoorLocationsApiService
+import com.cleanairspaces.android.models.api.responses.*
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.dao.SearchSuggestionsDao
 import com.cleanairspaces.android.models.entities.LocationAreas
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.entities.SearchSuggestions
 import com.cleanairspaces.android.utils.MyLogger
+import com.cleanairspaces.android.utils.QrCodeProcessor
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,7 +22,7 @@ import javax.inject.Singleton
 @Singleton
 class OutDoorLocationsRepo
 @Inject constructor(
-    private val outDoorLocationsApiService: OutDoorLocationsApiService,
+    private val inOutDoorLocationsApiService: InOutDoorLocationsApiService,
     private val coroutineScope: CoroutineScope,
     private val outDoorLocationsDao: OutDoorLocationsDao,
     private val searchSuggestionsDao : SearchSuggestionsDao
@@ -198,25 +197,77 @@ class OutDoorLocationsRepo
             }
         }
     }
+    
+    private fun getInDoorLocationsResponseCallback():Callback<IndoorLocationsResponse>{
+        return object  : Callback<IndoorLocationsResponse>{
+            override fun onResponse(
+                call: Call<IndoorLocationsResponse>,
+                response: Response<IndoorLocationsResponse>
+            ) {
+                when {
+                    response.code() == 200 -> {
+                        val responseBody = response.body()
+                        try{
+                            if (responseBody == null || responseBody.data.isNullOrEmpty()){
+                                MyLogger.logThis(
+                                    TAG,
+                                    "getInDoorLocationsResponseCallback()",
+                                    "response body is null or empty",
+                                )
+                            }else {
+                                saveInDoorLocations(
+                                    responseBody.data
+                                )
+                            }
+                        } catch (e: Exception) {
+                            MyLogger.logThis(
+                                TAG,
+                                "getInDoorLocationsResponseCallback()",
+                                "exception ${e.message}",
+                                e
+                            )
+                        }
+                    }
+                    else -> {
+                        MyLogger.logThis(
+                            TAG,
+                            "getInDoorLocationsResponseCallback()",
+                            "response code not 200, $response"
+                        )
+                    }
+                }
+            }
 
+            override fun onFailure(call: Call<IndoorLocationsResponse>, t: Throwable) {
+                MyLogger.logThis(TAG, "getInDoorLocationsResponseCallback() - OnFailure()->", "exc ${t.message}")
+            }
 
-    suspend fun refreshOutDoorLocations() {
-        //refreshing out door locations
-        val otherLocationsResponse = outDoorLocationsApiService.fetchOtherOutDoorLocations()
-        otherLocationsResponse.enqueue(getOtherOutDoorLocationsResponseCallback())
-
-        //refreshing american locations
-        val usLocationsResponse = outDoorLocationsApiService.fetchAmericanOutDoorLocations()
-        usLocationsResponse.enqueue(getAmericaOutDoorLocationsResponseCallback())
-
-        //refreshing taiwan locations
-        val taiwanLocationsResponse = outDoorLocationsApiService.fetchTaiwanOutDoorLocations()
-        taiwanLocationsResponse.enqueue(getTaiwanOutDoorLocationsResponseCallback())
-
+        }
     }
 
+    /*************** SAVING ****************/
+    private fun saveInDoorLocations(indoorLocations: List<IndoorLocations>) {
+         MyLogger.logThis(TAG, "saveInDoorLocations()", "received $indoorLocations locations")
+        coroutineScope.launch(Dispatchers.IO) {
+            val searchSuggestions = ArrayList<SearchSuggestions>()
+            for (location in indoorLocations) {
+                searchSuggestions.add(
+                    SearchSuggestions(
+                        autoId = 0,
+                        company_id = location.company_id,
+                        location_name = location.name_en,
+                        is_indoor_location = true
+                    )
+                )
+            }
+            searchSuggestionsDao.insertAll(searchSuggestions)
+            //todo insert indoor locations
+        }
+    }
+
+
     fun saveOutDoorLocations(locations: List<Any>, location_area: LocationAreas) {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.IO) {
             outDoorLocationsDao.deleteAllLocations()
             val newOutDoorLocations = ArrayList<OutDoorLocations>()
             val searchSuggestions = ArrayList<SearchSuggestions>()
@@ -278,8 +329,27 @@ class OutDoorLocationsRepo
         }
     }
 
-    fun refreshInDoorLocations() {
+    suspend fun refreshOutDoorLocations() {
+        //refreshing out door locations
+        val otherLocationsResponse = inOutDoorLocationsApiService.fetchOtherOutDoorLocations()
+        otherLocationsResponse.enqueue(getOtherOutDoorLocationsResponseCallback())
 
+        //refreshing american locations
+        val usLocationsResponse = inOutDoorLocationsApiService.fetchAmericanOutDoorLocations()
+        usLocationsResponse.enqueue(getAmericaOutDoorLocationsResponseCallback())
+
+        //refreshing taiwan locations
+        val taiwanLocationsResponse = inOutDoorLocationsApiService.fetchTaiwanOutDoorLocations()
+        taiwanLocationsResponse.enqueue(getTaiwanOutDoorLocationsResponseCallback())
+
+    }
+
+
+    suspend fun refreshInDoorLocations() {
+        val timeStamp = System.currentTimeMillis().toString()
+        val pl = QrCodeProcessor.getEncryptedEncodedPayloadForIndoorLocation(timeStamp = timeStamp)
+        val indoorLocationsResponse = inOutDoorLocationsApiService.fetchInDoorLocations(pl = pl)
+        indoorLocationsResponse.enqueue(getInDoorLocationsResponseCallback())
     }
 
 }

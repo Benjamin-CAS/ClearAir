@@ -531,6 +531,7 @@ class ScannedDevicesRepo
             val unEncryptedPayload =
                 QrCodeProcessor.getUnEncryptedPayload(payload, lTime, forCompLocation)
             val unEncJson = JSONObject(unEncryptedPayload)
+            MyLogger.logThis(TAG, "unEncryptScannedDevicePayload()", "unEncJson $unEncJson")
             val companyData = unEncJson.getString(LocationDataFromQr.RESPONSE_KEY)
             //if the device is a monitor
             val (type, monitor_id) = if (!forCompLocation && requestedData.has(MONITOR_ID_KEY)) {

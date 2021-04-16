@@ -12,11 +12,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class QrCodeViewModel @Inject constructor(
+class AddLocationViewModel @Inject constructor(
     private val scannedDevicesRepo: ScannedDevicesRepo
 ) : ViewModel() {
 
-    private val TAG = QrCodeViewModel::class.java.simpleName
+    private val TAG = AddLocationViewModel::class.java.simpleName
 
     fun observeLocationFromCompanyInfo(compId: Int, locId: Int): LiveData<LocationDataFromQr> =
         scannedDevicesRepo.getADeviceFlow(compId = compId.toString(), locId = locId.toString())

@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.work.WorkManager
 import com.cleanairspaces.android.models.CasDatabase
-import com.cleanairspaces.android.models.api.OutDoorLocationsApiService
+import com.cleanairspaces.android.models.api.InOutDoorLocationsApiService
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService
 import com.cleanairspaces.android.models.dao.*
 import com.cleanairspaces.android.models.repository.OutDoorLocationsRepo
@@ -47,6 +47,7 @@ class AppModule {
     fun provideRetrofit(): Retrofit =
             Retrofit.Builder()
                     .baseUrl(BASE_URL)
+                .client(getLogger())
                     .addConverterFactory(
                             GsonConverterFactory.create(
                                     GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
@@ -55,8 +56,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideOutDoorLocationsApiService(retrofit: Retrofit): OutDoorLocationsApiService =
-            retrofit.create(OutDoorLocationsApiService::class.java)
+    fun provideOutDoorLocationsApiService(retrofit: Retrofit): InOutDoorLocationsApiService =
+            retrofit.create(InOutDoorLocationsApiService::class.java)
 
     @Provides
     @Singleton
@@ -124,12 +125,12 @@ class AppModule {
     @Provides
     @Singleton
     fun provideLocationsRepo(
-            outDoorLocationsApiService: OutDoorLocationsApiService,
-            coroutineScope: CoroutineScope,
-            outDoorLocationsDao: OutDoorLocationsDao,
-            searchSuggestionsDao: SearchSuggestionsDao
+        inOutDoorLocationsApiService: InOutDoorLocationsApiService,
+        coroutineScope: CoroutineScope,
+        outDoorLocationsDao: OutDoorLocationsDao,
+        searchSuggestionsDao: SearchSuggestionsDao
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
-            outDoorLocationsApiService = outDoorLocationsApiService,
+            inOutDoorLocationsApiService = inOutDoorLocationsApiService,
             coroutineScope = coroutineScope,
             outDoorLocationsDao = outDoorLocationsDao,
         searchSuggestionsDao=searchSuggestionsDao

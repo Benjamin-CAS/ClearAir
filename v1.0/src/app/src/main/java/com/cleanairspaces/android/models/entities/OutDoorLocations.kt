@@ -31,6 +31,8 @@ data class OutDoorLocations(
         return gMapLatLng(lat.toDouble(), lon.toDouble())
     }
 
+
+    //TODO SYSTEM ERR HERE
     fun getAMapLocationLatLng(): aMapLatLng {
         return aMapLatLng(lat.toDouble(), lon.toDouble())
     }

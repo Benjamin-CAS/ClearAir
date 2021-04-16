@@ -7,27 +7,29 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.cleanairspaces.android.R
-import com.cleanairspaces.android.databinding.ActivityQrCodeProcessingBinding
+import com.cleanairspaces.android.databinding.ActivityAddLocationBinding
 import com.cleanairspaces.android.models.entities.LocationDataFromQr
+import com.cleanairspaces.android.models.entities.SearchSuggestions
 import com.cleanairspaces.android.ui.BaseActivity
 import com.cleanairspaces.android.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class QrCodeProcessingActivity : BaseActivity() {
+class AddLocationActivity : BaseActivity() {
     companion object {
-        private val TAG = QrCodeProcessingActivity::class.java.simpleName
-        val INTENT_EXTRA_TAG = "qrContent"
+        private val TAG = AddLocationActivity::class.java.simpleName
+        val INTENT_EXTRA_QR_CONTENT_TAG = "qrContent"
+        val INTENT_EXTRA_SEARCHED_TAG = "searchedContent"
     }
 
-    private lateinit var binding: ActivityQrCodeProcessingBinding
+    private lateinit var binding: ActivityAddLocationBinding
 
-    private val viewModel: QrCodeViewModel by viewModels()
+    private val viewModel: AddLocationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityQrCodeProcessingBinding.inflate(layoutInflater)
+        binding = ActivityAddLocationBinding.inflate(layoutInflater)
 
         val view = binding.root
         setContentView(view)
@@ -35,13 +37,27 @@ class QrCodeProcessingActivity : BaseActivity() {
         //toolbar
         super.setToolBar(binding.toolbarLayout, isHomeAct = false)
 
-        val scannedQrContent = intent.getStringExtra(INTENT_EXTRA_TAG)
-        handleQrCode(scannedQrContent)
+        if(intent.hasExtra(INTENT_EXTRA_QR_CONTENT_TAG)) {
+            val scannedQrContent = intent.getStringExtra(INTENT_EXTRA_QR_CONTENT_TAG)
+            handleQrCode(scannedQrContent)
+        }else if (intent.hasExtra(INTENT_EXTRA_SEARCHED_TAG)){
+            val searchedItem = intent.getParcelableExtra<SearchSuggestions>(
+                INTENT_EXTRA_SEARCHED_TAG
+            )
+            searchedItem?.let {
+                if (it.company_id.isNotEmpty() && it.location_id.isNotEmpty())
+                    viewModel.addLocationFromCompanyInfo(compId = it.company_id.toInt(), locId = it.location_id.toInt())
+                else if(it.monitor_id.isNotEmpty())
+                    viewModel.addLocationFromMonitorId(monitorId = it.monitor_id)
+            }
+        }
+
+
         observeMyLocationAdd()
     }
 
     override fun handleBackPress() {
-        this@QrCodeProcessingActivity.finish()
+        this@AddLocationActivity.finish()
     }
 
     private fun observeMyLocationAdd() {
@@ -125,7 +141,7 @@ class QrCodeProcessingActivity : BaseActivity() {
                 val deviceInfo = getDeviceInfoByType(locationDataFromQr.type!!)
                 if (deviceInfo != null) {
                     binding.deviceLogo.isVisible = true
-                    Glide.with(this@QrCodeProcessingActivity)
+                    Glide.with(this@AddLocationActivity)
                         .load(locationDataFromQr.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
                         .into(binding.deviceLogo)
                     val deviceInfoTxt =
@@ -138,7 +154,7 @@ class QrCodeProcessingActivity : BaseActivity() {
                 }
             }
 
-            Glide.with(this@QrCodeProcessingActivity)
+            Glide.with(this@AddLocationActivity)
                 .load(locationDataFromQr.getFullLogoUrl())
                 .into(logo)
             val locationInfoTitle = getString(R.string.location_information)
@@ -150,7 +166,7 @@ class QrCodeProcessingActivity : BaseActivity() {
             cancelBtn.apply {
                 isVisible = true
                 setOnClickListener {
-                    this@QrCodeProcessingActivity.finish()
+                    this@AddLocationActivity.finish()
                 }
             }
 
@@ -162,7 +178,7 @@ class QrCodeProcessingActivity : BaseActivity() {
                         null,
                         null,
                         ContextCompat.getDrawable(
-                            this@QrCodeProcessingActivity,
+                            this@AddLocationActivity,
                             R.drawable.ic_on_secondary_check
                         ),
                         null

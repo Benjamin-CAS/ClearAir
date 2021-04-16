@@ -158,6 +158,13 @@ object QrCodeProcessor {
         return toBase64Encoding(casEncrypted)
     }
 
+    fun getEncryptedEncodedPayloadForIndoorLocation(timeStamp: String): String {
+        val key = getProperPayloadKeyForCompLocation(timeStamp)
+        val payload = "ltime$timeStamp"
+        val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
+        return toBase64Encoding(casEncrypted)
+    }
+
     fun getEncryptedEncodedPayloadForMonitor(monitorId: String, timeStamp: String): String {
         val key = getProperPayloadKeyForMonitor(timeStamp)
         MyLogger.logThis(
@@ -245,6 +252,10 @@ object QrCodeProcessor {
     }
 
     fun getUnEncryptedPayloadForHistory(payload: String, lTime: String): String {
+        return fromBase64Encoding(payload)
+    }
+
+    fun getUnEncryptedPayloadForIndoorLocations(payload: String): String {
         return fromBase64Encoding(payload)
     }
 

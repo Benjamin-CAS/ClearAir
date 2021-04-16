@@ -23,10 +23,12 @@ class LocationDetailsViewModel @Inject constructor(
     private val TAG  = LocationDetailsViewModel::class.java.simpleName
 
     private val locationDetailsInfoLive = MutableLiveData<MyLocationDetailsWrapper>()
+    private lateinit var locationDetailsInfo : MyLocationDetailsWrapper
     fun setCustomerDeviceDataDetailedNGetDeviceId(
         myLocationDetailsWrapper: MyLocationDetailsWrapper
     ): String {
         locationDetailsInfoLive.value = myLocationDetailsWrapper
+        locationDetailsInfo = myLocationDetailsWrapper
         val location = myLocationDetailsWrapper.wrappedData.locationDetails
         val scannedDevice = myLocationDetailsWrapper.wrappedData.generalDataFromQr
         val (compId,locId,monitorId) = getCompIdLocIdMonitorId(scannedDevice)
@@ -36,14 +38,16 @@ class LocationDetailsViewModel @Inject constructor(
         )
         return forScannedDeviceId
     }
-
+    fun getNonObservableDetails() : MyLocationDetailsWrapper = locationDetailsInfo
     fun observeLocationDetails(): LiveData<MyLocationDetailsWrapper> = locationDetailsInfoLive
 
 
 
 
     /******** history *****/
-    var graphParamsSet: Boolean = false
+    lateinit var currentlyDisplayedDaysHistoryData: List<LocationHistoryThreeDays>
+    lateinit var currentlyDisplayedMonthHistoryData: List<LocationHistoryMonth>
+    lateinit var currentlyDisplayedWeekHistoryData: List<LocationHistoryWeek>
     private fun getCompIdLocIdMonitorId(scannedDevice: LocationDataFromQr): Triple<String, String, String> {
         return Triple(scannedDevice.company_id, scannedDevice.location_id,scannedDevice.monitor_id)
     }

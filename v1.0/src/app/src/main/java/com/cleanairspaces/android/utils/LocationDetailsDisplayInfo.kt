@@ -377,5 +377,40 @@ fun getLocationInfoDetails(
 
 }
 
+fun getStatusColorForPm(ctx: Context, aqiIndex : String, pmValue : Double): Int{
+    val pm25Default = ctx.getString(R.string.default_pm_index_value)
+    val aqiUs = ctx.getString(R.string.us_aqi_index_value)
+
+    if (aqiIndex == pm25Default || aqiIndex == aqiUs) {
+       return  when {
+            AQI.getAQIFromPM25(pmValue) < 100 -> {
+                R.color.aqi_good
+            }
+
+            AQI.getAQIFromPM25(pmValue) > 150 -> {
+               R.color.aqi_hazardous
+            }
+            else -> {
+                R.color.aqi_moderate
+            }
+        }
+
+    } else {
+        return when {
+            AQI.getAQICNFromPM25(pmValue) < 150 -> {
+                R.color.aqi_good
+            }
+
+            AQI.getAQICNFromPM25(pmValue) > 200 -> {
+                R.color.aqi_hazardous
+            }
+            else -> {
+                R.color.aqi_moderate
+            }
+        }
+    }
+}
+
+
 const val UNSET_PARAM_VAL = -1
 private const val TAG = "LocationDetailsDisplayInfoGenerator"

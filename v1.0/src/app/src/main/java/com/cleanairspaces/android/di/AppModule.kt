@@ -116,17 +116,23 @@ class AppModule {
     fun provideLocationHistoryUpdatesTrackerDao(casDatabase: CasDatabase): LocationHistoryUpdatesTrackerDao =
             casDatabase.locationHistoryUpdatesTrackerDao()
 
+    @Provides
+    @Singleton
+    fun provideSearchSuggestionsDao(casDatabase: CasDatabase): SearchSuggestionsDao =
+        casDatabase.searchSuggestionsDao()
 
     @Provides
     @Singleton
     fun provideLocationsRepo(
             outDoorLocationsApiService: OutDoorLocationsApiService,
             coroutineScope: CoroutineScope,
-            outDoorLocationsDao: OutDoorLocationsDao
+            outDoorLocationsDao: OutDoorLocationsDao,
+            searchSuggestionsDao: SearchSuggestionsDao
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
             outDoorLocationsApiService = outDoorLocationsApiService,
             coroutineScope = coroutineScope,
-            outDoorLocationsDao = outDoorLocationsDao
+            outDoorLocationsDao = outDoorLocationsDao,
+        searchSuggestionsDao=searchSuggestionsDao
     )
 
 
@@ -140,7 +146,8 @@ class AppModule {
             locationHistoryThreeDaysDao: LocationHistoryThreeDaysDao,
             locationHistoryWeekDao: LocationHistoryWeekDao,
             locationHistoryMonthDao: LocationHistoryMonthDao,
-            locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao
+            locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao,
+            searchSuggestionsDao: SearchSuggestionsDao
     ): ScannedDevicesRepo = ScannedDevicesRepo(
             qrScannedItemsApiService = qrScannedItemsApiService,
             coroutineScope = coroutineScope,
@@ -149,7 +156,8 @@ class AppModule {
             locationHistoryThreeDaysDao = locationHistoryThreeDaysDao,
             locationHistoryWeekDao = locationHistoryWeekDao,
             locationHistoryMonthDao = locationHistoryMonthDao,
-            locationHistoryUpdatesTrackerDao = locationHistoryUpdatesTrackerDao
+            locationHistoryUpdatesTrackerDao = locationHistoryUpdatesTrackerDao,
+        searchSuggestionsDao = searchSuggestionsDao
     )
 
     @Singleton

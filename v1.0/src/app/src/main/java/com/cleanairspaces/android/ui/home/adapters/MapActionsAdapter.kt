@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.home.adapters.home
+package com.cleanairspaces.android.ui.home.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

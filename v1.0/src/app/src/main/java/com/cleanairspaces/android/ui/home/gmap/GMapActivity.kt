@@ -8,8 +8,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.cleanairspaces.android.databinding.ActivityGmapBinding
 import com.cleanairspaces.android.ui.home.BaseMapActivity
-import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
-import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
+import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.MyLocationsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -15,8 +15,8 @@ import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivityAmapBinding
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.ui.home.BaseMapActivity
-import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
-import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
+import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.MyLocationsAdapter
 import com.cleanairspaces.android.utils.AQI.getAQIWeightFromPM25
 import com.cleanairspaces.android.utils.HEAT_MAP_CIRCLE_RADIUS
 import com.cleanairspaces.android.utils.MyColorUtils.getGradientColors

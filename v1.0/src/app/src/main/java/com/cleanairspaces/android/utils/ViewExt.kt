@@ -30,7 +30,7 @@ fun <T : View> T.toggleVisibility(makeVisible: Boolean) {
     }
 }
 
-fun Fragment.hideKeyBoard(context: Context, v: View) {
+fun hideKeyBoard(context: Context, v: View) {
     val imm = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
         context.getSystemService(InputMethodManager::class.java)
     } else {

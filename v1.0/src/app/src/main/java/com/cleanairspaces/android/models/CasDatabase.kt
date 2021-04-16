@@ -14,7 +14,8 @@ import com.cleanairspaces.android.models.entities.*
             LocationHistoryThreeDays::class,
             LocationHistoryWeek::class,
             LocationHistoryMonth::class,
-            LocationHistoryUpdatesTracker::class],
+            LocationHistoryUpdatesTracker::class,
+            SearchSuggestions::class],
         version = 1,
         exportSchema = false
 )
@@ -29,4 +30,5 @@ abstract class CasDatabase : RoomDatabase() {
     abstract fun locationHistoryWeekDao(): LocationHistoryWeekDao
     abstract fun locationHistoryMonthDao(): LocationHistoryMonthDao
     abstract fun locationHistoryUpdatesTrackerDao() : LocationHistoryUpdatesTrackerDao
+    abstract fun searchSuggestionsDao() : SearchSuggestionsDao
 }

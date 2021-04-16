@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/search_item_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/std_space"
+        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginEnd="@dimen/std_space"
+        style="@style/Theme.CleanAirSpaces.Body1"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="@dimen/md_txt"
+        app:drawableEndCompat="@drawable/ic_on_primary_check"
+        android:drawablePadding="@dimen/sm_space"
+        android:background="@color/whitish"
+        android:elevation="@dimen/std_space"/>
+</layout>

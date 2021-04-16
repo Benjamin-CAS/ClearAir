@@ -44,6 +44,8 @@ class LocationDetailsActivity : BaseActivity() {
 
         //toolbar
         super.setToolBar(binding.toolbarLayout, isHomeAct = false)
+
+        //intent data
         val locationDetailsInfo =
             intent.getParcelableExtra<MyLocationDetailsWrapper>(INTENT_EXTRA_TAG)
 

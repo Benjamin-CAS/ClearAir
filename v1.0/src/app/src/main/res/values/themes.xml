@@ -68,5 +68,11 @@
         <item name="android:paddingBottom">@dimen/std_space</item>
     </style>
 
+    <style name="Theme.CleanAirSpaces.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="fontFamily">@font/open_sans_condensed_light</item>
+        <item name="android:textSize">@dimen/md_txt</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
 
 </resources>

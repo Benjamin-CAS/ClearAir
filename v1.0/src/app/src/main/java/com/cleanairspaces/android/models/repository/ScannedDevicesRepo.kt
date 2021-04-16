@@ -1,5 +1,6 @@
 package com.cleanairspaces.android.models.repository
 
+import androidx.lifecycle.MutableLiveData
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.DEVICE_INFO_METHOD
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.LOCATION_INFO_METHOD
@@ -33,7 +34,8 @@ class ScannedDevicesRepo
         private val  locationHistoryThreeDaysDao : LocationHistoryThreeDaysDao,
         private val  locationHistoryWeekDao : LocationHistoryWeekDao,
         private val  locationHistoryMonthDao : LocationHistoryMonthDao,
-        private val  locationHistoryUpdatesTrackerDao : LocationHistoryUpdatesTrackerDao
+        private val  locationHistoryUpdatesTrackerDao : LocationHistoryUpdatesTrackerDao,
+        private val searchSuggestionsDao : SearchSuggestionsDao
 
         ) {
 
@@ -629,6 +631,14 @@ class ScannedDevicesRepo
             )
             customerDeviceData.is_mine = (isFound > 0)
             locDataFromQrDao.insert(customerDeviceData)
+            searchSuggestionsDao.insert(
+                SearchSuggestions(
+                    autoId = 0,
+                    company_id = customerDeviceData.company_id,
+                    location_id = customerDeviceData.location_id,
+                    location_name = customerDeviceData.company,
+                )
+            )
         }
     }
 
@@ -642,6 +652,10 @@ class ScannedDevicesRepo
         }
         MyLogger.logThis(TAG, "removing devices", "${locationsDetails.size}  $forScannedDeviceId")
     }
+
+
+    /*************** SEARCH SUGGESTIONS *************/
+    fun getSearchSuggestions(query: String) = searchSuggestionsDao.getSearchSuggestions("%$query%")
 
 
     companion object {

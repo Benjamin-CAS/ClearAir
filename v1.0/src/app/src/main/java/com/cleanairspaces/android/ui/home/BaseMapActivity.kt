@@ -22,9 +22,10 @@ import com.cleanairspaces.android.databinding.HomeMapOverlayBinding
 import com.cleanairspaces.android.models.entities.LocationDetailsGeneralDataWrapper
 import com.cleanairspaces.android.ui.BaseActivity
 import com.cleanairspaces.android.ui.about.AboutAppActivity
+import com.cleanairspaces.android.ui.add_locations.AddLocationActivity
 import com.cleanairspaces.android.ui.details.LocationDetailsActivity
-import com.cleanairspaces.android.ui.home.adapters.home.MapActionsAdapter
-import com.cleanairspaces.android.ui.home.adapters.home.MyLocationsAdapter
+import com.cleanairspaces.android.ui.home.adapters.MapActionsAdapter
+import com.cleanairspaces.android.ui.home.adapters.MyLocationsAdapter
 import com.cleanairspaces.android.ui.settings.SettingsActivity
 import com.cleanairspaces.android.ui.smart_qr.CaptureQrCodeActivity
 import com.cleanairspaces.android.ui.smart_qr.QrCodeProcessingActivity
@@ -116,7 +117,7 @@ abstract class BaseMapActivity : BaseActivity(), MapActionsAdapter.ClickListener
                 hideMyLocationsView()
             }
             MapActionChoices.ADD -> {
-                //todo
+                gotToActivity(AddLocationActivity::class.java)
             }
         }
     }

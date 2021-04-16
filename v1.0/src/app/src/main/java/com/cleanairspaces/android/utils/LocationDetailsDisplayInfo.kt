@@ -64,7 +64,6 @@ fun getLocationInfoDetails(
 ): MyLocationDetailsWrapper {
 
     val myLocationDetails = dataWrapper.locationDetails
-    val location = dataWrapper.generalDataFromQr
 
     val pm25Default = ctx.getString(R.string.default_pm_index_value)
     val aqiUs = ctx.getString(R.string.us_aqi_index_value)
@@ -72,7 +71,7 @@ fun getLocationInfoDetails(
         selectedAqiIndex ?: pm25Default
 
     val locationArea =
-        ctx.getString(R.string.outdoor_txt) + ": " + location.location
+        ctx.getString(R.string.outdoor_txt) + ": " + myLocationDetails.outdoor.name_en
 
     var inDoorPmValue: Double = UNSET_PARAM_VAL.toDouble()
     var inDoorPmTxt = ""

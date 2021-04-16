@@ -6,8 +6,10 @@ import com.cleanairspaces.android.models.api.responses.OutDoorLocationTaiwan
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOther
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOtherResponse
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
+import com.cleanairspaces.android.models.dao.SearchSuggestionsDao
 import com.cleanairspaces.android.models.entities.LocationAreas
 import com.cleanairspaces.android.models.entities.OutDoorLocations
+import com.cleanairspaces.android.models.entities.SearchSuggestions
 import com.cleanairspaces.android.utils.MyLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -23,7 +25,8 @@ class OutDoorLocationsRepo
 @Inject constructor(
     private val outDoorLocationsApiService: OutDoorLocationsApiService,
     private val coroutineScope: CoroutineScope,
-    private val outDoorLocationsDao: OutDoorLocationsDao
+    private val outDoorLocationsDao: OutDoorLocationsDao,
+    private val searchSuggestionsDao : SearchSuggestionsDao
 ) {
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
 
@@ -216,6 +219,7 @@ class OutDoorLocationsRepo
         coroutineScope.launch {
             outDoorLocationsDao.deleteAllLocations()
             val newOutDoorLocations = ArrayList<OutDoorLocations>()
+            val searchSuggestions = ArrayList<SearchSuggestions>()
             when (location_area) {
                 LocationAreas.AMERICA -> {
                     val locationsList = locations as List<*>
@@ -228,7 +232,6 @@ class OutDoorLocationsRepo
                             location_area = LocationAreas.AMERICA
                         )
                         newOutDoorLocations.add(outDoorLocation)
-
                     }
                 }
                 LocationAreas.TAIWAN -> {
@@ -260,10 +263,18 @@ class OutDoorLocationsRepo
                             location_area = LocationAreas.OTHER
                         )
                         newOutDoorLocations.add(outDoorLocation)
+                        searchSuggestions.add(
+                                SearchSuggestions(
+                                    autoId = 0,
+                                    location_name = location.name_en,
+                                    location_id = location.location_id,
+                                    monitor_id = location.monitor_id,
+                                ))
                     }
                 }
             }
             outDoorLocationsDao.insertOutDoorLocations(newOutDoorLocations)
+            searchSuggestionsDao.insertAll(searchSuggestions)
         }
     }
 

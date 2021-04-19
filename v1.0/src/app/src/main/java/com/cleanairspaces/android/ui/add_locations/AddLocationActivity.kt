@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.smart_qr
+package com.cleanairspaces.android.ui.add_locations
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -37,18 +37,26 @@ class AddLocationActivity : BaseActivity() {
         //toolbar
         super.setToolBar(binding.toolbarLayout, isHomeAct = false)
 
-        if(intent.hasExtra(INTENT_EXTRA_QR_CONTENT_TAG)) {
+        if (intent.hasExtra(INTENT_EXTRA_QR_CONTENT_TAG)) {
+            //user has scanned a device qr code
             val scannedQrContent = intent.getStringExtra(INTENT_EXTRA_QR_CONTENT_TAG)
             handleQrCode(scannedQrContent)
-        }else if (intent.hasExtra(INTENT_EXTRA_SEARCHED_TAG)){
+        } else if (intent.hasExtra(INTENT_EXTRA_SEARCHED_TAG)) {
+            //user has searched for a location
             val searchedItem = intent.getParcelableExtra<SearchSuggestions>(
-                INTENT_EXTRA_SEARCHED_TAG
+                    INTENT_EXTRA_SEARCHED_TAG
             )
             searchedItem?.let {
-                if (it.company_id.isNotEmpty() && it.location_id.isNotEmpty())
-                    viewModel.addLocationFromCompanyInfo(compId = it.company_id.toInt(), locId = it.location_id.toInt())
-                else if(it.monitor_id.isNotEmpty())
-                    viewModel.addLocationFromMonitorId(monitorId = it.monitor_id)
+                MyLogger.logThis(TAG, "search for ", "$it")
+                when {
+                    it.is_indoor_location -> {
+                        observeLocationToAdd(compId = it.company_id.toInt())
+                    }
+                    it.company_id.isNotEmpty() && it.location_id.isNotEmpty() -> {
+                        observeLocationToAdd(compId = it.company_id.toInt(), locId = it.location_id.toInt())
+                    }
+                    it.monitor_id.isNotEmpty() -> observeLocationToAdd(monitorId = it.monitor_id)
+                }
             }
         }
 
@@ -65,10 +73,10 @@ class AddLocationActivity : BaseActivity() {
             if (!isSuccessful) {
                 binding.progressCircular.isVisible = false
                 binding.container.showSnackBar(
-                    msgResId = R.string.failed_to_add_location_check_credentials,
-                    isErrorMsg = true,
-                    actionMessage = R.string.dismiss,
-                    actionToTake = {}
+                        msgResId = R.string.failed_to_add_location_check_credentials,
+                        isErrorMsg = true,
+                        actionMessage = R.string.dismiss,
+                        actionToTake = {}
                 )
             }
         })
@@ -83,18 +91,18 @@ class AddLocationActivity : BaseActivity() {
                 val infoTxt = processingQrCodeTxt + "\n" + parsedResult.extraData
                 info.text = infoTxt
                 if (parsedResult.monitorId != null) {
-                    observeScannedLocation(
-                        monitorId = parsedResult.monitorId
+                    observeLocationToAdd(
+                            monitorId = parsedResult.monitorId
                     )
                     viewModel.addLocationFromMonitorId(monitorId = parsedResult.monitorId)
                 } else if (parsedResult.locId != null && parsedResult.compId != null) {
-                    observeScannedLocation(
-                        locId = parsedResult.locId,
-                        compId = parsedResult.compId
+                    observeLocationToAdd(
+                            locId = parsedResult.locId,
+                            compId = parsedResult.compId
                     )
                     viewModel.addLocationFromCompanyInfo(
-                        locId = parsedResult.locId,
-                        compId = parsedResult.compId
+                            locId = parsedResult.locId,
+                            compId = parsedResult.compId
                     )
                 }
             } else {
@@ -104,30 +112,44 @@ class AddLocationActivity : BaseActivity() {
         }
     }
 
-    private fun observeScannedLocation(
-        locId: Int? = null,
-        compId: Int? = null,
-        monitorId: String? = null
+    private fun observeLocationToAdd(
+            locId: Int? = null,
+            compId: Int? = null,
+            monitorId: String? = null
     ) {
-        if (compId != null && locId != null) {
-            viewModel.observeLocationFromCompanyInfo(locId = locId, compId = compId).observe(
-                this, Observer {
+        when {
+            compId != null && locId != null -> {
+                //out door location
+                viewModel.observeLocationFromCompanyInfo(locId = locId, compId = compId).observe(
+                        this, Observer {
                     if (it != null) {
                         displayLocationInfo(it)
 
                     }
                 }
-            )
-        }
-        if (monitorId != null) {
-            viewModel.observeLocationFromMonitorInfo(monitorId = monitorId).observe(
-                this, Observer {
+                )
+            }
+            monitorId != null -> {
+                //scanned monitor QR
+                viewModel.observeLocationFromMonitorInfo(monitorId = monitorId).observe(
+                        this, Observer {
                     if (it != null) {
                         displayLocationInfo(it)
 
                     }
                 }
-            )
+                )
+            }
+            compId != null -> {
+                //indoor location
+                viewModel.observeIndoorLocationFromCompInfo(compId = compId).observe(
+                        this, Observer {
+                    if (it != null) {
+                        displayLocationInfo(it)
+                    }
+                }
+                )
+            }
         }
     }
 
@@ -142,10 +164,10 @@ class AddLocationActivity : BaseActivity() {
                 if (deviceInfo != null) {
                     binding.deviceLogo.isVisible = true
                     Glide.with(this@AddLocationActivity)
-                        .load(locationDataFromQr.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
-                        .into(binding.deviceLogo)
+                            .load(locationDataFromQr.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
+                            .into(binding.deviceLogo)
                     val deviceInfoTxt =
-                        getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
+                            getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
                     val deviceIdLbl = getString(R.string.device_id_lbl)
                     infoText += "$deviceInfoTxt\n$deviceIdLbl: ${locationDataFromQr.monitor_id}\n"
 
@@ -155,8 +177,8 @@ class AddLocationActivity : BaseActivity() {
             }
 
             Glide.with(this@AddLocationActivity)
-                .load(locationDataFromQr.getFullLogoUrl())
-                .into(logo)
+                    .load(locationDataFromQr.getFullLogoUrl())
+                    .into(logo)
             val locationInfoTitle = getString(R.string.location_information)
             val companyLblTxt = getString(R.string.company_name_lbl)
             val locationLblTxt = getString(R.string.location_lbl)
@@ -175,13 +197,13 @@ class AddLocationActivity : BaseActivity() {
                     setText(R.string.location_added_text)
                     isEnabled = false
                     setCompoundDrawablesWithIntrinsicBounds(
-                        null,
-                        null,
-                        ContextCompat.getDrawable(
-                            this@AddLocationActivity,
-                            R.drawable.ic_on_secondary_check
-                        ),
-                        null
+                            null,
+                            null,
+                            ContextCompat.getDrawable(
+                                    this@AddLocationActivity,
+                                    R.drawable.ic_on_secondary_check
+                            ),
+                            null
                     )
                 }
                 removeLocationBtn.apply {
@@ -218,16 +240,16 @@ class AddLocationActivity : BaseActivity() {
             val userPassword = binding.password.myTxt(binding.password)
             if (userName.isNullOrBlank() || userPassword.isNullOrBlank()) {
                 binding.container.showSnackBar(
-                    msgResId = R.string.enter_username_password,
-                    isErrorMsg = true
+                        msgResId = R.string.enter_username_password,
+                        isErrorMsg = true
                 )
             } else {
                 binding.progressCircular.isVisible = true
                 viewModel.toggleLocationIsMine(
-                    locationDataFromQr,
-                    userName,
-                    userPassword,
-                    isMine = true
+                        locationDataFromQr,
+                        userName,
+                        userPassword,
+                        isMine = true
                 )
             }
         } else {

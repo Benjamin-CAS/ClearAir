@@ -21,6 +21,6 @@ data class SearchSuggestions(
     val location_id: String = "",
     val location_name: String,
     val monitor_id: String = "",
-    val is_indoor_location : Boolean = false,
+    var is_indoor_location : Boolean = false,
 
 ):Parcelable

@@ -16,18 +16,19 @@ data class LocationDataFromQr(
     @PrimaryKey(autoGenerate = true)
     var autoId: Int,
     val company_id: String,
-    val location_id: String,
+    val location_id: String = "",
     @ColumnInfo(name = "company_name")
     val company: String,
-    val location: String,
-    val dev_name: String,
+    val location: String = "",
+    val dev_name: String = "",
     val is_secure: Boolean,
     @ColumnInfo(name = "logo_file_name")
-    val logo: String,
-    val reference_mon: String,
+    val logo: String= "",
+    val reference_mon: String= "",
     var is_mine: Boolean = false,
     var monitor_id: String =  DEFAULT_VALUE_FOR_PARAM.toString(), //not all devices are monitors
-    var type: String?
+    var type: String? = null,
+    var is_indoor_location : Boolean = false
 ) : Parcelable {
 
     fun getFullLogoUrl(): String {

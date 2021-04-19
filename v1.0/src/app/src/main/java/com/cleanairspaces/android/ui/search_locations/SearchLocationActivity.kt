@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.add_locations
+package com.cleanairspaces.android.ui.search_locations
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,8 +11,8 @@ import com.cleanairspaces.android.R
 import com.cleanairspaces.android.databinding.ActivitySearchLocationBinding
 import com.cleanairspaces.android.models.entities.SearchSuggestions
 import com.cleanairspaces.android.ui.BaseActivity
-import com.cleanairspaces.android.ui.add_locations.adapters.SearchSuggestionsAdapter
-import com.cleanairspaces.android.ui.smart_qr.AddLocationActivity
+import com.cleanairspaces.android.ui.search_locations.adapters.SearchSuggestionsAdapter
+import com.cleanairspaces.android.ui.add_locations.AddLocationActivity
 import com.cleanairspaces.android.utils.VerticalSpaceItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 

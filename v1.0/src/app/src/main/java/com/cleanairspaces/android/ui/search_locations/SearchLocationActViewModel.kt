@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.add_locations
+package com.cleanairspaces.android.ui.search_locations
 
 import androidx.lifecycle.*
 import com.cleanairspaces.android.models.entities.SearchSuggestions

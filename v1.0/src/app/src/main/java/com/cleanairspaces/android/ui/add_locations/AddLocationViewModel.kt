@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.smart_qr
+package com.cleanairspaces.android.ui.add_locations
 
 import androidx.lifecycle.*
 import com.cleanairspaces.android.models.api.listeners.AsyncResultListener
@@ -24,6 +24,10 @@ class AddLocationViewModel @Inject constructor(
 
     fun observeLocationFromMonitorInfo(monitorId: String): LiveData<LocationDataFromQr> =
         scannedDevicesRepo.getADeviceFlowByMonitorId(monitorId = monitorId).asLiveData()
+
+    fun observeIndoorLocationFromCompInfo(compId: Int):LiveData<LocationDataFromQr> =
+    scannedDevicesRepo.getAnIndoorLocationById(compId = compId).asLiveData()
+
 
     fun addLocationFromCompanyInfo(locId: Int, compId: Int) {
         val timeStamp = System.currentTimeMillis().toString()
@@ -51,6 +55,7 @@ class AddLocationViewModel @Inject constructor(
         }
     }
 
+
     private val getMyLocationDataListener = object : AsyncResultListener {
         override fun onAsyncComplete(isSuccess: Boolean) {
             isMyLocationAddedSuccessful.value = isSuccess
@@ -74,30 +79,48 @@ class AddLocationViewModel @Inject constructor(
                 val locId = locationDataFromQr.location_id
                 val monitorId = locationDataFromQr.monitor_id
                 val forScannedDeviceId = createDeviceIdToBindTo(compId,locId,monitorId)
+                val isIndoorLoc = locationDataFromQr.is_indoor_location
                 val pl = QrCodeProcessor.getEncryptedEncodedPayloadForDeviceDetails(
                         compId = compId,
                         locId = locId,
                         userName = userName,
                         userPassword = userPassword,
                         timeStamp = timeStamp,
-                        showHistory = true
+                        showHistory = false,
+                        isIndoorLoc = isIndoorLoc
                 )
-                scannedDevicesRepo.fetchLocationDetails(
-                    compId = compId,
-                    locId = locId,
-                    payload = pl,
-                    lTime = timeStamp,
-                    getMyLocationDataListener = getMyLocationDataListener,
-                    userName = userName,
-                    userPassword = userPassword,
-                    forScannedDeviceId = forScannedDeviceId
-                )
+
+                if (isIndoorLoc) {
+                    scannedDevicesRepo.fetchIndoorLocationDetails(
+                            compId = compId,
+                            locId = locId,
+                            payload = pl,
+                            lTime = timeStamp,
+                            getMyLocationDataListener = getMyLocationDataListener,
+                            userName = userName,
+                            userPassword = userPassword,
+                            forScannedDeviceId = forScannedDeviceId
+                    )
+                }else{
+                    scannedDevicesRepo.fetchLocationDetails(
+                            compId = compId,
+                            locId = locId,
+                            payload = pl,
+                            lTime = timeStamp,
+                            getMyLocationDataListener = getMyLocationDataListener,
+                            userName = userName,
+                            userPassword = userPassword,
+                            forScannedDeviceId = forScannedDeviceId
+                    )
+                }
+
             } else {
                 //user is not interested in details of this device
                     scannedDevicesRepo.removeMyDevice(locationDataFromQr)
             }
         }
     }
+
 
 
 }

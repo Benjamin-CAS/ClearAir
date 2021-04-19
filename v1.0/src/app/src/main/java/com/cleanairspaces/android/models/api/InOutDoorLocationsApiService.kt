@@ -5,6 +5,7 @@ import com.cleanairspaces.android.models.api.responses.IndoorLocationsResponse
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationAmerica
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationTaiwan
 import com.cleanairspaces.android.models.api.responses.OutDoorLocationsOtherResponse
+import com.cleanairspaces.android.utils.API_APP_ID
 import com.cleanairspaces.android.utils.NONCE
 import retrofit2.Call
 import retrofit2.http.Body
@@ -22,7 +23,7 @@ interface InOutDoorLocationsApiService {
 
     @GET("index.php/api/router")
     fun fetchOtherOutDoorLocations(
-        @Query("app_id") app_id: Int = 1,
+        @Query("app_id") app_id: Int = API_APP_ID,
         @Query("method") method: String = OUTDOOR_LOCATIONS_INFO_METHOD,
         @Query("nonce") nonce: String = NONCE,
         @Query("user") user: String = APP_USER,
@@ -39,9 +40,13 @@ interface InOutDoorLocationsApiService {
 
     @POST("index.php/api/router")
     fun fetchInDoorLocations(
-        @Query("app_id") app_id: Int = 1,
+        @Query("app_id") app_id: Int = API_APP_ID,
         @Query("method") method: String = INDOOR_LOCATIONS_INFO_METHOD,
         @Query("nonce") nonce: String = NONCE,
         @Body pl : String
     ):Call<IndoorLocationsResponse>
+
+
+    
+    
 }

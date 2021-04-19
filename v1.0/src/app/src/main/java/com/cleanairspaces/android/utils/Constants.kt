@@ -23,6 +23,7 @@ const val HISTORY_DAY_KEY = "d"
 const val PM25_TYPE_PARAM_KEY = "p"
 const val PASSWORD_KEY = "password"
 const val NONCE = "aa"
+const val API_APP_ID = 1
 const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
 const val UPDATE_USER_LOCATION_INTERVAL = 300000L //5 minutes

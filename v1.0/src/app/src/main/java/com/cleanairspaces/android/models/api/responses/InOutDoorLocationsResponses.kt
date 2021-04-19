@@ -67,5 +67,6 @@ data class IndoorLocations(
     @Expose
  val active : Number,
     @Expose
- val outdoor : Number
+ val outdoor : Number,
+
 )

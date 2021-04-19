@@ -1,10 +1,13 @@
 package com.cleanairspaces.android.models.repository
 
+import androidx.room.ColumnInfo
 import com.cleanairspaces.android.models.api.InOutDoorLocationsApiService
 import com.cleanairspaces.android.models.api.responses.*
+import com.cleanairspaces.android.models.dao.LocDataFromQrDao
 import com.cleanairspaces.android.models.dao.OutDoorLocationsDao
 import com.cleanairspaces.android.models.dao.SearchSuggestionsDao
 import com.cleanairspaces.android.models.entities.LocationAreas
+import com.cleanairspaces.android.models.entities.LocationDataFromQr
 import com.cleanairspaces.android.models.entities.OutDoorLocations
 import com.cleanairspaces.android.models.entities.SearchSuggestions
 import com.cleanairspaces.android.utils.MyLogger
@@ -25,7 +28,8 @@ class OutDoorLocationsRepo
     private val inOutDoorLocationsApiService: InOutDoorLocationsApiService,
     private val coroutineScope: CoroutineScope,
     private val outDoorLocationsDao: OutDoorLocationsDao,
-    private val searchSuggestionsDao : SearchSuggestionsDao
+    private val searchSuggestionsDao : SearchSuggestionsDao,
+    private val locDataFromQrDao: LocDataFromQrDao
 ) {
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
 
@@ -249,6 +253,7 @@ class OutDoorLocationsRepo
     private fun saveInDoorLocations(indoorLocations: List<IndoorLocations>) {
          MyLogger.logThis(TAG, "saveInDoorLocations()", "received $indoorLocations locations")
         coroutineScope.launch(Dispatchers.IO) {
+            val locationDatas = ArrayList<LocationDataFromQr>()
             val searchSuggestions = ArrayList<SearchSuggestions>()
             for (location in indoorLocations) {
                 searchSuggestions.add(
@@ -259,9 +264,18 @@ class OutDoorLocationsRepo
                         is_indoor_location = true
                     )
                 )
+                locationDatas.add(
+                        LocationDataFromQr(
+                                autoId = 0,
+                                company_id = location.company_id,
+                                company = location.name_en,
+                                is_secure = location.secure.toInt() == 1,
+                                is_indoor_location = true
+                        )
+                )
             }
             searchSuggestionsDao.insertAll(searchSuggestions)
-            //todo insert indoor locations
+            locDataFromQrDao.insertAll(locationDatas)
         }
     }
 

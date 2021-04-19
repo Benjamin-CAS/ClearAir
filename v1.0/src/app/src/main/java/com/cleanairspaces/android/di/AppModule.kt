@@ -128,12 +128,14 @@ class AppModule {
         inOutDoorLocationsApiService: InOutDoorLocationsApiService,
         coroutineScope: CoroutineScope,
         outDoorLocationsDao: OutDoorLocationsDao,
-        searchSuggestionsDao: SearchSuggestionsDao
+        searchSuggestionsDao: SearchSuggestionsDao,
+        locDataFromQrDao: LocDataFromQrDao,
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
             inOutDoorLocationsApiService = inOutDoorLocationsApiService,
             coroutineScope = coroutineScope,
             outDoorLocationsDao = outDoorLocationsDao,
-        searchSuggestionsDao=searchSuggestionsDao
+        searchSuggestionsDao=searchSuggestionsDao,
+            locDataFromQrDao = locDataFromQrDao,
     )
 
 

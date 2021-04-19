@@ -6,6 +6,7 @@ import android.util.Base64.decode
 import android.util.Base64.encodeToString
 import com.cleanairspaces.android.R
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.DEVICE_INFO_METHOD_FOR_KEY
+import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.LOCATION_INFO_METHOD_FOR_KEY
 import com.cleanairspaces.android.models.api.QrScannedItemsApiService.Companion.MONITOR_INFO_METHOD_FOR_KEY
 
@@ -183,14 +184,10 @@ object QrCodeProcessor {
             userName: String,
             userPassword: String,
             timeStamp: String,
-            showHistory: Boolean = false
+            showHistory: Boolean = false,
+            isIndoorLoc : Boolean = false
     ): String {
-        val key = getProperPayloadKeyForDeviceDetails(timeStamp)
-        MyLogger.logThis(
-            TAG,
-            "getEncryptedEncodedPayloadForDeviceDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time)",
-            "true key $key"
-        )
+        val key = getProperPayloadKeyForDeviceDetails(isIndoorLoc = isIndoorLoc, timeStamp=timeStamp)
         val pl = getProperPayloadForDeviceDetails(
             compId = compId,
             locId = locId,
@@ -199,12 +196,13 @@ object QrCodeProcessor {
                 showHistory = showHistory
         )
         val casEncrypted = doCASEncryptOrDecrypt(payload = pl, key = key)
+        val encoded = toBase64Encoding(casEncrypted)
         MyLogger.logThis(
-            TAG,
-            "getEncryptedEncodedPayloadForDeviceDetails()",
-            "payload $pl   => encrypted $casEncrypted"
+                TAG,
+                "getEncryptedEncodedPayloadForDeviceDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time, isIndoorLoc $isIndoorLoc)",
+                "true key $key encrypted $casEncrypted  encoded $encoded"
         )
-        return toBase64Encoding(casEncrypted)
+        return encoded
     }
 
 
@@ -238,8 +236,10 @@ object QrCodeProcessor {
         return "${MONITOR_INFO_METHOD_FOR_KEY}$timeStamp"
     }
 
-    private fun getProperPayloadKeyForDeviceDetails(timeStamp: String): String {
-        return "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
+    private fun getProperPayloadKeyForDeviceDetails(isIndoorLoc: Boolean, timeStamp: String): String {
+        return if (isIndoorLoc)
+            "${INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY}$timeStamp"
+            else "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
     }
 
     /********************** UN ENCRYPTIONS **************/

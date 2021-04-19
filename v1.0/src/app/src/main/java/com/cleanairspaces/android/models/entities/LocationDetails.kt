@@ -32,7 +32,7 @@ class LocationDetails(
         var lastKnownUserName: String = "", //for refreshing
         var lastKnownPassword: String = "", //for refreshing
         var is_mine: Boolean = true,
-        var bound_to_scanned_device_id: String //mapped as compIdLocIdMonitorId --of LocationDataFromQr
+        var bound_to_scanned_device_id: String, //mapped as compIdLocIdMonitorId --of LocationDataFromQr
 ) : Parcelable {
     fun getFormattedUpdateTime(): String {
         val date = Date(lastUpdated)

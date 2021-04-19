@@ -1,4 +1,4 @@
-package com.cleanairspaces.android.ui.add_locations.adapters
+package com.cleanairspaces.android.ui.search_locations.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

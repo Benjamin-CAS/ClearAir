@@ -51,14 +51,14 @@ class MyLocationsRefresher @AssistedInject constructor(
                     showHistory = true
             )
             scannedDevicesRepo.fetchLocationDetails(
-                compId = compId,
-                locId = locId,
-                payload = pl,
-                lTime = timeStamp,
-                userName = userName,
-                userPassword = userPassword,
-                ignoreResultIfNotAlreadyMyLocation = true,
-                forScannedDeviceId = aLocation.bound_to_scanned_device_id
+                    compId = compId,
+                    locId = locId,
+                    payload = pl,
+                    lTime = timeStamp,
+                    userName = userName,
+                    userPassword = userPassword,
+                    ignoreResultIfNotAlreadyMyLocation = true,
+                    forScannedDeviceId = aLocation.bound_to_scanned_device_id
             )
         }
     }

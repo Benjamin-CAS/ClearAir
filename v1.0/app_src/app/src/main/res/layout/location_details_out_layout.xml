@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/outdoor_lbl"
+        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        android:text="@string/outdoor_txt"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/out_pm_index_value"
+        style="@style/Theme.CleanAirSpaces.Title5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/outdoor_lbl"
+        tools:text="290"
+        tools:textColor="@color/aqi_moderate" />
+
+    <ImageView
+        android:id="@+id/out_pm_status_line"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/std_space"
+        android:layout_marginTop="@dimen/std_space"
+        android:contentDescription="@string/air_status_indicator_desc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/out_pm_index_value"
+        app:layout_constraintWidth_percent=".6"
+        tools:src="@drawable/aqi_moderate_status" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/status_tv"
+        style="@style/Theme.CleanAirSpaces.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        tools:text="Moderate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/out_pm_status_line" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/last_update_tv"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status_tv"
+        tools:text="Updated on 12 April" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

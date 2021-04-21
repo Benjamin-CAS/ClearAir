@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="std_icon">24dp</dimen>
+    <dimen name="std_space">8dp</dimen>
+    <dimen name="md_icon">32dp</dimen>
+    <dimen name="md_space">16dp</dimen>
+    <dimen name="sm_space">4dp</dimen>
+    <dimen name="location_logo_size">52dp</dimen>
+    <dimen name="clickable_std">48dp</dimen>
+    <dimen name="lg_icon">96dp</dimen>
+    <dimen name="watched_location_card_height">220dp</dimen>
+    <dimen name="chart_height">240dp</dimen>
+</resources>

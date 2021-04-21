@@ -1,0 +1,3 @@
+package com.android_dev.cleanairspaces.persistence.local.helpers
+
+class CustomTypeConverters

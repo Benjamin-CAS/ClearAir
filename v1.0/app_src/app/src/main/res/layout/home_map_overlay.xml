@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/transparent"
+    android:id="@+id/container">
+
+    <TextView
+        android:id="@+id/home_tv"
+        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/map_actions_container"
+        android:layout_margin="@dimen/std_space"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/home_top_tv"/>
+
+    <HorizontalScrollView
+        app:layout_constraintStart_toEndOf="@id/home_tv"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="@dimen/std_space"
+        android:id="@+id/map_actions_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:clickable="true"
+                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardElevation="@dimen/std_space"
+                app:cardCornerRadius="@dimen/std_space"
+                android:layout_margin="@dimen/std_space">
+                <TextView
+                    android:id="@+id/smart_qr"
+                    android:padding="@dimen/std_space"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.CleanAirSpaces.Button"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/smart_qr_txt"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:clickable="true"
+                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardElevation="@dimen/std_space"
+                app:cardCornerRadius="@dimen/std_space"
+                android:layout_margin="@dimen/std_space">
+                <TextView
+                    android:id="@+id/map_view"
+                    android:padding="@dimen/std_space"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.CleanAirSpaces.Button"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/map_view"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:clickable="true"
+                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardElevation="@dimen/std_space"
+                app:cardCornerRadius="@dimen/std_space"
+                android:layout_margin="@dimen/std_space">
+                <TextView
+                    android:id="@+id/search_location"
+                    android:padding="@dimen/std_space"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.CleanAirSpaces.Button"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/search_location"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/my_locations_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/std_space"
+        app:layout_constraintTop_toBottomOf="@id/map_actions_container"
+        app:layout_constraintBottom_toTopOf="@id/my_location_btn"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/my_location_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/md_space"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="@dimen/md_space"
+        android:contentDescription="@string/my_location_btn_desc"
+        android:src="@drawable/ic_my_location"
+        app:backgroundTint="@color/white"
+        android:tint="@color/blue_200"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

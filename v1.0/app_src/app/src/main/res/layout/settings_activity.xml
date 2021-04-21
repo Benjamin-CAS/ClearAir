@@ -1,0 +1,92 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.settings.SettingsActivity"
+    android:background="@color/whitish">
+
+    <include
+        android:id="@+id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        layout="@layout/toolbar_layout" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/aqi_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/md_space"
+        app:boxBackgroundColor="@color/white"
+        app:helperText="@string/default_pm_text_settings"
+        app:helperTextEnabled="true"
+        app:hintTextColor="@color/black"
+        app:helperTextTextColor="@color/blackish"
+        app:helperTextTextAppearance="@style/Theme.CleanAirSpaces.Caption"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/air_quality_index_txt"
+            android:inputType="none"
+            android:textColorHint="@color/black"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Body1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/map_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/md_space"
+        app:boxBackgroundColor="@color/white"
+        app:hintTextColor="@color/black"
+        app:helperText="@string/google_maps_hint"
+        app:helperTextTextColor="@color/blackish"
+        app:helperTextTextAppearance="@style/Theme.CleanAirSpaces.Caption"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/aqi_select">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/map_settings_hint"
+            android:inputType="none"
+            android:textColorHint="@color/black"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Body1"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/map_language_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/md_space"
+        app:boxBackgroundColor="@color/white"
+        app:hintTextColor="@color/black"
+        app:helperTextTextColor="@color/blackish"
+        app:helperTextTextAppearance="@style/Theme.CleanAirSpaces.Caption"
+        app:helperText="*Not applicable for Google Maps"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/map_select">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/a_map_language_settings"
+            android:inputType="none"
+            android:textColorHint="?colorOnPrimary"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Body1"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

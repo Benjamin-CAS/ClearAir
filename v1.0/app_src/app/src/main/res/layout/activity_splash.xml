@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.welcome.SplashActivity"
+    android:id="@+id/container">
+
+
+    <ImageView
+        android:id="@+id/app_logo"
+        android:contentDescription="@string/clean_air_spaces_logo_description"
+        app:layout_constraintBottom_toTopOf="@id/progress_circular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/std_space"
+        android:src="@drawable/clean_air_spaces_logo_name"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent=".5"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        />
+
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon"
+        app:layout_constraintBottom_toTopOf="@id/loading_tv"
+        android:layout_marginBottom="@dimen/std_space"
+        android:indeterminateTint="?attr/colorPrimary"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/loading_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/loading_txt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Theme.CleanAirSpaces.Body1"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

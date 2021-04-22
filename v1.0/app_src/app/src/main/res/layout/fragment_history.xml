@@ -182,15 +182,7 @@
     </HorizontalScrollView>
 
 
-    <ProgressBar
-        android:id="@+id/progress_circular"
-        android:layout_width="@dimen/md_icon"
-        android:layout_height="@dimen/md_icon"
-        android:layout_marginTop="@dimen/std_space"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/info_selector"
-        />
+
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/days_chart_lbl"
@@ -202,12 +194,12 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progress_circular" />
+        app:layout_constraintTop_toBottomOf="@+id/info_selector" />
 
     <LinearLayout
         android:id="@+id/days_chart_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chart_height"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/std_space"
         android:background="@drawable/chart_bg"
         android:fitsSystemWindows="true"
@@ -219,12 +211,22 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/days_chart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/chart_height"
             android:layout_marginStart="@dimen/std_space"
             android:layout_marginTop="@dimen/md_space"
             android:layout_marginEnd="@dimen/std_space"
             android:layout_marginBottom="@dimen/md_space"
             android:padding="@dimen/std_space" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/days_chart_value"
+            style="@style/Theme.CleanAirSpaces.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/std_space"
+            android:gravity="center"
+            android:textColor="@color/indigo_200"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
@@ -243,7 +245,7 @@
     <LinearLayout
         android:id="@+id/week_chart_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chart_height"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/std_space"
         android:background="@drawable/chart_bg"
         android:fitsSystemWindows="true"
@@ -255,12 +257,22 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/week_chart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/chart_height"
             android:layout_marginStart="@dimen/std_space"
             android:layout_marginTop="@dimen/md_space"
             android:layout_marginEnd="@dimen/std_space"
             android:layout_marginBottom="@dimen/md_space"
             android:padding="@dimen/std_space" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/week_chart_value"
+            style="@style/Theme.CleanAirSpaces.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/std_space"
+            android:gravity="center"
+            android:textColor="@color/indigo_200"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
@@ -279,7 +291,7 @@
     <LinearLayout
         android:id="@+id/month_chart_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/chart_height"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/md_space"
         android:background="@drawable/chart_bg"
         android:fitsSystemWindows="true"
@@ -291,12 +303,22 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/month_chart"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/chart_height"
             android:layout_marginStart="@dimen/std_space"
             android:layout_marginTop="@dimen/md_space"
             android:layout_marginEnd="@dimen/std_space"
             android:layout_marginBottom="@dimen/md_space"
             android:padding="@dimen/std_space" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/month_chart_value"
+            style="@style/Theme.CleanAirSpaces.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/std_space"
+            android:gravity="center"
+            android:textColor="@color/indigo_200"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
 

@@ -14,6 +14,7 @@ import com.android_dev.cleanairspaces.databinding.FragmentDetailsBinding
 import com.android_dev.cleanairspaces.databinding.LocationDetailsInOutLayoutBinding
 import com.android_dev.cleanairspaces.databinding.LocationDetailsOutLayoutBinding
 import com.android_dev.cleanairspaces.databinding.RecommendationsLayoutBinding
+import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.InOutPmFormattedOverviewData
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.IndoorFormatterExtraDetailsData
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsData
@@ -30,6 +31,10 @@ class DetailsFragment : Fragment() {
         private val TAG = DetailsFragment::class.java.simpleName
     }
 
+    //a data copy for this fragment --not LIVE
+    private lateinit var currentlyWatchedLocationHighLights: WatchedLocationHighLights
+
+
     private lateinit var recommendationsViewBinding: RecommendationsLayoutBinding
     private lateinit var recommendationsView: View
     private lateinit var outLayoutBinding: LocationDetailsOutLayoutBinding
@@ -43,8 +48,8 @@ class DetailsFragment : Fragment() {
     private val viewModel: LocationDetailsViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentDetailsBinding.inflate(inflater, container, false)
@@ -63,23 +68,19 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.observeAQIIndex().observe(viewLifecycleOwner, Observer {
-            viewModel.currentlyUsedAqi = it
-            refreshWatchedLocationDetails()
-        })
 
         viewModel.observeWatchedLocation().observe(viewLifecycleOwner, Observer {
+            currentlyWatchedLocationHighLights = it
             refreshWatchedLocationDetails()
         })
     }
 
     private fun refreshWatchedLocationDetails() {
         binding.progressCircular.isVisible = true
-        val location = viewModel.currentlyDisplayedLocationHighLights
         val inOutData = formatWatchedHighLightsData(
-            ctx = requireContext(),
-            location = location,
-            aqiIndex = viewModel.currentlyUsedAqi
+                ctx = requireContext(),
+                location = currentlyWatchedLocationHighLights,
+                aqiIndex = viewModel.aqiIndex
         )
         binding.aqiIndex.text = inOutData.aqiIndexStr
         if (inOutData.hasInDoorData) {
@@ -88,14 +89,14 @@ class DetailsFragment : Fragment() {
             displayIndoorInfo(inOutData)
             if (inOutData.indoorPmValue != null && inOutData.indoorAQIStatus != null)
                 displayIndoorDetailsSection(
-                    inOutData.indoorPmValue,
-                    inOutData.indoorAQIStatus,
-                    location.indoor_humidity,
-                    location.indoor_co2,
-                    location.indoor_voc,
-                    location.indoor_temperature,
-                    location.energyMax,
-                    location.energyMonth
+                        inOutData.indoorPmValue,
+                        inOutData.indoorAQIStatus,
+                        currentlyWatchedLocationHighLights.indoor_humidity,
+                        currentlyWatchedLocationHighLights.indoor_co2,
+                        currentlyWatchedLocationHighLights.indoor_voc,
+                        currentlyWatchedLocationHighLights.indoor_temperature,
+                        currentlyWatchedLocationHighLights.energyMax,
+                        currentlyWatchedLocationHighLights.energyMonth
                 )
         } else {
             inOutLayoutView.isVisible = false
@@ -112,32 +113,32 @@ class DetailsFragment : Fragment() {
     }
 
     private fun displayIndoorDetailsSection(
-        indoorPmValue: Double,
-        indoorAQIStatus: AQIStatus,
-        indoorHumidity: Double?,
-        indoorCo2: Double?,
-        indoorVoc: Double?,
-        indoorTemperature: Double?,
-        energyMax: Double?,
-        energyMonth: Double?
+            indoorPmValue: Double,
+            indoorAQIStatus: AQIStatus,
+            indoorHumidity: Double?,
+            indoorCo2: Double?,
+            indoorVoc: Double?,
+            indoorTemperature: Double?,
+            energyMax: Double?,
+            energyMonth: Double?
     ) {
         val uiReadyPmInfo = formatWatchedHighLightsIndoorExtras(
-            ctx = requireContext(),
-            inDoorAqiStatus = indoorAQIStatus,
-            humidLvl = indoorHumidity,
-            co2Lvl = indoorCo2,
-            vocLvl = indoorVoc,
-            tmpLvl = indoorTemperature,
-            energyMax = energyMax,
-            energyMonth = energyMonth
+                ctx = requireContext(),
+                inDoorAqiStatus = indoorAQIStatus,
+                humidLvl = indoorHumidity,
+                co2Lvl = indoorCo2,
+                vocLvl = indoorVoc,
+                tmpLvl = indoorTemperature,
+                energyMax = energyMax,
+                energyMonth = energyMonth
         )
 
         inOutLayoutBinding.apply {
             indoorPmIndexGradient.max = IndoorFormatterExtraDetailsData.sliderMaxFor3GradientLvls
             indoorPmIndexGradient.progress = uiReadyPmInfo.pmSliderValue
             indoorPmIndexGradient.thumb = ContextCompat.getDrawable(
-                requireContext(),
-                indoorAQIStatus.diskRes
+                    requireContext(),
+                    indoorAQIStatus.diskRes
             )
 
             //co2
@@ -146,8 +147,8 @@ class DetailsFragment : Fragment() {
                 indoorCo2Gradient.max = IndoorFormatterExtraDetailsData.sliderMaxFor3GradientLvls
                 indoorCo2Gradient.progress = uiReadyPmInfo.co2SliderValue
                 indoorCo2Gradient.thumb = ContextCompat.getDrawable(
-                    requireContext(),
-                    uiReadyPmInfo.coSliderDiskRes
+                        requireContext(),
+                        uiReadyPmInfo.coSliderDiskRes
                 )
             } else {
                 indoorCo2Lbl.isVisible = false
@@ -157,14 +158,14 @@ class DetailsFragment : Fragment() {
 
             //tmp
             if (uiReadyPmInfo.tmpSliderValue != null &&
-                uiReadyPmInfo.tmpSliderDiskRes != null
+                    uiReadyPmInfo.tmpSliderDiskRes != null
             ) {
                 indoorTmpValue.text = uiReadyPmInfo.tmpLvlTxt
                 indoorTmpGradient.max = IndoorFormatterExtraDetailsData.sliderMaxForSixGradientLvls
                 indoorTmpGradient.progress = uiReadyPmInfo.tmpSliderValue
                 indoorTmpGradient.thumb = ContextCompat.getDrawable(
-                    requireContext(),
-                    uiReadyPmInfo.tmpSliderDiskRes
+                        requireContext(),
+                        uiReadyPmInfo.tmpSliderDiskRes
                 )
             } else {
                 indoorTmpLbl.isVisible = false
@@ -178,8 +179,8 @@ class DetailsFragment : Fragment() {
                 indoorTvocGradient.max = IndoorFormatterExtraDetailsData.sliderMaxFor3GradientLvls
                 indoorTvocGradient.progress = uiReadyPmInfo.vocSliderValue
                 indoorTvocGradient.thumb = ContextCompat.getDrawable(
-                    requireContext(),
-                    uiReadyPmInfo.vocSliderDiskRes
+                        requireContext(),
+                        uiReadyPmInfo.vocSliderDiskRes
                 )
             } else {
                 indoorTvocLbl.isVisible = false
@@ -191,11 +192,11 @@ class DetailsFragment : Fragment() {
             if (uiReadyPmInfo.humidSliderValue != null && uiReadyPmInfo.humidSliderDiskRes != null) {
                 indoorHumidityVal.text = uiReadyPmInfo.humidLvlTxt
                 indoorHumiditygradient.max =
-                    IndoorFormatterExtraDetailsData.sliderMaxForSixGradientLvls
+                        IndoorFormatterExtraDetailsData.sliderMaxForSixGradientLvls
                 indoorHumiditygradient.progress = uiReadyPmInfo.humidSliderValue
                 indoorHumiditygradient.thumb = ContextCompat.getDrawable(
-                    requireContext(),
-                    uiReadyPmInfo.humidSliderDiskRes
+                        requireContext(),
+                        uiReadyPmInfo.humidSliderDiskRes
                 )
             } else {
                 indoorHumidityLbl.isVisible = false
@@ -285,8 +286,8 @@ class DetailsFragment : Fragment() {
                 outPmStatusLine.setImageResource(aqiStatus.status_bar_res)
                 statusTv.setText(aqiStatus.lbl)
                 val aqiColor = ContextCompat.getColor(
-                    requireContext(),
-                    aqiStatus.aqi_color_res
+                        requireContext(),
+                        aqiStatus.aqi_color_res
                 )
                 outPmIndexValue.setTextColor(aqiColor)
                 statusTv.setTextColor(aqiColor)

@@ -44,6 +44,7 @@
     <string name="good_air_status_txt">Good</string>
     <string name="moderate_air_status_txt">Moderate</string>
     <string name="aqi_status_unhealthy_sensitive_groups">Unhealthy for sensitive groups</string>
+    <string name="aqi_status_unhealthy_sensitive_groups_abbrev">Unhealthy F.S.G</string>
     <string name="aqi_status_unhealthy">Unhealthy</string>
     <string name="aqi_status_very_unhealthy">Very Unhealthy</string>
     <string name="aqi_status_hazardous">Hazardous</string>

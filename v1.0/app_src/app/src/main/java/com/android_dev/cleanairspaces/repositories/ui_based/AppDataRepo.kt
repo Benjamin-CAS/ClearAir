@@ -1,26 +1,30 @@
 package com.android_dev.cleanairspaces.repositories.ui_based
 
-import com.android_dev.cleanairspaces.persistence.local.models.dao.MapDataDao
-import com.android_dev.cleanairspaces.persistence.local.models.dao.SearchSuggestionsDataDao
-import com.android_dev.cleanairspaces.persistence.local.models.dao.WatchedLocationHighLightsDao
+import com.android_dev.cleanairspaces.persistence.local.models.dao.*
 import com.android_dev.cleanairspaces.persistence.local.models.entities.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
+import java.time.DayOfWeek
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MapDataRepo
+class AppDataRepo
 @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val mapDataDao: MapDataDao,
-    private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
-    private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao
+        private val coroutineScope: CoroutineScope,
+        private val mapDataDao: MapDataDao,
+        private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
+        private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
+        private val locationHistoryThreeDaysDao: LocationHistoryThreeDaysDao,
+        private val locationHistoryWeekDao: LocationHistoryWeekDao,
+        private val locationHistoryMonthDao: LocationHistoryMonthDao,
+        private val locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao,
 ) {
 
-    private val TAG = MapDataRepo::class.java.simpleName
+    private val TAG = AppDataRepo::class.java.simpleName
 
 
     fun getSearchSuggestions(query: String): Flow<List<SearchSuggestionsData>> {
@@ -68,7 +72,11 @@ class MapDataRepo
                         indoor_voc = testVCos.random(),
                         energyMonth = if (i % 2 == 0) 136.0 else null,
                         energyMax = if (i % 2 == 0) 200000.120 else null,
-                        isIndoorLoc = (i % 2 == 0)
+                        isIndoorLoc = (i % 2 == 0),
+                        compId = "21$i",
+                        locId = "12$i",
+                            lastRecPwd = "",
+                            lastRecUsername = ""
                     )
                 )
                 locationsCounter++
@@ -92,19 +100,19 @@ class MapDataRepo
 
 
     fun getLastDaysHistory(dataTag: String): Flow<List<LocationHistoryThreeDays>> {
-        TODO("Not yet implemented")
+       return locationHistoryThreeDaysDao.getLastDaysHistoryFlow(dataTag)
     }
 
     fun getLastWeekHistory(dataTag: String): Flow<List<LocationHistoryWeek>> {
-        TODO("Not yet implemented")
+        return  locationHistoryWeekDao.getLastWeekHistoryFlow(dataTag)
     }
 
     fun getLastMonthHistory(dataTag: String): Flow<List<LocationHistoryMonth>> {
-        TODO("Not yet implemented")
+       return locationHistoryMonthDao.getLastMonthsHistoryFlow(dataTag)
     }
 
-    fun getLastTimeUpdatedHistory(dataTag: String): Long? {
-        TODO("Not yet implemented")
+    suspend fun getLastTimeUpdatedHistory(dataTag: String): Long? {
+       return locationHistoryUpdatesTrackerDao.checkLastUpdate(dataTag)
     }
 
 
@@ -145,6 +153,25 @@ class MapDataRepo
         )
     }
 
+    fun refreshHistoryForLocation(compId : String, locId : String, timeStamp : String, dataTag : String, userName: String, userPassword: String) {
+        coroutineScope.launch (Dispatchers.IO){
+            val daysHistory =  getDummyLocationDaysHistory(dataTag=dataTag)
+            val weekHistory =   getDummyLocationWeekHistory(dataTag=dataTag)
+            val monthHistory =    getDummyLocationMonthHistory(dataTag=dataTag)
+            if (daysHistory.isNotEmpty()) {
+                locationHistoryThreeDaysDao.deleteAllHistoriesForData(dataTag)
+                locationHistoryThreeDaysDao.insertHistories(daysHistory)
+            }
+            if (weekHistory.isNotEmpty()) {
+                locationHistoryWeekDao.deleteAllHistoriesForData(dataTag)
+                locationHistoryWeekDao.insertHistories(weekHistory)
+            }
+            if (monthHistory.isNotEmpty()) {
+                locationHistoryMonthDao.deleteAllHistoriesForData(dataTag)
+                locationHistoryMonthDao.insertHistories(monthHistory)
+            }
+        }
+    }
 
 }
 
@@ -157,10 +184,75 @@ enum class DummyMapData(val mapData: MapData, val status: String) {
     SUZHOU(MapData(lat = 31.299999, lon = 120.599998, pm25 = 55.0), status = "gUnhealthy"),
     HANGZHOU(MapData(lat = 30.250000, lon = 120.166664, pm25 = 130.10), status = "unhealthy"),
     GUANGZHOU(MapData(lat = 23.128994, lon = 113.253250, pm25 = 360.0), status = "vUnhealthy"),
-    ZHUHAI(MapData(lat = 22.27694, lon = 113.56778, pm25 = 360.0), status = "hazardous")
+    ZHUHAI(MapData(lat = 22.27694, lon = 113.56778, pm25 = 400.4), status = "hazardous")
 }
 
 val testTemperatures = listOf<Double>(15.0, 18.0, 26.0, 30.0, 22.0 )
 val testCo2s = listOf<Double>(200.0, 800.14, 1000.55)
 val testHumidities = listOf<Double>( 34.3, 36.1, 55.2, 72.0,80.0)
 val testVCos = listOf<Double>(0.22, 0.60 ,0.90 )
+val testPm25 = listOf<Double>(10.1, 26.0, 55.0, 130.10, 360.0, 400.4)
+
+fun getDummyLocationWeekHistory(dataTag: String): ArrayList<LocationHistoryWeek> {
+    val histories = arrayListOf<LocationHistoryWeek>()
+    for (i in  0..7) {
+        val dayData = LocationHistoryWeek(
+                autoId = 0,
+                data = HistoryData(
+                        actualDataTag = dataTag,
+                        dates = "day $i",
+                        indoor_pm = testPm25.random().toFloat(),
+                        tvoc = testVCos.random().toFloat(),
+                        co2 = testCo2s.random().toFloat(),
+                        temperature = testTemperatures.random().toFloat(),
+                        humidity = testHumidities.random().toFloat(),
+                        outdoor_pm = testPm25.random().toFloat(),
+                )
+        )
+        histories.add(dayData)
+    }
+    return histories
+}
+
+fun getDummyLocationMonthHistory(dataTag: String): ArrayList<LocationHistoryMonth> {
+    val histories = arrayListOf<LocationHistoryMonth>()
+    for (i in  0..31) {
+        val dayData = LocationHistoryMonth(
+                autoId = 0,
+                data = HistoryData(
+                        actualDataTag = dataTag,
+                        dates = "day $i",
+                        indoor_pm = testPm25.random().toFloat(),
+                        tvoc = testVCos.random().toFloat(),
+                        co2 = testCo2s.random().toFloat(),
+                        temperature = testTemperatures.random().toFloat(),
+                        humidity = testHumidities.random().toFloat(),
+                        outdoor_pm = testPm25.random().toFloat(),
+                )
+        )
+        histories.add(dayData)
+    }
+    return histories
+}
+
+fun getDummyLocationDaysHistory(dataTag: String): ArrayList<LocationHistoryThreeDays> {
+    val histories = arrayListOf<LocationHistoryThreeDays>()
+    for (i in  0..72) {
+        val dayData = LocationHistoryThreeDays(
+                autoId = 0,
+                data = HistoryData(
+                        actualDataTag = dataTag,
+                        dates = "hour $i",
+                        indoor_pm = testPm25.random().toFloat(),
+                        tvoc = testVCos.random().toFloat(),
+                        co2 = testCo2s.random().toFloat(),
+                        temperature = testTemperatures.random().toFloat(),
+                        humidity = testHumidities.random().toFloat(),
+                        outdoor_pm = testPm25.random().toFloat(),
+                )
+        )
+        histories.add(dayData)
+    }
+    return histories
+}
+

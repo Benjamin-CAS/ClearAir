@@ -32,8 +32,8 @@ class SplashActViewModel @Inject constructor(
             TAG, "initDataRefresh()", "calling worker"
         )
 
+        //TODO .setRequiredNetworkType(NetworkType.CONNECTED)
         val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
         val refreshMapDataRequest =

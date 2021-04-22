@@ -6,39 +6,46 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.Location
 import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryThreeDays
 import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryWeek
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
-import com.android_dev.cleanairspaces.repositories.ui_based.MapDataRepo
+import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.HISTORY_EXPIRE_TIME_MILLS
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.ArrayList
 import javax.inject.Inject
 
 @HiltViewModel
 class LocationDetailsViewModel
 @Inject constructor(
     private val dataStoreManager: DataStoreManager,
-    private val repo: MapDataRepo
+    private val repo: AppDataRepo
 ) : ViewModel() {
-    
+
     private val TAG  = LocationDetailsViewModel::class.java.simpleName
 
-    var currentlyUsedAqi: String? = null
-    lateinit var currentlyDisplayedLocationHighLights: WatchedLocationHighLights
-
-    fun observeAQIIndex() = dataStoreManager.getAqiIndex().asLiveData()
+    init {
+        setAqiIndex()
+    }
+    var aqiIndex : String? = null
+    private fun setAqiIndex() {
+        aqiIndex = dataStoreManager.getAqiIndex().asLiveData().value
+    }
 
     private val watchedLocationHighLights = MutableLiveData<WatchedLocationHighLights>()
     fun observeWatchedLocation(): LiveData<WatchedLocationHighLights> = watchedLocationHighLights
     fun setWatchedLocation(locationHighLights: WatchedLocationHighLights) {
         watchedLocationHighLights.value = locationHighLights
-        currentlyDisplayedLocationHighLights = locationHighLights
         refreshHistoryIfNecessary(locationHighLights)
     }
 
 
     /******** history *****/
+    var currentDatesForDaysChart: ArrayList<String> = ArrayList()
+    var currentDatesForWeekChart: ArrayList<String> = ArrayList()
+    var currentDatesForMonthChart: ArrayList<String> = ArrayList()
+
     lateinit var currentlyDisplayedDaysHistoryData: List<LocationHistoryThreeDays>
     lateinit var currentlyDisplayedMonthHistoryData: List<LocationHistoryMonth>
     lateinit var currentlyDisplayedWeekHistoryData: List<LocationHistoryWeek>
@@ -66,8 +73,7 @@ class LocationDetailsViewModel
 
 
 
-    fun observeHistories(): TripleHistoryFlow {
-        val dataTag = currentlyDisplayedLocationHighLights.actualDataTag
+    fun observeHistories(dataTag: String): TripleHistoryFlow {
         return TripleHistoryFlow(
             days = repo.getLastDaysHistory(dataTag).asLiveData(),
             week = repo.getLastWeekHistory(dataTag).asLiveData(),
@@ -75,7 +81,7 @@ class LocationDetailsViewModel
         )
     }
     private fun refreshHistoryIfNecessary(location: WatchedLocationHighLights) {
-        val dataTag = currentlyDisplayedLocationHighLights.actualDataTag
+        val dataTag = location.actualDataTag
         viewModelScope.launch(Dispatchers.IO) {
             val lastUpdate = repo.getLastTimeUpdatedHistory(dataTag)
             val timeNow = System.currentTimeMillis()
@@ -106,6 +112,14 @@ class LocationDetailsViewModel
 
     private fun fetchHistory(compId : String, locId : String, timeStamp : String, dataTag : String, userName: String, userPassword: String) {
        //todo encrypt and fetch
+        repo.refreshHistoryForLocation(
+                compId = compId,
+                locId = locId,
+                timeStamp = timeStamp,
+                dataTag = dataTag,
+                userName = userName,
+                userPassword = userPassword
+        )
     }
 
 

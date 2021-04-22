@@ -6,10 +6,8 @@ import androidx.room.Room
 import androidx.work.WorkManager
 import com.android_dev.cleanairspaces.persistence.local.CasDatabase
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
-import com.android_dev.cleanairspaces.persistence.local.models.dao.MapDataDao
-import com.android_dev.cleanairspaces.persistence.local.models.dao.SearchSuggestionsDataDao
-import com.android_dev.cleanairspaces.persistence.local.models.dao.WatchedLocationHighLightsDao
-import com.android_dev.cleanairspaces.repositories.ui_based.MapDataRepo
+import com.android_dev.cleanairspaces.persistence.local.models.dao.*
+import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.BASE_URL
 import com.android_dev.cleanairspaces.utils.DATABASE_NAME
 import com.google.gson.GsonBuilder
@@ -74,16 +72,24 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideMapDataRepo(
+    fun provideAppDataRepo(
         coroutineScope: CoroutineScope,
         mapDataDao: MapDataDao,
         searchSuggestionsDataDao: SearchSuggestionsDataDao,
-        watchedLocationHighLightsDao: WatchedLocationHighLightsDao
-    ): MapDataRepo = MapDataRepo(
+        watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
+        locationHistoryThreeDaysDao: LocationHistoryThreeDaysDao,
+        locationHistoryWeekDao: LocationHistoryWeekDao,
+        locationHistoryMonthDao: LocationHistoryMonthDao,
+        locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao,
+    ): AppDataRepo = AppDataRepo(
         coroutineScope = coroutineScope,
         mapDataDao = mapDataDao,
         searchSuggestionsDataDao = searchSuggestionsDataDao,
-        watchedLocationHighLightsDao = watchedLocationHighLightsDao
+        watchedLocationHighLightsDao = watchedLocationHighLightsDao,
+            locationHistoryThreeDaysDao = locationHistoryThreeDaysDao,
+            locationHistoryWeekDao = locationHistoryWeekDao,
+            locationHistoryMonthDao = locationHistoryMonthDao,
+            locationHistoryUpdatesTrackerDao = locationHistoryUpdatesTrackerDao,
     )
 
 
@@ -105,6 +111,27 @@ class AppModule {
     fun provideWatchedLocationHighLightsDao(
         casDatabase: CasDatabase
     ): WatchedLocationHighLightsDao = casDatabase.watchedLocationHighLightsDao()
+
+    @Provides
+    @Singleton
+    fun provideMyLocationHistoryThreeDaysDao(casDatabase: CasDatabase): LocationHistoryThreeDaysDao =
+            casDatabase.locationHistoryThreeDaysDao()
+
+    @Provides
+    @Singleton
+    fun provideLocationHistoryWeekDao(casDatabase: CasDatabase): LocationHistoryWeekDao =
+            casDatabase.locationHistoryWeekDao()
+
+    @Provides
+    @Singleton
+    fun provideLocationHistoryMonthDao(casDatabase: CasDatabase): LocationHistoryMonthDao =
+            casDatabase.locationHistoryMonthDao()
+
+    @Provides
+    @Singleton
+    fun provideLocationHistoryUpdatesTrackerDao(casDatabase: CasDatabase): LocationHistoryUpdatesTrackerDao =
+            casDatabase.locationHistoryUpdatesTrackerDao()
+
 
 
     @Provides

@@ -61,25 +61,8 @@ class LocationDetailsActivity : BaseActivity() {
                 }
                 locationNameTv.text = it.name
                 viewModel.setWatchedLocation(it)
-                observeHistories()
             }
         }
-
-    }
-    private fun observeHistories() {
-        viewModel.observeHistories().days.observe(this, androidx.lifecycle.Observer {
-            if (it != null)
-                viewModel.setDaysHistory(it)
-        })
-        viewModel.observeHistories().week.observe(this, androidx.lifecycle.Observer {
-            if (it != null)
-                viewModel.setWeekHistory(it)
-        })
-
-        viewModel.observeHistories().month.observe(this, androidx.lifecycle.Observer {
-            if (it != null)
-                viewModel.setMonthHistory(it)
-        })
 
     }
 

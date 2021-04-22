@@ -41,7 +41,7 @@
                 android:layout_margin="@dimen/std_space"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardCornerRadius="@dimen/std_space"
                 app:cardElevation="@dimen/std_space">
 
@@ -65,7 +65,7 @@
                 android:layout_margin="@dimen/std_space"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardCornerRadius="@dimen/std_space"
                 app:cardElevation="@dimen/std_space">
 
@@ -89,7 +89,7 @@
                 android:layout_margin="@dimen/std_space"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardCornerRadius="@dimen/std_space"
                 app:cardElevation="@dimen/std_space">
 
@@ -113,7 +113,7 @@
                 android:layout_margin="@dimen/std_space"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardCornerRadius="@dimen/std_space"
                 app:cardElevation="@dimen/std_space">
 
@@ -137,7 +137,7 @@
                 android:layout_margin="@dimen/std_space"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardCornerRadius="@dimen/std_space"
                 app:cardElevation="@dimen/std_space">
 
@@ -161,7 +161,7 @@
                 android:layout_margin="@dimen/std_space"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardCornerRadius="@dimen/std_space"
                 app:cardElevation="@dimen/std_space">
 

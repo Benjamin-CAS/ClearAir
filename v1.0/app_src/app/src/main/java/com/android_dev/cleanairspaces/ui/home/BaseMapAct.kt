@@ -70,17 +70,6 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
 
     val viewModel: BaseMapVieModel by viewModels()
 
-    val heatMapGradientColors: List<AqiColors> =
-        listOf<AqiColors>(
-            AqiColors.AQIGoodColor,
-            AqiColors.AQIModerateColor,
-            AqiColors.AQIGUnhealthyColor,
-            AqiColors.AQIUnhealthyColor,
-            AqiColors.AQIVUnhealthyColor,
-            AqiColors.AQIHazardousColor,
-        )
-
-
     /*********** LOCATION ACCESS ***************/
     abstract fun showLocationOnMap(location: Location)
     fun promptToggleGPSSettings() {

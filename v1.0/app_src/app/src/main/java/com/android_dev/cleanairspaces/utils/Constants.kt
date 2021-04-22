@@ -10,6 +10,7 @@ const val MAP_LANG_TO_USE_KEY = "language_in_map_choice"
 const val DEFAULT_AQI_INDEX_PM25 = "PM 2.5"
 const val AQI_INDEX_AQI_US = "AQI U.S"
 
+
 //API
 const val BASE_URL = "https://monitor.cleanairspaces.com/"
 const val NONCE = "aa"
@@ -25,10 +26,11 @@ const val MAP_DATA_REFRESH_INTERVAL_MIN = 15L
 
 
 //MAPS
-const val HEAT_MAP_CIRCLE_RADIUS = 50
 const val USER_LOCATION_UPDATE_INTERVAL_MILLS = 300000L //5 minutes
 const val USER_LOCATION_UPDATE_ON_DISTANCE = 100f //100 meters
 const val MY_LOCATION_ZOOM_LEVEL = 15f
+
+
 
 //misc
 const val SCANNING_QR_TIMEOUT_MILLS = 18000L //3 minutes

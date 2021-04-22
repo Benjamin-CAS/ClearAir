@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.ActivityGoogleMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
@@ -16,18 +14,12 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedL
 import com.android_dev.cleanairspaces.ui.adding_locations.add.AddLocationActivity
 import com.android_dev.cleanairspaces.ui.home.BaseMapAct
 import com.android_dev.cleanairspaces.ui.home.adapters.WatchedLocationsAdapter
-import com.android_dev.cleanairspaces.utils.HEAT_MAP_CIRCLE_RADIUS
-import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
-import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
-import com.android_dev.cleanairspaces.utils.pmLevelIntensities
+import com.android_dev.cleanairspaces.utils.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.maps.android.heatmaps.Gradient
-import com.google.maps.android.heatmaps.HeatmapTileProvider
-import com.google.maps.android.heatmaps.WeightedLatLng
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,6 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
 
+    private val mapCircleMarkers: ArrayList<Marker> = arrayListOf()
     private val TAG = GMapsActivity::class.java.simpleName
 
     private var mMap: GoogleMap? = null
@@ -65,17 +58,6 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
             }
     }
 
-    private var tileOverlay: TileOverlay? = null
-    private var formattedHeatMapGradientColors: IntArray? = null
-    private fun setHeatMapGradientColors() {
-        if (formattedHeatMapGradientColors?.isNotEmpty() == true) return
-        formattedHeatMapGradientColors = IntArray(heatMapGradientColors.size)
-        for ((i, aqiColor) in heatMapGradientColors.withIndex()) {
-            formattedHeatMapGradientColors!![i] =
-                ContextCompat.getColor(this, aqiColor.colorRes)
-
-        }
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,11 +74,11 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
         super.setHomeMapOverlay(binding.mapOverlay)
 
         /*********** OBSERVE MAP OVERLAY DATA **********/
-        viewModel.observeWatchedLocations().observe(this, Observer {
+        viewModel.observeWatchedLocations().observe(this, {
             updateWatchedLocations(it)
         })
         viewModel.observeSelectedAqiIndex().observe(
-            this, Observer {
+            this,  {
                 updateSelectedAqiIndex(it)
             }
         )
@@ -117,46 +99,44 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        setHeatMapGradientColors()
+        mMap?.uiSettings?.apply {
+            isCompassEnabled = false
+        }
         observeMapRelatedData()
     }
 
     private fun observeMapRelatedData() {
         //map data -locations & pm values
         viewModel.observeMapData().observe(
-            this, Observer {
+            this, {
                 if (it.isNotEmpty()) {
-                    drawHeatMap(it)
+                    drawCirclesOnMap(it)
                 }
             }
         )
     }
 
-    private fun drawHeatMap(mapDataPoints: List<MapData>) {
-        val locationsLatLng: MutableCollection<WeightedLatLng> = mutableListOf()
-        for (mapData in mapDataPoints) {
-            val weight = getAQIStatusFromPM25(mapData.pm25).level_intensity
-            locationsLatLng.add(
-                WeightedLatLng(
-                    mapData.getGMapLocationLatLng(),
-                    weight
+    private fun drawCirclesOnMap(mapDataPoints: List<MapData>) {
+        clearMapCircles()
+        mMap?.let {
+            for (mapData in mapDataPoints) {
+                val aqiStatus =    getAQIStatusFromPM25(mapData.pm25)
+                val circleMarker =  mMap?.addMarker(
+                        MarkerOptions().position(mapData.getGMapLocationLatLng())
+                                .icon(BitmapDescriptorFactory.fromResource(aqiStatus.transparentCircleRes))
                 )
-            )
+                circleMarker?.let { marker ->
+                    mapCircleMarkers.add(marker)
+                }
+            }
         }
+    }
 
-        val gradient = Gradient(formattedHeatMapGradientColors, pmLevelIntensities)
-        val builder = HeatmapTileProvider.Builder()
-        builder.apply {
-            weightedData(locationsLatLng)
-            gradient(gradient)
-            radius(HEAT_MAP_CIRCLE_RADIUS)
+
+    private fun clearMapCircles(){
+        for (circle in mapCircleMarkers){
+            circle.remove()
         }
-        tileOverlay?.clearTileCache()
-        tileOverlay?.remove()
-        val heatMapTileProvider: HeatmapTileProvider = builder.build()
-        val tileOverlayOptions = TileOverlayOptions()
-        tileOverlayOptions.tileProvider(heatMapTileProvider)
-        tileOverlay = mMap?.addTileOverlay(tileOverlayOptions)
     }
 
     override fun showLocationOnMap(location: Location) {

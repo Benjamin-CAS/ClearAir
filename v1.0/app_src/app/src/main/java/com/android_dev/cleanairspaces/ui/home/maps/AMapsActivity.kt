@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.MapView
@@ -21,17 +20,15 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedL
 import com.android_dev.cleanairspaces.ui.adding_locations.add.AddLocationActivity
 import com.android_dev.cleanairspaces.ui.home.BaseMapAct
 import com.android_dev.cleanairspaces.ui.home.adapters.WatchedLocationsAdapter
-import com.android_dev.cleanairspaces.utils.HEAT_MAP_CIRCLE_RADIUS
-import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
-import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
-import com.android_dev.cleanairspaces.utils.pmLevelIntensities
+import com.android_dev.cleanairspaces.utils.*
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AMapsActivity : BaseMapAct() {
 
-    private var tileOverlay: TileOverlay? = null
+
+    private val mapCirlcesMarkers: ArrayList<Marker> = arrayListOf()
     private val TAG = AMapsActivity::class.java.simpleName
 
 
@@ -40,18 +37,6 @@ class AMapsActivity : BaseMapAct() {
 
     private var mapView: MapView? = null
     private var aMap: AMap? = null
-
-    private var formattedHeatMapGradientColors: IntArray? = null
-    private fun setHeatMapGradientColors() {
-        if (formattedHeatMapGradientColors?.isNotEmpty() == true) return
-        formattedHeatMapGradientColors = IntArray(heatMapGradientColors.size)
-        for ((i, aqiColor) in heatMapGradientColors.withIndex()) {
-            formattedHeatMapGradientColors!![i] =
-                ContextCompat.getColor(this, aqiColor.colorRes)
-
-        }
-    }
-
 
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
@@ -90,16 +75,15 @@ class AMapsActivity : BaseMapAct() {
         super.setToolBar(binding.toolbar, true)
         watchedLocationsAdapter = WatchedLocationsAdapter(this)
         super.setHomeMapOverlay(binding.mapOverlay)
-        viewModel.observeWatchedLocations().observe(this, Observer {
+        viewModel.observeWatchedLocations().observe(this, {
             updateWatchedLocations(it)
         })
         viewModel.observeSelectedAqiIndex().observe(
-            this, Observer {
+            this,{
                 updateSelectedAqiIndex(it)
             }
         )
 
-        setHeatMapGradientColors()
         initializeMap(savedInstanceState = savedInstanceState)
     }
 
@@ -123,15 +107,15 @@ class AMapsActivity : BaseMapAct() {
     private fun observeMapRelatedData() {
         //map data -locations & pm values
         viewModel.observeMapData().observe(
-            this, Observer {
+            this,{
                 if (it.isNotEmpty()) {
-                    drawHeatMap(it)
+                    drawCirclesOnMap(it)
                 }
             }
         )
         //user setting - language
         viewModel.observeMapLang().observe(
-            this, Observer {
+            this, {
                 if (it == null || it == getString(R.string.map_lang_chinese)) {
                     aMap?.setMapLanguage(AMap.CHINESE)
                 } else {
@@ -150,44 +134,58 @@ class AMapsActivity : BaseMapAct() {
             )
         )
         viewModel.myLocMarkerOnAMap?.remove()
-        val markerOptions = MarkerOptions().position(currentUserLocation)
-            .icon(
-                BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory
-                        .decodeResource(resources, R.drawable.ic_my_location_marker)
-                )
-            )
+        val mIcon = BitmapDescriptorFactory.fromBitmap(
+                BitmapFactory
+                        .decodeResource(resources,R.drawable.ic_my_location_marker)
+        )
+
+        val markerOptions = MarkerOptions()
+        markerOptions.apply {
+            position(currentUserLocation)
+            draggable(false)
+            anchor(0.5f, 0.5f)
+            mIcon?.let {
+                icon(it)
+            }
+        }
         viewModel.myLocMarkerOnAMap = aMap?.addMarker(markerOptions)
     }
 
-    /**************** HEAT MAPS **************/
-    private fun drawHeatMap(mapDataPoints: List<MapData>) {
-        val locationsLatLng: MutableCollection<WeightedLatLng> = mutableListOf()
-        for (mapData in mapDataPoints) {
-            val weight = getAQIStatusFromPM25(mapData.pm25).level_intensity
-            locationsLatLng.add(
-                WeightedLatLng(
-                    mapData.getAMapLocationLatLng(),
-                    weight
-                )
-            )
-        }
 
-        val gradient = Gradient(formattedHeatMapGradientColors, pmLevelIntensities)
-        val builder = HeatmapTileProvider.Builder()
-        builder.apply {
-            weightedData(locationsLatLng)
-            gradient(gradient)
-            radius(HEAT_MAP_CIRCLE_RADIUS)
+
+    private fun drawCirclesOnMap(mapDataPoints: List<MapData>) {
+        clearMapCircles()
+        aMap?.let {
+            for (mapData in mapDataPoints) {
+                val aqiStatus =    getAQIStatusFromPM25(mapData.pm25)
+                val mIcon = BitmapDescriptorFactory.fromBitmap(
+                            BitmapFactory
+                                    .decodeResource(resources, aqiStatus.transparentCircleRes)
+                    )
+
+                val markerOptions = MarkerOptions()
+                markerOptions.apply {
+                    position(mapData.getAMapLocationLatLng())
+                    draggable(false)
+                    anchor(0.5f, 0.5f)
+                    mIcon?.let {
+                        icon(it)
+                    }
+                }
+                val circleMarker = aMap?.addMarker(markerOptions)
+                circleMarker?.let { marker ->
+                    mapCirlcesMarkers.add(marker)
+                }
+            }
         }
-        tileOverlay?.clearTileCache()
-        tileOverlay?.remove()
-        val heatMapTileProvider: HeatmapTileProvider = builder.build()
-        val tileOverlayOptions = TileOverlayOptions()
-        tileOverlayOptions.tileProvider(heatMapTileProvider)
-        tileOverlay = aMap?.addTileOverlay(tileOverlayOptions)
     }
 
+
+    private fun clearMapCircles(){
+        for (circle in mapCirlcesMarkers){
+            circle.remove()
+        }
+    }
 
     /************* forwarding life cycle methods & clearing *********/
     override fun onSaveInstanceState(outState: Bundle) {

@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:clickable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardElevation="@dimen/std_space"
                 app:cardCornerRadius="@dimen/std_space"
                 android:layout_margin="@dimen/std_space">
@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:clickable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardElevation="@dimen/std_space"
                 app:cardCornerRadius="@dimen/std_space"
                 android:layout_margin="@dimen/std_space">
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:clickable="true"
-                app:cardBackgroundColor="@color/aqi_beyond"
+                app:cardBackgroundColor="@color/grey"
                 app:cardElevation="@dimen/std_space"
                 app:cardCornerRadius="@dimen/std_space"
                 android:layout_margin="@dimen/std_space">

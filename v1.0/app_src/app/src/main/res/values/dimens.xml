@@ -10,4 +10,7 @@
     <dimen name="lg_icon">96dp</dimen>
     <dimen name="watched_location_card_height">220dp</dimen>
     <dimen name="chart_height">240dp</dimen>
+    <dimen name="location_logo_size_md">64dp</dimen>
+    <dimen name="clickable_md">52dp</dimen>
+    <dimen name="clickable_plus_pad">70dp</dimen>
 </resources>

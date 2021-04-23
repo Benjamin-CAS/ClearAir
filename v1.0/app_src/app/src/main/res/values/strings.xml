@@ -140,5 +140,7 @@
     <string name="settings_act_lbl">Settings</string>
     <string name="select_history_type_hint">Info</string>
     <string name="indoor_air_quality_txt">Indoor Air Quality</string>
+    <string name="add_location_failed_text">Failed to add that location... try again</string>
+    <string name="add_location_ongoing_text">Adding location</string>
 
 </resources>

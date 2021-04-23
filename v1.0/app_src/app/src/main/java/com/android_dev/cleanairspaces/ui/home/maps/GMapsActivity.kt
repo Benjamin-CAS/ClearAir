@@ -14,12 +14,16 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedL
 import com.android_dev.cleanairspaces.ui.adding_locations.add.AddLocationActivity
 import com.android_dev.cleanairspaces.ui.home.BaseMapAct
 import com.android_dev.cleanairspaces.ui.home.adapters.WatchedLocationsAdapter
-import com.android_dev.cleanairspaces.utils.*
+import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
+import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,7 +41,7 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
         requestLocationPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
+                ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
                 showUserLocation()
@@ -48,16 +52,15 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
     override fun initQrScannerLauncher() {
         //scan-qr launcher must be set
         scanQrCodeLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-            { result: ActivityResult ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    //  you will get result here in result.data
-                    handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+                { result: ActivityResult ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        //  you will get result here in result.data
+                        handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+                    }
+
                 }
-
-            }
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,14 +81,14 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
             updateWatchedLocations(it)
         })
         viewModel.observeSelectedAqiIndex().observe(
-            this,  {
-                updateSelectedAqiIndex(it)
-            }
+                this, {
+            updateSelectedAqiIndex(it)
+        }
         )
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.g_map) as SupportMapFragment
+                .findFragmentById(R.id.g_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -108,11 +111,11 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
     private fun observeMapRelatedData() {
         //map data -locations & pm values
         viewModel.observeMapData().observe(
-            this, {
-                if (it.isNotEmpty()) {
-                    drawCirclesOnMap(it)
-                }
+                this, {
+            if (it.isNotEmpty()) {
+                drawCirclesOnMap(it)
             }
+        }
         )
     }
 
@@ -120,8 +123,8 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
         clearMapCircles()
         mMap?.let {
             for (mapData in mapDataPoints) {
-                val aqiStatus =    getAQIStatusFromPM25(mapData.pm25)
-                val circleMarker =  mMap?.addMarker(
+                val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
+                val circleMarker = mMap?.addMarker(
                         MarkerOptions().position(mapData.getGMapLocationLatLng())
                                 .icon(BitmapDescriptorFactory.fromResource(aqiStatus.transparentCircleRes))
                 )
@@ -133,8 +136,8 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
     }
 
 
-    private fun clearMapCircles(){
-        for (circle in mapCircleMarkers){
+    private fun clearMapCircles() {
+        for (circle in mapCircleMarkers) {
             circle.remove()
         }
     }
@@ -142,31 +145,31 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
     override fun showLocationOnMap(location: Location) {
         val currentUserLocation = LatLng(location.latitude, location.longitude)
         mMap?.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                currentUserLocation,
-                MY_LOCATION_ZOOM_LEVEL
-            )
+                CameraUpdateFactory.newLatLngZoom(
+                        currentUserLocation,
+                        MY_LOCATION_ZOOM_LEVEL
+                )
         )
         viewModel.myLocMarkerOnGMap?.remove()
         viewModel.myLocMarkerOnGMap = mMap?.addMarker(
-            MarkerOptions().position(currentUserLocation)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_my_location_marker))
+                MarkerOptions().position(currentUserLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_my_location_marker))
         )
     }
 
     override fun navigateToActivity(toAct: Class<*>, extraTag: String?, data: Any?) {
         when {
             extraTag != null && data is String -> startActivity(
-                Intent(this, toAct).putExtra(
-                    extraTag,
-                    data
-                )
+                    Intent(this, toAct).putExtra(
+                            extraTag,
+                            data
+                    )
             )
             extraTag != null && data is WatchedLocationHighLights -> startActivity(
-                Intent(
-                    this,
-                    toAct
-                ).putExtra(extraTag, data)
+                    Intent(
+                            this,
+                            toAct
+                    ).putExtra(extraTag, data)
             )
             else -> startActivity(Intent(this, toAct))
         }
@@ -185,9 +188,9 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
         if (intentResult != null) {
             if (intentResult.contents == null) {
                 Toast.makeText(
-                    this,
-                    R.string.scan_qr_code_cancelled,
-                    Toast.LENGTH_LONG
+                        this,
+                        R.string.scan_qr_code_cancelled,
+                        Toast.LENGTH_LONG
                 ).show()
             } else {
                 // if the intentResult is not null we'll set
@@ -195,14 +198,14 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
                 val qrContent = intentResult.contents
                 val extraTag = AddLocationActivity.INTENT_FROM_QR_SCANNER_TAG
                 navigateToActivity(
-                    AddLocationActivity::class.java,
-                    extraTag = extraTag, data = qrContent
+                        AddLocationActivity::class.java,
+                        extraTag = extraTag, data = qrContent
                 )
             }
         } else {
             Toast.makeText(
-                this, R.string.scan_qr_code_unknown,
-                Toast.LENGTH_LONG
+                    this, R.string.scan_qr_code_unknown,
+                    Toast.LENGTH_LONG
             ).show()
         }
     }

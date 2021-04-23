@@ -20,4 +20,11 @@ interface MapDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(newMapData: List<MapData>)
 
+    @Query("DELETE FROM map_displayed_data")
+    suspend fun deleteAll()
+
+    @Query("SELECT * FROM map_displayed_data WHERE actualDataTag =:tag")
+    suspend fun getMapDataOnce(tag: String): MapData?
+
+
 }

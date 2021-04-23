@@ -14,6 +14,9 @@ interface WatchedLocationHighLightsDao {
     @Query("SELECT * FROM watched_location ORDER BY last_updated DESC")
     fun getWatchedLocationHighLights(): Flow<List<WatchedLocationHighLights>>
 
+    @Query("SELECT * FROM watched_location ORDER BY last_updated DESC")
+    suspend fun getWatchedLocationHighLightsOnce(): List<WatchedLocationHighLights>
+
     @Query("DELETE FROM watched_location")
     suspend fun deleteAll()
 
@@ -23,7 +26,8 @@ interface WatchedLocationHighLightsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocation(watchedLocationHighLights: WatchedLocationHighLights)
 
-    @Query("SELECT COUNT(actualDataTag) FROM watched_location WHERE actualDataTag =:actualDataTag ")
-    suspend fun checkIfIsWatchedLocation(actualDataTag: String): Int
+    @Query("SELECT * FROM watched_location WHERE actualDataTag =:actualDataTag LIMIT 1")
+    suspend fun checkIfIsWatchedLocation(actualDataTag: String): List<WatchedLocationHighLights>
+
 
 }

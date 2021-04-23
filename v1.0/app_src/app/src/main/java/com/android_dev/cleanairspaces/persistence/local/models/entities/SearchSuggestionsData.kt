@@ -7,13 +7,19 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(
-    tableName = "search_suggestions",
+        tableName = "search_suggestions",
 )
 data class SearchSuggestionsData(
-    @PrimaryKey(autoGenerate = false)
-    val actualDataTag: String,
-    val nameToDisplay: String,
-    var isForIndoorLoc: Boolean = false,
-    var isForMonitor: Boolean = false,
-    var isForOutDoorLoc: Boolean = false
+        @PrimaryKey(autoGenerate = false)
+        val actualDataTag: String,
+        val nameToDisplay: String,
+        var isForIndoorLoc: Boolean,
+        var isForMonitor: Boolean,
+        var isForOutDoorLoc: Boolean,
+        val location_id: String,
+        val monitor_id: String,
+        val company_id: String,
+        var is_secure: Boolean = false,
+        var lat : Double? = null,
+        var lon :Double? = null
 ) : Parcelable

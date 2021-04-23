@@ -43,10 +43,10 @@ class LocationDetailsActivity : BaseActivity() {
 
         //intent data
         val locationDetailsInfo =
-            intent.getParcelableExtra<WatchedLocationHighLights>(INTENT_EXTRA_TAG)
+                intent.getParcelableExtra<WatchedLocationHighLights>(INTENT_EXTRA_TAG)
 
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()
         binding.bottomNav.setupWithNavController(navController)
 
@@ -56,8 +56,8 @@ class LocationDetailsActivity : BaseActivity() {
                 if (logoURL.isNotBlank()) {
                     locationLogo.isVisible = true
                     Glide.with(this@LocationDetailsActivity)
-                        .load(logoURL)
-                        .into(locationLogo)
+                            .load(logoURL)
+                            .into(locationLogo)
                 }
                 locationNameTv.text = it.name
                 viewModel.setWatchedLocation(it)

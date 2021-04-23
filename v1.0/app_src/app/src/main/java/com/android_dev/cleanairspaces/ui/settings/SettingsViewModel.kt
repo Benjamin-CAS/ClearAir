@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel
 @Inject constructor(
-    private val dataStoreManager: DataStoreManager
+        private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     fun observeAQIIndex() = dataStoreManager.getAqiIndex().asLiveData()

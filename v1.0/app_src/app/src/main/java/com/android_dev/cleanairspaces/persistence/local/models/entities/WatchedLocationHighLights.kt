@@ -11,42 +11,43 @@ import java.util.*
 
 @Parcelize
 @Entity(
-    tableName = "watched_location",
-    indices = [androidx.room.Index(
-        value = ["lat", "lon"],
-        unique = true
-    )]
+        tableName = "watched_location",
+        indices = [androidx.room.Index(
+                value = ["lat", "lon"],
+                unique = true
+        )]
 )
 data class WatchedLocationHighLights(
-    @PrimaryKey(autoGenerate = false)
-    val actualDataTag: String,
+        @PrimaryKey(autoGenerate = false)
+        val actualDataTag: String,
 
-    val lat: Double,
-    val lon: Double,
+        val lat: Double,
+        val lon: Double,
 
-    val pm_indoor: Double?,
-    val pm_outdoor: Double?,
+        val pm_indoor: Double?,
+        val pm_outdoor: Double?,
 
-    val name: String,
-    val compId :String,
-    val locId : String,
-    val lastRecPwd : String,
-    val lastRecUsername: String,
-    val logo: String,
+        val name: String,
+        val compId: String,
+        val locId: String,
+        val lastRecPwd: String,
+        val lastRecUsername: String,
+        val logo: String,
 
-    var indoor_co2: Double?,
-    var indoor_voc: Double?,
-    var indoor_temperature: Double?,
-    var indoor_humidity: Double?,
+        var indoor_co2: Double?,
+        var indoor_voc: Double?,
+        var indoor_temperature: Double?,
+        var indoor_humidity: Double?,
 
-    val location_area: String,
+        val location_area: String,
 
-    val energyMax: Double?,
-    val energyMonth: Double?,
+        val energyMax: Double?,
+        val energyMonth: Double?,
 
-    val isIndoorLoc  : Boolean,
+        val isIndoorLoc: Boolean,
 
-    val last_updated: Long = System.currentTimeMillis()
+        val last_updated: Long = System.currentTimeMillis(),
+        val monitorId: String
 
 ) : Parcelable {
 

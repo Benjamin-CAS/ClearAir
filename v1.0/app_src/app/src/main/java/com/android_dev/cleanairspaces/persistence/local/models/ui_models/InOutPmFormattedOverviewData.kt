@@ -11,26 +11,26 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class InOutPmFormattedOverviewData(
-    val locationName: String,
-    val logo: String,
-    val updated: String,
-    val locationArea: String,
-    val pm25Txt: String,
-    val aqiIndexStr: String,
-    val outDoorPmValue: Double?,
-    val hasOutDoorData: Boolean,
-    val outDoorAqiStatus: AQIStatus?,
-    val defaultBgColor: Int,
-    val indoorPmValue: Double?,
-    val hasInDoorData: Boolean,
-    val indoorAQIStatus: AQIStatus?,
-    val indoorPmValueConverted: Double?
+        val locationName: String,
+        val logo: String,
+        val updated: String,
+        val locationArea: String,
+        val pm25Txt: String,
+        val aqiIndexStr: String,
+        val outDoorPmValue: Double?,
+        val hasOutDoorData: Boolean,
+        val outDoorAqiStatus: AQIStatus?,
+        val defaultBgColor: Int,
+        val indoorPmValue: Double?,
+        val hasInDoorData: Boolean,
+        val indoorAQIStatus: AQIStatus?,
+        val indoorPmValueConverted: Double?
 ) : Parcelable
 
 fun formatWatchedHighLightsData(
-    ctx: Context,
-    location: WatchedLocationHighLights,
-    aqiIndex: String?
+        ctx: Context,
+        location: WatchedLocationHighLights,
+        aqiIndex: String?
 ): InOutPmFormattedOverviewData {
     val name = location.name
     val logo = location.getFullLogoUrl()
@@ -55,20 +55,20 @@ fun formatWatchedHighLightsData(
     val indoorPmValueConverted = indoorPmValue
 
     return InOutPmFormattedOverviewData(
-        locationName = name,
-        logo = logo,
-        updated = updated,
-        locationArea = locationArea,
-        pm25Txt = pm25Txt,
-        aqiIndexStr = aqiIndexStr,
-        outDoorPmValue = outDoorPmValue,
-        hasOutDoorData = hasOutDoorData,
-        outDoorAqiStatus = outDoorAqiStatus,
-        defaultBgColor = defaultBgColor,
-        indoorPmValue = indoorPmValue,
-        hasInDoorData = hasInDoorData,
-        indoorAQIStatus = indoorAQIStatus,
-        indoorPmValueConverted = indoorPmValueConverted
+            locationName = name,
+            logo = logo,
+            updated = updated,
+            locationArea = locationArea,
+            pm25Txt = pm25Txt,
+            aqiIndexStr = aqiIndexStr,
+            outDoorPmValue = outDoorPmValue,
+            hasOutDoorData = hasOutDoorData,
+            outDoorAqiStatus = outDoorAqiStatus,
+            defaultBgColor = defaultBgColor,
+            indoorPmValue = indoorPmValue,
+            hasInDoorData = hasInDoorData,
+            indoorAQIStatus = indoorAQIStatus,
+            indoorPmValueConverted = indoorPmValueConverted
     )
 }
 

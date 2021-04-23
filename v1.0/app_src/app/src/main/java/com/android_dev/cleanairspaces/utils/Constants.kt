@@ -21,15 +21,14 @@ const val DATABASE_NAME = "clean_air_spaces_db"
 
 
 //worker threads
-const val MAP_DATA_REFRESHER_WORKER = "map_data_refresher"
-const val MAP_DATA_REFRESH_INTERVAL_MIN = 15L
+const val DATA_REFRESHER_WORKER_NAME = "data_refresh_1193"
+const val DATA_REFRESH_INTERVAL_MIN = 15L
 
 
 //MAPS
 const val USER_LOCATION_UPDATE_INTERVAL_MILLS = 300000L //5 minutes
 const val USER_LOCATION_UPDATE_ON_DISTANCE = 100f //100 meters
 const val MY_LOCATION_ZOOM_LEVEL = 15f
-
 
 
 //misc
@@ -46,6 +45,7 @@ const val DEFAULT_QR_LOCATION_ID_R_PAD = "Y"
 const val QR_MONITOR_ID_PAD_LENGTH = 5
 const val QR_MONITOR_ID_PADDED_LENGTH = 22
 const val QR_MONITOR_ID_TRUE_LENGTH = 12
+const val API_LOCAL_DATA_BINDER_KEY = "tag"
 const val COMP_ID_KEY = "c"
 const val LOC_ID_KEY = "l"
 const val USER_KEY = "user"
@@ -56,6 +56,7 @@ const val PM25_TYPE_PARAM_KEY = "p"
 const val PASSWORD_KEY = "password"
 const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
+const val MONITOR_ID_KEY = "monitor_id"
 const val UPDATE_USER_LOCATION_INTERVAL = 300000L //5 minutes
 
 //worker tags

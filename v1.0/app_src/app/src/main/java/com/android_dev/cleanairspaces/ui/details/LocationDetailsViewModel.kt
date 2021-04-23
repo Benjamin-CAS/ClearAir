@@ -7,28 +7,30 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.Location
 import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryWeek
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
+import com.android_dev.cleanairspaces.utils.CasEncDecQrProcessor
 import com.android_dev.cleanairspaces.utils.HISTORY_EXPIRE_TIME_MILLS
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class LocationDetailsViewModel
 @Inject constructor(
-    private val dataStoreManager: DataStoreManager,
-    private val repo: AppDataRepo
+        private val dataStoreManager: DataStoreManager,
+        private val repo: AppDataRepo
 ) : ViewModel() {
 
-    private val TAG  = LocationDetailsViewModel::class.java.simpleName
+    private val TAG = LocationDetailsViewModel::class.java.simpleName
 
     init {
         setAqiIndex()
     }
-    var aqiIndex : String? = null
+
+    var aqiIndex: String? = null
     private fun setAqiIndex() {
         aqiIndex = dataStoreManager.getAqiIndex().asLiveData().value
     }
@@ -68,37 +70,37 @@ class LocationDetailsViewModel
     private val locationMonthHistoryLive = MutableLiveData<List<LocationHistoryMonth>>()
     fun observeLocationMonthHistory(): LiveData<List<LocationHistoryMonth>> = locationMonthHistoryLive
     fun setMonthHistory(history: List<LocationHistoryMonth>) {
-        locationMonthHistoryLive.value =  history
+        locationMonthHistoryLive.value = history
     }
-
 
 
     fun observeHistories(dataTag: String): TripleHistoryFlow {
         return TripleHistoryFlow(
-            days = repo.getLastDaysHistory(dataTag).asLiveData(),
-            week = repo.getLastWeekHistory(dataTag).asLiveData(),
-            month = repo.getLastMonthHistory(dataTag).asLiveData()
+                days = repo.getLastDaysHistory(dataTag).asLiveData(),
+                week = repo.getLastWeekHistory(dataTag).asLiveData(),
+                month = repo.getLastMonthHistory(dataTag).asLiveData()
         )
     }
+
     private fun refreshHistoryIfNecessary(location: WatchedLocationHighLights) {
         val dataTag = location.actualDataTag
         viewModelScope.launch(Dispatchers.IO) {
             val lastUpdate = repo.getLastTimeUpdatedHistory(dataTag)
             val timeNow = System.currentTimeMillis()
             if (lastUpdate == null
-                ||  hasExpired(timeNow, lastUpdate) ) {
+                    || hasExpired(timeNow, lastUpdate)) {
                 withContext(context = Dispatchers.Main) {
                     MyLogger.logThis(
-                        TAG,
-                        "refreshHistoryIfNecessary()", "refreshing history"
+                            TAG,
+                            "refreshHistoryIfNecessary()", "refreshing history for comp ${location.compId} ${location.locId}"
                     )
                     fetchHistory(
-                        compId = location.compId,
-                        locId = location.locId,
-                        timeStamp = timeNow.toString(),
-                        dataTag = dataTag,
-                        userName = location.lastRecUsername,
-                        userPassword = location.lastRecPwd
+                            compId = location.compId,
+                            locId = location.locId,
+                            timeStamp = timeNow.toString().replace(" ", ""),
+                            dataTag = dataTag,
+                            userName = location.lastRecUsername,
+                            userPassword = location.lastRecPwd
                     )
                 }
             }
@@ -110,15 +112,22 @@ class LocationDetailsViewModel
     }
 
 
-    private fun fetchHistory(compId : String, locId : String, timeStamp : String, dataTag : String, userName: String, userPassword: String) {
-       //todo encrypt and fetch
+    private fun fetchHistory(compId: String, locId: String, timeStamp: String, dataTag: String, userName: String, userPassword: String) {
+        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForLocationHistory(
+                compId = compId,
+                locId = locId,
+                userName = userName,
+                userPassword = userPassword,
+                timeStamp = timeStamp
+        )
         repo.refreshHistoryForLocation(
                 compId = compId,
                 locId = locId,
+                payload = pl,
                 timeStamp = timeStamp,
-                dataTag = dataTag,
                 userName = userName,
-                userPassword = userPassword
+                userPassword = userPassword,
+                dataTag = dataTag
         )
     }
 
@@ -126,8 +135,8 @@ class LocationDetailsViewModel
 }
 
 data class TripleHistoryFlow(
-    val days: LiveData<List<LocationHistoryThreeDays>>,
-    val week: LiveData<List<LocationHistoryWeek>>,
-    val month: LiveData<List<LocationHistoryMonth>>
+        val days: LiveData<List<LocationHistoryThreeDays>>,
+        val week: LiveData<List<LocationHistoryWeek>>,
+        val month: LiveData<List<LocationHistoryMonth>>
 )
 

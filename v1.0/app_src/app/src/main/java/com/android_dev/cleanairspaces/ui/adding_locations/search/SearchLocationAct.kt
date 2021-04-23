@@ -46,9 +46,9 @@ class SearchLocationAct : BaseActivity(), SearchSuggestionsAdapter.OnClickItemLi
         searchSuggestionsAdapter = SearchSuggestionsAdapter(this)
         binding.locationSuggestionsRv.apply {
             layoutManager = LinearLayoutManager(
-                this@SearchLocationAct,
-                RecyclerView.VERTICAL,
-                false
+                    this@SearchLocationAct,
+                    RecyclerView.VERTICAL,
+                    false
             )
             adapter = searchSuggestionsAdapter
             addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -69,16 +69,15 @@ class SearchLocationAct : BaseActivity(), SearchSuggestionsAdapter.OnClickItemLi
             else -> AddLocationActivity.INTENT_FROM_SEARCHED_MONITOR_LOC
         }
         startActivity(
-            Intent(this, AddLocationActivity::class.java).putExtra(
-                tag, suggestion
-            )
+                Intent(this, AddLocationActivity::class.java).putExtra(
+                        tag, suggestion
+                )
         )
         finish()
     }
 
 
     override fun handleBackPress() {
-        super.handleBackPress()
         finish()
     }
 

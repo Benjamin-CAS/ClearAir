@@ -6,13 +6,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryThreeDays
 import kotlinx.coroutines.flow.Flow
-import java.util.ArrayList
 
 @Dao
 interface LocationHistoryThreeDaysDao {
 
     @Query("SELECT * FROM location_history_last_three WHERE actualDataTag =:dataTag")
-    fun getLastDaysHistoryFlow(dataTag: String) : Flow<List<LocationHistoryThreeDays>>
+    fun getLastDaysHistoryFlow(dataTag: String): Flow<List<LocationHistoryThreeDays>>
 
     @Query("DELETE FROM location_history_last_three WHERE actualDataTag =:dataTag")
     suspend fun deleteAllHistoriesForData(dataTag: String)

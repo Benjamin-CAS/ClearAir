@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchLocationViewModel @Inject constructor(
-    private val appDataRepo: AppDataRepo
+        private val appDataRepo: AppDataRepo
 
 ) : ViewModel() {
 

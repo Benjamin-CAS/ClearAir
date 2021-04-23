@@ -12,8 +12,8 @@ import com.google.android.gms.maps.model.Marker as GMarker
 
 @HiltViewModel
 class BaseMapVieModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager,
-    private val appDataRepo: AppDataRepo
+        private val dataStoreManager: DataStoreManager,
+        private val appDataRepo: AppDataRepo
 ) : ViewModel() {
 
     var myLocMarkerOnAMap: AMarker? = null

@@ -5,9 +5,4 @@
         android:id="@+id/settingsMenu"
         android:title="@string/settings_txt"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/aboutAppMenu"
-        android:title="@string/about_app_txt"
-        app:showAsAction="never" />
 </menu>

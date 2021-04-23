@@ -8,11 +8,13 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.MapView
-import com.amap.api.maps.model.*
+import com.amap.api.maps.model.BitmapDescriptorFactory
+import com.amap.api.maps.model.LatLng
+import com.amap.api.maps.model.Marker
+import com.amap.api.maps.model.MarkerOptions
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.ActivityAMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
@@ -20,7 +22,8 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedL
 import com.android_dev.cleanairspaces.ui.adding_locations.add.AddLocationActivity
 import com.android_dev.cleanairspaces.ui.home.BaseMapAct
 import com.android_dev.cleanairspaces.ui.home.adapters.WatchedLocationsAdapter
-import com.android_dev.cleanairspaces.utils.*
+import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
+import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +44,7 @@ class AMapsActivity : BaseMapAct() {
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
         requestLocationPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
+                ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
                 showUserLocation()
@@ -52,14 +55,14 @@ class AMapsActivity : BaseMapAct() {
     override fun initQrScannerLauncher() {
         //scan-qr launcher must be set
         scanQrCodeLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-            { result: ActivityResult ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    //  you will get result here in result.data
-                    handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
-                }
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+                { result: ActivityResult ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        //  you will get result here in result.data
+                        handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+                    }
 
-            }
+                }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,9 +82,9 @@ class AMapsActivity : BaseMapAct() {
             updateWatchedLocations(it)
         })
         viewModel.observeSelectedAqiIndex().observe(
-            this,{
-                updateSelectedAqiIndex(it)
-            }
+                this, {
+            updateSelectedAqiIndex(it)
+        }
         )
 
         initializeMap(savedInstanceState = savedInstanceState)
@@ -107,36 +110,36 @@ class AMapsActivity : BaseMapAct() {
     private fun observeMapRelatedData() {
         //map data -locations & pm values
         viewModel.observeMapData().observe(
-            this,{
-                if (it.isNotEmpty()) {
-                    drawCirclesOnMap(it)
-                }
+                this, {
+            if (it.isNotEmpty()) {
+                drawCirclesOnMap(it)
             }
+        }
         )
         //user setting - language
         viewModel.observeMapLang().observe(
-            this, {
-                if (it == null || it == getString(R.string.map_lang_chinese)) {
-                    aMap?.setMapLanguage(AMap.CHINESE)
-                } else {
-                    aMap?.setMapLanguage(AMap.ENGLISH)
-                }
+                this, {
+            if (it == null || it == getString(R.string.map_lang_chinese)) {
+                aMap?.setMapLanguage(AMap.CHINESE)
+            } else {
+                aMap?.setMapLanguage(AMap.ENGLISH)
             }
+        }
         )
     }
 
     override fun showLocationOnMap(location: Location) {
         val currentUserLocation = LatLng(location.latitude, location.longitude)
         aMap?.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                currentUserLocation,
-                MY_LOCATION_ZOOM_LEVEL
-            )
+                CameraUpdateFactory.newLatLngZoom(
+                        currentUserLocation,
+                        MY_LOCATION_ZOOM_LEVEL
+                )
         )
         viewModel.myLocMarkerOnAMap?.remove()
         val mIcon = BitmapDescriptorFactory.fromBitmap(
                 BitmapFactory
-                        .decodeResource(resources,R.drawable.ic_my_location_marker)
+                        .decodeResource(resources, R.drawable.ic_my_location_marker)
         )
 
         val markerOptions = MarkerOptions()
@@ -152,16 +155,15 @@ class AMapsActivity : BaseMapAct() {
     }
 
 
-
     private fun drawCirclesOnMap(mapDataPoints: List<MapData>) {
         clearMapCircles()
         aMap?.let {
             for (mapData in mapDataPoints) {
-                val aqiStatus =    getAQIStatusFromPM25(mapData.pm25)
+                val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
                 val mIcon = BitmapDescriptorFactory.fromBitmap(
-                            BitmapFactory
-                                    .decodeResource(resources, aqiStatus.transparentCircleRes)
-                    )
+                        BitmapFactory
+                                .decodeResource(resources, aqiStatus.transparentCircleRes)
+                )
 
                 val markerOptions = MarkerOptions()
                 markerOptions.apply {
@@ -181,8 +183,8 @@ class AMapsActivity : BaseMapAct() {
     }
 
 
-    private fun clearMapCircles(){
-        for (circle in mapCirlcesMarkers){
+    private fun clearMapCircles() {
+        for (circle in mapCirlcesMarkers) {
             circle.remove()
         }
     }
@@ -222,16 +224,16 @@ class AMapsActivity : BaseMapAct() {
     override fun navigateToActivity(toAct: Class<*>, extraTag: String?, data: Any?) {
         when {
             extraTag != null && data is String -> startActivity(
-                Intent(this, toAct).putExtra(
-                    extraTag,
-                    data
-                )
+                    Intent(this, toAct).putExtra(
+                            extraTag,
+                            data
+                    )
             )
             extraTag != null && data is WatchedLocationHighLights -> startActivity(
-                Intent(
-                    this,
-                    toAct
-                ).putExtra(extraTag, data)
+                    Intent(
+                            this,
+                            toAct
+                    ).putExtra(extraTag, data)
             )
             else -> startActivity(Intent(this, toAct))
         }
@@ -242,9 +244,9 @@ class AMapsActivity : BaseMapAct() {
         if (intentResult != null) {
             if (intentResult.contents == null) {
                 Toast.makeText(
-                    this,
-                    R.string.scan_qr_code_cancelled,
-                    Toast.LENGTH_LONG
+                        this,
+                        R.string.scan_qr_code_cancelled,
+                        Toast.LENGTH_LONG
                 ).show()
             } else {
                 // if the intentResult is not null we'll set
@@ -252,14 +254,14 @@ class AMapsActivity : BaseMapAct() {
                 val qrContent = intentResult.contents
                 val extraTag = AddLocationActivity.INTENT_FROM_QR_SCANNER_TAG
                 navigateToActivity(
-                    AddLocationActivity::class.java,
-                    extraTag = extraTag, data = qrContent
+                        AddLocationActivity::class.java,
+                        extraTag = extraTag, data = qrContent
                 )
             }
         } else {
             Toast.makeText(
-                this, R.string.scan_qr_code_unknown,
-                Toast.LENGTH_LONG
+                    this, R.string.scan_qr_code_unknown,
+                    Toast.LENGTH_LONG
             ).show()
         }
     }

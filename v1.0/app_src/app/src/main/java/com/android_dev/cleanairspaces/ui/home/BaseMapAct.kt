@@ -58,9 +58,9 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
 
             myLocationsRv.apply {
                 layoutManager = LinearLayoutManager(
-                    homeMapOverlay.container.context,
-                    RecyclerView.VERTICAL,
-                    false
+                        homeMapOverlay.container.context,
+                        RecyclerView.VERTICAL,
+                        false
                 )
                 adapter = watchedLocationsAdapter
                 addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -77,15 +77,15 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
         if (!manager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //showTurnOnGPSDialog
             showCustomDialog(msgRes = R.string.turn_on_gps_prompt,
-                okRes = R.string.go_to_settings,
-                dismissRes = R.string.not_now_txt,
-                positiveAction = {
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                    okRes = R.string.go_to_settings,
+                    dismissRes = R.string.not_now_txt,
+                    positiveAction = {
+                        startActivity(
+                                Intent(
+                                        Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                                )
                         )
-                    )
-                })
+                    })
         }
     }
 
@@ -94,9 +94,9 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
         override fun onLocationChanged(location: Location) {
             //TODO log location
             MyLogger.logThis(
-                "BaseMapAct",
-                "locationChanged()",
-                "${location.latitude}, ${location.longitude} "
+                    "BaseMapAct",
+                    "locationChanged()",
+                    "${location.latitude}, ${location.longitude} "
             )
             showLocationOnMap(location)
         }
@@ -117,10 +117,10 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
     fun showUserLocation() {
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         locationManager?.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER,
-            USER_LOCATION_UPDATE_INTERVAL_MILLS,
-            USER_LOCATION_UPDATE_ON_DISTANCE,
-            locationListener
+                LocationManager.NETWORK_PROVIDER,
+                USER_LOCATION_UPDATE_INTERVAL_MILLS,
+                USER_LOCATION_UPDATE_ON_DISTANCE,
+                locationListener
         )
 
     }
@@ -129,16 +129,16 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             when {
                 checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     showUserLocation()
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showCustomDialog(
-                        msgRes = R.string.location_permission_rationale,
-                        okRes = R.string.got_it_txt,
-                        dismissRes = R.string.not_now_txt
+                            msgRes = R.string.location_permission_rationale,
+                            okRes = R.string.got_it_txt,
+                            dismissRes = R.string.not_now_txt
                     ) {
                         requestPermission(isLocation = true)
                     }
@@ -166,14 +166,17 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.aboutAppMenu -> {
+            /***
+             * *** TODO
+             *  R.id.aboutAppMenu -> {
 
-                //todo
-                true
+            //todo
+            true
             }
+             */
             R.id.settingsMenu -> {
                 navigateToActivity(
-                    SettingsActivity::class.java, null, null
+                        SettingsActivity::class.java, null, null
                 )
                 true
             }
@@ -204,9 +207,9 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
     /************** WATCHED LOCATIONS *********/
     override fun onClickWatchedLocation(location: WatchedLocationHighLights) {
         navigateToActivity(
-            LocationDetailsActivity::class.java,
-            extraTag = LocationDetailsActivity.INTENT_EXTRA_TAG,
-            data = location
+                LocationDetailsActivity::class.java,
+                extraTag = LocationDetailsActivity.INTENT_EXTRA_TAG,
+                data = location
         )
     }
 

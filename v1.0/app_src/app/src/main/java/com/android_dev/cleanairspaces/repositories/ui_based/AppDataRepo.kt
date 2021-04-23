@@ -1,13 +1,23 @@
 package com.android_dev.cleanairspaces.repositories.ui_based
 
+import com.android_dev.cleanairspaces.persistence.api.responses.HistoryDataUnEncrypted
+import com.android_dev.cleanairspaces.persistence.api.responses.LocationDataFromQr
+import com.android_dev.cleanairspaces.persistence.api.responses.LocationHistoriesResponse
+import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD
+import com.android_dev.cleanairspaces.persistence.api.services.LocationHistoriesService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.*
 import com.android_dev.cleanairspaces.persistence.local.models.entities.*
+import com.android_dev.cleanairspaces.utils.*
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import java.sql.Timestamp
-import java.time.DayOfWeek
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,6 +32,7 @@ class AppDataRepo
         private val locationHistoryWeekDao: LocationHistoryWeekDao,
         private val locationHistoryMonthDao: LocationHistoryMonthDao,
         private val locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao,
+        private val locationHistoriesService: LocationHistoriesService
 ) {
 
     private val TAG = AppDataRepo::class.java.simpleName
@@ -29,62 +40,13 @@ class AppDataRepo
 
     fun getSearchSuggestions(query: String): Flow<List<SearchSuggestionsData>> {
         return searchSuggestionsDataDao.getSearchSuggestions(
-            query = "%$query%"
+                query = "%$query%"
         )
     }
 
     fun getMapDataFlow() = mapDataDao.getMapDataFlow()
     fun getWatchedLocationHighLights() = watchedLocationHighLightsDao.getWatchedLocationHighLights()
 
-    suspend fun refreshMapData() {
-        val newMapData = getMapData()
-        mapDataDao.insertAll(newMapData)
-        val allMapData = mapDataDao.getAllMapData()
-        //outdoor locations search
-        searchSuggestionsDataDao.deleteAllOutDoorSearchSuggestions()
-        var locationsCounter = 0
-        for ((i, mapData) in allMapData.withIndex()) {
-            //populate with actual API data NOT mapData
-            val binder = "${mapData.lat}${mapData.lon}"
-            searchSuggestionsDataDao.insertSuggestion(
-                SearchSuggestionsData(
-                    actualDataTag = binder,
-                    isForOutDoorLoc = true,
-                    nameToDisplay = "out door loc $i"
-                )
-            )
-            val found = watchedLocationHighLightsDao.checkIfIsWatchedLocation(binder) > 0
-            if (!found) {
-                //update
-                watchedLocationHighLightsDao.insertLocation(
-                    WatchedLocationHighLights(
-                        actualDataTag = binder,
-                        lat = mapData.lat,
-                        lon = mapData.lon,
-                        pm_outdoor = if (i % 2 != 0) mapData.pm25 else 10.0,
-                        pm_indoor = if (i % 2 == 0) mapData.pm25 else null,
-                        name = "out door loc $i",
-                        logo = "",
-                        location_area = dummyLocations[locationsCounter],
-                        indoor_co2 = testCo2s.random(),
-                        indoor_humidity = testHumidities.random(),
-                        indoor_temperature = testTemperatures.random() ,
-                        indoor_voc = testVCos.random(),
-                        energyMonth = if (i % 2 == 0) 136.0 else null,
-                        energyMax = if (i % 2 == 0) 200000.120 else null,
-                        isIndoorLoc = (i % 2 == 0),
-                        compId = "21$i",
-                        locId = "12$i",
-                            lastRecPwd = "",
-                            lastRecUsername = ""
-                    )
-                )
-                locationsCounter++
-                if (locationsCounter == 6)
-                    locationsCounter = 0
-            }
-        }
-    }
 
     fun watchALocation(watchedLocationHighLight: WatchedLocationHighLights) {
         coroutineScope.launch(Dispatchers.IO) {
@@ -100,159 +62,364 @@ class AppDataRepo
 
 
     fun getLastDaysHistory(dataTag: String): Flow<List<LocationHistoryThreeDays>> {
-       return locationHistoryThreeDaysDao.getLastDaysHistoryFlow(dataTag)
+        return locationHistoryThreeDaysDao.getLastDaysHistoryFlow(dataTag)
     }
 
     fun getLastWeekHistory(dataTag: String): Flow<List<LocationHistoryWeek>> {
-        return  locationHistoryWeekDao.getLastWeekHistoryFlow(dataTag)
+        return locationHistoryWeekDao.getLastWeekHistoryFlow(dataTag)
     }
 
     fun getLastMonthHistory(dataTag: String): Flow<List<LocationHistoryMonth>> {
-       return locationHistoryMonthDao.getLastMonthsHistoryFlow(dataTag)
+        return locationHistoryMonthDao.getLastMonthsHistoryFlow(dataTag)
     }
 
     suspend fun getLastTimeUpdatedHistory(dataTag: String): Long? {
-       return locationHistoryUpdatesTrackerDao.checkLastUpdate(dataTag)
+        return locationHistoryUpdatesTrackerDao.checkLastUpdate(dataTag)
     }
 
 
+    /******************** DATA API **********/
+    private fun getLocationHistoryCallback(): Callback<LocationHistoriesResponse> {
+        return object : Callback<LocationHistoriesResponse> {
+            override fun onResponse(call: Call<LocationHistoriesResponse>, response: Response<LocationHistoriesResponse>) {
+                when {
+                    response.code() == 200 -> {
+                        val responseBody = response.body()
+                        try {
+                            if (responseBody == null) {
+                                MyLogger.logThis(
+                                        TAG,
+                                        "getLocationHistoryCallback -> onResponse()",
+                                        "response is OK but body is null"
+                                )
+                            } else {
+                                if (responseBody.payload != null) {
+                                    unEncryptHistoryPayload(
+                                            pl = responseBody.payload,
+                                            lTime = responseBody.ltime ?: "0"
+                                    )
+                                } else {
+                                    MyLogger.logThis(
+                                            TAG,
+                                            "getLocationHistoryCallback -> onResponse()",
+                                            "response is OK but payload is null - $responseBody"
+                                    )
+                                }
+                            }
+                        } catch (e: Exception) {
+                            MyLogger.logThis(
+                                    TAG,
+                                    "getLocationHistoryCallback -> onResponse()",
+                                    "response is OK but an exception occurred ${e.message}",
+                                    e
+                            )
+                        }
+                    }
+                    else -> {
+                        MyLogger.logThis(
+                                TAG,
+                                "getLocationHistoryCallback -> onResponse()",
+                                "response code is not 200 OK $response"
+                        )
+                    }
+                }
+            }
 
-    /******************** DUMMY MAPA DATA API **********/
-    private fun getMapData(): ArrayList<MapData> {
-        return arrayListOf(
-            MapData(
-                lat = DummyMapData.SHANGHAI.mapData.lat,
-                lon = DummyMapData.SHANGHAI.mapData.lon,
-                pm25 = DummyMapData.SHANGHAI.mapData.pm25
-            ),
-            MapData(
-                lat = DummyMapData.BEIJING.mapData.lat,
-                lon = DummyMapData.BEIJING.mapData.lon,
-                pm25 = DummyMapData.BEIJING.mapData.pm25
-            ),
-            MapData(
-                lat = DummyMapData.SUZHOU.mapData.lat,
-                lon = DummyMapData.SUZHOU.mapData.lon,
-                pm25 = DummyMapData.SUZHOU.mapData.pm25
-            ),
-            MapData(
-                lat = DummyMapData.HANGZHOU.mapData.lat,
-                lon = DummyMapData.HANGZHOU.mapData.lon,
-                pm25 = DummyMapData.HANGZHOU.mapData.pm25
-            ),
-            MapData(
-                lat = DummyMapData.GUANGZHOU.mapData.lat,
-                lon = DummyMapData.GUANGZHOU.mapData.lon,
-                pm25 = DummyMapData.GUANGZHOU.mapData.pm25
-            ),
-            MapData(
-                lat = DummyMapData.ZHUHAI.mapData.lat,
-                lon = DummyMapData.ZHUHAI.mapData.lon,
-                pm25 = DummyMapData.ZHUHAI.mapData.pm25
+            override fun onFailure(call: Call<LocationHistoriesResponse>, t: Throwable) {
+                MyLogger.logThis(
+                        TAG,
+                        "getLocationHistoryCallback -> onFailure()",
+                        "exc ${t.message}"
+                )
+            }
+
+        }
+    }
+
+    private fun unEncryptHistoryPayload(pl: String, lTime: String) {
+        try {
+            val dataMatchingLTime = recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+            if (dataMatchingLTime.isNullOrEmpty()) return
+            val requestedData = dataMatchingLTime[0]
+            recentRequestsData.remove(requestedData)
+            val actualDataTag = requestedData.get(API_LOCAL_DATA_BINDER_KEY).asString
+
+            val unEncryptedPayload: String =
+                    CasEncDecQrProcessor.decodeApiResponse(pl)
+            val unEncJson = JSONObject(unEncryptedPayload)
+
+            /** last 72 hours history */
+            val sevenTwoHrsJsonArray = unEncJson.getJSONArray(LocationHistoriesResponse.daysResponseKey)
+            val sevenTwoHrsArrList = arrayListOf<LocationHistoryThreeDays>()
+            val sevenTwoHrsTotal = sevenTwoHrsJsonArray.length()
+            var i = 0
+            while (i < sevenTwoHrsTotal) {
+                val daysData =
+                        Gson().fromJson(sevenTwoHrsJsonArray.getJSONObject(i).toString(), HistoryDataUnEncrypted::class.java)
+                if (daysData.date_reading != null) {
+                    val parsedDaysData = LocationHistoryThreeDays(
+                            autoId = 0,
+                            data = HistoryData(
+                                    actualDataTag = actualDataTag,
+                                    dates = daysData.date_reading!!,
+                                    indoor_pm = (daysData.avg_reading?:0.0).toFloat(),
+                                    outdoor_pm = (daysData.reading_comp?:0.0).toFloat(),
+                                    temperature = (daysData.avg_temperature?:0.0).toFloat(),
+                                    co2 =(daysData.avg_co2?:0.0).toFloat(),
+                                    tvoc = (daysData.avg_tvoc?:"0.0").toFloat(),
+                                    humidity = (daysData.avg_humidity?:0.0).toFloat(),
+                            )
+                    )
+                    sevenTwoHrsArrList.add(parsedDaysData)
+                }
+                i++
+            }
+
+
+            /** last week history */
+            val weekJsonArray = unEncJson.getJSONArray(LocationHistoriesResponse.weekResponseKey)
+            val weekArrList = arrayListOf<LocationHistoryWeek>()
+            val weekTotal = weekJsonArray.length()
+            var j = 0
+            while (j < weekTotal) {
+                val weekData =
+                        Gson().fromJson(weekJsonArray.getJSONObject(j).toString(), HistoryDataUnEncrypted::class.java)
+                            if (weekData.date_reading != null) {
+                                val parsedWeekData = LocationHistoryWeek(
+                                        autoId = 0,
+                                        data = HistoryData(
+                                                actualDataTag = actualDataTag,
+                                                dates = weekData.date_reading!!,
+                                                indoor_pm = (weekData.avg_reading?:0.0).toFloat(),
+                                                outdoor_pm = (weekData.reading_comp?:0.0).toFloat(),
+                                                temperature = (weekData.avg_temperature?:0.0).toFloat(),
+                                                co2 =(weekData.avg_co2?:0.0).toFloat(),
+                                                tvoc = (weekData.avg_tvoc?:"0.0").toFloat(),
+                                                humidity = (weekData.avg_humidity?:0.0).toFloat(),
+                                                 )
+                                )
+                                weekArrList.add(parsedWeekData)
+                            }
+                j++
+            }
+
+            /** last month history */
+            val monthJsonArray = unEncJson.getJSONArray(LocationHistoriesResponse.monthResponseKey)
+            val monthArrList = arrayListOf<LocationHistoryMonth>()
+            val monthTotal = monthJsonArray.length()
+            var k = 0
+            while (k < monthTotal) {
+                val monthData =
+                        Gson().fromJson(monthJsonArray.getJSONObject(k).toString(), HistoryDataUnEncrypted::class.java)
+                if (monthData.date_reading != null) {
+                    val parsedMonthData = LocationHistoryMonth(
+                            autoId = 0,
+                            data = HistoryData(
+                                    actualDataTag = actualDataTag,
+                                    dates = monthData.date_reading!!,
+                                    indoor_pm = (monthData.avg_reading?:0.0).toFloat(),
+                                    outdoor_pm = (monthData.reading_comp?:0.0).toFloat(),
+                                    temperature = (monthData.avg_temperature?:0.0).toFloat(),
+                                    co2 =(monthData.avg_co2?:0.0).toFloat(),
+                                    tvoc = (monthData.avg_tvoc?:"0.0").toFloat(),
+                                    humidity = (monthData.avg_humidity?:0.0).toFloat(),
+                            )
+                    )
+                    monthArrList.add(parsedMonthData)
+                }
+                k++
+            }
+
+            saveFetchedHistoryForLocation(
+                    daysHistory = sevenTwoHrsArrList, weekHistory = weekArrList, monthHistory = monthArrList, dataTag = actualDataTag
             )
-        )
+        } catch (e: Exception) {
+            MyLogger.logThis(
+                    TAG,
+                    "unEncryptHistoryPayload(payload - $pl, lTime $lTime)",
+                    "exception thrown ${e.message}", e
+            )
+        }
     }
 
-    fun refreshHistoryForLocation(compId : String, locId : String, timeStamp : String, dataTag : String, userName: String, userPassword: String) {
-        coroutineScope.launch (Dispatchers.IO){
-            val daysHistory =  getDummyLocationDaysHistory(dataTag=dataTag)
-            val weekHistory =   getDummyLocationWeekHistory(dataTag=dataTag)
-            val monthHistory =    getDummyLocationMonthHistory(dataTag=dataTag)
-            if (daysHistory.isNotEmpty()) {
-                locationHistoryThreeDaysDao.deleteAllHistoriesForData(dataTag)
-                locationHistoryThreeDaysDao.insertHistories(daysHistory)
-            }
-            if (weekHistory.isNotEmpty()) {
-                locationHistoryWeekDao.deleteAllHistoriesForData(dataTag)
-                locationHistoryWeekDao.insertHistories(weekHistory)
-            }
-            if (monthHistory.isNotEmpty()) {
-                locationHistoryMonthDao.deleteAllHistoriesForData(dataTag)
-                locationHistoryMonthDao.insertHistories(monthHistory)
+    private val recentRequestsData = arrayListOf<JsonObject>()
+    private fun saveFetchedHistoryForLocation(
+            daysHistory: ArrayList<LocationHistoryThreeDays>,
+            weekHistory: ArrayList<LocationHistoryWeek>,
+            monthHistory: ArrayList<LocationHistoryMonth>,
+            dataTag: String) {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                if (daysHistory.isNotEmpty()) {
+                    locationHistoryThreeDaysDao.deleteAllHistoriesForData(dataTag)
+                    locationHistoryThreeDaysDao.insertHistories(daysHistory)
+                }
+                if (weekHistory.isNotEmpty()) {
+                    locationHistoryWeekDao.deleteAllHistoriesForData(dataTag)
+                    locationHistoryWeekDao.insertHistories(weekHistory)
+                }
+                if (monthHistory.isNotEmpty()) {
+                    locationHistoryMonthDao.deleteAllHistoriesForData(dataTag)
+                    locationHistoryMonthDao.insertHistories(monthHistory)
+                }
+                locationHistoryUpdatesTrackerDao.saveLastUpdate(
+                        LocationHistoryUpdatesTracker(
+                                actualDataTag = dataTag,
+                        )
+                )
+                MyLogger.logThis(
+                        TAG, "saveFetchedHistoryForLocation()", "success"
+                )
+            } catch (e: java.lang.Exception) {
+                MyLogger.logThis(
+                        TAG, "saveFetchedHistoryForLocation()", "exception ${e.message}", e
+                )
             }
         }
     }
 
-}
+    fun refreshHistoryForLocation(compId: String, locId: String, timeStamp: String,  payload: String,  dataTag: String, userName: String, userPassword: String) {
+        try {
+            val method = DEVICE_INFO_METHOD
+            val data = JsonObject()
+            data.addProperty(L_TIME_KEY, timeStamp)
+            data.addProperty(PAYLOAD_KEY, payload)
+            val response = locationHistoriesService.fetchLocationHistory(
+                    data = data,
+                    method = method
+            )
 
-val dummyLocations =
-    listOf<String>("Shanghai", "Beijing", "Suzhou", "Hangzhou", "Guangzhou", "Zhuhai")
-
-enum class DummyMapData(val mapData: MapData, val status: String) {
-    SHANGHAI(MapData(lat = 31.224361, lon = 121.469170, pm25 = 10.1), status = "good"),
-    BEIJING(MapData(lat = 39.916668, lon = 116.383331, pm25 = 26.0), status = "moderate"),
-    SUZHOU(MapData(lat = 31.299999, lon = 120.599998, pm25 = 55.0), status = "gUnhealthy"),
-    HANGZHOU(MapData(lat = 30.250000, lon = 120.166664, pm25 = 130.10), status = "unhealthy"),
-    GUANGZHOU(MapData(lat = 23.128994, lon = 113.253250, pm25 = 360.0), status = "vUnhealthy"),
-    ZHUHAI(MapData(lat = 22.27694, lon = 113.56778, pm25 = 400.4), status = "hazardous")
-}
-
-val testTemperatures = listOf<Double>(15.0, 18.0, 26.0, 30.0, 22.0 )
-val testCo2s = listOf<Double>(200.0, 800.14, 1000.55)
-val testHumidities = listOf<Double>( 34.3, 36.1, 55.2, 72.0,80.0)
-val testVCos = listOf<Double>(0.22, 0.60 ,0.90 )
-val testPm25 = listOf<Double>(10.1, 26.0, 55.0, 130.10, 360.0, 400.4)
-
-fun getDummyLocationWeekHistory(dataTag: String): ArrayList<LocationHistoryWeek> {
-    val histories = arrayListOf<LocationHistoryWeek>()
-    for (i in  0..7) {
-        val dayData = LocationHistoryWeek(
-                autoId = 0,
-                data = HistoryData(
-                        actualDataTag = dataTag,
-                        dates = "day $i",
-                        indoor_pm = testPm25.random().toFloat(),
-                        tvoc = testVCos.random().toFloat(),
-                        co2 = testCo2s.random().toFloat(),
-                        temperature = testTemperatures.random().toFloat(),
-                        humidity = testHumidities.random().toFloat(),
-                        outdoor_pm = testPm25.random().toFloat(),
-                )
-        )
-        histories.add(dayData)
+            // keep track of this request data ---
+            data.addProperty(COMP_ID_KEY, compId)
+            data.addProperty(LOC_ID_KEY, locId)
+            data.addProperty(USER_KEY, userName)
+            data.addProperty(PASSWORD_KEY, userPassword)
+            response.enqueue(
+                    getLocationHistoryCallback()
+            )
+            data.addProperty(API_LOCAL_DATA_BINDER_KEY, dataTag)
+            recentRequestsData.add(data)
+            MyLogger.logThis(
+                    TAG,
+                    "refreshHistoryForLocation()",
+                    "data passed $data $payload",
+            )
+        } catch (e: Exception) {
+            MyLogger.logThis(
+                    TAG,
+                    "refreshHistoryForLocation()",
+                    "exc ${e.message}",
+                    e
+            )
+        }
     }
-    return histories
-}
 
-fun getDummyLocationMonthHistory(dataTag: String): ArrayList<LocationHistoryMonth> {
-    val histories = arrayListOf<LocationHistoryMonth>()
-    for (i in  0..31) {
-        val dayData = LocationHistoryMonth(
-                autoId = 0,
-                data = HistoryData(
-                        actualDataTag = dataTag,
-                        dates = "day $i",
-                        indoor_pm = testPm25.random().toFloat(),
-                        tvoc = testVCos.random().toFloat(),
-                        co2 = testCo2s.random().toFloat(),
-                        temperature = testTemperatures.random().toFloat(),
-                        humidity = testHumidities.random().toFloat(),
-                        outdoor_pm = testPm25.random().toFloat(),
-                )
-        )
-        histories.add(dayData)
+    suspend fun addNewWatchedLocationFromOutDoorSearchData(
+            outDoorInfo: SearchSuggestionsData
+    ): Boolean {
+        try {
+            val tag = "${outDoorInfo.company_id}${outDoorInfo.location_id}"
+            val foundData = watchedLocationHighLightsDao.checkIfIsWatchedLocation(tag)
+            if (foundData.isNotEmpty()) return true
+            watchedLocationHighLightsDao.insertLocation(
+                    WatchedLocationHighLights(
+                            actualDataTag = tag,
+                            lat = outDoorInfo.lat!!,
+                            lon = outDoorInfo.lon!!,
+                            pm_outdoor = 0.0,
+                            pm_indoor = null,
+                            name = outDoorInfo.nameToDisplay,
+                            logo = "",
+                            location_area = outDoorInfo.nameToDisplay,
+                            indoor_co2 = null,
+                            indoor_humidity = null,
+                            indoor_temperature = null,
+                            indoor_voc = null,
+                            energyMonth = null,
+                            energyMax = null,
+                            isIndoorLoc = false,
+                            compId = outDoorInfo.company_id,
+                            locId = outDoorInfo.location_id,
+                            monitorId = "",
+                            lastRecPwd = "",
+                            lastRecUsername = ""
+                    )
+            )
+            MyLogger.logThis(
+                    TAG, "addNewWatchedLocationFromOutDoorSearchData()", "--done"
+            )
+            return true
+        } catch (ex: java.lang.Exception) {
+            MyLogger.logThis(
+                    TAG, "addNewWatchedLocationFromOutDoorSearchData failed", "exception ${ex.message}", ex
+            )
+            return false
+        }
     }
-    return histories
-}
 
-fun getDummyLocationDaysHistory(dataTag: String): ArrayList<LocationHistoryThreeDays> {
-    val histories = arrayListOf<LocationHistoryThreeDays>()
-    for (i in  0..72) {
-        val dayData = LocationHistoryThreeDays(
-                autoId = 0,
-                data = HistoryData(
-                        actualDataTag = dataTag,
-                        dates = "hour $i",
-                        indoor_pm = testPm25.random().toFloat(),
-                        tvoc = testVCos.random().toFloat(),
-                        co2 = testCo2s.random().toFloat(),
-                        temperature = testTemperatures.random().toFloat(),
-                        humidity = testHumidities.random().toFloat(),
-                        outdoor_pm = testPm25.random().toFloat(),
-                )
-        )
-        histories.add(dayData)
+    suspend fun addNewWatchedLocationFromScannedQrCode(
+            locationDataFromQr: LocationDataFromQr? = null,
+            monitorDataFromQr: LocationDataFromQr? = null,
+            userPwd: String,
+            userName: String,
+    ): Boolean {
+
+        try {
+            var tag = ""
+            val locationData: LocationDataFromQr
+            when {
+                monitorDataFromQr != null -> {
+                    //user has scanned a qr code from monitor -- saving the details
+                    tag = "${monitorDataFromQr.company_id}${monitorDataFromQr.location_id}${monitorDataFromQr.monitor_id}"
+                    val foundData = watchedLocationHighLightsDao.checkIfIsWatchedLocation(tag)
+                    if (foundData.isNotEmpty()) return true
+                    locationData = monitorDataFromQr
+                }
+                locationDataFromQr != null -> {
+                    //user has scanned a qr code for company-- saving the details
+                    tag = "${locationDataFromQr.company_id}${locationDataFromQr.location_id}"
+                    val foundData = watchedLocationHighLightsDao.checkIfIsWatchedLocation(tag)
+                    if (foundData.isNotEmpty()) return true
+                    locationData = locationDataFromQr
+                }
+
+
+                else -> return false
+            }
+            watchedLocationHighLightsDao.insertLocation(
+                    WatchedLocationHighLights(
+                            actualDataTag = tag,
+                            lat = 0.0,
+                            lon = 0.0,
+                            pm_outdoor = null,
+                            pm_indoor = null,
+                            name = locationData.company,
+                            logo = locationData.logo,
+                            location_area = locationData.location,
+                            indoor_co2 = null,
+                            indoor_humidity = null,
+                            indoor_temperature = null,
+                            indoor_voc = null,
+                            energyMonth = null,
+                            energyMax = null,
+                            isIndoorLoc = false,
+                            compId = locationData.company_id,
+                            locId = locationData.location_id,
+                            monitorId = locationData.monitor_id,
+                            lastRecPwd = userPwd,
+                            lastRecUsername = userName
+                    )
+            )
+            MyLogger.logThis(
+                    TAG, "addNewWatchedLocationFromScannedQrCode()", "--done"
+            )
+            return true
+        } catch (ex: java.lang.Exception) {
+            MyLogger.logThis(
+                    TAG, "addNewWatchedLocationFromScannedQrCode failed", "exception ${ex.message}", ex
+            )
+            return false
+        }
     }
-    return histories
-}
 
+}

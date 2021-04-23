@@ -95,7 +95,7 @@ class LocationDetailsViewModel @Inject constructor(
                     fetchHistory(
                             compId = compId,
                             locId = locId,
-                            timeStamp = timeNow.toString(),
+                            timeStamps = timeNow.toString(),
                             forScannedDeviceId = forScannedDeviceId,
                             userName = location.lastKnownUserName,
                             userPassword = location.lastKnownPassword
@@ -110,7 +110,8 @@ class LocationDetailsViewModel @Inject constructor(
     }
 
 
-    private fun fetchHistory(compId : String, locId : String, timeStamp : String, forScannedDeviceId : String, userName: String, userPassword: String) {
+    private fun fetchHistory(compId : String, locId : String, timeStamps : String, forScannedDeviceId : String, userName: String, userPassword: String) {
+        val timeStamp = "1619173011403"
         val pl = QrCodeProcessor.getEncryptedEncodedPayloadForDeviceDetails(
                 compId = compId,
                 locId = locId,

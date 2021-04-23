@@ -32,4 +32,5 @@
     <color name="aqi_hazardous">#CC1919</color>
     <color name="aqi_beyond">#CCCCCC</color>
     <color name="blackish">#333333</color>
+    <color name="ic_launcher_background">#00ffffff</color>
 </resources>

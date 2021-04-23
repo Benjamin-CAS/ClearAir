@@ -498,12 +498,12 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    private fun displayClickedValue(entry: Entry, chartIdentifierTag : String) {
+    private fun displayClickedValue(entry: Entry, chartIdentifierTag: String) {
         try {
             val pos = entry.x.toInt()
             val value = entry.y
             var clickedVal = ""
-            val unitsTxt =  when (selectedParamType) {
+            val unitsTxt = when (selectedParamType) {
                 ParamTypes.IN_PM,
                 ParamTypes.OUT_PM -> getString(R.string.pm_units)
                 ParamTypes.TMP -> getString(R.string.tmp_units)
@@ -534,7 +534,7 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    private fun clearClickedValue(chartIdentifierTag : String) {
+    private fun clearClickedValue(chartIdentifierTag: String) {
         try {
             when (chartIdentifierTag) {
                 DAY_TAG -> {

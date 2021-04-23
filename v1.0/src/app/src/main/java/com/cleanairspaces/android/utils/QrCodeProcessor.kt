@@ -200,7 +200,7 @@ object QrCodeProcessor {
         MyLogger.logThis(
                 TAG,
                 "getEncryptedEncodedPayloadForDeviceDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time, isIndoorLoc $isIndoorLoc)",
-                "true key $key encrypted $casEncrypted  encoded $encoded"
+                "true key $key @pl $pl encrypted $casEncrypted  encoded $encoded"
         )
         return encoded
     }

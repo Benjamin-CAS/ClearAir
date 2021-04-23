@@ -28,19 +28,19 @@ class SplashActivity : BaseActivity() {
         setContentView(view)
         viewModel.initDataRefresh()
         viewModel.getMapSelected().observe(
-            this, Observer {
-                if (it != null && it != getString(R.string.default_map_a_map)) {
-                    MyLogger.logThis(TAG, "getMapSelected()", "google maps selected")
-                    if (checkForGooglePlayServices()) {
-                        //send to google play services
-                        navigateToActivity(GMapsActivity::class.java)
-                    } else {
-                        MyLogger.logThis(
+                this, Observer {
+            if (it != null && it != getString(R.string.default_map_a_map)) {
+                MyLogger.logThis(TAG, "getMapSelected()", "google maps selected")
+                if (checkForGooglePlayServices()) {
+                    //send to google play services
+                    navigateToActivity(GMapsActivity::class.java)
+                } else {
+                    MyLogger.logThis(
                             TAG,
                             "getMapSelected()",
                             "google maps selected but google play services missing or out of data"
-                        )
-                        snackBar = binding.container.showSnackBar(
+                    )
+                    snackBar = binding.container.showSnackBar(
                             isErrorMsg = true,
                             msgResId = R.string.no_google_play_services_err,
                             actionMessage = R.string.switch_to_a_maps,
@@ -48,14 +48,14 @@ class SplashActivity : BaseActivity() {
                                 //send to a-maps activity
                                 navigateToActivity(AMapsActivity::class.java)
                             }
-                        )
-                    }
-                } else {
-                    //use A MAP
-                    MyLogger.logThis(TAG, "getMapSelected()", "a maps selected")
-                    navigateToActivity(AMapsActivity::class.java)
+                    )
                 }
+            } else {
+                //use A MAP
+                MyLogger.logThis(TAG, "getMapSelected()", "a maps selected")
+                navigateToActivity(AMapsActivity::class.java)
             }
+        }
         )
 
     }
@@ -66,8 +66,8 @@ class SplashActivity : BaseActivity() {
             finish()
         } catch (e: Exception) {
             MyLogger.logThis(
-                TAG, "navigateToActivity()", "error launching activity ${e.message}",
-                e
+                    TAG, "navigateToActivity()", "error launching activity ${e.message}",
+                    e
             )
         }
     }
@@ -76,7 +76,7 @@ class SplashActivity : BaseActivity() {
         //maybe need update?
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         return when (googleApiAvailability.isGooglePlayServicesAvailable(
-            this
+                this
         )) {
             ConnectionResult.SUCCESS -> true
             else -> false

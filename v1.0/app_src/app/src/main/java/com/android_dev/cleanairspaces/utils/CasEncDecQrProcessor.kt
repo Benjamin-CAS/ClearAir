@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.utils
 
 import android.util.Base64
+import android.util.Log
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY
@@ -60,9 +61,8 @@ object CasEncDecQrProcessor {
                 if (asciiViableLocIdAsInt == 0 || asciiViableCompIdAsInt == 0)
                     return ParserResult(codeRes = QR_LOCATION_ERR)
 
-                MyLogger.logThis(
-                        TAG, "identifyQrCode($qrContent : String)",
-                        "locationId $locationId companyId $companyId " +
+                Log.d(
+                        TAG, "identifyQrCode($qrContent : String) locationId $locationId companyId $companyId " +
                                 "locAsInt $asciiViableLocIdAsInt compAsInt $asciiViableCompIdAsInt"
                 )
                 return ParserResult(
@@ -137,14 +137,13 @@ object CasEncDecQrProcessor {
 
 
     fun getEncryptedEncodedPayloadForLocationHistory(compId: String, locId: String, userName: String, userPassword: String, timeStamp: String): String {
-        val key =  "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
-        val pl =  "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"1\",\"$HISTORY_WEEK_KEY\":\"1\",\"$HISTORY_DAY_KEY\":\"1\",\"$PM25_TYPE_PARAM_KEY\":\"$PM2_5_STD_PARAM\"}"
+        val key = "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
+        val pl = "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"1\",\"$HISTORY_WEEK_KEY\":\"1\",\"$HISTORY_DAY_KEY\":\"1\",\"$PM25_TYPE_PARAM_KEY\":\"$PM2_5_STD_PARAM\"}"
         val casEncrypted = doCASEncryptOrDecrypt(payload = pl, key = key)
         val encoded = toBase64Encoding(casEncrypted)
-        MyLogger.logThis(
+        Log.d(
                 TAG,
-                "getEncryptedEncodedPayloadForLocationHistory($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time)",
-                "true key $key pl $pl encrypted $casEncrypted  encoded $encoded"
+                "getEncryptedEncodedPayloadForLocationHistory($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time) true key $key pl $pl encrypted $casEncrypted  encoded $encoded"
         )
         return encoded
     }
@@ -157,20 +156,18 @@ object CasEncDecQrProcessor {
         val key = "${LOCATION_INFO_METHOD_FOR_KEY}$timeStamp"
         val payload = "{\"$COMP_ID_KEY\":$compId, \"$LOC_ID_KEY\":$locId}"
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
-        MyLogger.logThis(
+        Log.d(
                 TAG,
-                "getEncryptedEncodedPayloadForScannedDeviceWithCompLoc($locId : L, $compId : C, $timeStamp : t)",
-                "true key $key payload $payload encrypted $casEncrypted")
+                "getEncryptedEncodedPayloadForScannedDeviceWithCompLoc($locId : L, $compId : C, $timeStamp : t) true key $key payload $payload encrypted $casEncrypted")
         return toBase64Encoding(casEncrypted)
     }
 
     fun getEncryptedEncodedPayloadForScannedDeviceWithMonitorId(monitorId: String, timeStamp: String): String {
         val key = "${MONITOR_INFO_METHOD_FOR_KEY}$timeStamp"
         val casEncrypted = doCASEncryptOrDecrypt(payload = monitorId, key = key)
-        MyLogger.logThis(
+        Log.d(
                 TAG,
-                "getEncryptedEncodedPayloadForScannedDeviceWithMonitorId(monitorId: $monitorId, $timeStamp : time)",
-                "true key $key  encrypted $casEncrypted")
+                "getEncryptedEncodedPayloadForScannedDeviceWithMonitorId(monitorId: $monitorId, $timeStamp : time) true key $key  encrypted $casEncrypted")
         return toBase64Encoding(casEncrypted)
     }
 
@@ -178,37 +175,43 @@ object CasEncDecQrProcessor {
         val key = "${LOCATION_INFO_METHOD_FOR_KEY}$timeStamp"
         val payload = "ltime$timeStamp"
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
-        MyLogger.logThis(
-                TAG, "getEncryptedEncodedPayloadForIndoorLocation(timeStamp: $timeStamp)",
-                "key $key payload $payload encrypted $casEncrypted"
+        Log.d(
+                TAG, "getEncryptedEncodedPayloadForIndoorLocation(timeStamp: $timeStamp) key $key payload $payload encrypted $casEncrypted"
         )
         return toBase64Encoding(casEncrypted)
     }
 
     fun getEncryptedEncodedPayloadForLocationDetails(compId: String, locId: String, userName: String, userPassword: String, timeStamp: String, isIndoorLoc: Boolean): String {
-        val key = if (isIndoorLoc)
-            "${INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY}$timeStamp"
-        else "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
-        val payload = "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"0\",\"$HISTORY_WEEK_KEY\":\"0\",\"$HISTORY_DAY_KEY\":\"0\",\"$PM25_TYPE_PARAM_KEY\":\"0\"}"
+        val key = "${DEVICE_INFO_METHOD_FOR_KEY}$timeStamp"
+        val payload = "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"0\",\"$HISTORY_WEEK_KEY\":\"0\",\"$HISTORY_DAY_KEY\":\"0\",\"$PM25_TYPE_PARAM_KEY\":\"0\"}".replace(" ", "")
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
         val encoded = toBase64Encoding(casEncrypted)
-        MyLogger.logThis(
+        Log.d(
                 TAG,
-                "getEncryptedEncodedPayloadForLocationDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time, isIndoorLoc $isIndoorLoc)",
-                "true key $key encrypted $casEncrypted  encoded $encoded"
+                "getEncryptedEncodedPayloadForLocationDetails($compId: compId, $locId: locId, $userName: username, $userPassword: upass, $timeStamp: time, isIndoorLoc $isIndoorLoc) true key $key encrypted $casEncrypted  encoded $encoded"
         )
         return encoded
     }
 
     fun getEncryptedEncodedPayloadForOutdoorLocation(timeStamp: String): String {
-        val key = "$timeStamp"
         val payload = "{\"d\":\"$1\"}"
+        val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = timeStamp)
+        val encoded = toBase64Encoding(casEncrypted)
+        Log.d(
+                TAG,
+                "getEncryptedEncodedPayloadForOutdoorLocation() true key $timeStamp encrypted $casEncrypted  encoded $encoded"
+        )
+        return encoded
+    }
+
+    fun getEncryptedEncodedPayloadForIndoorLocationOverviewDetails(timeStamp: String, companyId: String, userName: String, userPass: String): String {
+        val key = "${INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY}$timeStamp"
+        val payload = "{\"$COMP_ID_KEY\":\"19\",\"$USER_KEY\":\"\",\"$PASSWORD_KEY\":\"\"}"
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
         val encoded = toBase64Encoding(casEncrypted)
-        MyLogger.logThis(
+        Log.d(
                 TAG,
-                "ggetEncryptedEncodedPayloadForOutdoorLocation()",
-                "true key $key encrypted $casEncrypted  encoded $encoded"
+                "getEncryptedEncodedPayloadForIndoorLocationOverviewDetails() true key $key PL  $payload encrypted $casEncrypted  encoded $encoded"
         )
         return encoded
     }

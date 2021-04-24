@@ -2,6 +2,7 @@ package com.android_dev.cleanairspaces.ui.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -14,11 +15,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android_dev.cleanairspaces.BaseActivity
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.HomeMapOverlayBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
@@ -28,11 +30,17 @@ import com.android_dev.cleanairspaces.ui.details.LocationDetailsActivity
 import com.android_dev.cleanairspaces.ui.home.adapters.WatchedLocationsAdapter
 import com.android_dev.cleanairspaces.ui.settings.SettingsActivity
 import com.android_dev.cleanairspaces.utils.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemListener {
+abstract class BaseMapAct : AppCompatActivity(), WatchedLocationsAdapter.OnClickItemListener {
+
+    @Inject
+    lateinit var myLogger: MyLogger
 
     abstract fun navigateToActivity(toAct: Class<*>, extraTag: String?, data: Any?)
 
@@ -70,13 +78,19 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
 
     val viewModel: BaseMapVieModel by viewModels()
 
+    var snackBar: Snackbar? = null
+    var popUp: AlertDialog? = null
+
+
     /*********** LOCATION ACCESS ***************/
     abstract fun showLocationOnMap(location: Location)
     fun promptToggleGPSSettings() {
         val manager = getSystemService(LOCATION_SERVICE) as LocationManager?
         if (!manager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //showTurnOnGPSDialog
-            showCustomDialog(msgRes = R.string.turn_on_gps_prompt,
+            showCustomDialog(
+                    ctx = this,
+                    msgRes = R.string.turn_on_gps_prompt,
                     okRes = R.string.go_to_settings,
                     dismissRes = R.string.not_now_txt,
                     positiveAction = {
@@ -92,9 +106,8 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
     private var locationManager: LocationManager? = null
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            //TODO log location
-            MyLogger.logThis(
-                    "BaseMapAct",
+            myLogger.logThis(
+                    "new loc",
                     "locationChanged()",
                     "${location.latitude}, ${location.longitude} "
             )
@@ -136,6 +149,7 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showCustomDialog(
+                            ctx = this,
                             msgRes = R.string.location_permission_rationale,
                             okRes = R.string.got_it_txt,
                             dismissRes = R.string.not_now_txt
@@ -223,4 +237,43 @@ abstract class BaseMapAct : BaseActivity(), WatchedLocationsAdapter.OnClickItemL
     }
 
     private val TAG = BaseMapAct::class.java.simpleName
+
+
+    private fun showCustomDialog(ctx: Context, msgRes: Int, okRes: Int, dismissRes: Int, positiveAction: () -> Unit) {
+        popUp?.let {
+            if (it.isShowing) it.dismiss()
+        }
+        popUp = MaterialAlertDialogBuilder(ctx)
+                .setTitle(msgRes)
+                .setPositiveButton(
+                        okRes
+                ) { dialog, _ ->
+                    positiveAction.invoke()
+                    dialog.dismiss()
+                }
+                .setNeutralButton(
+                        dismissRes
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
+
+        popUp?.show()
+    }
+
+    private fun dismissPopUps() {
+        snackBar?.let {
+            if (it.isShown)
+                it.dismiss()
+        }
+        popUp?.let {
+            if (it.isShowing) it.dismiss()
+        }
+        snackBar = null
+        popUp = null
+    }
+
+    override fun onStop() {
+        super.onStop()
+        dismissPopUps()
+    }
 }

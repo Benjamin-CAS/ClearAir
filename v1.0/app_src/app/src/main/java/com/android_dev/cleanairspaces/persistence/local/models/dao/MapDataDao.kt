@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
+import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import kotlinx.coroutines.flow.Flow
 
 
@@ -25,6 +26,9 @@ interface MapDataDao {
 
     @Query("SELECT * FROM map_displayed_data WHERE actualDataTag =:tag")
     suspend fun getMapDataOnce(tag: String): MapData?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(watchedLocationHighLights: WatchedLocationHighLights)
 
 
 }

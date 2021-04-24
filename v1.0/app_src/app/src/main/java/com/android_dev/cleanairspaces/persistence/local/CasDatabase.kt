@@ -13,7 +13,8 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.*
             LocationHistoryThreeDays::class,
             LocationHistoryWeek::class,
             LocationHistoryMonth::class,
-            LocationHistoryUpdatesTracker::class],
+            LocationHistoryUpdatesTracker::class,
+            Logs::class],
         version = 1,
         exportSchema = false
 )
@@ -25,4 +26,5 @@ abstract class CasDatabase : RoomDatabase() {
     abstract fun locationHistoryWeekDao(): LocationHistoryWeekDao
     abstract fun locationHistoryMonthDao(): LocationHistoryMonthDao
     abstract fun locationHistoryUpdatesTrackerDao(): LocationHistoryUpdatesTrackerDao
+    abstract fun logsDao(): LogsDao
 }

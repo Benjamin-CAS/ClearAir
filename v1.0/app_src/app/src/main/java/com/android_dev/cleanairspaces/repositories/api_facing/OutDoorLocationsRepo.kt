@@ -4,10 +4,8 @@ import com.android_dev.cleanairspaces.persistence.api.responses.*
 import com.android_dev.cleanairspaces.persistence.api.services.OutDoorLocationApiService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.MapDataDao
 import com.android_dev.cleanairspaces.persistence.local.models.dao.SearchSuggestionsDataDao
-import com.android_dev.cleanairspaces.persistence.local.models.dao.WatchedLocationHighLightsDao
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
-import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.CasEncDecQrProcessor
 import com.android_dev.cleanairspaces.utils.L_TIME_KEY
 import com.android_dev.cleanairspaces.utils.MyLogger
@@ -28,8 +26,8 @@ class OutDoorLocationsRepo
         private val coroutineScope: CoroutineScope,
         private val mapDataDao: MapDataDao,
         private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
-        private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-        private val outDoorLocationApiService: OutDoorLocationApiService) {
+        private val outDoorLocationApiService: OutDoorLocationApiService,
+        private val myLogger: MyLogger) {
 
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
 
@@ -45,13 +43,13 @@ class OutDoorLocationsRepo
                         try {
                             val locations = responseBody!!.data
                             if (locations.isNullOrEmpty()) {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getOtherOutDoorLocationsResponseCallback()",
                                         "locations in response are null or empty"
                                 )
                             } else {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getOtherOutDoorLocationsResponseCallback()",
                                         "total ${locations.size}"
@@ -59,7 +57,7 @@ class OutDoorLocationsRepo
                                 mapOutDoorLocationsToMapData(otherLocations = locations)
                             }
                         } catch (e: Exception) {
-                            MyLogger.logThis(
+                            myLogger.logThis(
                                     TAG,
                                     "getOtherOutDoorLocationsResponseCallback()",
                                     "exception ${e.message}",
@@ -68,7 +66,7 @@ class OutDoorLocationsRepo
                         }
                     }
                     else -> {
-                        MyLogger.logThis(
+                        myLogger.logThis(
                                 TAG,
                                 "getOtherOutDoorLocationsResponseCallback()",
                                 "response code not 200, $response"
@@ -78,7 +76,7 @@ class OutDoorLocationsRepo
             }
 
             override fun onFailure(call: Call<OutDoorLocationResponse>, e: Throwable) {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG,
                         "getOtherOutDoorLocationsResponseCallback()",
                         "OnFailure-exception ${e.message}"
@@ -98,13 +96,13 @@ class OutDoorLocationsRepo
                         val responseBody = response.body()
                         try {
                             if (responseBody.isNullOrEmpty()) {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getAmericaOutDoorLocationsResponseCallback()",
                                         "locations in response are null or empty"
                                 )
                             } else {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getAmericaOutDoorLocationsResponseCallback()",
                                         "total ${responseBody.size}"
@@ -114,7 +112,7 @@ class OutDoorLocationsRepo
                                 )
                             }
                         } catch (e: Exception) {
-                            MyLogger.logThis(
+                            myLogger.logThis(
                                     TAG,
                                     "getAmericaOutDoorLocationsResponseCallback()",
                                     "exception ${e.message}",
@@ -123,7 +121,7 @@ class OutDoorLocationsRepo
                         }
                     }
                     else -> {
-                        MyLogger.logThis(
+                        myLogger.logThis(
                                 TAG,
                                 "getAmericaOutDoorLocationsResponseCallback()",
                                 "response code not 200, $response"
@@ -133,7 +131,7 @@ class OutDoorLocationsRepo
             }
 
             override fun onFailure(call: Call<List<OutDoorLocationAmerica>>, e: Throwable) {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG,
                         "getAmericaOutDoorLocationsResponseCallback()",
                         "OnFailure-exception ${e.message}"
@@ -153,13 +151,13 @@ class OutDoorLocationsRepo
                         val responseBody = response.body()
                         try {
                             if (responseBody.isNullOrEmpty()) {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getTaiwanOutDoorLocationsResponseCallback()",
                                         "locations in response are null or empty"
                                 )
                             } else {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getTaiwanOutDoorLocationsResponseCallback()",
                                         "total ${responseBody.size}"
@@ -169,7 +167,7 @@ class OutDoorLocationsRepo
                                 )
                             }
                         } catch (e: Exception) {
-                            MyLogger.logThis(
+                            myLogger.logThis(
                                     TAG,
                                     "getTaiwanOutDoorLocationsResponseCallback()",
                                     "exception ${e.message}",
@@ -178,7 +176,7 @@ class OutDoorLocationsRepo
                         }
                     }
                     else -> {
-                        MyLogger.logThis(
+                        myLogger.logThis(
                                 TAG,
                                 "getTaiwanOutDoorLocationsResponseCallback()",
                                 "response code not 200, $response"
@@ -188,7 +186,7 @@ class OutDoorLocationsRepo
             }
 
             override fun onFailure(call: Call<List<OutDoorLocationTaiwan>>, e: Throwable) {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG,
                         "getTaiwanOutDoorLocationsResponseCallback()",
                         "OnFailure-exception ${e.message}"
@@ -196,6 +194,64 @@ class OutDoorLocationsRepo
             }
         }
     }
+
+
+    suspend fun refreshOutDoorLocations() {
+        //refreshing out door locations
+        val otherLocationsResponse = outDoorLocationApiService.fetchOtherOutDoorLocations()
+        otherLocationsResponse.enqueue(getOtherOutDoorLocationsResponseCallback())
+
+        //refreshing american locations
+        val usLocationsResponse = outDoorLocationApiService.fetchAmericanOutDoorLocations()
+        usLocationsResponse.enqueue(getAmericaOutDoorLocationsResponseCallback())
+
+        //refreshing taiwan locations
+        val taiwanLocationsResponse = outDoorLocationApiService.fetchTaiwanOutDoorLocations()
+        taiwanLocationsResponse.enqueue(getTaiwanOutDoorLocationsResponseCallback())
+
+
+        //refreshing outdoor location details -- more detailed locations
+        val timeStamp = System.currentTimeMillis().toString()
+        val data = JsonObject()
+        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForOutdoorLocation(
+                timeStamp = timeStamp
+        )
+        data.addProperty(L_TIME_KEY, timeStamp)
+        data.addProperty(PAYLOAD_KEY, pl)
+        val request = outDoorLocationApiService.fetchOutDoorLocationsExtraDetails(
+                data = data
+        )
+        request.enqueue(getOutdoorLocationsDetails())
+
+    }
+
+    private fun getOutdoorLocationsDetails(): Callback<OutDoorDetailsLocationResponse> {
+        return object : Callback<OutDoorDetailsLocationResponse> {
+            override fun onResponse(call: Call<OutDoorDetailsLocationResponse>, response: Response<OutDoorDetailsLocationResponse>) {
+
+                val responseBody = response.body()
+                try {
+                    if (responseBody!!.data.isNotEmpty()) {
+                        mapOutDoorLocationsToMapData(
+                                inDoorExtraDetailed = responseBody.data
+                        )
+                    }
+
+                } catch (exc: java.lang.Exception) {
+                    myLogger.logThis(
+                            TAG, "getOutdoorLocationsDetails", "failed response - $response responseBody - $responseBody exception ${exc.message}", exc
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<OutDoorDetailsLocationResponse>, t: Throwable) {
+                myLogger.logThis(
+                        TAG, "getOutdoorLocationsDetails() -> onFailure()", "${t.message}"
+                )
+            }
+        }
+    }
+
 
     private fun mapOutDoorLocationsToMapData(
             taiwanLocations: List<OutDoorLocationTaiwan>? = null,
@@ -210,14 +266,14 @@ class OutDoorLocationsRepo
                 val searchData = ArrayList<SearchSuggestionsData>()
                 when {
                     taiwanLocations != null -> {
-                        for (location in taiwanLocations) {
+                        /*TODO fix error invalid location with aMap getlatlon for (location in taiwanLocations) {
                             mapDataList.add(MapData(
                                     lat = location.lat.toDouble(),
                                     lon = location.lon.toDouble(),
                                     pm25 = location.pm2p5.toDouble(),
-                                    actualDataTag = ""
+                                    actualDataTag = "taiwan${location.lat}${location.lon}"
                             ))
-                        }
+                        }*/
                     }
 
                     usLocations != null -> {
@@ -226,13 +282,13 @@ class OutDoorLocationsRepo
                                     lat = location.sta_lat.toDouble(),
                                     lon = location.sta_lon.toDouble(),
                                     pm25 = location.pm2p5.toDouble(),
-                                    actualDataTag = ""
+                                    actualDataTag = "us${location.sta_lat}${location.sta_lon}"
                             ))
                         }
                     }
 
                     inDoorExtraDetailed != null -> {
-                        //TODO? more data & map data
+                        //This info is not used in the map--
                         for (location in inDoorExtraDetailed) {
                             val tag = "${location.company_id}${location.location_id}"
                             searchData.add(
@@ -254,50 +310,17 @@ class OutDoorLocationsRepo
 
                     otherLocations != null -> {
                         for (location in otherLocations) {
-                            val tag = "${location.location_id}${location.monitor_id}"
                             mapDataList.add(MapData(
-                                    actualDataTag = tag,
+                                    actualDataTag = "other${location.lat}${location.lon}",
                                     lat = location.lat.toDouble(),
                                     lon = location.lon.toDouble(),
                                     pm25 = location.reading.toDouble()
                             ))
-                            //update watched location
-                            val matchingLocations = watchedLocationHighLightsDao.checkIfIsWatchedLocation(tag)
-                            val found = matchingLocations.isNotEmpty()
-                            if (found) {
-                                val foundLocation = matchingLocations[0]
-                                //update preserve pwd & username data
-                                watchedLocationHighLightsDao.insertLocation(
-                                        WatchedLocationHighLights(
-                                                actualDataTag = tag,
-                                                lat = location.lat.toDouble(),
-                                                lon = location.lon.toDouble(),
-                                                pm_outdoor = location.reading.toDouble(),
-                                                pm_indoor = foundLocation.pm_indoor,
-                                                name = location.name_en,
-                                                logo = foundLocation.logo,
-                                                location_area = foundLocation.location_area,
-                                                indoor_co2 = foundLocation.indoor_co2,
-                                                indoor_humidity = foundLocation.indoor_humidity,
-                                                indoor_temperature = foundLocation.indoor_temperature,
-                                                indoor_voc = foundLocation.indoor_voc,
-                                                energyMonth = foundLocation.energyMonth,
-                                                energyMax = foundLocation.energyMax,
-                                                isIndoorLoc = false,
-                                                compId = foundLocation.compId,
-                                                locId = location.location_id,
-                                                monitorId = location.monitor_id,
-                                                lastRecPwd = foundLocation.lastRecPwd,
-                                                lastRecUsername = foundLocation.lastRecUsername
-                                        )
-                                )
-                            }
                         }
                     }
                 }
 
                 if (mapDataList.isNotEmpty()) {
-                    mapDataDao.deleteAll()
                     mapDataDao.insertAll(mapDataList)
                 }
 
@@ -305,65 +328,14 @@ class OutDoorLocationsRepo
                     searchSuggestionsDataDao.deleteAllOutDoorSearchSuggestions()
                     searchSuggestionsDataDao.insertSuggestions(searchData)
                 }
-                MyLogger.logThis(TAG, "mapOutDoorLocationsToMapData()", "success")
+                myLogger.logThis(TAG, "mapOutDoorLocationsToMapData()", "success")
 
             } catch (e: java.lang.Exception) {
-                MyLogger.logThis(TAG, "mapOutDoorLocationsToMapData()", "exception ${e.message}", e)
+                myLogger.logThis(TAG, "mapOutDoorLocationsToMapData()", "exception ${e.message}", e)
             }
         }
 
     }
 
-    suspend fun refreshOutDoorLocations() {
-        //refreshing out door locations
-        val otherLocationsResponse = outDoorLocationApiService.fetchOtherOutDoorLocations()
-        otherLocationsResponse.enqueue(getOtherOutDoorLocationsResponseCallback())
-
-        //refreshing american locations
-        val usLocationsResponse = outDoorLocationApiService.fetchAmericanOutDoorLocations()
-        usLocationsResponse.enqueue(getAmericaOutDoorLocationsResponseCallback())
-
-        //refreshing taiwan locations
-        val taiwanLocationsResponse = outDoorLocationApiService.fetchTaiwanOutDoorLocations()
-        taiwanLocationsResponse.enqueue(getTaiwanOutDoorLocationsResponseCallback())
-
-        val timeStamp  = System.currentTimeMillis().toString()
-        val data = JsonObject()
-        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForOutdoorLocation(
-                timeStamp = timeStamp
-        )
-        data.addProperty(L_TIME_KEY, timeStamp)
-        data.addProperty(PAYLOAD_KEY, pl)
-        val request =  outDoorLocationApiService.fetchOutDoorLocationsExtraDetails(
-                data = data
-        )
-        request.enqueue(object  : Callback<OutDoorDetailsLocationResponse>{
-            override fun onResponse(call: Call<OutDoorDetailsLocationResponse>, response: Response<OutDoorDetailsLocationResponse>) {
-
-                val responseBody = response.body()
-                try{
-                   if (responseBody!!.data.isNotEmpty()){
-                       mapOutDoorLocationsToMapData(
-                               inDoorExtraDetailed = responseBody!!.data
-                       )
-                   }
-
-                }catch (exc : java.lang.Exception){
-                    MyLogger.logThis(
-                            TAG, "failed $responseBody", "${exc.message}", exc
-                    )
-                }
-            }
-
-            override fun onFailure(call: Call<OutDoorDetailsLocationResponse>, t: Throwable) {
-                MyLogger.logThis(
-                        TAG, "failed retrofit", "${t.message}"
-                )
-            }
-
-
-        })
-
-    }
 
 }

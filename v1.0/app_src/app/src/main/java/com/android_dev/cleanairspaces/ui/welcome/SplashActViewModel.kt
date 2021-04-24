@@ -6,7 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.work.*
 import com.android_dev.cleanairspaces.bg_work.RefreshLocationsWorker
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
-import com.android_dev.cleanairspaces.utils.*
+import com.android_dev.cleanairspaces.utils.DATA_REFRESHER_WORKER_NAME
+import com.android_dev.cleanairspaces.utils.DATA_REFRESH_INTERVAL_MIN
+import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -14,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashActViewModel @Inject constructor(
         private val dataStoreManager: DataStoreManager,
-        private val workManager: WorkManager
+        private val workManager: WorkManager,
+        private val myLogger: MyLogger
 ) : ViewModel() {
 
     private val TAG = SplashActViewModel::class.java.simpleName
@@ -23,7 +26,7 @@ class SplashActViewModel @Inject constructor(
 
 
     fun initDataRefresh() {
-        MyLogger.logThis(
+        myLogger.logThis(
                 TAG, "initDataRefresh()", "calling worker"
         )
 

@@ -9,19 +9,24 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.android_dev.cleanairspaces.BaseActivity
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.SettingsActivityBinding
 import com.android_dev.cleanairspaces.ui.welcome.SplashActivity
+import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettingsActivity : BaseActivity() {
+class SettingsActivity : AppCompatActivity() {
 
     private var displayedMapsSettings: Boolean = false
     private var displayedMapLangSettings: Boolean = false
     private var displayedAqiSettings: Boolean = false
+
+    @Inject
+    lateinit var myLogger: MyLogger
 
     private var mapsSelector: AutoCompleteTextView? = null
     private var mapLangSelector: AutoCompleteTextView? = null
@@ -44,10 +49,18 @@ class SettingsActivity : BaseActivity() {
         val view = binding.root
         setContentView(view)
 
-        super.setToolBar(binding.topBar, isHomeAct = false)
+        setSupportActionBar(binding.topBar.toolbar)
+        binding.topBar.toolbar.apply {
+            setNavigationIcon(R.drawable.ic_back)
+            setNavigationOnClickListener {
+                this@SettingsActivity.finish()
+            }
+        }
 
         initViews()
         observeSettings()
+
+
     }
 
     private fun initViews() {
@@ -100,9 +113,6 @@ class SettingsActivity : BaseActivity() {
                 }
     }
 
-    override fun handleBackPress() {
-        finish()
-    }
 
     private fun observeSettings() {
         viewModel.observeAQIIndex().observe(this, Observer { selectedAqi ->
@@ -147,10 +157,7 @@ class SettingsActivity : BaseActivity() {
         })
     }
 
-    private fun reloadApp() {
-        finishAffinity()
-        startActivity(Intent(this, SplashActivity::class.java))
-    }
+
 
 
     /****************** MENU **************/
@@ -164,7 +171,8 @@ class SettingsActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.save -> {
-                reloadApp()
+                startActivity(Intent(this, SplashActivity::class.java))
+                this.finishAffinity()
                 true
             }
             else -> super.onOptionsItemSelected(item)

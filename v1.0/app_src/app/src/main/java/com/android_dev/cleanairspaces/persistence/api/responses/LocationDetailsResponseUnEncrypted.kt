@@ -8,20 +8,20 @@ class LocationDetails(
         var company_id: String = "",
         var location_id: String = "",
         var lastUpdated: Long = System.currentTimeMillis(),
-        val indoor: Indoor,
-        val outdoor: Outdoor,
-        val energy: Energy,
+        val indoor: Indoor?,
+        val outdoor: Outdoor?,
+        val energy: Energy?,
         val ExpFilter: String? = "",
         val ExpEquip: String? = "",
         var lastKnownUserName: String = "", //for refreshing
         var lastKnownPassword: String = "", //for refreshing
 ) : Parcelable {
-    fun getLat(): Double {
-        return (indoor.lat ?: outdoor.lat ?: "0.0").toDouble()
+    fun getLat(): Double? {
+        return (indoor?.lat ?: outdoor?.lat)?.toDouble()
     }
 
-    fun getLon(): Double {
-        return (indoor.lon ?: outdoor.lon ?: "0.0").toDouble()
+    fun getLon(): Double? {
+        return (indoor?.lon ?: outdoor?.lon)?.toDouble()
     }
 }
 

@@ -21,7 +21,8 @@ import javax.inject.Inject
 class LocationDetailsViewModel
 @Inject constructor(
         private val dataStoreManager: DataStoreManager,
-        private val repo: AppDataRepo
+        private val repo: AppDataRepo,
+        private val myLogger: MyLogger
 ) : ViewModel() {
 
     private val TAG = LocationDetailsViewModel::class.java.simpleName
@@ -90,7 +91,7 @@ class LocationDetailsViewModel
             if (lastUpdate == null
                     || hasExpired(timeNow, lastUpdate)) {
                 withContext(context = Dispatchers.Main) {
-                    MyLogger.logThis(
+                    myLogger.logThis(
                             TAG,
                             "refreshHistoryIfNecessary()", "refreshing history for comp ${location.compId} ${location.locId}"
                     )

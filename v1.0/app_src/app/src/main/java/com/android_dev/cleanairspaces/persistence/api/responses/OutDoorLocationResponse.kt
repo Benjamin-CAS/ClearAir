@@ -9,20 +9,20 @@ data class OutDoorDetailsLocationResponse(
 
 data class OutDoorDetailedLocationData(
         @Expose
-        val company_id : String,
-        val logo:  String?,
+        val company_id: String,
+        val logo: String?,
         @Expose
-        val location_id : String,
+        val location_id: String,
         @Expose
-        val location_name : String,
+        val location_name: String,
         @Expose
-        val city : String,
+        val city: String,
         @Expose
-        val country : String,
+        val country: String,
         @Expose
-        val lon : String,
+        val lon: String,
         @Expose
-        val lat : String
+        val lat: String
 )
 
 data class OutDoorLocationResponse(

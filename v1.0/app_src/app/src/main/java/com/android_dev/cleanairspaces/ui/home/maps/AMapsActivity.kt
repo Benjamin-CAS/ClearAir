@@ -23,9 +23,11 @@ import com.android_dev.cleanairspaces.ui.adding_locations.add.AddLocationActivit
 import com.android_dev.cleanairspaces.ui.home.BaseMapAct
 import com.android_dev.cleanairspaces.ui.home.adapters.WatchedLocationsAdapter
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
+import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AMapsActivity : BaseMapAct() {
@@ -74,8 +76,14 @@ class AMapsActivity : BaseMapAct() {
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
 
+        setSupportActionBar(binding.toolbar.toolbar)
+        binding.toolbar.toolbar.apply {
+            setNavigationIcon(R.drawable.ic_home)
+            setNavigationOnClickListener {
+                this@AMapsActivity.finish()
+            }
+        }
 
-        super.setToolBar(binding.toolbar, true)
         watchedLocationsAdapter = WatchedLocationsAdapter(this)
         super.setHomeMapOverlay(binding.mapOverlay)
         viewModel.observeWatchedLocations().observe(this, {
@@ -156,29 +164,34 @@ class AMapsActivity : BaseMapAct() {
 
 
     private fun drawCirclesOnMap(mapDataPoints: List<MapData>) {
-        clearMapCircles()
-        aMap?.let {
-            for (mapData in mapDataPoints) {
-                val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
-                val mIcon = BitmapDescriptorFactory.fromBitmap(
-                        BitmapFactory
-                                .decodeResource(resources, aqiStatus.transparentCircleRes)
-                )
+        try {
+            clearMapCircles()
+            aMap?.let {
+                for (mapData in mapDataPoints) {
+                    val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
+                    val mIcon = BitmapDescriptorFactory.fromBitmap(
+                            BitmapFactory
+                                    .decodeResource(resources, aqiStatus.transparentCircleRes)
+                    )
 
-                val markerOptions = MarkerOptions()
-                markerOptions.apply {
-                    position(mapData.getAMapLocationLatLng())
-                    draggable(false)
-                    anchor(0.5f, 0.5f)
-                    mIcon?.let {
-                        icon(it)
+                    val markerOptions = MarkerOptions()
+                    markerOptions.apply {
+                        val area  =mapData.getAMapLocationLatLng()
+                        position(area)
+                        draggable(false)
+                        anchor(0.5f, 0.5f)
+                        mIcon?.let {
+                            icon(it)
+                        }
+                    }
+                    val circleMarker = aMap?.addMarker(markerOptions)
+                    circleMarker?.let { marker ->
+                        mapCirlcesMarkers.add(marker)
                     }
                 }
-                val circleMarker = aMap?.addMarker(markerOptions)
-                circleMarker?.let { marker ->
-                    mapCirlcesMarkers.add(marker)
-                }
             }
+        } catch (exc: Exception) {
+            myLogger.logThis(TAG, "drawCirclesOnMap()", "exc ${exc.message}", exc)
         }
     }
 
@@ -201,6 +214,7 @@ class AMapsActivity : BaseMapAct() {
         aMap?.apply {
             observeMapRelatedData()
         }
+        viewModel.refreshWatchedLocationData()
     }
 
     override fun onPause() {

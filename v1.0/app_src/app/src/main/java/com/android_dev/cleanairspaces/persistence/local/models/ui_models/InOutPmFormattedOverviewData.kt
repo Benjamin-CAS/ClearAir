@@ -14,14 +14,14 @@ data class InOutPmFormattedOverviewData(
         val locationName: String,
         val logo: String,
         val updated: String,
-        val locationArea: String,
+        val locationArea: String?,
         val pm25Txt: String,
         val aqiIndexStr: String,
-        val outDoorPmValue: Double?,
+        val outDoorPmValue: Int?,
         val hasOutDoorData: Boolean,
         val outDoorAqiStatus: AQIStatus?,
         val defaultBgColor: Int,
-        val indoorPmValue: Double?,
+        val indoorPmValue: Int?,
         val hasInDoorData: Boolean,
         val indoorAQIStatus: AQIStatus?,
         val indoorPmValueConverted: Double?
@@ -35,7 +35,8 @@ fun formatWatchedHighLightsData(
     val name = location.name
     val logo = location.getFullLogoUrl()
     val updated = ctx.getString(R.string.updated_on_prefix) + "\n" + location.getUpdatedOnFormatted()
-    val locationArea = ctx.getString(R.string.outdoor_txt) + "\n" + location.location_area
+    val locationArea = if(location.location_area.isNotBlank()) ctx.getString(R.string.outdoor_txt) + "\n" + location.location_area
+            else null
     val pm25Txt = ctx.getString(R.string.default_aqi_pm_2_5)
     val aqiIndexStr = aqiIndex ?: pm25Txt
     val outDoorPmValue = location.pm_outdoor
@@ -61,11 +62,11 @@ fun formatWatchedHighLightsData(
             locationArea = locationArea,
             pm25Txt = pm25Txt,
             aqiIndexStr = aqiIndexStr,
-            outDoorPmValue = outDoorPmValue,
+            outDoorPmValue = outDoorPmValue?.toInt(),
             hasOutDoorData = hasOutDoorData,
             outDoorAqiStatus = outDoorAqiStatus,
             defaultBgColor = defaultBgColor,
-            indoorPmValue = indoorPmValue,
+            indoorPmValue = indoorPmValue?.toInt(),
             hasInDoorData = hasInDoorData,
             indoorAQIStatus = indoorAQIStatus,
             indoorPmValueConverted = indoorPmValueConverted

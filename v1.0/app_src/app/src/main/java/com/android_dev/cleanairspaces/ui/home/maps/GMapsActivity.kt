@@ -15,6 +15,7 @@ import com.android_dev.cleanairspaces.ui.adding_locations.add.AddLocationActivit
 import com.android_dev.cleanairspaces.ui.home.BaseMapAct
 import com.android_dev.cleanairspaces.ui.home.adapters.WatchedLocationsAdapter
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
+import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -37,6 +39,8 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
 
     private lateinit var binding: ActivityGoogleMapsBinding
+
+
 
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
@@ -72,7 +76,16 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
 
-        super.setToolBar(binding.toolbar, true)
+        setSupportActionBar(binding.toolbar.toolbar)
+        binding.toolbar.toolbar.apply {
+            setNavigationIcon(R.drawable.ic_home)
+            setNavigationOnClickListener {
+                this@GMapsActivity.finish()
+            }
+        }
+
+
+
         watchedLocationsAdapter = WatchedLocationsAdapter(this)
         super.setHomeMapOverlay(binding.mapOverlay)
 
@@ -120,18 +133,22 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
     }
 
     private fun drawCirclesOnMap(mapDataPoints: List<MapData>) {
-        clearMapCircles()
-        mMap?.let {
-            for (mapData in mapDataPoints) {
-                val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
-                val circleMarker = mMap?.addMarker(
-                        MarkerOptions().position(mapData.getGMapLocationLatLng())
-                                .icon(BitmapDescriptorFactory.fromResource(aqiStatus.transparentCircleRes))
-                )
-                circleMarker?.let { marker ->
-                    mapCircleMarkers.add(marker)
+        try {
+            clearMapCircles()
+            mMap?.let {
+                for (mapData in mapDataPoints) {
+                    val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
+                    val circleMarker = mMap?.addMarker(
+                            MarkerOptions().position(mapData.getGMapLocationLatLng())
+                                    .icon(BitmapDescriptorFactory.fromResource(aqiStatus.transparentCircleRes))
+                    )
+                    circleMarker?.let { marker ->
+                        mapCircleMarkers.add(marker)
+                    }
                 }
             }
+        } catch (exc: Exception) {
+            myLogger.logThis(TAG, "drawCirclesOnMap()", "exc ${exc.message}", exc)
         }
     }
 
@@ -180,6 +197,7 @@ class GMapsActivity : BaseMapAct(), OnMapReadyCallback {
         mMap?.let {
             observeMapRelatedData()
         }
+        viewModel.refreshWatchedLocationData()
     }
 
 

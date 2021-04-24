@@ -16,6 +16,7 @@
             android:id="@+id/toolbar_logo"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/md_icon"
+            android:src="@drawable/clean_air_spaces_logo_name"
             android:layout_gravity="start|center_vertical"
             android:contentDescription="@string/clean_air_spaces_logo_description"
             android:scaleType="fitStart"

@@ -19,9 +19,8 @@ import javax.inject.Singleton
 @Singleton
 class LocationDetailsRepo
 @Inject constructor(
-        private val coroutineScope: CoroutineScope,
-        private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-        private val qrScannedItemsApiService: QrScannedItemsApiService
+        private val qrScannedItemsApiService: QrScannedItemsApiService,
+        private val myLogger: MyLogger
 ) {
 
     private val TAG = LocationDetailsRepo::class.java.simpleName
@@ -47,7 +46,7 @@ class LocationDetailsRepo
             recentRequestsData.add(data)
             response.enqueue(getScannedDeviceQrResponseCallback(hasCompLocId = true))
         } catch (e: Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG,
                     "fetchDataForScannedDeviceWithCompLoc",
                     "exc ${e.message}",
@@ -71,7 +70,7 @@ class LocationDetailsRepo
             recentRequestsData.add(data)
             response.enqueue(getScannedDeviceQrResponseCallback(hasMonitorId = true))
         } catch (e: Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG,
                     "fetchDataForScannedDeviceWithMonitorId",
                     "exc ${e.message}",
@@ -96,7 +95,7 @@ class LocationDetailsRepo
                         val responseBody = response.body()
                         try {
                             if (responseBody == null) {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getScannedDeviceQrResponseCallback",
                                         "returned a null body"
@@ -117,21 +116,21 @@ class LocationDetailsRepo
                                             )
                                         }
                                         else -> {
-                                            MyLogger.logThis(
+                                            myLogger.logThis(
                                                     TAG, "getScannedDeviceQrResponseCallback",
                                                     "response body is $responseBody - unknown device"
                                             )
                                         }
                                     }
                                 } else {
-                                    MyLogger.logThis(
+                                    myLogger.logThis(
                                             TAG, "getScannedDeviceQrResponseCallback",
                                             "payload is null in response body $responseBody"
                                     )
                                 }
                             }
                         } catch (e: Exception) {
-                            MyLogger.logThis(
+                            myLogger.logThis(
                                     TAG,
                                     "getScannedDeviceQrResponseCallback",
                                     "exception ${e.message}",
@@ -140,7 +139,7 @@ class LocationDetailsRepo
                         }
                     }
                     else -> {
-                        MyLogger.logThis(
+                        myLogger.logThis(
                                 TAG,
                                 "getScannedDeviceQrResponseCallback",
                                 "response code not 200, $response"
@@ -150,7 +149,7 @@ class LocationDetailsRepo
             }
 
             override fun onFailure(call: Call<ScannedDeviceQrWithCompLocResponse>, e: Throwable) {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG,
                         "getScannedDeviceQrResponseCallback",
                         "OnFailure-exception ${e.message}"
@@ -175,13 +174,13 @@ class LocationDetailsRepo
             val companyData = unEncJson.getString(ScannedDeviceQrWithCompLocResponse.response_key)
             val customerDeviceData = Gson().fromJson(companyData, LocationDataFromQr::class.java)
 
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "unEncryptScannedDeviceQrWithCompLocResponse",
                     "unEncJson $unEncJson customerData $customerDeviceData"
             )
             currentlyScannedDeviceData.value = customerDeviceData!!
         } catch (e: java.lang.Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "unEncryptScannedDeviceQrWithCompLocResponse -pl $payload",
                     "failed ${e.message}",
                     e
@@ -210,13 +209,13 @@ class LocationDetailsRepo
             customerDeviceData.monitor_id = monitorId
             customerDeviceData.type = type
 
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse",
                     "unEncJson $unEncJson customerData $customerDeviceData"
             )
             currentlyScannedDeviceData.value = customerDeviceData!!
         } catch (e: java.lang.Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse -pl $payload",
                     "failed ${e.message}",
                     e

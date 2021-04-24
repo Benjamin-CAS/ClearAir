@@ -72,7 +72,7 @@ class WatchedLocationsAdapter(private val locationListener: OnClickItemListener)
                     //hide data
                     indoorTv.isVisible = false
                 }
-                itemCard.setOnClickListener { locationListener.onClickWatchedLocation(location) }
+               itemView.setOnClickListener { locationListener.onClickWatchedLocation(location) }
             }
         }
     }

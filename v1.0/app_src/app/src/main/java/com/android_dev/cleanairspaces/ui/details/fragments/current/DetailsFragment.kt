@@ -21,15 +21,20 @@ import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatW
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsIndoorExtras
 import com.android_dev.cleanairspaces.ui.details.LocationDetailsViewModel
 import com.android_dev.cleanairspaces.utils.AQIStatus
+import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.getRecommendationsGivenAQIColorRes
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class DetailsFragment : Fragment() {
+class DetailsFragment  : Fragment() {
 
     companion object {
         private val TAG = DetailsFragment::class.java.simpleName
     }
+
+    @Inject
+    lateinit var myLogger: MyLogger
 
     //a data copy for this fragment --not LIVE
     private lateinit var currentlyWatchedLocationHighLights: WatchedLocationHighLights
@@ -113,7 +118,7 @@ class DetailsFragment : Fragment() {
     }
 
     private fun displayIndoorDetailsSection(
-            indoorPmValue: Double,
+            indoorPmValue: Int,
             indoorAQIStatus: AQIStatus,
             indoorHumidity: Double?,
             indoorCo2: Double?,

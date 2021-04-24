@@ -25,7 +25,8 @@ class WatchedLocationUpdatesRepo
 @Inject constructor(
         private val coroutineScope: CoroutineScope,
         private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-        private val locationDetailsService: LocationDetailsService
+        private val locationDetailsService: LocationDetailsService,
+        private val myLogger: MyLogger
 ) {
 
     private val TAG = WatchedLocationUpdatesRepo::class.java.simpleName
@@ -42,7 +43,7 @@ class WatchedLocationUpdatesRepo
                     val locId = aLocation.locId
                     val userName = aLocation.lastRecUsername
                     val userPassword = aLocation.lastRecPwd
-                    val timeStamp = System.currentTimeMillis().toString() + aLocation.actualDataTag
+                    val timeStamp = (System.currentTimeMillis().toString() + aLocation.actualDataTag)
                     val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForLocationDetails(
                             compId = compId,
                             locId = locId,
@@ -54,7 +55,7 @@ class WatchedLocationUpdatesRepo
 
                     val data = JsonObject()
                     data.addProperty(L_TIME_KEY, timeStamp)
-                    data.addProperty(PAYLOAD_KEY, pl)
+                    data.addProperty(PAYLOAD_KEY, pl.replace("\n", ""))
                     val response = locationDetailsService.fetchDetailsForLocation(
                             data = data,
                             method = AppApiService.DEVICE_INFO_METHOD
@@ -70,12 +71,13 @@ class WatchedLocationUpdatesRepo
                     response.enqueue(
                             getWatchedLocationDetailsResponseCallback()
                     )
+                    myLogger.logThis(
+                            TAG, "refreshWatchedLocationsData()", "refreshed ${myLocations.size} data $data"
+                    )
                 }
-                MyLogger.logThis(
-                        TAG, "refreshWatchedLocationsData()", "refreshed ${myLocations.size} data"
-                )
-            } catch (exc: java.lang.Exception) {
-                MyLogger.logThis(
+
+            } catch (exc: Exception) {
+                myLogger.logThis(
                         TAG, "refreshWatchedLocationsData()", "failed exc ${exc.message}", exc
                 )
 
@@ -89,12 +91,12 @@ class WatchedLocationUpdatesRepo
                     call: Call<LocationDetailsResponse>,
                     response: Response<LocationDetailsResponse>
             ) {
-                when {
-                    response.code() == 200 -> {
-                        val responseBody = response.body()
-                        try {
+                try {
+                    when {
+                        response.code() == 200 -> {
+                            val responseBody = response.body()
                             if (responseBody == null || responseBody.payload.isNullOrBlank()) {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getWatchedLocationDetailsResponseCallback()",
                                         "returned a null body"
@@ -106,27 +108,27 @@ class WatchedLocationUpdatesRepo
                                         lTime = lTime
                                 )
                             }
-                        } catch (e: Exception) {
-                            MyLogger.logThis(
+                        }
+                        else -> {
+                            myLogger.logThis(
                                     TAG,
                                     "getWatchedLocationDetailsResponseCallback()",
-                                    "exception ${e.message}",
-                                    e
+                                    "response code not 200, $response"
                             )
                         }
                     }
-                    else -> {
-                        MyLogger.logThis(
-                                TAG,
-                                "getWatchedLocationDetailsResponseCallback()",
-                                "response code not 200, $response"
-                        )
-                    }
+                } catch (e: Exception) {
+                    myLogger.logThis(
+                            TAG,
+                            "getWatchedLocationDetailsResponseCallback()",
+                            "exception ${e.message}",
+                            e
+                    )
                 }
             }
 
             override fun onFailure(call: Call<LocationDetailsResponse>, e: Throwable) {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG,
                         "getWatchedLocationDetailsResponseCallback()",
                         "OnFailure-exception ${e.message}"
@@ -158,14 +160,14 @@ class WatchedLocationUpdatesRepo
                 locationDetails.lastKnownPassword = requestedData.get(PASSWORD_KEY).asString
                 locationDetails.lastUpdated = System.currentTimeMillis()
 
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG,
                         "unEncryptWatchedLocationDetailsPayload(payload: , lTime  : $lTime)",
                         "encrypted data $unEncJson for company ${locationDetails.company_id} & location ${locationDetails.location_id}",
                 )
                 updateWatchedLocationIfExists(locationDetails, dataTag)
             } else {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG, "unEncryptWatchedLocationDetailsPayload()",
                         "failed to decode my locations details to gSon ..encoded - $unEncJson"
                 )
@@ -173,7 +175,7 @@ class WatchedLocationUpdatesRepo
             }
 
         } catch (e: java.lang.Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG,
                     " unEncryptWatchedLocationDetailsPayload(payload: , lTime  : $lTime)",
                     "failed ${e.message}",
@@ -184,32 +186,44 @@ class WatchedLocationUpdatesRepo
 
     private fun updateWatchedLocationIfExists(locationDetails: LocationDetails, dataTag: String) {
         coroutineScope.launch(Dispatchers.IO) {
-            val foundDetails = watchedLocationHighLightsDao.checkIfIsWatchedLocation(dataTag)
-            if (foundDetails.isNotEmpty()) {
-                val existingData = foundDetails[0]
-                val updatedData = WatchedLocationHighLights(
-                        actualDataTag = dataTag,
-                        lat = locationDetails.getLat(),
-                        lon = locationDetails.getLon(),
-                        pm_outdoor = locationDetails.outdoor.outdoor_pm.toDoubleOrNull(),
-                        pm_indoor = locationDetails.indoor.indoor_pm.toDoubleOrNull(),
-                        name = existingData.name,
-                        logo = existingData.logo,
-                        location_area = existingData.location_area,
-                        indoor_co2 = locationDetails.indoor.indoor_co2.toDoubleOrNull(),
-                        indoor_humidity = locationDetails.indoor.indoor_humidity.toDoubleOrNull(),
-                        indoor_temperature = locationDetails.indoor.indoor_temperature.toDoubleOrNull(),
-                        indoor_voc = locationDetails.indoor.indoor_voc.toDoubleOrNull(),
-                        energyMonth = locationDetails.energy.month?.toDoubleOrNull(),
-                        energyMax = locationDetails.energy.max?.toDoubleOrNull(),
-                        isIndoorLoc = locationDetails.indoor.indoor_pm.isNotBlank(),
-                        compId = existingData.compId,
-                        locId = existingData.locId,
-                        monitorId = existingData.monitorId,
-                        lastRecPwd = existingData.lastRecPwd,
-                        lastRecUsername = existingData.lastRecUsername
+            try {
+                val foundDetails = watchedLocationHighLightsDao.checkIfIsWatchedLocation(dataTag)
+                if (foundDetails.isNotEmpty()) {
+                    val existingData = foundDetails[0]
+                    val lat = locationDetails.getLat()
+                    val lon = locationDetails.getLon()
+                    if (lat != null && lon != null) {
+                        val indoorPm = if (existingData.isIndoorLoc) locationDetails.indoor?.indoor_pm?.toDoubleOrNull()
+                        else null
+                        val updatedData = WatchedLocationHighLights(
+                                actualDataTag = dataTag,
+                                lat = lat,
+                                lon = lon,
+                                pm_outdoor = locationDetails.outdoor?.outdoor_pm?.toDoubleOrNull(),
+                                pm_indoor = indoorPm,
+                                name = existingData.name,
+                                logo = existingData.logo,
+                                location_area = existingData.location_area,
+                                indoor_co2 = locationDetails.indoor?.indoor_co2?.toDoubleOrNull(),
+                                indoor_humidity = locationDetails.indoor?.indoor_humidity?.toDoubleOrNull(),
+                                indoor_temperature = locationDetails.indoor?.indoor_temperature?.toDoubleOrNull(),
+                                indoor_voc = locationDetails.indoor?.indoor_voc?.toDoubleOrNull(),
+                                energyMonth = locationDetails.energy?.month?.toDoubleOrNull(),
+                                energyMax = locationDetails.energy?.max?.toDoubleOrNull(),
+                                isIndoorLoc = indoorPm != null,
+                                compId = existingData.compId,
+                                locId = existingData.locId,
+                                monitorId = existingData.monitorId,
+                                lastRecPwd = existingData.lastRecPwd,
+                                lastRecUsername = existingData.lastRecUsername
+                        )
+                        watchedLocationHighLightsDao.insertLocation(updatedData)
+                    }
+                }
+            } catch (exc: Exception) {
+                myLogger.logThis(
+                        TAG, " updateWatchedLocationIfExist()", "exception ${exc.message}", exc
                 )
-             watchedLocationHighLightsDao.insertLocation(updatedData)
             }
         }
     }

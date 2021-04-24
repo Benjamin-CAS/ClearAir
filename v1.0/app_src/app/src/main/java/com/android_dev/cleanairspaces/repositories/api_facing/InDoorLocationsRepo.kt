@@ -22,8 +22,8 @@ class InDoorLocationsRepo
 @Inject constructor(
         private val coroutineScope: CoroutineScope,
         private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
-        private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-        private val inDoorLocationsApiService: InDoorLocationApiService) {
+        private val inDoorLocationsApiService: InDoorLocationApiService,
+        private val myLogger: MyLogger) {
 
     private val TAG = IndoorLocationsResponse::class.java.simpleName
 
@@ -34,13 +34,15 @@ class InDoorLocationsRepo
         indoorLocationsResponse.enqueue(getInDoorLocationsResponseCallback())
     }
 
+
     private fun mapIndoorLocationsToSearchableData(indoorLocations: List<IndoorLocations>) {
         coroutineScope.launch(Dispatchers.IO) {
             try {
                 val searchData = ArrayList<SearchSuggestionsData>()
                 for (location in indoorLocations) {
+                    if (location.active.toInt() == 0)
+                        continue
                     val tag = location.company_id
-                    /** TODO later
                     searchData.add(
                             SearchSuggestionsData(
                                     actualDataTag = tag,
@@ -52,13 +54,13 @@ class InDoorLocationsRepo
                                     isForMonitor = false,
                                     isForIndoorLoc = true,
                                     is_secure = location.secure.toInt() == 1
-                            )) **/
+                            ))
                 }
                 searchSuggestionsDataDao.deleteAllInDoorSearchSuggestions()
                 searchSuggestionsDataDao.insertSuggestions(searchData)
-                MyLogger.logThis(TAG, "saveInDoorLocations()", "saved ${indoorLocations.size} locations")
+                myLogger.logThis(TAG, "saveInDoorLocations()", "saved ${indoorLocations.size} locations")
             } catch (e: java.lang.Exception) {
-                MyLogger.logThis(TAG, "saveInDoorLocations()", "received ${indoorLocations.size} locations failed exc ${e.message}", e)
+                myLogger.logThis(TAG, "saveInDoorLocations()", "received ${indoorLocations.size} locations failed exc ${e.message}", e)
             }
         }
     }
@@ -75,7 +77,7 @@ class InDoorLocationsRepo
                         val responseBody = response.body()
                         try {
                             if (responseBody == null || responseBody.data.isNullOrEmpty()) {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getInDoorLocationsResponseCallback()",
                                         "response body is null or empty",
@@ -86,7 +88,7 @@ class InDoorLocationsRepo
                                 )
                             }
                         } catch (e: Exception) {
-                            MyLogger.logThis(
+                            myLogger.logThis(
                                     TAG,
                                     "getInDoorLocationsResponseCallback()",
                                     "exception ${e.message}",
@@ -95,7 +97,7 @@ class InDoorLocationsRepo
                         }
                     }
                     else -> {
-                        MyLogger.logThis(
+                        myLogger.logThis(
                                 TAG,
                                 "getInDoorLocationsResponseCallback()",
                                 "response code not 200, $response"
@@ -105,10 +107,11 @@ class InDoorLocationsRepo
             }
 
             override fun onFailure(call: Call<IndoorLocationsResponse>, t: Throwable) {
-                MyLogger.logThis(TAG, "getInDoorLocationsResponseCallback() - OnFailure()->", "exc ${t.message}")
+                myLogger.logThis(TAG, "getInDoorLocationsResponseCallback() - OnFailure()->", "exc ${t.message}")
             }
 
         }
     }
+
 
 }

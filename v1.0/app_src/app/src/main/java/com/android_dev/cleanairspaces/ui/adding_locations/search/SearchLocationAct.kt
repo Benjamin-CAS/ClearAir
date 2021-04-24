@@ -3,24 +3,30 @@ package com.android_dev.cleanairspaces.ui.adding_locations.search
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android_dev.cleanairspaces.BaseActivity
+import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.ActivitySearchLocationBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
 import com.android_dev.cleanairspaces.ui.adding_locations.add.AddLocationActivity
 import com.android_dev.cleanairspaces.ui.adding_locations.search.adapters.SearchSuggestionsAdapter
+import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class SearchLocationAct : BaseActivity(), SearchSuggestionsAdapter.OnClickItemListener {
+class SearchLocationAct : AppCompatActivity(), SearchSuggestionsAdapter.OnClickItemListener {
     companion object {
         private val TAG = SearchLocationAct::class.java.simpleName
     }
+
+    @Inject
+    lateinit var myLogger: MyLogger
 
     private lateinit var binding: ActivitySearchLocationBinding
 
@@ -33,7 +39,15 @@ class SearchLocationAct : BaseActivity(), SearchSuggestionsAdapter.OnClickItemLi
         binding = ActivitySearchLocationBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        super.setToolBar(binding.topToolbar, isHomeAct = false)
+
+
+        setSupportActionBar(binding.topToolbar.toolbar)
+        binding.topToolbar.toolbar.apply {
+            setNavigationIcon(R.drawable.ic_back)
+            setNavigationOnClickListener {
+                this@SearchLocationAct.finish()
+            }
+        }
 
         setupRecyclerView()
         initializeSearchView()
@@ -73,12 +87,7 @@ class SearchLocationAct : BaseActivity(), SearchSuggestionsAdapter.OnClickItemLi
                         tag, suggestion
                 )
         )
-        finish()
-    }
-
-
-    override fun handleBackPress() {
-        finish()
+        this.finish()
     }
 
 

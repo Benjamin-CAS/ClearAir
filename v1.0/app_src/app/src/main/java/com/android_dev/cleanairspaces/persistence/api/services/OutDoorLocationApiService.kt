@@ -16,7 +16,7 @@ import retrofit2.http.Query
 interface OutDoorLocationApiService {
     companion object {
         const val OUTDOOR_LOCATIONS_INFO_METHOD = "OutLocInfo"
-        const val OUTDOOR_LOCATIONS_EXTRA_INFO_METHOD  = "GetOutLoc"
+        const val OUTDOOR_LOCATIONS_EXTRA_INFO_METHOD = "GetOutLoc"
     }
 
     @POST("index.php/api/router")

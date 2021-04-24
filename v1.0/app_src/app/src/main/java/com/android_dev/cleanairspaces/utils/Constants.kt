@@ -35,10 +35,7 @@ const val MY_LOCATION_ZOOM_LEVEL = 15f
 const val SCANNING_QR_TIMEOUT_MILLS = 18000L //3 minutes
 
 //DATA
-const val DEFAULT_LOCATION_EN_NAME = "Unspecified Location"
-const val OUTDOOR_LOCATIONS_REFRESH_RATE_MIN = 30L // 30 minutes
-const val MY_LOCATIONS_REFRESH_RATE_MIN = 15L // 15 minutes
-const val HISTORY_EXPIRE_TIME_MILLS = 60000L //TODO 900000L 15 minutes
+const val HISTORY_EXPIRE_TIME_MILLS = 900000L //15 minutes
 const val DEFAULT_QR_LOCATION_ID = "LOCID"
 const val DEFAULT_QR_LOCATION_ID_L_PAD = "X"
 const val DEFAULT_QR_LOCATION_ID_R_PAD = "Y"
@@ -57,7 +54,3 @@ const val PASSWORD_KEY = "password"
 const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
 const val MONITOR_ID_KEY = "monitor_id"
-const val UPDATE_USER_LOCATION_INTERVAL = 300000L //5 minutes
-
-//worker tags
-const val LOCATIONS_REFRESH_WORKER = "locations_refresher"

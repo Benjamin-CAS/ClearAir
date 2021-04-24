@@ -8,13 +8,11 @@ import com.android_dev.cleanairspaces.persistence.api.services.*
 import com.android_dev.cleanairspaces.persistence.local.CasDatabase
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
 import com.android_dev.cleanairspaces.persistence.local.models.dao.*
-import com.android_dev.cleanairspaces.repositories.api_facing.InDoorLocationsRepo
-import com.android_dev.cleanairspaces.repositories.api_facing.LocationDetailsRepo
-import com.android_dev.cleanairspaces.repositories.api_facing.OutDoorLocationsRepo
-import com.android_dev.cleanairspaces.repositories.api_facing.WatchedLocationUpdatesRepo
+import com.android_dev.cleanairspaces.repositories.api_facing.*
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.BASE_URL
 import com.android_dev.cleanairspaces.utils.DATABASE_NAME
+import com.android_dev.cleanairspaces.utils.MyLogger
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -77,6 +75,11 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideLoggerService(retrofit: Retrofit):LoggerService =
+        retrofit.create(LoggerService::class.java)
+
+    @Provides
+    @Singleton
     fun provideLocationHistoriesService(retrofit: Retrofit): LocationHistoriesService =
             retrofit.create(LocationHistoriesService::class.java)
 
@@ -110,7 +113,9 @@ class AppModule {
             locationHistoryWeekDao: LocationHistoryWeekDao,
             locationHistoryMonthDao: LocationHistoryMonthDao,
             locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao,
-            locationHistoriesService: LocationHistoriesService
+            locationHistoriesService: LocationHistoriesService,
+            inDoorLocationsApiService: InDoorLocationApiService,
+            myLogger: MyLogger
     ): AppDataRepo = AppDataRepo(
             coroutineScope = coroutineScope,
             mapDataDao = mapDataDao,
@@ -120,7 +125,9 @@ class AppModule {
             locationHistoryWeekDao = locationHistoryWeekDao,
             locationHistoryMonthDao = locationHistoryMonthDao,
             locationHistoryUpdatesTrackerDao = locationHistoryUpdatesTrackerDao,
-            locationHistoriesService = locationHistoriesService
+            locationHistoriesService = locationHistoriesService,
+            inDoorLocationsApiService = inDoorLocationsApiService,
+        myLogger = myLogger,
     )
 
     @Provides
@@ -129,25 +136,23 @@ class AppModule {
             coroutineScope: CoroutineScope,
             mapDataDao: MapDataDao,
             searchSuggestionsDataDao: SearchSuggestionsDataDao,
-            watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-            outDoorLocationApiService: OutDoorLocationApiService
+            outDoorLocationApiService: OutDoorLocationApiService,
+            myLogger: MyLogger
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
             coroutineScope = coroutineScope,
             mapDataDao = mapDataDao,
             searchSuggestionsDataDao = searchSuggestionsDataDao,
-            watchedLocationHighLightsDao = watchedLocationHighLightsDao,
-            outDoorLocationApiService = outDoorLocationApiService
+            outDoorLocationApiService = outDoorLocationApiService,
+        myLogger = myLogger,
     )
 
     @Provides
     @Singleton
     fun provideLocationDetailsRepo(
-            coroutineScope: CoroutineScope,
-            watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
+            myLogger: MyLogger,
             qrScannedItemsApiService: QrScannedItemsApiService
     ): LocationDetailsRepo = LocationDetailsRepo(
-            coroutineScope = coroutineScope,
-            watchedLocationHighLightsDao = watchedLocationHighLightsDao,
+        myLogger = myLogger,
             qrScannedItemsApiService = qrScannedItemsApiService
     )
 
@@ -156,13 +161,13 @@ class AppModule {
     fun provideInDoorLocationsRepo(
             coroutineScope: CoroutineScope,
             searchSuggestionsDataDao: SearchSuggestionsDataDao,
-            watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-            inDoorLocationApiService: InDoorLocationApiService
+            inDoorLocationApiService: InDoorLocationApiService,
+            myLogger: MyLogger
     ): InDoorLocationsRepo = InDoorLocationsRepo(
             coroutineScope = coroutineScope,
             searchSuggestionsDataDao = searchSuggestionsDataDao,
-            watchedLocationHighLightsDao = watchedLocationHighLightsDao,
-            inDoorLocationsApiService = inDoorLocationApiService
+            inDoorLocationsApiService = inDoorLocationApiService,
+        myLogger = myLogger,
     )
 
     @Provides
@@ -171,11 +176,12 @@ class AppModule {
             coroutineScope: CoroutineScope,
             locationDetailsService: LocationDetailsService,
             watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-
+            myLogger: MyLogger
             ): WatchedLocationUpdatesRepo = WatchedLocationUpdatesRepo(
             coroutineScope = coroutineScope,
             watchedLocationHighLightsDao = watchedLocationHighLightsDao,
-            locationDetailsService = locationDetailsService
+            locationDetailsService = locationDetailsService,
+        myLogger = myLogger,
     )
 
     @Provides
@@ -217,6 +223,24 @@ class AppModule {
     fun provideLocationHistoryUpdatesTrackerDao(casDatabase: CasDatabase): LocationHistoryUpdatesTrackerDao =
             casDatabase.locationHistoryUpdatesTrackerDao()
 
+    @Provides
+    @Singleton
+    fun provideLogsDao(casDatabase: CasDatabase):LogsDao =
+        casDatabase.logsDao()
+
+    @Provides
+    @Singleton
+    fun provideLogsRepo(coroutineScope: CoroutineScope, logsDao: LogsDao, loggerService : LoggerService) : LogRepo = LogRepo(
+            coroutineScope = coroutineScope,
+            loggerDao = logsDao,
+            loggerService = loggerService
+        )
+
+    @Provides
+    @Singleton
+    fun provideLogger(logRepo: LogRepo): MyLogger = MyLogger(
+        logRepo = logRepo
+    )
 
     @Provides
     @Singleton

@@ -3,10 +3,10 @@ package com.android_dev.cleanairspaces.ui.adding_locations.add
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import com.android_dev.cleanairspaces.BaseActivity
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.ActivityAddLocationBinding
 import com.android_dev.cleanairspaces.persistence.api.responses.LocationDataFromQr
@@ -18,10 +18,11 @@ import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.myTxt
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class AddLocationActivity : BaseActivity() {
+class AddLocationActivity : AppCompatActivity() {
     companion object {
         private val TAG = AddLocationActivity::class.java.simpleName
         const val INTENT_FROM_QR_SCANNER_TAG = "loc_data_from_qr"
@@ -29,6 +30,8 @@ class AddLocationActivity : BaseActivity() {
         const val INTENT_FROM_SEARCHED_OUTDOOR_LOC = "loc_data_is_outdoor_query"
         const val INTENT_FROM_SEARCHED_MONITOR_LOC: String = "loc_data_is_monitor_query"
     }
+    @Inject
+    lateinit var myLogger: MyLogger
 
     private lateinit var binding: ActivityAddLocationBinding
     private val viewModel: AddLocationViewModel by viewModels()
@@ -38,13 +41,20 @@ class AddLocationActivity : BaseActivity() {
         binding = ActivityAddLocationBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        super.setToolBar(binding.toolbar, isHomeAct = false)
+
+        setSupportActionBar(binding.toolbar.toolbar)
+        binding.toolbar.toolbar.apply {
+            setNavigationIcon(R.drawable.ic_back)
+            setNavigationOnClickListener {
+                this@AddLocationActivity.finish()
+            }
+        }
         viewModel.clearCache()
 
         when {
             intent.hasExtra(INTENT_FROM_SEARCHED_INDOOR_LOC) -> {
                 val searchDataForIndoorLocation = intent.getParcelableExtra<SearchSuggestionsData>(INTENT_FROM_SEARCHED_INDOOR_LOC)
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG, "onCreate()",
                         "receivedData for indoor loc"
                 )
@@ -55,7 +65,7 @@ class AddLocationActivity : BaseActivity() {
 
             intent.hasExtra(INTENT_FROM_SEARCHED_MONITOR_LOC) -> {
 
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG, "onCreate()",
                         "receivedData for monitor loc"
                 )
@@ -63,7 +73,7 @@ class AddLocationActivity : BaseActivity() {
 
             intent.hasExtra(INTENT_FROM_SEARCHED_OUTDOOR_LOC) -> {
                 val searchDataForOutDoorLocation = intent.getParcelableExtra<SearchSuggestionsData>(INTENT_FROM_SEARCHED_OUTDOOR_LOC)
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG, "onCreate()",
                         "receivedData for outdoor loc"
                 )
@@ -74,7 +84,7 @@ class AddLocationActivity : BaseActivity() {
 
             intent.hasExtra(INTENT_FROM_QR_SCANNER_TAG) -> {
                 val qrContent = intent.getStringExtra(INTENT_FROM_QR_SCANNER_TAG)
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG, "onCreate()",
                         "receivedData from qr $qrContent"
                 )
@@ -87,44 +97,51 @@ class AddLocationActivity : BaseActivity() {
         })
 
         viewModel.observeAddProcess().observe(this, Observer {
-            when (it) {
-                WatchLocationProcessState.ADDING -> {
-                    binding.apply {
-                        addLocationBtn.isEnabled = false
-                        progressCircular.isVisible = true
-                        addingProgress.setText(R.string.add_location_ongoing_text)
-                    }
-                }
-                WatchLocationProcessState.ADDED -> {
-                    binding.apply {
-                        addLocationBtn.apply {
-                            setText(R.string.location_added_text)
-                            isEnabled = false
-                            setCompoundDrawablesWithIntrinsicBounds(
-                                    null,
-                                    null,
-                                    ContextCompat.getDrawable(
-                                            this@AddLocationActivity,
-                                            R.drawable.ic_white_check
-                                    ),
-                                    null
-                            )
-                        }
-                        addingProgress.setText(R.string.location_added_text)
-                        progressCircular.isVisible = false
-                        addingProgress.text = ""
 
+            try {
+                when (it) {
+                    WatchLocationProcessState.ADDING -> {
+                        binding.apply {
+                            addLocationBtn.isEnabled = false
+                            progressCircular.isVisible = true
+                            addingProgress.setText(R.string.add_location_ongoing_text)
+                        }
+                    }
+                    WatchLocationProcessState.ADDED -> {
+                        binding.apply {
+                            addLocationBtn.apply {
+                                setText(R.string.location_added_text)
+                                isEnabled = false
+                                setCompoundDrawablesWithIntrinsicBounds(
+                                        null,
+                                        null,
+                                        ContextCompat.getDrawable(
+                                                this@AddLocationActivity,
+                                                R.drawable.ic_white_check
+                                        ),
+                                        null
+                                )
+                            }
+                            addingProgress.setText(R.string.location_added_text)
+                            progressCircular.isVisible = false
+                            addingProgress.text = ""
+
+                        }
+                    }
+                    WatchLocationProcessState.FAILED -> {
+                        binding.apply {
+                            addLocationBtn.isEnabled = true
+                            progressCircular.isVisible = false
+                            addingProgress.setText(R.string.add_location_failed_text)
+                        }
+                    }
+                    else -> {
                     }
                 }
-                WatchLocationProcessState.FAILED -> {
-                    binding.apply {
-                        addLocationBtn.isEnabled = true
-                        progressCircular.isVisible = false
-                        addingProgress.setText(R.string.add_location_failed_text)
-                    }
-                }
-                else -> {
-                }
+            } catch (exc: Exception) {
+                myLogger.logThis(
+                        TAG, "observeAddProcess()", "exception ${exc.message}", exc
+                )
             }
         })
     }
@@ -177,7 +194,7 @@ class AddLocationActivity : BaseActivity() {
                     infoText += "$companyLblTxt: ${searchDataForIndoorLocation.nameToDisplay}"
                     isSecureLocation = searchDataForIndoorLocation.is_secure
                     onClickAddLocListener = {
-                        addLocationFromSearchedInfo(searchInfo =searchDataForIndoorLocation, isInDoorData = true)
+                        addLocationFromSearchedInfo(searchInfo = searchDataForIndoorLocation, isInDoorData = true)
                     }
                 }
                 searchDataForOutdoorLocation != null -> {
@@ -185,7 +202,7 @@ class AddLocationActivity : BaseActivity() {
                     val locationLbl = getString(R.string.location_lbl)
                     infoText += "$locationLbl: ${searchDataForOutdoorLocation.nameToDisplay}"
                     onClickAddLocListener = {
-                        addLocationFromSearchedInfo(searchInfo =searchDataForOutdoorLocation, isInDoorData = false)
+                        addLocationFromSearchedInfo(searchInfo = searchDataForOutdoorLocation, isInDoorData = false)
                     }
                 }
             }
@@ -211,7 +228,6 @@ class AddLocationActivity : BaseActivity() {
             progressCircular.isVisible = false
         }
     }
-
 
 
     private fun handleQrCode(scannedQrContent: String?) {
@@ -252,27 +268,24 @@ class AddLocationActivity : BaseActivity() {
         }
     }
 
-    private fun addLocationFromSearchedInfo(searchInfo: SearchSuggestionsData, isInDoorData : Boolean) {
+    private fun addLocationFromSearchedInfo(searchInfo: SearchSuggestionsData, isInDoorData: Boolean) {
         //an outdoor loc has location_id , monitor_id
         if (!isInDoorData) {
-            viewModel.saveWatchedOutdoorLocationSearchedInfo( outDoorInfo = searchInfo)
-        }else {
+            viewModel.saveWatchedOutdoorLocationSearchedInfo(outDoorInfo = searchInfo)
+        } else {
             val (userName, password) = if (searchInfo.is_secure) {
-                Pair(binding.userName.myTxt(binding.userName), binding.password.myTxt(binding.password))
+                Pair(binding.userName.myTxt(binding.userName)
+                        ?: "", binding.password.myTxt(binding.password) ?: "")
             } else Pair("", "")
-            //todo fetch indoor data
+            viewModel.saveWatchedIndoorLocationSearchedInfo(
+                    userName, password, searchInfo
+            )
         }
     }
 
 
-
-    override fun handleBackPress() {
-        reloadApp()
-    }
-
-    private fun reloadApp() {
-        startActivity(Intent(this, SplashActivity::class.java))
-        finishAffinity()
+    private fun reloadApp(){
+        this@AddLocationActivity.finish()
     }
 
 

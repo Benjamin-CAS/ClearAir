@@ -26,6 +26,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -36,6 +37,8 @@ class HistoryFragment : Fragment() {
         private const val DAY_TAG = "d"
         private const val WEEK_TAG = "w"
     }
+    @Inject
+    lateinit var myLogger: MyLogger
 
 
     private var selectedTv: TextView? = null
@@ -245,7 +248,7 @@ class HistoryFragment : Fragment() {
                     chartData = monthData
             )
         }
-        MyLogger.logThis(
+        myLogger.logThis(
                 TAG, "refreshing histories day $refreshDaysHistory week $refreshWeeksHistory month $refreshMonthsHistory", "called"
         )
     }
@@ -528,7 +531,7 @@ class HistoryFragment : Fragment() {
                 }
             }
         } catch (e: java.lang.Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "displayClickedValue(x ${entry.x} y ${entry.y} tag $chartIdentifierTag)", "exc ${e.message}", e
             )
         }
@@ -555,7 +558,7 @@ class HistoryFragment : Fragment() {
                 }
             }
         } catch (e: java.lang.Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "clearClickedValue($chartIdentifierTag)", "exc ${e.message}", e
             )
         }
@@ -611,11 +614,11 @@ class HistoryFragment : Fragment() {
                 data = BarData(daysHistoryDataSet)
                 notifyDataSetChanged()
             }
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "update chart $selectedParamType", "$title with data ${chartData.size}"
             )
         } catch (e: Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "updateChart()",
                     "failed -- new data ${chartData.size} in size ${e.message}",
                     e

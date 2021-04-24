@@ -1,9 +1,8 @@
 package com.android_dev.cleanairspaces.repositories.ui_based
 
-import com.android_dev.cleanairspaces.persistence.api.responses.HistoryDataUnEncrypted
-import com.android_dev.cleanairspaces.persistence.api.responses.LocationDataFromQr
-import com.android_dev.cleanairspaces.persistence.api.responses.LocationHistoriesResponse
+import com.android_dev.cleanairspaces.persistence.api.responses.*
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD
+import com.android_dev.cleanairspaces.persistence.api.services.InDoorLocationApiService
 import com.android_dev.cleanairspaces.persistence.api.services.LocationHistoriesService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.*
 import com.android_dev.cleanairspaces.persistence.local.models.entities.*
@@ -14,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,7 +32,9 @@ class AppDataRepo
         private val locationHistoryWeekDao: LocationHistoryWeekDao,
         private val locationHistoryMonthDao: LocationHistoryMonthDao,
         private val locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao,
-        private val locationHistoriesService: LocationHistoriesService
+        private val locationHistoriesService: LocationHistoriesService,
+        private val inDoorLocationsApiService: InDoorLocationApiService,
+        private val myLogger: MyLogger,
 ) {
 
     private val TAG = AppDataRepo::class.java.simpleName
@@ -87,7 +89,7 @@ class AppDataRepo
                         val responseBody = response.body()
                         try {
                             if (responseBody == null) {
-                                MyLogger.logThis(
+                                myLogger.logThis(
                                         TAG,
                                         "getLocationHistoryCallback -> onResponse()",
                                         "response is OK but body is null"
@@ -99,7 +101,7 @@ class AppDataRepo
                                             lTime = responseBody.ltime ?: "0"
                                     )
                                 } else {
-                                    MyLogger.logThis(
+                                    myLogger.logThis(
                                             TAG,
                                             "getLocationHistoryCallback -> onResponse()",
                                             "response is OK but payload is null - $responseBody"
@@ -107,7 +109,7 @@ class AppDataRepo
                                 }
                             }
                         } catch (e: Exception) {
-                            MyLogger.logThis(
+                            myLogger.logThis(
                                     TAG,
                                     "getLocationHistoryCallback -> onResponse()",
                                     "response is OK but an exception occurred ${e.message}",
@@ -116,7 +118,7 @@ class AppDataRepo
                         }
                     }
                     else -> {
-                        MyLogger.logThis(
+                        myLogger.logThis(
                                 TAG,
                                 "getLocationHistoryCallback -> onResponse()",
                                 "response code is not 200 OK $response"
@@ -126,7 +128,7 @@ class AppDataRepo
             }
 
             override fun onFailure(call: Call<LocationHistoriesResponse>, t: Throwable) {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG,
                         "getLocationHistoryCallback -> onFailure()",
                         "exc ${t.message}"
@@ -162,12 +164,12 @@ class AppDataRepo
                             data = HistoryData(
                                     actualDataTag = actualDataTag,
                                     dates = daysData.date_reading!!,
-                                    indoor_pm = (daysData.avg_reading?:0.0).toFloat(),
-                                    outdoor_pm = (daysData.reading_comp?:0.0).toFloat(),
-                                    temperature = (daysData.avg_temperature?:0.0).toFloat(),
-                                    co2 =(daysData.avg_co2?:0.0).toFloat(),
-                                    tvoc = (daysData.avg_tvoc?:"0.0").toFloat(),
-                                    humidity = (daysData.avg_humidity?:0.0).toFloat(),
+                                    indoor_pm = (daysData.avg_reading ?: 0.0).toFloat(),
+                                    outdoor_pm = (daysData.reading_comp ?: 0.0).toFloat(),
+                                    temperature = (daysData.avg_temperature ?: 0.0).toFloat(),
+                                    co2 = (daysData.avg_co2 ?: 0.0).toFloat(),
+                                    tvoc = (daysData.avg_tvoc ?: "0.0").toFloat(),
+                                    humidity = (daysData.avg_humidity ?: 0.0).toFloat(),
                             )
                     )
                     sevenTwoHrsArrList.add(parsedDaysData)
@@ -184,22 +186,22 @@ class AppDataRepo
             while (j < weekTotal) {
                 val weekData =
                         Gson().fromJson(weekJsonArray.getJSONObject(j).toString(), HistoryDataUnEncrypted::class.java)
-                            if (weekData.date_reading != null) {
-                                val parsedWeekData = LocationHistoryWeek(
-                                        autoId = 0,
-                                        data = HistoryData(
-                                                actualDataTag = actualDataTag,
-                                                dates = weekData.date_reading!!,
-                                                indoor_pm = (weekData.avg_reading?:0.0).toFloat(),
-                                                outdoor_pm = (weekData.reading_comp?:0.0).toFloat(),
-                                                temperature = (weekData.avg_temperature?:0.0).toFloat(),
-                                                co2 =(weekData.avg_co2?:0.0).toFloat(),
-                                                tvoc = (weekData.avg_tvoc?:"0.0").toFloat(),
-                                                humidity = (weekData.avg_humidity?:0.0).toFloat(),
-                                                 )
-                                )
-                                weekArrList.add(parsedWeekData)
-                            }
+                if (weekData.date_reading != null) {
+                    val parsedWeekData = LocationHistoryWeek(
+                            autoId = 0,
+                            data = HistoryData(
+                                    actualDataTag = actualDataTag,
+                                    dates = weekData.date_reading!!,
+                                    indoor_pm = (weekData.avg_reading ?: 0.0).toFloat(),
+                                    outdoor_pm = (weekData.reading_comp ?: 0.0).toFloat(),
+                                    temperature = (weekData.avg_temperature ?: 0.0).toFloat(),
+                                    co2 = (weekData.avg_co2 ?: 0.0).toFloat(),
+                                    tvoc = (weekData.avg_tvoc ?: "0.0").toFloat(),
+                                    humidity = (weekData.avg_humidity ?: 0.0).toFloat(),
+                            )
+                    )
+                    weekArrList.add(parsedWeekData)
+                }
                 j++
             }
 
@@ -217,12 +219,12 @@ class AppDataRepo
                             data = HistoryData(
                                     actualDataTag = actualDataTag,
                                     dates = monthData.date_reading!!,
-                                    indoor_pm = (monthData.avg_reading?:0.0).toFloat(),
-                                    outdoor_pm = (monthData.reading_comp?:0.0).toFloat(),
-                                    temperature = (monthData.avg_temperature?:0.0).toFloat(),
-                                    co2 =(monthData.avg_co2?:0.0).toFloat(),
-                                    tvoc = (monthData.avg_tvoc?:"0.0").toFloat(),
-                                    humidity = (monthData.avg_humidity?:0.0).toFloat(),
+                                    indoor_pm = (monthData.avg_reading ?: 0.0).toFloat(),
+                                    outdoor_pm = (monthData.reading_comp ?: 0.0).toFloat(),
+                                    temperature = (monthData.avg_temperature ?: 0.0).toFloat(),
+                                    co2 = (monthData.avg_co2 ?: 0.0).toFloat(),
+                                    tvoc = (monthData.avg_tvoc ?: "0.0").toFloat(),
+                                    humidity = (monthData.avg_humidity ?: 0.0).toFloat(),
                             )
                     )
                     monthArrList.add(parsedMonthData)
@@ -234,7 +236,7 @@ class AppDataRepo
                     daysHistory = sevenTwoHrsArrList, weekHistory = weekArrList, monthHistory = monthArrList, dataTag = actualDataTag
             )
         } catch (e: Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG,
                     "unEncryptHistoryPayload(payload - $pl, lTime $lTime)",
                     "exception thrown ${e.message}", e
@@ -267,18 +269,18 @@ class AppDataRepo
                                 actualDataTag = dataTag,
                         )
                 )
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG, "saveFetchedHistoryForLocation()", "success"
                 )
             } catch (e: java.lang.Exception) {
-                MyLogger.logThis(
+                myLogger.logThis(
                         TAG, "saveFetchedHistoryForLocation()", "exception ${e.message}", e
                 )
             }
         }
     }
 
-    fun refreshHistoryForLocation(compId: String, locId: String, timeStamp: String,  payload: String,  dataTag: String, userName: String, userPassword: String) {
+    fun refreshHistoryForLocation(compId: String, locId: String, timeStamp: String, payload: String, dataTag: String, userName: String, userPassword: String) {
         try {
             val method = DEVICE_INFO_METHOD
             val data = JsonObject()
@@ -299,13 +301,13 @@ class AppDataRepo
             )
             data.addProperty(API_LOCAL_DATA_BINDER_KEY, dataTag)
             recentRequestsData.add(data)
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG,
                     "refreshHistoryForLocation()",
                     "data passed $data $payload",
             )
         } catch (e: Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG,
                     "refreshHistoryForLocation()",
                     "exc ${e.message}",
@@ -320,13 +322,14 @@ class AppDataRepo
         try {
             val tag = "${outDoorInfo.company_id}${outDoorInfo.location_id}"
             val foundData = watchedLocationHighLightsDao.checkIfIsWatchedLocation(tag)
-            if (foundData.isNotEmpty()) return true
+            if (foundData.isNotEmpty())
+                return true //already added
             watchedLocationHighLightsDao.insertLocation(
                     WatchedLocationHighLights(
                             actualDataTag = tag,
                             lat = outDoorInfo.lat!!,
                             lon = outDoorInfo.lon!!,
-                            pm_outdoor = 0.0,
+                            pm_outdoor = 0.0, //to be refreshed
                             pm_indoor = null,
                             name = outDoorInfo.nameToDisplay,
                             logo = "",
@@ -345,12 +348,12 @@ class AppDataRepo
                             lastRecUsername = ""
                     )
             )
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "addNewWatchedLocationFromOutDoorSearchData()", "--done"
             )
             return true
         } catch (ex: java.lang.Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "addNewWatchedLocationFromOutDoorSearchData failed", "exception ${ex.message}", ex
             )
             return false
@@ -402,7 +405,7 @@ class AppDataRepo
                             indoor_voc = null,
                             energyMonth = null,
                             energyMax = null,
-                            isIndoorLoc = false,
+                            isIndoorLoc = true, //we do not know--- could be -- to be determined upon refresh
                             compId = locationData.company_id,
                             locId = locationData.location_id,
                             monitorId = locationData.monitor_id,
@@ -410,15 +413,109 @@ class AppDataRepo
                             lastRecUsername = userName
                     )
             )
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "addNewWatchedLocationFromScannedQrCode()", "--done"
             )
             return true
         } catch (ex: java.lang.Exception) {
-            MyLogger.logThis(
+            myLogger.logThis(
                     TAG, "addNewWatchedLocationFromScannedQrCode failed", "exception ${ex.message}", ex
             )
             return false
+        }
+    }
+
+    suspend fun addNewWatchedLocationFromInDoorSearchData(userName: String, password: String, inDoorInfo: SearchSuggestionsData, indoorDataResultListener: AsyncResultListener) {
+        try {
+            //indoor loc only has company id
+            fetchIndoorLocationsToWatch(
+                    indoorLocation = inDoorInfo,
+                    userName = userName,
+                    userPass = password,
+                    indoorDataResultListener = indoorDataResultListener
+            )
+            myLogger.logThis(
+                    TAG, "addNewWatchedLocationFromInDoorSearchData()", "--done"
+            )
+        } catch (ex: java.lang.Exception) {
+            myLogger.logThis(
+                    TAG, "addNewWatchedLocationFromInDoorSearchData failed", "exception ${ex.message}", ex
+            )
+            indoorDataResultListener.onComplete(isSuccess = false)
+        }
+    }
+
+
+    /********** INDOOR ******/
+    private fun fetchIndoorLocationsToWatch(indoorLocation: SearchSuggestionsData, userName: String = "", userPass: String = "", indoorDataResultListener: AsyncResultListener) {
+        //MORE -- DETAILS
+        coroutineScope.launch(Dispatchers.IO) {
+            val timeStamp = System.currentTimeMillis().toString()
+            val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocationOverviewDetails(timeStamp, companyId = indoorLocation.company_id, userName = userName, userPass = userPass)
+            val data = JsonObject()
+            data.addProperty(L_TIME_KEY, timeStamp)
+            data.addProperty(PAYLOAD_KEY, pl)
+            val indoorDetailsResponse = inDoorLocationsApiService.fetchInDoorLocationsDetails(pl = data)
+            indoorDetailsResponse.enqueue(object : Callback<IndoorLocationsDetailsResponse> {
+                override fun onResponse(call: Call<IndoorLocationsDetailsResponse>, response: Response<IndoorLocationsDetailsResponse>) {
+                    try {
+                        val decodedResponse = CasEncDecQrProcessor.decodeApiResponse(response.body()!!.payload!!)
+                        val jsonArray = JSONArray(decodedResponse)
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            val indoorLocationExtraDetails = Gson().fromJson(jsonObject.toString(), IndoorLocationExtraDetails::class.java)
+                            watchIndoorLocation(indoorLocation = indoorLocation, indoorLocationExtraDetails = indoorLocationExtraDetails, userName = userName, userPwd = userPass)
+                            myLogger.logThis(TAG, "refreshExtraDetails()", "onResponse() found ${indoorLocationExtraDetails.name_en} with $indoorLocationExtraDetails")
+                        }
+                        myLogger.logThis(TAG, "refreshExtraDetails()", "onResponse() decoded $decodedResponse")
+                        indoorDataResultListener.onComplete(isSuccess = true)
+                    } catch (exc: Exception) {
+                        myLogger.logThis(TAG, "refreshExtraDetails()", "onResponse() ${exc.message}", exc)
+                        indoorDataResultListener.onComplete(isSuccess = false)
+                    }
+                }
+
+                override fun onFailure(call: Call<IndoorLocationsDetailsResponse>, t: Throwable) {
+                    myLogger.logThis(TAG, "refreshExtraDetails()", "onFailure() ${t.message}")
+                    indoorDataResultListener.onComplete(isSuccess = false)
+                }
+
+            })
+        }
+    }
+
+    private fun watchIndoorLocation(indoorLocation: SearchSuggestionsData, indoorLocationExtraDetails: IndoorLocationExtraDetails, userPwd: String, userName: String) {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                val tag = "${indoorLocation.company_id}${indoorLocationExtraDetails.location_id}"
+                mapDataDao.insert(WatchedLocationHighLights(
+                        actualDataTag = tag,
+                        lat = indoorLocation.lat ?: 0.0,
+                        lon = indoorLocation.lon ?: 0.0,
+                        pm_outdoor = null,
+                        pm_indoor = null,
+                        name = indoorLocationExtraDetails.name_en,
+                        logo = indoorLocationExtraDetails.logo,
+                        location_area = "",
+                        indoor_co2 = null,
+                        indoor_humidity = null,
+                        indoor_temperature = null,
+                        indoor_voc = null,
+                        energyMonth = null,
+                        energyMax = null,
+                        isIndoorLoc = true,
+                        compId = indoorLocation.company_id,
+                        locId = indoorLocationExtraDetails.location_id,
+                        monitorId = "",
+                        lastRecPwd = userPwd,
+                        lastRecUsername = userName
+                ))
+                myLogger.logThis(TAG, "watchIndoorLocations()", "saving $tag  ${indoorLocationExtraDetails.name_en} with ${indoorLocation.company_id} ${indoorLocationExtraDetails.location_id}")
+            } catch (exc: java.lang.Exception) {
+                myLogger.logThis(
+                        TAG, "watchIndoorLocation()", "exception ${exc.message}", exc
+                )
+            }
         }
     }
 

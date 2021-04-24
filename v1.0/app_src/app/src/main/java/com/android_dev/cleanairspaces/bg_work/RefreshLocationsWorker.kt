@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.android_dev.cleanairspaces.repositories.api_facing.InDoorLocationsRepo
+import com.android_dev.cleanairspaces.repositories.api_facing.LogRepo
 import com.android_dev.cleanairspaces.repositories.api_facing.OutDoorLocationsRepo
 import com.android_dev.cleanairspaces.repositories.api_facing.WatchedLocationUpdatesRepo
 import com.android_dev.cleanairspaces.utils.MyLogger
@@ -21,10 +22,12 @@ class RefreshLocationsWorker @AssistedInject constructor(
         private val outDoorLocationsRepo: OutDoorLocationsRepo,
         private val inDoorLocationsRepo: InDoorLocationsRepo,
         private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
+        private val myLogger: MyLogger,
+        private val logRepo: LogRepo
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val TAG = RefreshLocationsWorker::class.java.simpleName
-    private val TWO_MIN_MILLS = 90000L //2 minutes
+    private val TWO_MIN_MILLS = 180000L// 2 minutes
 
     override suspend fun doWork(): Result {
 
@@ -33,31 +36,36 @@ class RefreshLocationsWorker @AssistedInject constructor(
             delay(TWO_MIN_MILLS)
             refreshInDoorLocations()
             delay(TWO_MIN_MILLS)
-            refreshWatchedLocations()
+            sendLogData()
         }
 
         return Result.success()
     }
 
     private suspend fun refreshOutDoorLocations() {
-        MyLogger.logThis(
+        myLogger.logThis(
                 TAG, "refreshOutDoorLocations", "refreshing"
         )
         outDoorLocationsRepo.refreshOutDoorLocations()
     }
 
     private suspend fun refreshInDoorLocations() {
-        MyLogger.logThis(
+        myLogger.logThis(
                 TAG, "refreshInDoorLocations", "refreshing"
         )
         inDoorLocationsRepo.refreshInDoorLocations()
     }
 
+    //doing it on resume is enough --- more actually!
     private suspend fun refreshWatchedLocations() {
-        MyLogger.logThis(
+        myLogger.logThis(
                 TAG, "RefreshWatchedLocations", "refreshing"
         )
         watchedLocationUpdatesRepo.refreshWatchedLocationsData()
+    }
+
+    private suspend fun sendLogData(){
+        logRepo.pushLogs()
     }
 
 }

@@ -17,16 +17,15 @@ import com.google.android.gms.maps.model.LatLng as GLatLng
         )]
 )
 data class MapData(
-        @PrimaryKey(autoGenerate = true)
-        var autoId: Int = 0,
+        @PrimaryKey(autoGenerate = false)
+        val actualDataTag: String,
 
         val lat: Double,
         val lon: Double,
 
         val pm25: Double,
 
-        val last_updated: Long = System.currentTimeMillis(),
-        val actualDataTag: String
+        val last_updated: Long = System.currentTimeMillis()
 ) : Parcelable {
     fun getAMapLocationLatLng() = ALatLng(lat, lon)
     fun getGMapLocationLatLng(): GLatLng = GLatLng(lat, lon)

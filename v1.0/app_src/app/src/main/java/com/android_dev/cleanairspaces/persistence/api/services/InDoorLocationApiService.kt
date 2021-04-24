@@ -1,8 +1,11 @@
 package com.android_dev.cleanairspaces.persistence.api.services
 
+import com.android_dev.cleanairspaces.persistence.api.responses.IndoorLocationsDetailsResponse
 import com.android_dev.cleanairspaces.persistence.api.responses.IndoorLocationsResponse
+import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_DETAILS_METHOD
 import com.android_dev.cleanairspaces.utils.API_APP_ID
 import com.android_dev.cleanairspaces.utils.NONCE
+import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -20,5 +23,14 @@ interface InDoorLocationApiService {
             @Query("nonce") nonce: String = NONCE,
             @Body pl: String
     ): Call<IndoorLocationsResponse>
+
+
+    @POST("index.php/api/approuter")
+    fun fetchInDoorLocationsDetails(
+            @Query("app_id") app_id: Int = API_APP_ID,
+            @Query("method") method: String = INDOOR_LOCATION_DETAILS_METHOD,
+            @Query("nonce") nonce: String = NONCE,
+            @Body pl: JsonObject
+    ): Call<IndoorLocationsDetailsResponse>
 
 }

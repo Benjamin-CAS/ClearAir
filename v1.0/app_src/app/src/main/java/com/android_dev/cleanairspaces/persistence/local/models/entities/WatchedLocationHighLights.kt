@@ -10,13 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Parcelize
-@Entity(
-        tableName = "watched_location",
-        indices = [androidx.room.Index(
-                value = ["lat", "lon"],
-                unique = true
-        )]
-)
+@Entity(tableName = "watched_location")
 data class WatchedLocationHighLights(
         @PrimaryKey(autoGenerate = false)
         val actualDataTag: String,

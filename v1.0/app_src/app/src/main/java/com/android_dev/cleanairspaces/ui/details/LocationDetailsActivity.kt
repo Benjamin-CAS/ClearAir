@@ -2,25 +2,30 @@ package com.android_dev.cleanairspaces.ui.details
 
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.android_dev.cleanairspaces.BaseActivity
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.ActivityLocationDetailsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
+import com.android_dev.cleanairspaces.utils.MyLogger
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class LocationDetailsActivity : BaseActivity() {
+class LocationDetailsActivity : AppCompatActivity() {
     companion object {
         private val TAG = LocationDetailsActivity::class.java.simpleName
         const val INTENT_EXTRA_TAG = "locationDetails"
     }
+
+    @Inject
+    lateinit var myLogger: MyLogger
 
 
     private lateinit var binding: ActivityLocationDetailsBinding
@@ -37,8 +42,13 @@ class LocationDetailsActivity : BaseActivity() {
         val view = binding.root
         setContentView(view)
 
-        //toolbar
-        super.setToolBar(binding.toolbarBarLayout, isHomeAct = false)
+        setSupportActionBar(binding.toolbarBarLayout.toolbar)
+        binding.toolbarBarLayout.toolbar.apply {
+            setNavigationIcon(R.drawable.ic_back)
+            setNavigationOnClickListener {
+                this@LocationDetailsActivity.finish()
+            }
+        }
 
 
         //intent data
@@ -66,14 +76,10 @@ class LocationDetailsActivity : BaseActivity() {
 
     }
 
-    override fun handleBackPress() {
-        this@LocationDetailsActivity.finish()
-    }
 
-
-    //toolbar handle back navigation
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+    override fun onBackPressed() {
+        super.onBackPressed()
+        this.finish()
     }
 
 }

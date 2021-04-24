@@ -3,6 +3,23 @@ package com.android_dev.cleanairspaces.persistence.api.responses
 import com.google.gson.annotations.Expose
 
 /************* INDOOR **********/
+data class IndoorLocationsDetailsResponse(
+        @Expose
+        val payload: String?,
+
+        @Expose
+        val ltime: String?
+
+)
+
+data class IndoorLocationExtraDetails(
+        val location_id: String,
+        val name_en: String,
+        val active: Number,
+        val outdoor: String?,
+        val logo: String,
+)
+
 data class IndoorLocationsResponse(
         @Expose
         val status: Boolean,

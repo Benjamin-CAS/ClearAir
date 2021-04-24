@@ -3,7 +3,9 @@ package com.android_dev.cleanairspaces.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
+import com.android_dev.cleanairspaces.repositories.api_facing.WatchedLocationUpdatesRepo
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
+import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.amap.api.maps.model.Marker as AMarker
@@ -13,8 +15,13 @@ import com.google.android.gms.maps.model.Marker as GMarker
 @HiltViewModel
 class BaseMapVieModel @Inject constructor(
         private val dataStoreManager: DataStoreManager,
-        private val appDataRepo: AppDataRepo
+        private val appDataRepo: AppDataRepo,
+        private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
+        private val myLogger: MyLogger
 ) : ViewModel() {
+
+
+    private val TAG = BaseMapVieModel::class.java.simpleName
 
     var myLocMarkerOnAMap: AMarker? = null
     var myLocMarkerOnGMap: GMarker? = null
@@ -24,5 +31,9 @@ class BaseMapVieModel @Inject constructor(
     fun observeMapData() = appDataRepo.getMapDataFlow().asLiveData()
     fun observeSelectedAqiIndex() = dataStoreManager.getAqiIndex().asLiveData()
     fun observeWatchedLocations() = appDataRepo.getWatchedLocationHighLights().asLiveData()
+    fun refreshWatchedLocationData() {
+        myLogger.logThis(TAG, "refreshWatchedLocationData()", "triggered")
+        watchedLocationUpdatesRepo.refreshWatchedLocationsData()
+    }
 }
 

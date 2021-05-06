@@ -27,7 +27,8 @@
         android:label="GMapsFragment" >
         <action
             android:id="@+id/action_GMapsFragment_to_addLocation"
-            app:destination="@id/addLocation" />
+            app:destination="@id/addLocation"
+            app:launchSingleTop="true" />
         <action
             android:id="@+id/action_GMapsFragment_to_detailsFragment"
             app:destination="@id/detailsFragment"
@@ -44,7 +45,8 @@
         tools:layout="@layout/fragment_a_maps" >
         <action
             android:id="@+id/action_AMapsFragment_to_addLocation"
-            app:destination="@id/addLocation" />
+            app:destination="@id/addLocation"
+            app:launchSingleTop="true" />
         <action
             android:id="@+id/action_AMapsFragment_to_detailsFragment"
             app:destination="@id/detailsFragment"
@@ -79,6 +81,10 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_addLocation_to_addLocationFromLocationsList"
+            app:destination="@id/addLocationFromLocationsList"
+            app:launchSingleTop="true" />
     </fragment>
     <fragment
         android:id="@+id/detailsFragment"
@@ -112,6 +118,17 @@
         tools:layout="@layout/fragment_search" >
         <action
             android:id="@+id/action_searchFragment_to_addLocation"
-            app:destination="@id/addLocation" />
+            app:destination="@id/addLocation"
+            app:launchSingleTop="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/addLocationFromLocationsList"
+        android:name="com.android_dev.cleanairspaces.views.fragments.add_location.AddLocationFromLocationsList"
+        android:label="AddLocationFromLocationsList" >
+        <action
+            android:id="@+id/action_addLocationFromLocationsList_to_splashFragment"
+            app:destination="@id/splashFragment"
+            app:popUpTo="@id/addLocationFromLocationsList"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

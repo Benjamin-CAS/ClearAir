@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android_dev.cleanairspaces.persistence.api.responses.LocationDataFromQr
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
+import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.repositories.api_facing.LocationDetailsRepo
 import com.android_dev.cleanairspaces.repositories.api_facing.WatchedLocationUpdatesRepo
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
@@ -120,15 +121,38 @@ class AddLocationViewModel @Inject constructor(
         }
     }
 
-
+    private lateinit var allIndoorLocationsToChooseFrom :  List<WatchedLocationHighLights>
+    private val indoorLocationsToChooseFrom = MutableLiveData<List<WatchedLocationHighLights>>()
+    fun observeIndoorLocationsToChooseFrom() : LiveData<List<WatchedLocationHighLights>> = indoorLocationsToChooseFrom
     private val indoorDataResultListener = object : AsyncResultListener {
         override fun onComplete(data: Any?, isSuccess: Boolean) {
-            locationIsAdded.value = if (isSuccess) {
-                WatchLocationProcessState.ADDED
+            locationIsAdded.value = if (isSuccess && data != null && data is ArrayList<*>) {
+                allIndoorLocationsToChooseFrom = data as ArrayList<WatchedLocationHighLights>
+                indoorLocationsToChooseFrom.value = allIndoorLocationsToChooseFrom
+                WatchLocationProcessState.ADDED_INDOOR
             } else WatchLocationProcessState.FAILED
         }
 
     }
+
+    fun searchInIndoorLocations(query: String) {
+        if (query.isNotBlank())
+          indoorLocationsToChooseFrom.value = allIndoorLocationsToChooseFrom.filter { it.name.contains(query, ignoreCase = true) }
+        else
+           indoorLocationsToChooseFrom.value = allIndoorLocationsToChooseFrom
+    }
+
+    fun saveIndoorLocationFromFoundList(location: WatchedLocationHighLights) {
+       val newList = allIndoorLocationsToChooseFrom.filter { it.name != location.name }
+        allIndoorLocationsToChooseFrom = newList
+       indoorLocationsToChooseFrom.value =  newList
+        appDataRepo.watchALocation(location)
+    }
+
+    fun resetWatchLocationState() {
+        locationIsAdded.value = WatchLocationProcessState.IDLE
+    }
+
 
     fun saveWatchedIndoorLocationSearchedInfo(
         userName: String,
@@ -161,11 +185,16 @@ class AddLocationViewModel @Inject constructor(
             watchedLocationUpdatesRepo.refreshWatchedLocationsData()
         }
     }
+
+
+
+
 }
 
 enum class WatchLocationProcessState {
     IDLE,
     ADDING,
     ADDED,
+    ADDED_INDOOR,
     FAILED
 }

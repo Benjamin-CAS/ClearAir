@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/whitish"
+    tools:context=".views.fragments.add_location.AddLocationFromLocationsList">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/search_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="@dimen/sm_space"
+        app:cardElevation="@dimen/std_space"
+        app:cardBackgroundColor="@color/white"
+        app:cardUseCompatPadding="true"
+        >
+
+        <EditText
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:hint="@string/search_found_indoor_locations_hint"
+            android:textColorHint="@color/blackish"
+            android:gravity="center_vertical"
+            android:layout_marginStart="@dimen/sm_space"
+            android:layout_marginEnd="@dimen/sm_space"
+            android:paddingStart="@dimen/sm_space"
+            android:paddingEnd="@dimen/sm_space"
+            android:inputType="text"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="@dimen/sm_space"
+            style="@style/Theme.CleanAirSpaces.Subtitle1"
+            android:focusable="true"
+            android:background="@android:color/transparent" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/location_suggestions_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/std_space"
+        app:layout_constraintTop_toBottomOf="@id/search_card"
+        app:layout_constraintBottom_toTopOf="@id/done_btn"
+        android:layout_marginBottom="@dimen/md_space"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/done_btn"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Button"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/done_txt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/md_space"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

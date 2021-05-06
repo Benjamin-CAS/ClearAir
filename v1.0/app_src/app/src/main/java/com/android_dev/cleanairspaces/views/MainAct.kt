@@ -73,7 +73,10 @@ class MainAct : AppCompatActivity() {
                     }
                 }
 
-                R.id.addLocation-> {
+                R.id.addLocation,
+                R.id.settingsMenuFragment,
+                R.id.searchFragment,
+                R.id.addLocationFromLocationsList -> {
                     binding.apply {
                         toolbarLayout.apply {
                             toolbar.isVisible = true
@@ -97,20 +100,6 @@ class MainAct : AppCompatActivity() {
                             }
                         }
                         bottomNav.isVisible = true
-                    }
-                }
-
-                R.id.settingsMenuFragment,
-                R.id.searchFragment-> {
-                    binding.apply {
-                        toolbarLayout.apply {
-                            toolbar.isVisible = true
-                            toolbar.setNavigationIcon(R.drawable.ic_back)
-                            toolbar.setNavigationOnClickListener {
-                                navController.navigateUp()
-                            }
-                        }
-                        bottomNav.isVisible = false
                     }
                 }
 

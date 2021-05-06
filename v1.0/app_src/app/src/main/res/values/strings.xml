@@ -140,8 +140,11 @@
     <string name="settings_act_lbl">Settings</string>
     <string name="select_history_type_hint">Info</string>
     <string name="indoor_air_quality_txt">Indoor Air Quality</string>
-    <string name="add_location_failed_text">Failed to add that location... try again</string>
+    <string name="add_location_failed_text">Failed to add that location… try again</string>
     <string name="add_location_ongoing_text">Adding location</string>
     <string name="failed_to_load_gmap">Google maps loading failed!</string>
+    <string name="search_found_indoor_locations_hint">Search</string>
+    <string name="location_added_suffix">added</string>
+    <string name="done_txt">DONE</string>
 
 </resources>

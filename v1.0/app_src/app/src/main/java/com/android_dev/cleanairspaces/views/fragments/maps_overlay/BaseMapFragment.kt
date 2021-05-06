@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.SimpleAdapter
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -70,7 +69,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
             }
 
             searchLocation.setOnClickListener {
-               goToSearchFragment()
+                goToSearchFragment()
             }
 
             myLocationsRv.apply {

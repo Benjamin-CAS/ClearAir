@@ -293,12 +293,20 @@ class AMapsFragment : BaseMapFragment() {
 
     /********************* NAVIGATION ***************/
     override fun goToSearchFragment() {
-        val action = AMapsFragmentDirections.actionAMapsFragmentToSearchFragment()
-        findNavController().navigate(action)
+        try {
+            val action = AMapsFragmentDirections.actionAMapsFragmentToSearchFragment()
+            findNavController().navigate(action)
+        } catch (exc: java.lang.Exception) {
+            myLogger.logThis(TAG, "goToSearchFragment()", "Exception ${exc.message}")
+        }
     }
 
     override fun onClickWatchedLocation(location: WatchedLocationHighLights) {
-        val action = AMapsFragmentDirections.actionAMapsFragmentToDetailsFragment(location)
-        findNavController().navigate(action)
+        try {
+            val action = AMapsFragmentDirections.actionAMapsFragmentToDetailsFragment(location)
+            findNavController().navigate(action)
+        } catch (exc: java.lang.Exception) {
+            myLogger.logThis(TAG, "onClickWatchedLocation()", "Exception ${exc.message}")
+        }
     }
 }

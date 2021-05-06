@@ -44,7 +44,6 @@ class LocationDetailsViewModel
     }
 
 
-
     /******** history *****/
     var currentDatesForDaysChart: ArrayList<String> = ArrayList()
     var currentDatesForWeekChart: ArrayList<String> = ArrayList()

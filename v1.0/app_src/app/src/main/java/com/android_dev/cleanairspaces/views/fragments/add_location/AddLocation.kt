@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -32,7 +33,7 @@ class AddLocation : Fragment() {
     @Inject
     lateinit var myLogger: MyLogger
 
-    private val viewModel: AddLocationViewModel by viewModels()
+    private val viewModel: AddLocationViewModel by activityViewModels()
     private var _binding: FragmentAddLocationBinding? = null
     private val binding get() = _binding!!
 
@@ -124,6 +125,12 @@ class AddLocation : Fragment() {
 
                         }
                     }
+                    WatchLocationProcessState.ADDED_INDOOR -> {
+                        //navigate to another search like location
+                        val action  = AddLocationDirections.actionAddLocationToAddLocationFromLocationsList()
+                        findNavController().navigate(action)
+                        viewModel.resetWatchLocationState() //so user can navigate back
+                    }
                     WatchLocationProcessState.FAILED -> {
                         binding.apply {
                             addLocationBtn.isEnabled = true
@@ -134,6 +141,7 @@ class AddLocation : Fragment() {
                     else -> {
                     }
                 }
+
             } catch (exc: Exception) {
                 myLogger.logThis(
                     TAG, "observeAddProcess()", "exception ${exc.message}", exc

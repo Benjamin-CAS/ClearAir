@@ -4,7 +4,10 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/transparent"
-    android:id="@+id/container">
+    android:id="@+id/container"
+    android:elevation="@dimen/md_space"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/home_tv"
@@ -48,7 +51,7 @@
                     android:textColor="@color/black"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@string/smart_qr_txt"/>
+                    android:text="@string/smart_qr_txt" />
 
             </com.google.android.material.card.MaterialCardView>
 

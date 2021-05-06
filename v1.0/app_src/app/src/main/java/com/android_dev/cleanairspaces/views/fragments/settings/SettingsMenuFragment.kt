@@ -1,16 +1,12 @@
 package com.android_dev.cleanairspaces.views.fragments.settings
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentSettingsMenuBinding
@@ -19,11 +15,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettingsMenuFragment: Fragment() {
+class SettingsMenuFragment : Fragment() {
 
     companion object {
         private val TAG = SettingsMenuFragment::class.java.simpleName
     }
+
     private var displayedMapsSettings: Boolean = false
     private var displayedMapLangSettings: Boolean = false
     private var displayedAqiSettings: Boolean = false
@@ -60,7 +57,7 @@ class SettingsMenuFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         initViews()
         observeSettings()
     }
@@ -173,7 +170,8 @@ class SettingsMenuFragment: Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.save -> {
-                val action  = SettingsMenuFragmentDirections.actionSettingsMenuFragmentToSplashFragment()
+                val action =
+                    SettingsMenuFragmentDirections.actionSettingsMenuFragmentToSplashFragment()
                 findNavController().navigate(action)
                 true
             }

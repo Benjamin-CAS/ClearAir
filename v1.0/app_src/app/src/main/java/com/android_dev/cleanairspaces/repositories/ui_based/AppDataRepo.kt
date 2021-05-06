@@ -515,18 +515,40 @@ class AppDataRepo
                         val decodedResponse =
                             CasEncDecQrProcessor.decodeApiResponse(response.body()!!.payload!!)
                         val jsonArray = JSONArray(decodedResponse)
+                        val locationsToWatch = ArrayList<WatchedLocationHighLights>()
                         for (i in 0 until jsonArray.length()) {
                             val jsonObject = jsonArray.getJSONObject(i)
                             val indoorLocationExtraDetails = Gson().fromJson(
                                 jsonObject.toString(),
                                 IndoorLocationExtraDetails::class.java
                             )
-                            watchIndoorLocation(
-                                indoorLocation = indoorLocation,
-                                indoorLocationExtraDetails = indoorLocationExtraDetails,
-                                userName = userName,
-                                userPwd = userPass
+
+                            val tag = "${indoorLocation.company_id}${indoorLocationExtraDetails.location_id}"
+                            locationsToWatch.add(
+                                WatchedLocationHighLights(
+                                    actualDataTag = tag,
+                                    lat = indoorLocation.lat ?: 0.0,
+                                    lon = indoorLocation.lon ?: 0.0,
+                                    pm_outdoor = null,
+                                    pm_indoor = null,
+                                    name = indoorLocationExtraDetails.name_en,
+                                    logo = indoorLocationExtraDetails.logo,
+                                    location_area = "",
+                                    indoor_co2 = null,
+                                    indoor_humidity = null,
+                                    indoor_temperature = null,
+                                    indoor_voc = null,
+                                    energyMonth = null,
+                                    energyMax = null,
+                                    isIndoorLoc = true,
+                                    compId = indoorLocation.company_id,
+                                    locId = indoorLocationExtraDetails.location_id,
+                                    monitorId = "",
+                                    lastRecPwd = userPass,
+                                    lastRecUsername = userName
+                                )
                             )
+
                             myLogger.logThis(
                                 TAG,
                                 "refreshExtraDetails()",
@@ -538,7 +560,8 @@ class AppDataRepo
                             "refreshExtraDetails()",
                             "onResponse() decoded $decodedResponse"
                         )
-                        indoorDataResultListener.onComplete(isSuccess = true)
+                        //USER MUST SELECT WHICH ONES FROM THIS ...
+                        indoorDataResultListener.onComplete(isSuccess = true, data =locationsToWatch)
                     } catch (exc: Exception) {
                         myLogger.logThis(
                             TAG,

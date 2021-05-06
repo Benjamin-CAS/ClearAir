@@ -1,6 +1,5 @@
 package com.android_dev.cleanairspaces.views.search
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +7,9 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.amap.api.mapcore.util.it
 import com.android_dev.cleanairspaces.databinding.FragmentSearchBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
 import com.android_dev.cleanairspaces.utils.MyLogger
@@ -35,7 +32,7 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: SearchLocationViewModel  by viewModels()
+    private val viewModel: SearchLocationViewModel by viewModels()
     private lateinit var snackBar: Snackbar
 
     private lateinit var searchSuggestionsAdapter: SearchSuggestionsAdapter
@@ -77,19 +74,19 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
 
 
     override fun onClickSearchSuggestion(suggestion: SearchSuggestionsData) {
-       val action =
-           when {
-               suggestion.isForIndoorLoc ->  SearchFragmentDirections.actionSearchFragmentToAddLocation(
+        val action =
+            when {
+                suggestion.isForIndoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
                     locDataIsIndoorQuery = suggestion
-               )
-               suggestion.isForOutDoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
-                   locDataIsOutdoorQuery = suggestion
-               )
-               else -> null
-           }
-       action?.let { navDirection ->
-           findNavController().navigate(navDirection)
-       }
+                )
+                suggestion.isForOutDoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
+                    locDataIsOutdoorQuery = suggestion
+                )
+                else -> null
+            }
+        action?.let { navDirection ->
+            findNavController().navigate(navDirection)
+        }
     }
 
     override fun onDestroyView() {

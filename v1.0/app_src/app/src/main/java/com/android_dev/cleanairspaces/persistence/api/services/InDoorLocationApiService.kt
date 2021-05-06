@@ -18,19 +18,19 @@ interface InDoorLocationApiService {
 
     @POST("index.php/api/router")
     fun fetchInDoorLocations(
-            @Query("app_id") app_id: Int = API_APP_ID,
-            @Query("method") method: String = INDOOR_LOCATIONS_INFO_METHOD,
-            @Query("nonce") nonce: String = NONCE,
-            @Body pl: String
+        @Query("app_id") app_id: Int = API_APP_ID,
+        @Query("method") method: String = INDOOR_LOCATIONS_INFO_METHOD,
+        @Query("nonce") nonce: String = NONCE,
+        @Body pl: String
     ): Call<IndoorLocationsResponse>
 
 
     @POST("index.php/api/approuter")
     fun fetchInDoorLocationsDetails(
-            @Query("app_id") app_id: Int = API_APP_ID,
-            @Query("method") method: String = INDOOR_LOCATION_DETAILS_METHOD,
-            @Query("nonce") nonce: String = NONCE,
-            @Body pl: JsonObject
+        @Query("app_id") app_id: Int = API_APP_ID,
+        @Query("method") method: String = INDOOR_LOCATION_DETAILS_METHOD,
+        @Query("nonce") nonce: String = NONCE,
+        @Body pl: JsonObject
     ): Call<IndoorLocationsDetailsResponse>
 
 }

@@ -9,11 +9,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Logs(
     @PrimaryKey(autoGenerate = true)
-    val id : Int,
+    val id: Int,
 
-    val key : String,
-    val message : String,
-    val tag : String,
-    val  last_updated: Long = System.currentTimeMillis()
+    val key: String,
+    val message: String,
+    val tag: String,
+    val last_updated: Long = System.currentTimeMillis()
 
-):Parcelable
+) : Parcelable

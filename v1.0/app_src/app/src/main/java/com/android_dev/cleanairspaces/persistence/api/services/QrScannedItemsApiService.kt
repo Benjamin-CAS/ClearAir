@@ -13,18 +13,18 @@ interface QrScannedItemsApiService {
 
     @POST("index.php/api/approuter")
     fun fetchDataForScannedDeviceWithCompLoc(
-            @Query("app_id") app_id: Int = API_APP_ID,
-            @Query("method") method: String = AppApiService.LOCATION_INFO_METHOD,
-            @Query("nonce") nonce: String = NONCE,
-            @Body data: JsonObject
+        @Query("app_id") app_id: Int = API_APP_ID,
+        @Query("method") method: String = AppApiService.LOCATION_INFO_METHOD,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
     ): Call<ScannedDeviceQrWithCompLocResponse>
 
     @POST("index.php/api/approuter")
     fun fetchDataForScannedDeviceWithMonitorId(
-            @Query("app_id") app_id: Int = API_APP_ID,
-            @Query("method") method: String = AppApiService.MONITOR_INFO_METHOD,
-            @Query("nonce") nonce: String = NONCE,
-            @Body data: JsonObject
+        @Query("app_id") app_id: Int = API_APP_ID,
+        @Query("method") method: String = AppApiService.MONITOR_INFO_METHOD,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
     ): Call<ScannedDeviceQrWithCompLocResponse>
 
 }

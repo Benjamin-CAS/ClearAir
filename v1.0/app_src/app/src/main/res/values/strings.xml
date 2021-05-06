@@ -142,5 +142,6 @@
     <string name="indoor_air_quality_txt">Indoor Air Quality</string>
     <string name="add_location_failed_text">Failed to add that location... try again</string>
     <string name="add_location_ongoing_text">Adding location</string>
+    <string name="failed_to_load_gmap">Google maps loading failed!</string>
 
 </resources>

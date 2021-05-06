@@ -22,10 +22,11 @@ class DataStoreManager(appContext: Context) {
 
     fun getAqiIndex(): Flow<String?> {
         return mDataStore.data
-                .map { preferences ->
-                    preferences[aqiIndexKey]
-                }
+            .map { preferences ->
+                preferences[aqiIndexKey]
+            }
     }
+
 
     suspend fun saveAqiIndex(newAqiIndex: String) {
         mDataStore.edit { settings ->
@@ -42,9 +43,9 @@ class DataStoreManager(appContext: Context) {
 
     fun getSelectedMap(): Flow<String?> {
         return mDataStore.data
-                .map { preferences ->
-                    preferences[mapToUseKey]
-                }
+            .map { preferences ->
+                preferences[mapToUseKey]
+            }
     }
 
     suspend fun saveMapLang(selectedMapLang: String) {
@@ -55,9 +56,9 @@ class DataStoreManager(appContext: Context) {
 
     fun getMapLang(): Flow<String?> {
         return mDataStore.data
-                .map { preferences ->
-                    preferences[mapLang]
-                }
+            .map { preferences ->
+                preferences[mapLang]
+            }
     }
 
     private val aqiIndexKey = stringPreferencesKey(AQI_INDEX_TO_USE_KEY)

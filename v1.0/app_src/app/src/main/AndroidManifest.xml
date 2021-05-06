@@ -28,17 +28,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CleanAirSpaces">
-        <activity android:name=".ui.details.LocationDetailsActivity"/>
-        <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:label="@string/settings_act_lbl"
-          />
-        <activity android:name=".ui.adding_locations.search.SearchLocationAct" />
-
-        <activity android:name=".ui.adding_locations.add.AddLocationActivity"
-          />
-
-        <activity android:name=".ui.welcome.SplashActivity">
+        <activity android:name=".views.MainAct"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,13 +48,7 @@
             android:value="${GMAPS_API_DEBUG_KEY}" />
 
         <activity
-            android:name=".ui.home.maps.GMapsActivity"
-            android:label="@string/g_map_act_lbl"/>
-        <activity
-            android:name=".ui.home.maps.AMapsActivity"
-            android:label="@string/a_map_act_lbl"/>
-        <activity
-            android:name=".ui.adding_locations.add.CaptureQrCodeActivity"
+            android:name=".views.smartqr.CaptureQrCodeActivity"
             android:screenOrientation="portrait"
             android:stateNotNeeded="true"/>
 

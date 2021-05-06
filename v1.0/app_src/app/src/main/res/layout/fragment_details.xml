@@ -7,6 +7,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+
+    <ImageView
+        android:id="@+id/location_logo"
+        android:contentDescription="@string/location_logo_image_desc"
+        android:layout_margin="@dimen/std_space"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/location_logo_size"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
+        android:id="@+id/location_name_tv"
+        android:layout_marginTop="@dimen/std_space"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textStyle="bold"/>
+
     <ProgressBar
         android:id="@+id/progress_circular"
         android:layout_width="@dimen/md_icon"

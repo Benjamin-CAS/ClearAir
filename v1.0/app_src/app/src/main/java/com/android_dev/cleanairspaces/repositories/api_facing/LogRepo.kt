@@ -4,10 +4,6 @@ import android.util.Log
 import com.android_dev.cleanairspaces.persistence.api.services.LoggerService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.LogsDao
 import com.android_dev.cleanairspaces.persistence.local.models.entities.Logs
-import com.android_dev.cleanairspaces.utils.CasEncDecQrProcessor
-import com.android_dev.cleanairspaces.utils.L_TIME_KEY
-import com.android_dev.cleanairspaces.utils.MyLogger
-import com.android_dev.cleanairspaces.utils.PAYLOAD_KEY
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +11,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,9 +18,9 @@ import javax.inject.Singleton
 class LogRepo
 @Inject constructor(
     private val coroutineScope: CoroutineScope,
-    private val loggerDao : LogsDao,
-    private val loggerService : LoggerService
-){
+    private val loggerDao: LogsDao,
+    private val loggerService: LoggerService
+) {
     fun saveLocally(key: String, message: String, isExc: Boolean) {
         coroutineScope.launch(Dispatchers.IO) {
             loggerDao.insertLog(
@@ -39,7 +34,7 @@ class LogRepo
         }
     }
 
-    suspend fun pushLogs(){
+    suspend fun pushLogs() {
 
         try {
             val logs = loggerDao.getLogs()
@@ -51,7 +46,7 @@ class LogRepo
                 val request = loggerService.sendLogs(
                     data = data
                 )
-                request.enqueue(object : Callback<Any>{
+                request.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         Log.d(
                             "pushLogs onResponse->()", "$response ${response.body()}"
@@ -67,9 +62,9 @@ class LogRepo
                 })
             }
             loggerDao.clearLogData()
-        }catch (exc : Exception){
+        } catch (exc: Exception) {
             Log.d(
-                 "pushLogs", "${exc.message}", exc
+                "pushLogs", "${exc.message}", exc
             )
         }
 

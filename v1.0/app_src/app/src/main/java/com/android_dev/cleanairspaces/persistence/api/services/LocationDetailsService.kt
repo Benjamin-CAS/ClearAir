@@ -14,10 +14,10 @@ interface LocationDetailsService {
 
     @POST("index.php/api/approuter")
     fun fetchDetailsForLocation(
-            @Query("app_id") app_id: Int = API_APP_ID,
-            @Query("method") method: String,
-            @Query("nonce") nonce: String = NONCE,
-            @Body data: JsonObject
+        @Query("app_id") app_id: Int = API_APP_ID,
+        @Query("method") method: String,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
     ): Call<LocationDetailsResponse>
 
 }

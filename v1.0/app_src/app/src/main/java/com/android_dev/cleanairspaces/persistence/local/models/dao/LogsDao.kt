@@ -12,7 +12,7 @@ interface LogsDao {
     suspend fun insertLog(log: Logs)
 
     @Query("SELECT * FROM logs ORDER BY last_updated DESC")
-    suspend fun getLogs() : List<Logs>
+    suspend fun getLogs(): List<Logs>
 
     @Query("DELETE FROM logs")
     suspend fun clearLogData()

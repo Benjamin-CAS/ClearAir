@@ -7,17 +7,17 @@ import javax.inject.Singleton
 
 @Singleton
 class MyLogger @Inject constructor(
-    private val logRepo : LogRepo
+    private val logRepo: LogRepo
 ) {
     fun logThis(tag: String, from: String, msg: String, exc: Exception? = null) {
         if (Companion.DEBUG)
             Log.d("CAS_Logger $tag", "$from $msg", exc)
-        else{
+        else {
             logRepo.saveLocally("CAS_Logger $tag", "$from $msg", isExc = (exc != null))
         }
     }
 
     companion object {
-        private const val DEBUG = false
+        private const val DEBUG = true
     }
 }

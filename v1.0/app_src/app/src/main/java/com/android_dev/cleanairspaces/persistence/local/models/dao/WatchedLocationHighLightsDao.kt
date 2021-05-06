@@ -11,7 +11,7 @@ interface WatchedLocationHighLightsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocations(watchedLocationHighLights: List<WatchedLocationHighLights>)
 
-    @Query("SELECT * FROM watched_location ORDER BY last_updated DESC")
+    @Query("SELECT * FROM watched_location ORDER BY name ASC")
     fun getWatchedLocationHighLights(): Flow<List<WatchedLocationHighLights>>
 
     @Query("SELECT * FROM watched_location ORDER BY last_updated DESC")

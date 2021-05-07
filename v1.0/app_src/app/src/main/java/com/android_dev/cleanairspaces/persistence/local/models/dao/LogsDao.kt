@@ -11,7 +11,7 @@ interface LogsDao {
     @Insert
     suspend fun insertLog(log: Logs)
 
-    @Query("SELECT * FROM logs ORDER BY last_updated DESC")
+    @Query("SELECT * FROM logs ORDER BY recordedAt DESC")
     suspend fun getLogs(): List<Logs>
 
     @Query("DELETE FROM logs")

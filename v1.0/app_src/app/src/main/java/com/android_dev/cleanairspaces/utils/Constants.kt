@@ -26,8 +26,8 @@ const val DATA_REFRESH_INTERVAL_MIN = 15L
 
 
 //MAPS
-const val USER_LOCATION_UPDATE_INTERVAL_MILLS = 300000L //5 minutes
-const val USER_LOCATION_UPDATE_ON_DISTANCE = 100f //100 meters
+const val USER_LOCATION_UPDATE_INTERVAL_MILLS = 180000L //3 minutes
+const val USER_LOCATION_UPDATE_ON_DISTANCE = 50f //50 meters
 const val MY_LOCATION_ZOOM_LEVEL = 15f
 
 
@@ -54,3 +54,4 @@ const val PASSWORD_KEY = "password"
 const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
 const val MONITOR_ID_KEY = "monitor_id"
+const val LAT_LON_DELIMITER ="_"

@@ -12,7 +12,7 @@ import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatW
 import com.bumptech.glide.Glide
 
 class WatchedLocationsAdapter(private val locationListener: OnClickItemListener) :
-    RecyclerView.Adapter<WatchedLocationsAdapter.WatchedLocationsViewHolder>() {
+        RecyclerView.Adapter<WatchedLocationsAdapter.WatchedLocationsViewHolder>() {
 
     private val locationList = ArrayList<WatchedLocationHighLights>()
 
@@ -24,39 +24,39 @@ class WatchedLocationsAdapter(private val locationListener: OnClickItemListener)
     }
 
     class WatchedLocationsViewHolder(private val binding: WatchedLocationItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+            RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            location: WatchedLocationHighLights,
-            locationListener: OnClickItemListener,
-            aqiIndex: String?
+                location: WatchedLocationHighLights,
+                locationListener: OnClickItemListener,
+                aqiIndex: String?
         ) {
             val ctx = itemView.context
             binding.apply {
                 val uiData =
-                    formatWatchedHighLightsData(ctx = ctx, location = location, aqiIndex = aqiIndex)
+                        formatWatchedHighLightsData(ctx = ctx, location = location, aqiIndex = aqiIndex)
                 locationNameTv.text = uiData.locationName
                 Glide.with(ctx)
-                    .load(uiData.logo)
-                    .placeholder(R.drawable.clean_air_spaces_logo_name)
-                    .into(locationLogoIv)
+                        .load(uiData.logo)
+                        .placeholder(R.drawable.clean_air_spaces_logo_name)
+                        .into(locationLogoIv)
 
                 updatedTv.text = uiData.updated
                 locationAreaTv.text = uiData.locationArea
                 if (uiData.hasOutDoorData) {
                     outdoorTv.isVisible = true
                     itemCard.setCardBackgroundColor(
-                        ContextCompat.getColor(ctx, uiData.outDoorAqiStatus!!.aqi_color_res)
+                            ContextCompat.getColor(ctx, uiData.outDoorAqiStatus!!.aqi_color_res)
                     )
                     outdoorPointsTv.text = uiData.outDoorPmValue.toString()
                     outdoorStatusIndicatorTv.text = ctx.getString(uiData.outDoorAqiStatus.lbl)
                     outdoorStatusIndicatorIv.setImageResource(
-                        uiData.outDoorAqiStatus.status_bar_res
+                            uiData.outDoorAqiStatus.status_bar_res
                     )
                     outdoorPmIndexTv.text = uiData.aqiIndexStr
 
                 } else {
                     itemCard.setCardBackgroundColor(
-                        uiData.defaultBgColor
+                            uiData.defaultBgColor
                     )
 
                 }
@@ -66,7 +66,7 @@ class WatchedLocationsAdapter(private val locationListener: OnClickItemListener)
                     indoorPointsTv.text = uiData.indoorPmValue.toString()
                     indoorStatusIndicatorTv.text = ctx.getString(uiData.indoorAQIStatus!!.lbl)
                     indoorStatusIndicatorIv.setImageResource(
-                        uiData.indoorAQIStatus.status_bar_res
+                            uiData.indoorAQIStatus.status_bar_res
                     )
                     indoorPmIndexTv.text = uiData.aqiIndexStr
                 } else {
@@ -80,11 +80,11 @@ class WatchedLocationsAdapter(private val locationListener: OnClickItemListener)
 
 
     override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
+            parent: ViewGroup,
+            viewType: Int
     ): WatchedLocationsViewHolder {
         val binding =
-            WatchedLocationItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                WatchedLocationItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return WatchedLocationsViewHolder(binding)
     }
 

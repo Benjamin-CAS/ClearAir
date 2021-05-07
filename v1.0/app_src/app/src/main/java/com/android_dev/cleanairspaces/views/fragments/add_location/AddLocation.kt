@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.android_dev.cleanairspaces.R
@@ -16,6 +15,7 @@ import com.android_dev.cleanairspaces.databinding.FragmentAddLocationBinding
 import com.android_dev.cleanairspaces.persistence.api.responses.LocationDataFromQr
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
 import com.android_dev.cleanairspaces.utils.CasEncDecQrProcessor
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MonitorTypes.getDeviceInfoByType
 import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.myTxt
@@ -39,8 +39,8 @@ class AddLocation : Fragment() {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddLocationBinding.inflate(inflater, container, false)
         return binding.root
@@ -57,33 +57,21 @@ class AddLocation : Fragment() {
             args.locDataIsIndoorQuery != null -> {
 
                 val searchDataForIndoorLocation = args.locDataIsIndoorQuery
-                myLogger.logThis(
-                    TAG, "onCreate()",
-                    "receivedData for indoor loc"
-                )
                 displayLocationData(
-                    searchDataForIndoorLocation = searchDataForIndoorLocation
+                        searchDataForIndoorLocation = searchDataForIndoorLocation
                 )
             }
 
 
             args.locDataIsOutdoorQuery != null -> {
                 val searchDataForOutDoorLocation = args.locDataIsOutdoorQuery
-                myLogger.logThis(
-                    TAG, "onCreate()",
-                    "receivedData for outdoor loc"
-                )
                 displayLocationData(
-                    searchDataForOutdoorLocation = searchDataForOutDoorLocation
+                        searchDataForOutdoorLocation = searchDataForOutDoorLocation
                 )
             }
 
             args.locDataFromQr != null -> {
                 val qrContent = args.locDataFromQr
-                myLogger.logThis(
-                    TAG, "onCreate()",
-                    "receivedData from qr $qrContent"
-                )
                 handleQrCode(qrContent)
             }
         }
@@ -110,13 +98,13 @@ class AddLocation : Fragment() {
                                 setText(R.string.location_added_text)
                                 isEnabled = false
                                 setCompoundDrawablesWithIntrinsicBounds(
-                                    null,
-                                    null,
-                                    ContextCompat.getDrawable(
-                                        requireContext(),
-                                        R.drawable.ic_white_check
-                                    ),
-                                    null
+                                        null,
+                                        null,
+                                        ContextCompat.getDrawable(
+                                                requireContext(),
+                                                R.drawable.ic_white_check
+                                        ),
+                                        null
                                 )
                             }
                             addingProgress.setText(R.string.location_added_text)
@@ -127,7 +115,7 @@ class AddLocation : Fragment() {
                     }
                     WatchLocationProcessState.ADDED_INDOOR -> {
                         //navigate to another search like location
-                        val action  = AddLocationDirections.actionAddLocationToAddLocationFromLocationsList()
+                        val action = AddLocationDirections.actionAddLocationToAddLocationFromLocationsList()
                         findNavController().navigate(action)
                         viewModel.resetWatchLocationState() //so user can navigate back
                     }
@@ -143,18 +131,17 @@ class AddLocation : Fragment() {
                 }
 
             } catch (exc: Exception) {
-                myLogger.logThis(
-                    TAG, "observeAddProcess()", "exception ${exc.message}", exc
-                )
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG observeAddProcess()", msg = exc.message, exc = exc)
+
             }
         })
     }
 
 
     private fun displayLocationData(
-        locationDataFromQr: LocationDataFromQr? = null,
-        searchDataForIndoorLocation: SearchSuggestionsData? = null,
-        searchDataForOutdoorLocation: SearchSuggestionsData? = null
+            locationDataFromQr: LocationDataFromQr? = null,
+            searchDataForIndoorLocation: SearchSuggestionsData? = null,
+            searchDataForOutdoorLocation: SearchSuggestionsData? = null
     ) {
         binding.apply {
             var infoText = ""
@@ -167,10 +154,10 @@ class AddLocation : Fragment() {
                         if (deviceInfo != null) {
                             binding.deviceLogo.isVisible = true
                             Glide.with(requireContext())
-                                .load(locationDataFromQr.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
-                                .into(binding.deviceLogo)
+                                    .load(locationDataFromQr.getFullDeviceLogoUrl(deviceInfo.deviceLogoName))
+                                    .into(binding.deviceLogo)
                             val deviceInfoTxt =
-                                getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
+                                    getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
                             val deviceIdLbl = getString(R.string.device_id_lbl)
                             infoText += "$deviceInfoTxt\n$deviceIdLbl: ${locationDataFromQr.monitor_id}\n"
 
@@ -180,8 +167,8 @@ class AddLocation : Fragment() {
                     }
 
                     Glide.with(requireContext())
-                        .load(locationDataFromQr.getFullLogoUrl())
-                        .into(logo)
+                            .load(locationDataFromQr.getFullLogoUrl())
+                            .into(logo)
                     val locationInfoTitle = getString(R.string.location_information)
                     val companyLblTxt = getString(R.string.company_name_lbl)
                     val locationLblTxt = getString(R.string.location_lbl)
@@ -198,8 +185,8 @@ class AddLocation : Fragment() {
                     isSecureLocation = searchDataForIndoorLocation.is_secure
                     onClickAddLocListener = {
                         addLocationFromSearchedInfo(
-                            searchInfo = searchDataForIndoorLocation,
-                            isInDoorData = true
+                                searchInfo = searchDataForIndoorLocation,
+                                isInDoorData = true
                         )
                     }
                 }
@@ -209,8 +196,8 @@ class AddLocation : Fragment() {
                     infoText += "$locationLbl: ${searchDataForOutdoorLocation.nameToDisplay}"
                     onClickAddLocListener = {
                         addLocationFromSearchedInfo(
-                            searchInfo = searchDataForOutdoorLocation,
-                            isInDoorData = false
+                                searchInfo = searchDataForOutdoorLocation,
+                                isInDoorData = false
                         )
                     }
                 }
@@ -254,7 +241,7 @@ class AddLocation : Fragment() {
                     val locId = locationDataFromQrt.locId
                     val compId = locationDataFromQrt.compId
                     viewModel.fetchLocationDetailsForScannedDeviceWithCompLoc(
-                        locId = locId, compId = compId
+                            locId = locId, compId = compId
                     )
                 }
             } else {
@@ -270,20 +257,20 @@ class AddLocation : Fragment() {
         } else Pair("", "")
         if (locationDataFromQr.monitor_id.isNotBlank()) {
             viewModel.saveWatchedLocationFromScannedQr(
-                monitorDataFromQr = locationDataFromQr, userName = userName
+                    monitorDataFromQr = locationDataFromQr, userName = userName
                     ?: "", userPwd = password ?: ""
             )
         } else if (locationDataFromQr.location_id.isNotBlank() && locationDataFromQr.company_id.isNotBlank()) {
             viewModel.saveWatchedLocationFromScannedQr(
-                locationDataFromQr = locationDataFromQr, userName = userName
+                    locationDataFromQr = locationDataFromQr, userName = userName
                     ?: "", userPwd = password ?: ""
             )
         }
     }
 
     private fun addLocationFromSearchedInfo(
-        searchInfo: SearchSuggestionsData,
-        isInDoorData: Boolean
+            searchInfo: SearchSuggestionsData,
+            isInDoorData: Boolean
     ) {
         //an outdoor loc has location_id , monitor_id
         if (!isInDoorData) {
@@ -291,12 +278,12 @@ class AddLocation : Fragment() {
         } else {
             val (userName, password) = if (searchInfo.is_secure) {
                 Pair(
-                    binding.userName.myTxt(binding.userName)
-                        ?: "", binding.password.myTxt(binding.password) ?: ""
+                        binding.userName.myTxt(binding.userName)
+                                ?: "", binding.password.myTxt(binding.password) ?: ""
                 )
             } else Pair("", "")
             viewModel.saveWatchedIndoorLocationSearchedInfo(
-                userName, password, searchInfo
+                    userName, password, searchInfo
             )
         }
     }
@@ -309,6 +296,7 @@ class AddLocation : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.resetWatchLocationState() //so user can navigate back
         _binding = null
     }
 }

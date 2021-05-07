@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentSplashBinding
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.showSnackBar
 import com.google.android.gms.common.ConnectionResult
@@ -34,8 +35,8 @@ class SplashFragment : Fragment() {
     private lateinit var snackBar: Snackbar
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSplashBinding.inflate(inflater, container, false)
         return binding.root
@@ -45,18 +46,13 @@ class SplashFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.scheduleDataRefresh()
         viewModel.getMapSelected().observe(
-            viewLifecycleOwner, {
-                if (it != null && it != getString(R.string.default_map_a_map)) {
-                    if (checkForGooglePlayServices()) {
-                        //use google maps
-                        navigateToFragment(useDefaultMap = false)
-                    } else {
-                        myLogger.logThis(
-                            TAG,
-                            "getMapSelected()",
-                            "google maps selected but google play services missing or out of data"
-                        )
-                        snackBar = binding.container.showSnackBar(
+                viewLifecycleOwner, {
+            if (it != null && it != getString(R.string.default_map_a_map)) {
+                if (checkForGooglePlayServices()) {
+                    //use google maps
+                    navigateToFragment(useDefaultMap = false)
+                } else {
+                    snackBar = binding.container.showSnackBar(
                             isErrorMsg = true,
                             msgResId = R.string.no_google_play_services_err,
                             actionMessage = R.string.switch_to_a_maps,
@@ -64,14 +60,14 @@ class SplashFragment : Fragment() {
                                 //send to a-maps activity
                                 navigateToFragment(useDefaultMap = true)
                             }
-                        )
-                    }
-                } else {
-                    //use A MAP
-                    myLogger.logThis(TAG, "getMapSelected()", "a maps selected")
-                    navigateToFragment(useDefaultMap = true)
+                    )
                 }
+            } else {
+                //use A MAP
+
+                navigateToFragment(useDefaultMap = true)
             }
+        }
         )
 
     }
@@ -84,11 +80,9 @@ class SplashFragment : Fragment() {
                 SplashFragmentDirections.actionSplashFragmentToGMapsFragment()
             }
             findNavController().navigate(action)
-        } catch (e: Exception) {
-            myLogger.logThis(
-                TAG, "navigateToFragment()", "Exception launching activity ${e.message}",
-                e
-            )
+        } catch (exc: Exception) {
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG navigateToFragment()", msg = exc.message, exc = exc)
+
         }
     }
 
@@ -96,7 +90,7 @@ class SplashFragment : Fragment() {
         //maybe need update?
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         return when (googleApiAvailability.isGooglePlayServicesAvailable(
-            requireContext()
+                requireContext()
         )) {
             ConnectionResult.SUCCESS -> true
             else -> false
@@ -120,5 +114,4 @@ class SplashFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

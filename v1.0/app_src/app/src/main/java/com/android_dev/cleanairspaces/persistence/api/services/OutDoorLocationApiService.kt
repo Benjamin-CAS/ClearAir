@@ -21,21 +21,21 @@ interface OutDoorLocationApiService {
 
     @POST("index.php/api/router")
     fun fetchOutDoorLocationsExtraDetails(
-        @Query("app_id") app_id: Int = API_APP_ID,
-        @Query("method") method: String = OUTDOOR_LOCATIONS_EXTRA_INFO_METHOD,
-        @Query("nonce") nonce: String = NONCE,
-        @Query("user") user: String = AppApiService.APP_USER,
-        @Query("pwd") pwd: String = AppApiService.APP_USER_PWD,
-        @Body data: JsonObject
+            @Query("app_id") app_id: Int = API_APP_ID,
+            @Query("method") method: String = OUTDOOR_LOCATIONS_EXTRA_INFO_METHOD,
+            @Query("nonce") nonce: String = NONCE,
+            @Query("user") user: String = AppApiService.APP_USER,
+            @Query("pwd") pwd: String = AppApiService.APP_USER_PWD,
+            @Body data: JsonObject
     ): Call<OutDoorDetailsLocationResponse>
 
     @GET("index.php/api/router")
     fun fetchOtherOutDoorLocations(
-        @Query("app_id") app_id: Int = API_APP_ID,
-        @Query("method") method: String = OUTDOOR_LOCATIONS_INFO_METHOD,
-        @Query("nonce") nonce: String = NONCE,
-        @Query("user") user: String = AppApiService.APP_USER,
-        @Query("pwd") pwd: String = AppApiService.APP_USER_PWD
+            @Query("app_id") app_id: Int = API_APP_ID,
+            @Query("method") method: String = OUTDOOR_LOCATIONS_INFO_METHOD,
+            @Query("nonce") nonce: String = NONCE,
+            @Query("user") user: String = AppApiService.APP_USER,
+            @Query("pwd") pwd: String = AppApiService.APP_USER_PWD
     ): Call<OutDoorLocationResponse>
 
     @GET("us_resp.php")

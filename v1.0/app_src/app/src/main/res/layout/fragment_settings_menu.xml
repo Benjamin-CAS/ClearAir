@@ -7,13 +7,6 @@
     tools:context=".views.fragments.settings.SettingsMenuFragment"
     android:background="@color/whitish">
 
-    <include
-        android:id="@+id/topBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        layout="@layout/toolbar_layout" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/aqi_select"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -27,7 +20,7 @@
         app:helperTextTextColor="@color/blackish"
         app:helperTextTextAppearance="@style/Theme.CleanAirSpaces.Caption"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <AutoCompleteTextView
             android:layout_width="match_parent"

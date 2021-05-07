@@ -12,9 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapsViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager,
-    private val appDataRepo: AppDataRepo,
-    private val myLogger: MyLogger
+        private val dataStoreManager: DataStoreManager,
+        private val appDataRepo: AppDataRepo,
+        private val myLogger: MyLogger
 ) : ViewModel() {
 
     private val TAG = MapsViewModel::class.java.simpleName

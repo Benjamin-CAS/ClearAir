@@ -12,9 +12,9 @@ import retrofit2.http.Query
 interface LocationHistoriesService {
     @POST("index.php/api/approuter")
     fun fetchLocationHistory(
-        @Query("app_id") app_id: Int = API_APP_ID,
-        @Query("method") method: String,
-        @Query("nonce") nonce: String = NONCE,
-        @Body data: JsonObject
+            @Query("app_id") app_id: Int = API_APP_ID,
+            @Query("method") method: String,
+            @Query("nonce") nonce: String = NONCE,
+            @Body data: JsonObject
     ): Call<LocationHistoriesResponse>
 }

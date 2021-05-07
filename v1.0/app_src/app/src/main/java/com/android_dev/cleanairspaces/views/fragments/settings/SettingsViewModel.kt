@@ -12,8 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager,
-    private val myLogger: MyLogger
+        private val dataStoreManager: DataStoreManager,
+        private val myLogger: MyLogger
 ) : ViewModel() {
 
     private val TAG = SettingsViewModel::class.java.simpleName
@@ -24,17 +24,17 @@ class SettingsViewModel @Inject constructor(
 
 
     fun setAQIIndex(selectedAqi: String) = viewModelScope.launch(Dispatchers.IO) {
-        myLogger.logThis(TAG, "setSelectedAQI()", "-- $selectedAqi")
+
         dataStoreManager.saveAqiIndex(newAqiIndex = selectedAqi)
     }
 
     fun setSelectedMap(selectedMap: String) = viewModelScope.launch(Dispatchers.IO) {
-        myLogger.logThis(TAG, "setSelectedMap()", "-- $selectedMap")
+
         dataStoreManager.saveMap(selectedMap = selectedMap)
     }
 
     fun setSelectedMapLang(selectedMapLang: String) = viewModelScope.launch(Dispatchers.IO) {
-        myLogger.logThis(TAG, "setSelectedMapLang()", "-- $selectedMapLang")
+
         dataStoreManager.saveMapLang(selectedMapLang)
     }
 

@@ -11,21 +11,21 @@ import kotlin.math.truncate
 
 @Parcelize
 data class IndoorFormatterExtraDetailsData(
-    val co2LvlTxt: String,
-    val vocLvlTxt: String,
-    val tmpLvlTxt: String,
-    val humidLvlTxt: String,
-    val pmSliderValue: Int,
-    val co2SliderValue: Int?,
-    val coSliderDiskRes: Int?,
-    val tmpSliderValue: Int?,
-    val tmpSliderDiskRes: Int?,
-    val vocSliderValue: Int?,
-    val vocSliderDiskRes: Int?,
-    val humidSliderValue: Int?,
-    val humidSliderDiskRes: Int?,
-    var carbonSavedStr: String,
-    var energySavedStr: String
+        val co2LvlTxt: String,
+        val vocLvlTxt: String,
+        val tmpLvlTxt: String,
+        val humidLvlTxt: String,
+        val pmSliderValue: Int,
+        val co2SliderValue: Int?,
+        val coSliderDiskRes: Int?,
+        val tmpSliderValue: Int?,
+        val tmpSliderDiskRes: Int?,
+        val vocSliderValue: Int?,
+        val vocSliderDiskRes: Int?,
+        val humidSliderValue: Int?,
+        val humidSliderDiskRes: Int?,
+        var carbonSavedStr: String,
+        var energySavedStr: String
 ) : Parcelable {
     companion object {
         const val sliderMin = 0
@@ -35,21 +35,20 @@ data class IndoorFormatterExtraDetailsData(
 }
 
 fun formatWatchedHighLightsIndoorExtras(
-    ctx: Context,
-    co2Lvl: Double?,
-    vocLvl: Double?,
-    tmpLvl: Double?,
-    humidLvl: Double?,
-    inDoorAqiStatus: AQIStatus,
-    energyMonth: Double?,
-    energyMax: Double?
+        ctx: Context,
+        co2Lvl: Double?,
+        vocLvl: Double?,
+        tmpLvl: Double?,
+        humidLvl: Double?,
+        inDoorAqiStatus: AQIStatus,
+        energyMonth: Double?,
+        energyMax: Double?
 ): IndoorFormatterExtraDetailsData {
     //initialize --
-    var co2LvlTxt = ""
-    var vocLvlTxt = ""
-    var tmpLvlTxt = ""
-    var humidLvlTxt = ""
-    var pmSliderValue = 0
+    val co2LvlTxt: String
+    val vocLvlTxt: String
+    val tmpLvlTxt: String
+    val humidLvlTxt: String
     var co2SliderValue: Int? = null
     var coSliderDiskRes: Int? = null
     var tmpSliderValue: Int? = null
@@ -59,7 +58,7 @@ fun formatWatchedHighLightsIndoorExtras(
     var humidSliderValue: Int? = null
     var humidSliderDiskRes: Int? = null
 
-    pmSliderValue = when (inDoorAqiStatus.diskRes) {
+    val pmSliderValue: Int = when (inDoorAqiStatus.diskRes) {
         R.drawable.green_seekbar_thumb -> 15
         R.drawable.yellow_seekbar_thumb -> 55
         R.drawable.red_seekbar_thumb -> 85
@@ -126,21 +125,21 @@ fun formatWatchedHighLightsIndoorExtras(
     }
 
     return IndoorFormatterExtraDetailsData(
-        co2LvlTxt = co2LvlTxt,
-        vocLvlTxt = vocLvlTxt,
-        tmpLvlTxt = tmpLvlTxt,
-        humidLvlTxt = humidLvlTxt,
-        pmSliderValue = pmSliderValue,
-        co2SliderValue = co2SliderValue,
-        coSliderDiskRes = coSliderDiskRes,
-        tmpSliderValue = tmpSliderValue,
-        tmpSliderDiskRes = tmpSliderDiskRes,
-        vocSliderValue = vocSliderValue,
-        vocSliderDiskRes = vocSliderDiskRes,
-        humidSliderValue = humidSliderValue,
-        humidSliderDiskRes = humidSliderDiskRes,
-        carbonSavedStr = carbonSavedStr,
-        energySavedStr = energySavedStr
+            co2LvlTxt = co2LvlTxt,
+            vocLvlTxt = vocLvlTxt,
+            tmpLvlTxt = tmpLvlTxt,
+            humidLvlTxt = humidLvlTxt,
+            pmSliderValue = pmSliderValue,
+            co2SliderValue = co2SliderValue,
+            coSliderDiskRes = coSliderDiskRes,
+            tmpSliderValue = tmpSliderValue,
+            tmpSliderDiskRes = tmpSliderDiskRes,
+            vocSliderValue = vocSliderValue,
+            vocSliderDiskRes = vocSliderDiskRes,
+            humidSliderValue = humidSliderValue,
+            humidSliderDiskRes = humidSliderDiskRes,
+            carbonSavedStr = carbonSavedStr,
+            energySavedStr = energySavedStr
     )
 }
 

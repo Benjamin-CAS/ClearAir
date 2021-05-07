@@ -46,8 +46,8 @@ class SettingsMenuFragment : Fragment() {
     private val viewModel: SettingsViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsMenuBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
@@ -65,10 +65,10 @@ class SettingsMenuFragment : Fragment() {
     private fun initViews() {
         aqiIndexArr = resources.getStringArray(R.array.aqi_indexes)
         aqiIndexesAdapter =
-            ArrayAdapter(requireContext(), R.layout.settings_drop_down_item, aqiIndexArr)
+                ArrayAdapter(requireContext(), R.layout.settings_drop_down_item, aqiIndexArr)
         mapLangArr = resources.getStringArray(R.array.map_languages)
         mapLangAdapter =
-            ArrayAdapter(requireContext(), R.layout.settings_drop_down_item, mapLangArr)
+                ArrayAdapter(requireContext(), R.layout.settings_drop_down_item, mapLangArr)
         mapsArr = resources.getStringArray(R.array.maps)
         mapsAdapter = ArrayAdapter(requireContext(), R.layout.settings_drop_down_item, mapsArr)
         setupPMAdapter()
@@ -80,36 +80,36 @@ class SettingsMenuFragment : Fragment() {
         aqiTypeSelector = (binding.aqiSelect.editText as? AutoCompleteTextView)
         aqiTypeSelector?.setAdapter(aqiIndexesAdapter)
         aqiTypeSelector?.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-                val selectedAqi: String =
-                    aqiIndexesAdapter.getItem(position)
-                        ?: getString(R.string.default_aqi_pm_2_5)
-                viewModel.setAQIIndex(selectedAqi)
-            }
+                AdapterView.OnItemClickListener { _, _, position, _ ->
+                    val selectedAqi: String =
+                            aqiIndexesAdapter.getItem(position)
+                                    ?: getString(R.string.default_aqi_pm_2_5)
+                    viewModel.setAQIIndex(selectedAqi)
+                }
     }
 
     private fun setupMapLanguageAdapter() {
         mapLangSelector = (binding.mapLanguageSelect.editText as? AutoCompleteTextView)
         mapLangSelector?.setAdapter(mapLangAdapter)
         mapLangSelector?.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-                val selectedMapLang: String =
-                    mapLangAdapter.getItem(position)
-                        ?: getString(R.string.map_lang_chinese)
-                viewModel.setSelectedMapLang(selectedMapLang)
-            }
+                AdapterView.OnItemClickListener { _, _, position, _ ->
+                    val selectedMapLang: String =
+                            mapLangAdapter.getItem(position)
+                                    ?: getString(R.string.map_lang_chinese)
+                    viewModel.setSelectedMapLang(selectedMapLang)
+                }
     }
 
     private fun setupMapsAdapter() {
         mapsSelector = (binding.mapSelect.editText as? AutoCompleteTextView)
         mapsSelector?.setAdapter(mapsAdapter)
         mapsSelector?.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-                val selectedMap: String =
-                    mapsAdapter.getItem(position)
-                        ?: getString(R.string.default_map_a_map)
-                viewModel.setSelectedMap(selectedMap)
-            }
+                AdapterView.OnItemClickListener { _, _, position, _ ->
+                    val selectedMap: String =
+                            mapsAdapter.getItem(position)
+                                    ?: getString(R.string.default_map_a_map)
+                    viewModel.setSelectedMap(selectedMap)
+                }
     }
 
 
@@ -171,7 +171,7 @@ class SettingsMenuFragment : Fragment() {
         return when (item.itemId) {
             R.id.save -> {
                 val action =
-                    SettingsMenuFragmentDirections.actionSettingsMenuFragmentToSplashFragment()
+                        SettingsMenuFragmentDirections.actionSettingsMenuFragmentToSplashFragment()
                 findNavController().navigate(action)
                 true
             }

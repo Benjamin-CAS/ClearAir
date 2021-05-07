@@ -7,13 +7,26 @@
     android:background="@color/whitish"
     tools:context=".views.fragments.add_location.AddLocationFromLocationsList">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Title6"
+        android:id="@+id/company_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/search_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/company_name"
+        android:layout_marginTop="@dimen/std_space"
         app:cardCornerRadius="@dimen/sm_space"
         app:cardElevation="@dimen/std_space"
         app:cardBackgroundColor="@color/white"
@@ -40,12 +53,24 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/std_space"
+        android:gravity="center"
+        android:text="@string/add_location_hint"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Caption"
+        android:id="@+id/add_hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_card"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/location_suggestions_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/std_space"
-        app:layout_constraintTop_toBottomOf="@id/search_card"
+        app:layout_constraintTop_toBottomOf="@id/add_hint"
         app:layout_constraintBottom_toTopOf="@id/done_btn"
         android:layout_marginBottom="@dimen/md_space"/>
 

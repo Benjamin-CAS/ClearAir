@@ -38,8 +38,8 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
 
     private lateinit var foundLocationsAdapter: FoundLocationsAdapter
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddLocationFromListBinding.inflate(inflater, container, false)
         return binding.root
@@ -50,7 +50,13 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
         setupRecyclerView()
         initializeSearchView()
         viewModel.observeIndoorLocationsToChooseFrom().observe(viewLifecycleOwner, {
-            foundLocationsAdapter.setFoundLocationsList(it)
+            if (it != null) {
+                foundLocationsAdapter.setFoundLocationsList(it)
+                if (it.isNotEmpty()) {
+                    val title = it[0].name + "\n" + getString(R.string.locations_txt)
+                    binding.companyName.text = title
+                }
+            }
         })
         binding.doneBtn.setOnClickListener {
             viewModel.refreshRecentlyAddedLocationDetails()
@@ -63,9 +69,9 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
         foundLocationsAdapter = FoundLocationsAdapter(this)
         binding.locationSuggestionsRv.apply {
             layoutManager = LinearLayoutManager(
-                requireContext(),
-                RecyclerView.VERTICAL,
-                false
+                    requireContext(),
+                    RecyclerView.VERTICAL,
+                    false
             )
             adapter = foundLocationsAdapter
             addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -81,9 +87,9 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
 
     override fun onClickFoundLocation(location: WatchedLocationHighLights) {
         viewModel.saveIndoorLocationFromFoundList(location)
-        val msg = location.name  + " " + getString( R.string.location_added_suffix)
+        val msg = location.name + " " + getString(R.string.location_added_suffix)
         Toast.makeText(
-            requireContext(), msg, Toast.LENGTH_LONG
+                requireContext(), msg, Toast.LENGTH_LONG
         ).show()
     }
 
@@ -91,5 +97,4 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
         super.onDestroyView()
         _binding = null
     }
-
 }

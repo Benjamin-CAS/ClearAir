@@ -23,10 +23,10 @@ import javax.inject.Singleton
 @Singleton
 class WatchedLocationUpdatesRepo
 @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
-    private val locationDetailsService: LocationDetailsService,
-    private val myLogger: MyLogger
+        private val coroutineScope: CoroutineScope,
+        private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
+        private val locationDetailsService: LocationDetailsService,
+        private val myLogger: MyLogger
 ) {
 
     private val TAG = WatchedLocationUpdatesRepo::class.java.simpleName
@@ -44,20 +44,20 @@ class WatchedLocationUpdatesRepo
                 val userPassword = aLocation.lastRecPwd
                 val timeStamp = (System.currentTimeMillis().toString() + aLocation.actualDataTag)
                 val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForLocationDetails(
-                    compId = compId,
-                    locId = locId,
-                    userName = userName,
-                    userPassword = userPassword,
-                    timeStamp = timeStamp,
-                    isIndoorLoc = aLocation.isIndoorLoc
+                        compId = compId,
+                        locId = locId,
+                        userName = userName,
+                        userPassword = userPassword,
+                        timeStamp = timeStamp,
+                        isIndoorLoc = aLocation.isIndoorLoc
                 )
 
                 val data = JsonObject()
                 data.addProperty(L_TIME_KEY, timeStamp)
                 data.addProperty(PAYLOAD_KEY, pl.replace("\n", ""))
                 val response = locationDetailsService.fetchDetailsForLocation(
-                    data = data,
-                    method = AppApiService.DEVICE_INFO_METHOD
+                        data = data,
+                        method = AppApiService.DEVICE_INFO_METHOD
                 )
 
                 // keep track of this request data ---
@@ -68,17 +68,13 @@ class WatchedLocationUpdatesRepo
                 data.addProperty(API_LOCAL_DATA_BINDER_KEY, aLocation.actualDataTag)
                 recentRequestsData.add(data)
                 response.enqueue(
-                    getWatchedLocationDetailsResponseCallback()
-                )
-                myLogger.logThis(
-                    TAG, "refreshWatchedLocationsData()", "refreshed ${myLocations.size} data $data"
+                        getWatchedLocationDetailsResponseCallback()
                 )
             }
 
         } catch (exc: Exception) {
-            myLogger.logThis(
-                TAG, "refreshWatchedLocationsData()", "failed exc ${exc.message}", exc
-            )
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG refreshWatchedLocationsData()", msg = exc.message, exc = exc)
+
 
         }
     }
@@ -86,115 +82,83 @@ class WatchedLocationUpdatesRepo
     private fun getWatchedLocationDetailsResponseCallback(): Callback<LocationDetailsResponse> {
         return object : Callback<LocationDetailsResponse> {
             override fun onResponse(
-                call: Call<LocationDetailsResponse>,
-                response: Response<LocationDetailsResponse>
+                    call: Call<LocationDetailsResponse>,
+                    response: Response<LocationDetailsResponse>
             ) {
                 try {
                     when {
                         response.code() == 200 -> {
                             val responseBody = response.body()
-                            if (responseBody == null || responseBody.payload.isNullOrBlank()) {
-                                myLogger.logThis(
-                                    TAG,
-                                    "getWatchedLocationDetailsResponseCallback()",
-                                    "returned a null body"
-                                )
-                            } else {
+                            if (responseBody != null && !responseBody.payload.isNullOrBlank()) {
                                 val lTime = responseBody.ltime ?: "0"
                                 unEncryptWatchedLocationDetailsPayload(
-                                    payload = responseBody.payload,
-                                    lTime = lTime
+                                        payload = responseBody.payload,
+                                        lTime = lTime
                                 )
                             }
                         }
                         else -> {
-                            myLogger.logThis(
-                                TAG,
-                                "getWatchedLocationDetailsResponseCallback()",
-                                "response code not 200, $response"
-                            )
                         }
                     }
-                } catch (e: Exception) {
-                    myLogger.logThis(
-                        TAG,
-                        "getWatchedLocationDetailsResponseCallback()",
-                        "exception ${e.message}",
-                        e
-                    )
+                } catch (exc: Exception) {
+                    myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getWatchedLocationDetailsResponseCallback()", msg = exc.message, exc = exc)
+
                 }
             }
 
             override fun onFailure(call: Call<LocationDetailsResponse>, e: Throwable) {
-                myLogger.logThis(
-                    TAG,
-                    "getWatchedLocationDetailsResponseCallback()",
-                    "OnFailure-exception ${e.message}"
-                )
             }
         }
     }
 
     private fun unEncryptWatchedLocationDetailsPayload(payload: String, lTime: String) {
         try {
-            val dataMatchingLTime =
-                recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
-            if (dataMatchingLTime.isNullOrEmpty()) return
-            val requestedData = dataMatchingLTime[0]
-            recentRequestsData.remove(requestedData)
-            val dataTag = requestedData.get(API_LOCAL_DATA_BINDER_KEY).asString
-            if (dataTag.isNullOrBlank()) return
+            coroutineScope.launch(Dispatchers.IO) {
+                val dataMatchingLTime =
+                        recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+                if (!dataMatchingLTime.isNullOrEmpty()) {
+                    val requestedData = dataMatchingLTime[0]
+                    recentRequestsData.remove(requestedData)
+                    val dataTag = requestedData.get(API_LOCAL_DATA_BINDER_KEY).asString
+                    if (!dataTag.isNullOrBlank()) {
 
-            val unEncryptedPayload: String =
-                CasEncDecQrProcessor.decodeApiResponse(payload)
-            val unEncJson = JSONObject(unEncryptedPayload)
-            val locationDetails =
-                Gson().fromJson(unEncJson.toString(), LocationDetails::class.java)
+                        val unEncryptedPayload: String =
+                                CasEncDecQrProcessor.decodeApiResponse(payload)
+                        val unEncJson = JSONObject(unEncryptedPayload)
+                        val locationDetails =
+                                Gson().fromJson(unEncJson.toString(), LocationDetails::class.java)
 
-            if (locationDetails != null) {
-                locationDetails.company_id = requestedData.get(COMP_ID_KEY).asString
-                locationDetails.location_id = requestedData.get(LOC_ID_KEY).asString
-                locationDetails.lastKnownUserName = requestedData.get(USER_KEY).asString
-                locationDetails.lastKnownPassword = requestedData.get(PASSWORD_KEY).asString
-                locationDetails.lastUpdated = System.currentTimeMillis()
+                        if (locationDetails != null) {
+                            locationDetails.company_id = requestedData.get(COMP_ID_KEY).asString
+                            locationDetails.location_id = requestedData.get(LOC_ID_KEY).asString
+                            locationDetails.lastKnownUserName = requestedData.get(USER_KEY).asString
+                            locationDetails.lastKnownPassword = requestedData.get(PASSWORD_KEY).asString
+                            locationDetails.lastUpdated = System.currentTimeMillis()
 
-                myLogger.logThis(
-                    TAG,
-                    "unEncryptWatchedLocationDetailsPayload(payload: , lTime  : $lTime)",
-                    "encrypted data $unEncJson for company ${locationDetails.company_id} & location ${locationDetails.location_id}",
-                )
-                updateWatchedLocationIfExists(locationDetails, dataTag)
-            } else {
-                myLogger.logThis(
-                    TAG, "unEncryptWatchedLocationDetailsPayload()",
-                    "failed to decode my locations details to gSon ..encoded - $unEncJson"
-                )
-
+                            updateWatchedLocationIfExists(locationDetails, dataTag)
+                        }
+                    }
+                }
             }
 
-        } catch (e: java.lang.Exception) {
-            myLogger.logThis(
-                TAG,
-                " unEncryptWatchedLocationDetailsPayload(payload: , lTime  : $lTime)",
-                "failed ${e.message}",
-                e
-            )
+        } catch (exc: Exception) {
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptWatchedLocationDetailsPayload()", msg = exc.message, exc = exc)
+
         }
     }
 
-    private fun updateWatchedLocationIfExists(locationDetails: LocationDetails, dataTag: String) {
-        coroutineScope.launch(Dispatchers.IO) {
-            try {
-                val foundDetails = watchedLocationHighLightsDao.checkIfIsWatchedLocation(dataTag)
-                if (foundDetails.isNotEmpty()) {
-                    val existingData = foundDetails[0]
-                    val lat = locationDetails.getLat()
-                    val lon = locationDetails.getLon()
-                    if (lat != null && lon != null) {
-                        val indoorPm =
+    private suspend fun updateWatchedLocationIfExists(locationDetails: LocationDetails, dataTag: String) {
+        try {
+            val foundDetails = watchedLocationHighLightsDao.checkIfIsWatchedLocation(dataTag)
+            if (foundDetails.isNotEmpty()) {
+                val existingData = foundDetails[0]
+                val lat = locationDetails.getLat()
+                val lon = locationDetails.getLon()
+                if (lat != null && lon != null) {
+                    val indoorPm =
                             if (existingData.isIndoorLoc) locationDetails.indoor?.indoor_pm?.toDoubleOrNull()
                             else null
-                        val updatedData = WatchedLocationHighLights(
+                    val updatedData = WatchedLocationHighLights(
                             actualDataTag = dataTag,
                             lat = lat,
                             lon = lon,
@@ -215,15 +179,13 @@ class WatchedLocationUpdatesRepo
                             monitorId = existingData.monitorId,
                             lastRecPwd = existingData.lastRecPwd,
                             lastRecUsername = existingData.lastRecUsername
-                        )
-                        watchedLocationHighLightsDao.insertLocation(updatedData)
-                    }
+                    )
+                    watchedLocationHighLightsDao.insertLocation(updatedData)
                 }
-            } catch (exc: Exception) {
-                myLogger.logThis(
-                    TAG, " updateWatchedLocationIfExist()", "exception ${exc.message}", exc
-                )
             }
+        } catch (exc: Exception) {
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG updateWatchedLocationIfExists()", msg = exc.message, exc = exc)
+
         }
     }
 

@@ -101,6 +101,13 @@
 
         </LinearLayout>
     </HorizontalScrollView>
+    <ProgressBar
+        android:id="@+id/progress_recycler"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon"
+        android:layout_below="@id/map_actions_container"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_locations_rv"
@@ -109,7 +116,7 @@
         android:layout_marginStart="@dimen/std_space"
         android:layout_marginEnd="@dimen/std_space"
         android:layout_marginTop="@dimen/std_space"
-        android:layout_below="@id/map_actions_container"
+        android:layout_below="@id/progress_recycler"
         />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/my_location_btn"

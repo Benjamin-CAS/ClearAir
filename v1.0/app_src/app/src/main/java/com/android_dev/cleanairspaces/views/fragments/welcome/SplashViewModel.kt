@@ -16,9 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager,
-    private val workManager: WorkManager,
-    private val myLogger: MyLogger
+        private val dataStoreManager: DataStoreManager,
+        private val workManager: WorkManager,
+        private val myLogger: MyLogger
 ) : ViewModel() {
 
     companion object {
@@ -30,27 +30,23 @@ class SplashViewModel @Inject constructor(
 
 
     fun scheduleDataRefresh() {
-        myLogger.logThis(
-            TAG, "initDataRefresh()", "calling worker"
-        )
 
-
+//todo .setRequiredNetworkType(NetworkType.CONNECTED)
         val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val refreshMapDataRequest =
-            PeriodicWorkRequestBuilder<RefreshLocationsWorker>(
-                DATA_REFRESH_INTERVAL_MIN,
-                TimeUnit.MINUTES
-            )
-                .setConstraints(constraints)
                 .build()
 
+        val refreshMapDataRequest =
+                PeriodicWorkRequestBuilder<RefreshLocationsWorker>(
+                        DATA_REFRESH_INTERVAL_MIN,
+                        TimeUnit.MINUTES
+                )
+                        .setConstraints(constraints)
+                        .build()
+
         workManager.enqueueUniquePeriodicWork(
-            DATA_REFRESHER_WORKER_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            refreshMapDataRequest
+                DATA_REFRESHER_WORKER_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                refreshMapDataRequest
         )
 
     }

@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.databinding.FragmentSearchBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
 import com.android_dev.cleanairspaces.views.adapters.SearchSuggestionsAdapter
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,12 +33,11 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchLocationViewModel by viewModels()
-    private lateinit var snackBar: Snackbar
 
     private lateinit var searchSuggestionsAdapter: SearchSuggestionsAdapter
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -57,9 +56,9 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
         searchSuggestionsAdapter = SearchSuggestionsAdapter(this)
         binding.locationSuggestionsRv.apply {
             layoutManager = LinearLayoutManager(
-                requireContext(),
-                RecyclerView.VERTICAL,
-                false
+                    requireContext(),
+                    RecyclerView.VERTICAL,
+                    false
             )
             adapter = searchSuggestionsAdapter
             addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -74,18 +73,35 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
 
 
     override fun onClickSearchSuggestion(suggestion: SearchSuggestionsData) {
-        val action =
-            when {
-                suggestion.isForIndoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
-                    locDataIsIndoorQuery = suggestion
-                )
-                suggestion.isForOutDoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
-                    locDataIsOutdoorQuery = suggestion
-                )
-                else -> null
+        try {
+            val query = binding.searchView.text.toString()
+            val msg = "searched $query clicked ${suggestion.nameToDisplay}"
+            myLogger.logThis(
+                    tag = LogTags.USER_ACTION_SEARCH,
+                    from = TAG,
+                    msg = msg
+            )
+            val action =
+                    when {
+                        suggestion.isForIndoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
+                                locDataIsIndoorQuery = suggestion
+                        )
+                        suggestion.isForOutDoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
+                                locDataIsOutdoorQuery = suggestion
+                        )
+                        else -> null
+                    }
+            action?.let { navDirection ->
+                findNavController().navigate(navDirection)
             }
-        action?.let { navDirection ->
-            findNavController().navigate(navDirection)
+
+        } catch (exc: Exception) {
+            myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = TAG,
+                    msg = exc.message,
+                    exc = exc
+            )
         }
     }
 
@@ -93,5 +109,4 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
         super.onDestroyView()
         _binding = null
     }
-
 }

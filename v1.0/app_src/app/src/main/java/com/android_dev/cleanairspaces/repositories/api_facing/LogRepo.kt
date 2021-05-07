@@ -4,6 +4,7 @@ import android.util.Log
 import com.android_dev.cleanairspaces.persistence.api.services.LoggerService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.LogsDao
 import com.android_dev.cleanairspaces.persistence.local.models.entities.Logs
+import com.android_dev.cleanairspaces.utils.LAT_LON_DELIMITER
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,20 +18,30 @@ import javax.inject.Singleton
 @Singleton
 class LogRepo
 @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val loggerDao: LogsDao,
-    private val loggerService: LoggerService
+        private val coroutineScope: CoroutineScope,
+        private val loggerDao: LogsDao,
+        private val loggerService: LoggerService
 ) {
+
+    companion object{
+        private val TAG = LogRepo::class.java.simpleName
+    }
     fun saveLocally(key: String, message: String, isExc: Boolean) {
         coroutineScope.launch(Dispatchers.IO) {
-            loggerDao.insertLog(
-                Logs(
-                    id = 0,
-                    key = key,
-                    message = message,
-                    tag = if (isExc) "Exception" else ""
+            try {
+                loggerDao.insertLog(
+                        Logs(
+                                id = 0,
+                                key = key,
+                                message = message,
+                                tag = if (isExc) "Exception" else ""
+                        )
                 )
-            )
+            } catch (exc: java.lang.Exception) {
+                Log.d(
+                        TAG, "saveLocally() exc ${exc.message}", exc
+                )
+            }
         }
     }
 
@@ -42,20 +53,20 @@ class LogRepo
                 val data = JsonObject()
                 data.addProperty("key", log.key)
                 data.addProperty("message", log.message)
-                data.addProperty("tag", "${log.tag}_${log.last_updated}")
+                data.addProperty("tag", "${log.tag}_${log.recordedAt}")
                 val request = loggerService.sendLogs(
-                    data = data
+                        data = data
                 )
                 request.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         Log.d(
-                            "pushLogs onResponse->()", "$response ${response.body()}"
+                                TAG , "pushLogs onResponse->() $response ${response.body()}"
                         )
                     }
 
                     override fun onFailure(call: Call<Any>, t: Throwable) {
                         Log.d(
-                            "pushLogs onFailure->()", "${t.message}"
+                                TAG , "pushLogs onFailure->() ${t.message}"
                         )
                     }
 
@@ -64,9 +75,44 @@ class LogRepo
             loggerDao.clearLogData()
         } catch (exc: Exception) {
             Log.d(
-                "pushLogs", "${exc.message}", exc
+                    TAG , "pushLogs ${exc.message}", exc
             )
         }
 
+    }
+
+    fun updateUserLocation(uniqueID: String, msg: String?) {
+        coroutineScope.launch {
+            try {
+                val lat = msg?.substringBefore(LAT_LON_DELIMITER)
+                val lon = msg?.substringAfter(LAT_LON_DELIMITER)
+                Log.d(
+                        TAG, "updateUserLocation for user $uniqueID  to lat_lon $lat $lon"
+                )
+                if (lat != null && lon != null) {
+                    val request = loggerService.sendUserLocation(
+                            uid = uniqueID, lat = lat, lon = lon
+                    )
+                    request.enqueue(object : Callback<Any> {
+                        override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                            Log.d(
+                                    TAG, "updateUserLocation onResponse->() $response ${response.body()}"
+                            )
+                        }
+
+                        override fun onFailure(call: Call<Any>, t: Throwable) {
+                            Log.d(
+                                    TAG, "updateUserLocation onFailure->() ${t.message}"
+                            )
+                        }
+
+                    })
+                }
+            } catch (exc: Exception) {
+                Log.d(
+                        TAG, "updateUserLocation for user $uniqueID to lat${LAT_LON_DELIMITER}lon $msg ${exc.message}", exc
+                )
+            }
+        }
     }
 }

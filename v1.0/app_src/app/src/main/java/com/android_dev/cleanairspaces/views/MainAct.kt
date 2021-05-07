@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.ActivityMainBinding
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -22,6 +23,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainAct : AppCompatActivity() {
+
+    companion object {
+        private val TAG = MainAct::class.java.simpleName
+    }
 
     @Inject
     lateinit var myLogger: MyLogger
@@ -39,15 +44,15 @@ class MainAct : AppCompatActivity() {
         setContentView(view)
 
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()
         //specify home fragments
         appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.splashFragment,
-                R.id.AMapsFragment,
-                R.id.GMapsFragment
-            )
+                setOf(
+                        R.id.splashFragment,
+                        R.id.AMapsFragment,
+                        R.id.GMapsFragment
+                )
         )
         setSupportActionBar(binding.toolbarLayout.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -113,6 +118,11 @@ class MainAct : AppCompatActivity() {
             }
         }
 
+        //log
+        myLogger.logThis(
+                LogTags.USER_ACTION_OPEN_APP, TAG
+        )
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -130,4 +140,12 @@ class MainAct : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        myLogger.logThis(
+                LogTags.USER_ACTION_CLOSE_APP, TAG
+        )
+    }
+
 }

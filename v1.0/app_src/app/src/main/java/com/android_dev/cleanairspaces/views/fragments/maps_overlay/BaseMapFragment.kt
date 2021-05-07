@@ -55,6 +55,11 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     private lateinit var homeMapOverlay: HomeMapOverlayBinding
     lateinit var watchedLocationsAdapter: WatchedLocationsAdapter
 
+    private fun toggleProgressView(show: Boolean) {
+        homeMapOverlay.progressRecycler.isVisible = show
+    }
+
+
     fun setHomeMapOverlay(mapOverlay: HomeMapOverlayBinding) {
         homeMapOverlay = mapOverlay
         homeMapOverlay.apply {
@@ -62,21 +67,36 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
                 requestPermissionsAndShowUserLocation()
             }
             mapView.setOnClickListener {
+                myLogger.logThis(
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "MAP VIEW TOGGLE"
+                )
                 homeMapOverlay.myLocationsRv.isVisible = !homeMapOverlay.myLocationsRv.isVisible
             }
             smartQr.setOnClickListener {
+                myLogger.logThis(
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "SMART QR"
+                )
                 scanQRCode()
             }
 
             searchLocation.setOnClickListener {
+                myLogger.logThis(
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "SEARCH"
+                )
                 goToSearchFragment()
             }
 
             myLocationsRv.apply {
                 layoutManager = LinearLayoutManager(
-                    homeMapOverlay.container.context,
-                    RecyclerView.VERTICAL,
-                    false
+                        homeMapOverlay.container.context,
+                        RecyclerView.VERTICAL,
+                        false
                 )
                 adapter = watchedLocationsAdapter
                 addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -97,21 +117,21 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     abstract fun showLocationOnMap(location: Location)
     fun promptToggleGPSSettings() {
         val manager =
-            requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
+                requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
         if (!manager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //showTurnOnGPSDialog
             showCustomDialog(
-                ctx = requireContext(),
-                msgRes = R.string.turn_on_gps_prompt,
-                okRes = R.string.go_to_settings,
-                dismissRes = R.string.not_now_txt,
-                positiveAction = {
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                    ctx = requireContext(),
+                    msgRes = R.string.turn_on_gps_prompt,
+                    okRes = R.string.go_to_settings,
+                    dismissRes = R.string.not_now_txt,
+                    positiveAction = {
+                        startActivity(
+                                Intent(
+                                        Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                                )
                         )
-                    )
-                })
+                    })
         }
     }
 
@@ -119,9 +139,9 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             myLogger.logThis(
-                "new loc",
-                "locationChanged()",
-                "${location.latitude}, ${location.longitude} "
+                    tag = LogTags.USER_LOCATION_CHANGED,
+                    from = TAG,
+                    msg = "${location.latitude}$LAT_LON_DELIMITER${location.longitude}"
             )
             showLocationOnMap(location)
         }
@@ -141,12 +161,12 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     @SuppressLint("MissingPermission")
     fun showUserLocation() {
         locationManager =
-            requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
+                requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
         locationManager?.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER,
-            USER_LOCATION_UPDATE_INTERVAL_MILLS,
-            USER_LOCATION_UPDATE_ON_DISTANCE,
-            locationListener
+                LocationManager.NETWORK_PROVIDER,
+                USER_LOCATION_UPDATE_INTERVAL_MILLS,
+                USER_LOCATION_UPDATE_ON_DISTANCE,
+                locationListener
         )
 
     }
@@ -155,17 +175,17 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             when {
                 ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     showUserLocation()
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showCustomDialog(
-                        ctx = requireContext(),
-                        msgRes = R.string.location_permission_rationale,
-                        okRes = R.string.got_it_txt,
-                        dismissRes = R.string.not_now_txt
+                            ctx = requireContext(),
+                            msgRes = R.string.location_permission_rationale,
+                            okRes = R.string.got_it_txt,
+                            dismissRes = R.string.not_now_txt
                     ) {
                         requestPermission(isLocation = true)
                     }
@@ -192,7 +212,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(
-            item
+                item
         )
     }
 
@@ -230,28 +250,28 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     }
 
     private fun showCustomDialog(
-        ctx: Context,
-        msgRes: Int,
-        okRes: Int,
-        dismissRes: Int,
-        positiveAction: () -> Unit
+            ctx: Context,
+            msgRes: Int,
+            okRes: Int,
+            dismissRes: Int,
+            positiveAction: () -> Unit
     ) {
         popUp?.let {
             if (it.isShowing) it.dismiss()
         }
         popUp = MaterialAlertDialogBuilder(ctx)
-            .setTitle(msgRes)
-            .setPositiveButton(
-                okRes
-            ) { dialog, _ ->
-                positiveAction.invoke()
-                dialog.dismiss()
-            }
-            .setNeutralButton(
-                dismissRes
-            ) { dialog, _ ->
-                dialog.dismiss()
-            }.create()
+                .setTitle(msgRes)
+                .setPositiveButton(
+                        okRes
+                ) { dialog, _ ->
+                    positiveAction.invoke()
+                    dialog.dismiss()
+                }
+                .setNeutralButton(
+                        dismissRes
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
 
         popUp?.show()
     }

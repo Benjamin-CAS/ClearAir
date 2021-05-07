@@ -12,6 +12,7 @@ import com.android_dev.cleanairspaces.repositories.api_facing.WatchedLocationUpd
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.AsyncResultListener
 import com.android_dev.cleanairspaces.utils.CasEncDecQrProcessor
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +23,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddLocationViewModel @Inject constructor(
-    private val appDataRepo: AppDataRepo,
-    private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
-    private val locationDetailsRepo: LocationDetailsRepo,
-    private val myLogger: MyLogger
+        private val appDataRepo: AppDataRepo,
+        private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
+        private val locationDetailsRepo: LocationDetailsRepo,
+        private val myLogger: MyLogger
 ) : ViewModel() {
 
     private val TAG = AddLocationViewModel::class.java.simpleName
@@ -35,19 +36,19 @@ class AddLocationViewModel @Inject constructor(
     }
 
     fun observeScanQrCodeData(): LiveData<LocationDataFromQr> =
-        locationDetailsRepo.getCurrentlyScannedDeviceData()
+            locationDetailsRepo.getCurrentlyScannedDeviceData()
 
     fun fetchLocationDetailsForScannedMonitor(monitorId: String) {
         val timeStamp = System.currentTimeMillis().toString()
         val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForScannedDeviceWithMonitorId(
-            monitorId = monitorId,
-            timeStamp = timeStamp
+                monitorId = monitorId,
+                timeStamp = timeStamp
         )
         viewModelScope.launch(Dispatchers.IO) {
             locationDetailsRepo.fetchDataForScannedDeviceWithMonitorId(
-                base64Str = pl,
-                payLoadTimeStamp = timeStamp,
-                monitorId = monitorId
+                    base64Str = pl,
+                    payLoadTimeStamp = timeStamp,
+                    monitorId = monitorId
             )
         }
     }
@@ -55,36 +56,36 @@ class AddLocationViewModel @Inject constructor(
     fun fetchLocationDetailsForScannedDeviceWithCompLoc(locId: Int, compId: Int) {
         val timeStamp = System.currentTimeMillis().toString()
         val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForScannedDeviceWithCompLoc(
-            locId,
-            compId,
-            timeStamp
+                locId,
+                compId,
+                timeStamp
         )
         viewModelScope.launch(Dispatchers.IO) {
             locationDetailsRepo.fetchDataForScannedDeviceWithCompLoc(
-                base64Str = pl,
-                payLoadTimeStamp = timeStamp
+                    base64Str = pl,
+                    payLoadTimeStamp = timeStamp
             )
         }
     }
 
     private val locationIsAdded =
-        MutableLiveData<WatchLocationProcessState>(WatchLocationProcessState.IDLE)
+            MutableLiveData<WatchLocationProcessState>(WatchLocationProcessState.IDLE)
 
     fun observeAddProcess(): LiveData<WatchLocationProcessState> = locationIsAdded
     fun saveWatchedLocationFromScannedQr(
-        locationDataFromQr: LocationDataFromQr? = null,
-        monitorDataFromQr: LocationDataFromQr? = null,
-        userPwd: String,
-        userName: String
+            locationDataFromQr: LocationDataFromQr? = null,
+            monitorDataFromQr: LocationDataFromQr? = null,
+            userPwd: String,
+            userName: String
     ) {
         locationIsAdded.value = WatchLocationProcessState.ADDING
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val isSaved = appDataRepo.addNewWatchedLocationFromScannedQrCode(
-                    locationDataFromQr = locationDataFromQr,
-                    monitorDataFromQr = monitorDataFromQr,
-                    userPwd = userPwd,
-                    userName = userName
+                        locationDataFromQr = locationDataFromQr,
+                        monitorDataFromQr = monitorDataFromQr,
+                        userPwd = userPwd,
+                        userName = userName
                 )
                 withContext(Dispatchers.Main) {
                     locationIsAdded.value = if (isSaved) {
@@ -92,21 +93,20 @@ class AddLocationViewModel @Inject constructor(
                     } else WatchLocationProcessState.FAILED
                 }
             } catch (exc: Exception) {
-                myLogger.logThis(
-                    TAG, "saveWatchedLocationFromScannedQr()", "exception ${exc.message}", exc
-                )
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG saveWatchedLocationFromScannedQr()", msg = exc.message, exc = exc)
+
             }
         }
     }
 
     fun saveWatchedOutdoorLocationSearchedInfo(
-        outDoorInfo: SearchSuggestionsData
+            outDoorInfo: SearchSuggestionsData
     ) {
         locationIsAdded.value = WatchLocationProcessState.ADDING
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val isSaved = appDataRepo.addNewWatchedLocationFromOutDoorSearchData(
-                    outDoorInfo = outDoorInfo
+                        outDoorInfo = outDoorInfo
                 )
                 withContext(Dispatchers.Main) {
                     locationIsAdded.value = if (isSaved) {
@@ -114,16 +114,15 @@ class AddLocationViewModel @Inject constructor(
                     } else WatchLocationProcessState.FAILED
                 }
             } catch (exc: Exception) {
-                myLogger.logThis(
-                    TAG, "saveWatchedOutdoorLocationSearchedInfo()", "exception ${exc.message}", exc
-                )
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG saveWatchedOutdoorLocationSearchedInfo()", msg = exc.message, exc = exc)
+
             }
         }
     }
 
-    private lateinit var allIndoorLocationsToChooseFrom :  List<WatchedLocationHighLights>
+    private lateinit var allIndoorLocationsToChooseFrom: List<WatchedLocationHighLights>
     private val indoorLocationsToChooseFrom = MutableLiveData<List<WatchedLocationHighLights>>()
-    fun observeIndoorLocationsToChooseFrom() : LiveData<List<WatchedLocationHighLights>> = indoorLocationsToChooseFrom
+    fun observeIndoorLocationsToChooseFrom(): LiveData<List<WatchedLocationHighLights>> = indoorLocationsToChooseFrom
     private val indoorDataResultListener = object : AsyncResultListener {
         override fun onComplete(data: Any?, isSuccess: Boolean) {
             locationIsAdded.value = if (isSuccess && data != null && data is ArrayList<*>) {
@@ -137,15 +136,15 @@ class AddLocationViewModel @Inject constructor(
 
     fun searchInIndoorLocations(query: String) {
         if (query.isNotBlank())
-          indoorLocationsToChooseFrom.value = allIndoorLocationsToChooseFrom.filter { it.name.contains(query, ignoreCase = true) }
+            indoorLocationsToChooseFrom.value = allIndoorLocationsToChooseFrom.filter { it.name.contains(query, ignoreCase = true) }
         else
-           indoorLocationsToChooseFrom.value = allIndoorLocationsToChooseFrom
+            indoorLocationsToChooseFrom.value = allIndoorLocationsToChooseFrom
     }
 
     fun saveIndoorLocationFromFoundList(location: WatchedLocationHighLights) {
-       val newList = allIndoorLocationsToChooseFrom.filter { it.name != location.name }
+        val newList = allIndoorLocationsToChooseFrom.filter { it.name != location.name }
         allIndoorLocationsToChooseFrom = newList
-       indoorLocationsToChooseFrom.value =  newList
+        indoorLocationsToChooseFrom.value = newList
         appDataRepo.watchALocation(location)
     }
 
@@ -155,38 +154,32 @@ class AddLocationViewModel @Inject constructor(
 
 
     fun saveWatchedIndoorLocationSearchedInfo(
-        userName: String,
-        password: String,
-        inDoorInfo: SearchSuggestionsData
+            userName: String,
+            password: String,
+            inDoorInfo: SearchSuggestionsData
     ) {
         locationIsAdded.value = WatchLocationProcessState.ADDING
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 appDataRepo.addNewWatchedLocationFromInDoorSearchData(
-                    userName = userName,
-                    password = password,
-                    inDoorInfo = inDoorInfo,
-                    indoorDataResultListener = indoorDataResultListener
+                        userName = userName,
+                        password = password,
+                        inDoorInfo = inDoorInfo,
+                        indoorDataResultListener = indoorDataResultListener
                 )
 
             } catch (exc: Exception) {
-                myLogger.logThis(
-                    TAG, "saveWatchedOutdoorLocationSearchedInfo()", "exception ${exc.message}", exc
-                )
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG saveWatchedIndoorLocationSearchedInfo()", msg = exc.message, exc = exc)
+
             }
         }
     }
 
     fun refreshRecentlyAddedLocationDetails() {
         viewModelScope.launch(Dispatchers.IO) {
-            myLogger.logThis(
-                TAG, "refreshRecentlyAddedLocationDetails()", "recently added location"
-            )
             watchedLocationUpdatesRepo.refreshWatchedLocationsData()
         }
     }
-
-
 
 
 }

@@ -2,22 +2,42 @@ package com.android_dev.cleanairspaces.utils
 
 import android.util.Log
 import com.android_dev.cleanairspaces.repositories.api_facing.LogRepo
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MyLogger @Inject constructor(
-    private val logRepo: LogRepo
+        private val logRepo: LogRepo
 ) {
-    fun logThis(tag: String, from: String, msg: String, exc: Exception? = null) {
-        if (Companion.DEBUG)
-            Log.d("CAS_Logger $tag", "$from $msg", exc)
-        else {
-            logRepo.saveLocally("CAS_Logger $tag", "$from $msg", isExc = (exc != null))
+
+
+    fun logThis(tag: LogTags, from: String, msg: String? = "", exc: Exception? = null) {
+
+        if (DEBUG) {
+            Log.d("CAS_Logger ${tag.readableMsg}", "User $uniqueID $from $msg", exc)
+            if (tag == LogTags.USER_LOCATION_CHANGED){
+                logRepo.updateUserLocation(uniqueID, msg)
+            }
+        }else {
+            logRepo.saveLocally(tag.readableMsg, "User $uniqueID $from $msg", isExc = (exc != null))
         }
     }
 
+
     companion object {
-        private const val DEBUG = true
+        private const val DEBUG = false
+        private val uniqueID = UUID.randomUUID().toString()
     }
+}
+
+enum class LogTags(val readableMsg: String) {
+    EXCEPTION(readableMsg = "exception"),
+    USER_ACTION_OPEN_SCREEN(readableMsg = "user action | open screen"),
+    USER_ACTION_CLICK_FEATURE(readableMsg = "user action | click feature"),
+    USER_ACTION_SEARCH(readableMsg = "user action | search"),
+    USER_ACTION_OPEN_APP(readableMsg = "user action | open app"),
+    USER_ACTION_CLOSE_APP(readableMsg = "user action | close app"),
+    USER_LOCATION_CHANGED(readableMsg = "user location changed")
+
 }

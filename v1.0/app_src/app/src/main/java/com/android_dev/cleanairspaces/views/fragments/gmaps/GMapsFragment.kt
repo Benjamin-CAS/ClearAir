@@ -10,11 +10,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentGMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.android_dev.cleanairspaces.utils.showSnackBar
@@ -43,10 +45,32 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
     private val mapCircleMarkers: ArrayList<Marker> = arrayListOf()
 
+
+    private val goodCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.good_circle)
+   }
+
+    private val moderateCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.moderate_circle)
+   }
+
+    private val gUnhealthyCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.g_unhealthy_circle)
+   }
+
+    private val unHealthyCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.unhealthy_circle)
+   }
+
+    private val vUnHealthyCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.v_unhealthy_circle)
+   }
+
+    private val hazardCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.hazardous_circle)
+   }
+
+
+   
+
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
         requestLocationPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
+                ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
                 showUserLocation()
@@ -57,21 +81,25 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     override fun initQrScannerLauncher() {
         //scan-qr launcher must be set
         scanQrCodeLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-            { result: ActivityResult ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    //  you will get result here in result.data
-                    handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
-                }
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+                { result: ActivityResult ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        //  you will get result here in result.data
+                        handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
+                    }
 
-            }
+                }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGMapsBinding.inflate(inflater, container, false)
+
+        watchedLocationsAdapter = WatchedLocationsAdapter(this)
+        super.setHomeMapOverlay(binding.mapOverlay)
+
 
         setHasOptionsMenu(true)
         requireActivity().invalidateOptionsMenu()
@@ -84,19 +112,16 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
 
-        watchedLocationsAdapter = WatchedLocationsAdapter(this)
-        super.setHomeMapOverlay(binding.mapOverlay)
-
         binding.gMap.apply {
             onCreate(savedInstanceState)
             getMapAsync(this@GMapsFragment)
         }
 
         viewModel.observeSelectedAqiIndex().observe(
-            viewLifecycleOwner, {
-                updateSelectedAqiIndex(it)
-                observeWatchedLocations()
-            }
+                viewLifecycleOwner, {
+            updateSelectedAqiIndex(it)
+            observeWatchedLocations()
+        }
         )
 
     }
@@ -112,9 +137,9 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
 
         } else {
             snackBar = binding.container.showSnackBar(
-                isErrorMsg = true,
-                msgResId = R.string.failed_to_load_gmap,
-                actionMessage = R.string.dismiss
+                    isErrorMsg = true,
+                    msgResId = R.string.failed_to_load_gmap,
+                    actionMessage = R.string.dismiss
             )
         }
 
@@ -130,11 +155,11 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     private fun observeMapRelatedData() {
         //map data -locations & pm values
         viewModel.observeMapData().observe(
-            this, {
-                if (it.isNotEmpty()) {
-                    drawCirclesOnMap(it)
-                }
+                this, {
+            if (it.isNotEmpty()) {
+                drawCirclesOnMap(it)
             }
+        }
         )
     }
 
@@ -144,9 +169,17 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             mMap?.let {
                 for (mapData in mapDataPoints) {
                     val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
+                    val mIcon = when (aqiStatus.level_intensity) {
+                        1.0 -> goodCircle
+                        2.0 -> moderateCircle
+                        3.0 -> gUnhealthyCircle
+                        4.0 -> unHealthyCircle
+                        5.0 -> vUnHealthyCircle
+                        else -> hazardCircle
+                    }
                     val circleMarker = mMap?.addMarker(
-                        MarkerOptions().position(mapData.getGMapLocationLatLng())
-                            .icon(BitmapDescriptorFactory.fromResource(aqiStatus.transparentCircleRes))
+                            MarkerOptions().position(mapData.getGMapLocationLatLng())
+                                    .icon(mIcon)
                     )
                     circleMarker?.let { marker ->
                         mapCircleMarkers.add(marker)
@@ -154,7 +187,9 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
                 }
             }
         } catch (exc: Exception) {
-            myLogger.logThis(TAG, "drawCirclesOnMap()", "Exception ${exc.message}", exc)
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG drawCirclesOnMap()", msg = exc.message, exc = exc)
+
+
         }
     }
 
@@ -168,15 +203,15 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     override fun showLocationOnMap(location: Location) {
         val currentUserLocation = LatLng(location.latitude, location.longitude)
         mMap?.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                currentUserLocation,
-                MY_LOCATION_ZOOM_LEVEL
-            )
+                CameraUpdateFactory.newLatLngZoom(
+                        currentUserLocation,
+                        MY_LOCATION_ZOOM_LEVEL
+                )
         )
         viewModel.myLocMarkerOnGMap?.remove()
         viewModel.myLocMarkerOnGMap = mMap?.addMarker(
-            MarkerOptions().position(currentUserLocation)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_my_location_marker))
+                MarkerOptions().position(currentUserLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_my_location_marker))
         )
     }
 
@@ -185,23 +220,23 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         if (intentResult != null) {
             if (intentResult.contents == null) {
                 Toast.makeText(
-                    requireContext(),
-                    R.string.scan_qr_code_cancelled,
-                    Toast.LENGTH_LONG
+                        requireContext(),
+                        R.string.scan_qr_code_cancelled,
+                        Toast.LENGTH_LONG
                 ).show()
             } else {
                 // if the intentResult is not null we'll set
                 // the content and format of scan message
                 val qrContent = intentResult.contents
                 val action = GMapsFragmentDirections.actionGMapsFragmentToAddLocation(
-                    locDataFromQr = qrContent
+                        locDataFromQr = qrContent
                 )
                 findNavController().navigate(action)
             }
         } else {
             Toast.makeText(
-                requireContext(), R.string.scan_qr_code_unknown,
-                Toast.LENGTH_LONG
+                    requireContext(), R.string.scan_qr_code_unknown,
+                    Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -262,17 +297,21 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         try {
             val action = GMapsFragmentDirections.actionGMapsFragmentToSearchFragment()
             findNavController().navigate(action)
-        } catch (exc: java.lang.Exception) {
-            myLogger.logThis(TAG, "goToSearchFragment()", "Exception ${exc.message}")
+        } catch (exc: Exception) {
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG goToSearchFragment()", msg = exc.message, exc = exc)
+
+
         }
     }
 
     override fun onClickWatchedLocation(location: WatchedLocationHighLights) {
         try {
             val action = GMapsFragmentDirections.actionGMapsFragmentToDetailsFragment(location)
-            findNavController().navigate(action)
-        } catch (exc: java.lang.Exception) {
-            myLogger.logThis(TAG, "onClickWatchedLocation()", "Exception ${exc.message}")
+            binding.container.findNavController().navigate(action)
+        } catch (exc: Exception) {
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG  onClickWatchedLocation()", msg = exc.message, exc = exc)
+
+
         }
     }
 

@@ -146,5 +146,6 @@
     <string name="search_found_indoor_locations_hint">Search</string>
     <string name="location_added_suffix">added</string>
     <string name="done_txt">DONE</string>
+    <string name="add_location_hint">Click the right add icon for each location you wish to track</string>
 
 </resources>

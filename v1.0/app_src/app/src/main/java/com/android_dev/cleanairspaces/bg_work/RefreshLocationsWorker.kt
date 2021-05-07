@@ -17,13 +17,13 @@ import kotlinx.coroutines.withContext
 
 @HiltWorker
 class RefreshLocationsWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val outDoorLocationsRepo: OutDoorLocationsRepo,
-    private val inDoorLocationsRepo: InDoorLocationsRepo,
-    private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
-    private val myLogger: MyLogger,
-    private val logRepo: LogRepo
+        @Assisted appContext: Context,
+        @Assisted workerParams: WorkerParameters,
+        private val outDoorLocationsRepo: OutDoorLocationsRepo,
+        private val inDoorLocationsRepo: InDoorLocationsRepo,
+        private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
+        private val myLogger: MyLogger,
+        private val logRepo: LogRepo
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val TAG = RefreshLocationsWorker::class.java.simpleName
@@ -41,23 +41,17 @@ class RefreshLocationsWorker @AssistedInject constructor(
     }
 
     private suspend fun refreshWatchedLocations() {
-        myLogger.logThis(
-            TAG, "refreshWatchedLocations", "refreshing"
-        )
+
         watchedLocationUpdatesRepo.refreshWatchedLocationsData()
     }
 
     private suspend fun refreshOutDoorLocations() {
-        myLogger.logThis(
-            TAG, "refreshOutDoorLocations", "refreshing"
-        )
+
         outDoorLocationsRepo.refreshOutDoorLocations()
     }
 
     private suspend fun refreshInDoorLocations() {
-        myLogger.logThis(
-            TAG, "refreshInDoorLocations", "refreshing"
-        )
+
         inDoorLocationsRepo.refreshInDoorLocations()
     }
 

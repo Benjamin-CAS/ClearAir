@@ -56,7 +56,7 @@
 
               <TextView
                   android:id="@+id/location_area_tv"
-                  style="@style/Theme.CleanAirSpaces.Button"
+                  style="@style/Theme.CleanAirSpaces.Body2"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="@dimen/std_space"

@@ -1,6 +1,8 @@
 package com.android_dev.cleanairspaces.repositories.ui_based
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.android_dev.cleanairspaces.persistence.api.responses.*
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD
 import com.android_dev.cleanairspaces.persistence.api.services.InDoorLocationApiService
@@ -39,6 +41,13 @@ class AppDataRepo
         private val myLogger: MyLogger,
         private val monitorDetailsDataDao : MonitorDetailsDataDao
 ) {
+
+    /************** CACHES ************* */
+    //shared across fragments
+    val watchedLocationHighLights =  MutableLiveData<WatchedLocationHighLights>()
+    fun setCurrentlyWatchedLocation(locationHighLights: WatchedLocationHighLights) {
+        watchedLocationHighLights.value = locationHighLights
+    }
 
     private val TAG = AppDataRepo::class.java.simpleName
 
@@ -601,10 +610,11 @@ class AppDataRepo
             })
         }
     }
-    fun watchMonitor(monitor: MonitorDetails, isWatched : Boolean) {
+    fun toggleWatchAMonitor(monitor: MonitorDetails, watch : Boolean) {
         coroutineScope.launch {
-            monitorDetailsDataDao.toggleIsWatched(watchLocation = isWatched, monitorsTag = monitor.actualDataTag)
+            monitorDetailsDataDao.toggleIsWatched(watchLocation = watch, monitorsTag = monitor.actualDataTag)
         }
     }
+
 
 }

@@ -22,10 +22,12 @@ import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentAMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapDataType
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
+import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAdapter
 import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragment
 import com.google.zxing.integration.android.IntentIntegrator
@@ -125,6 +127,7 @@ class AMapsFragment : BaseMapFragment() {
         initQrScannerLauncher()
 
         watchedLocationsAdapter = WatchedLocationsAdapter(this)
+        monitorsAdapter = MonitorsAdapter(this)
         super.setHomeMapOverlay(binding.mapOverlay)
 
         //user setting - language
@@ -350,11 +353,16 @@ class AMapsFragment : BaseMapFragment() {
 
     override fun onClickWatchedLocation(location: WatchedLocationHighLights) {
         try {
-            val action = AMapsFragmentDirections.actionAMapsFragmentToDetailsFragment(location)
+            viewModel.setWatchedLocationInCache(location)
+            val action = AMapsFragmentDirections.actionAMapsFragmentToDetailsFragment()
             binding.container.findNavController().navigate(action)
         } catch (exc: Exception) {
             myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG onClickWatchedLocation", msg = exc.message, exc = exc)
         }
+    }
+
+    override fun onClickWatchedMonitor(monitor: MonitorDetails) {
+        //todo show history
     }
 }
 

@@ -110,13 +110,23 @@
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/my_locations_rv"
+        android:id="@+id/monitors_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
         android:layout_marginEnd="@dimen/std_space"
         android:layout_marginTop="@dimen/sm_space"
         android:layout_below="@id/progress_recycler"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/my_locations_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginEnd="@dimen/std_space"
+        android:layout_marginTop="@dimen/sm_space"
+        android:layout_below="@id/monitors_rv"
         />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/my_location_btn"

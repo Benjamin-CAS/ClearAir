@@ -1,15 +1,18 @@
-package com.android_dev.cleanairspaces.views.fragments.details
+package com.android_dev.cleanairspaces.views.fragments.details_tabbed.location_history
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat.getFont
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentHistoryBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
@@ -46,7 +49,7 @@ class HistoryFragment : Fragment() {
     private lateinit var selectedParamType: ParamTypes
     private var _binding: FragmentHistoryBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: LocationDetailsViewModel by activityViewModels()
+    private val viewModel: LocationHistoryViewModel by viewModels()
 
 
     private val titleFont by lazy {
@@ -112,6 +115,7 @@ class HistoryFragment : Fragment() {
 
         viewModel.observeWatchedLocation().observe(viewLifecycleOwner, {
             if (it != null) {
+                viewModel.refreshHistoryIfNecessary(it)
                 updateGeneralLocationInfo(it)
                 val hasIndoorData = it.isIndoorLoc
                 toggleIndoorParameters(hasIndoorData)

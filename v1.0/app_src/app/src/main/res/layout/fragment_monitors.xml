@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="views.fragments.monitors.MonitorsFragment">
+    tools:context=".views.fragments.details_tabbed.monitors.MonitorsFragment">
 
 
     <ImageView

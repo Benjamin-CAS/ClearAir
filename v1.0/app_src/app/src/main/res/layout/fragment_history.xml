@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="views.fragments.details.HistoryFragment">
+    tools:context=".views.fragments.details_tabbed.location_history.HistoryFragment">
 
 
     <ImageView
@@ -225,7 +225,10 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/days_chart_lbl"
         style="@style/Theme.CleanAirSpaces.Subtitle1"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:gravity="start"
+        android:paddingStart="@dimen/std_space"
+        android:paddingEnd="@dimen/std_space"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -233,6 +236,16 @@
         android:layout_marginTop="@dimen/md_space"
         android:text="@string/last_seven_two_hours"
         android:textStyle="bold"/>
+
+        <View
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/sm_space"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/days_chart_lbl"
+            android:background="@android:color/darker_gray"/>
 
     <LinearLayout
         android:id="@+id/days_chart_container"
@@ -244,7 +257,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/days_chart_lbl">
+        app:layout_constraintTop_toBottomOf="@+id/line1">
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/days_chart"
@@ -271,8 +284,11 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/week_chart_lbl"
         style="@style/Theme.CleanAirSpaces.Subtitle1"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:gravity="start"
+        android:paddingStart="@dimen/std_space"
+        android:paddingEnd="@dimen/std_space"
         android:layout_marginTop="@dimen/md_space"
         android:text="@string/last_week_lbl"
         android:textStyle="bold"
@@ -280,7 +296,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/days_chart_container" />
 
-
+        <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/sm_space"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/week_chart_lbl"
+            android:background="@android:color/darker_gray"/>
     <LinearLayout
         android:id="@+id/week_chart_container"
         android:layout_width="match_parent"
@@ -291,7 +315,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/week_chart_lbl">
+        app:layout_constraintTop_toBottomOf="@id/line2">
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/week_chart"
@@ -318,7 +342,10 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/months_chart_lbl"
         style="@style/Theme.CleanAirSpaces.Subtitle1"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:gravity="start"
+        android:paddingStart="@dimen/std_space"
+        android:paddingEnd="@dimen/std_space"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/md_space"
         android:text="@string/last_thirty_lbl"
@@ -327,6 +354,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/week_chart_container" />
 
+        <View
+            android:id="@+id/line3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/sm_space"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/months_chart_lbl"
+            android:background="@android:color/darker_gray"/>
 
     <LinearLayout
         android:id="@+id/month_chart_container"
@@ -338,7 +374,7 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/months_chart_lbl">
+        app:layout_constraintTop_toBottomOf="@id/line3">
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/month_chart"

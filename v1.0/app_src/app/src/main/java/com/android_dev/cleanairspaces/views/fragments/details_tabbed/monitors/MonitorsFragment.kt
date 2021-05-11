@@ -1,14 +1,15 @@
-package com.android_dev.cleanairspaces.views.fragments.monitors
+package com.android_dev.cleanairspaces.views.fragments.details_tabbed.monitors
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
@@ -20,7 +21,6 @@ import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
 import com.android_dev.cleanairspaces.utils.myTxt
 import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
-import com.android_dev.cleanairspaces.views.fragments.details.LocationDetailsViewModel
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -39,7 +39,7 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
     private val binding get() = _binding!!
     private val monitorsAdapter = MonitorsAdapter(this)
 
-    private val viewModel: LocationDetailsViewModel by activityViewModels()
+    private val viewModel: MonitorsViewModel by viewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,

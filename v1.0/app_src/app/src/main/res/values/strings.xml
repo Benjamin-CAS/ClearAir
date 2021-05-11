@@ -156,5 +156,6 @@
     <string name="monitor_temperature_lbl">Temperature:</string>
     <string name="monitor_humidity_lbl">Humidity:</string>
     <string name="is_watching_loc_iv_desc">is watching location indicator</string>
+    <string name="turn_on_network_loc_provider">"Turn on location access in settings"</string>
 
 </resources>

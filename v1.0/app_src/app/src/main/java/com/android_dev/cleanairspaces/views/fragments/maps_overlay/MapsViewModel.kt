@@ -1,12 +1,12 @@
 package com.android_dev.cleanairspaces.views.fragments.maps_overlay
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.amap.api.maps.model.Marker
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.LAT_LON_DELIMITER
@@ -30,7 +30,7 @@ class MapsViewModel @Inject constructor(
 
     var myLocMarkerOnAMap: Marker? = null
     var myLocMarkerOnGMap: com.google.android.gms.maps.model.Marker? = null
-    var alreadyPromptedUserForGPS = false
+    var alreadyPromptedUserForLocationSettings = false
 
     fun observeMapLang() = dataStoreManager.getMapLang().asLiveData()
     fun observeSelectedAqiIndex() = dataStoreManager.getAqiIndex().asLiveData()
@@ -79,6 +79,14 @@ class MapsViewModel @Inject constructor(
         super.onCleared()
         updatesStarted = false
         stopSendingLocUpdates = true
+    }
+
+    fun stopWatchingMonitor(monitor: MonitorDetails) {
+        appDataRepo.toggleWatchAMonitor(monitor, false)
+    }
+
+    fun setWatchedLocationInCache(location: WatchedLocationHighLights) {
+        appDataRepo.setCurrentlyWatchedLocation(location)
     }
 
 }

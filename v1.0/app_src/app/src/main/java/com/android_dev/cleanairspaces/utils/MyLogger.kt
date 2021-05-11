@@ -26,7 +26,7 @@ class MyLogger @Inject constructor(
 
 
     companion object {
-        private const val DEBUG = false
+        private const val DEBUG = true
         private val uniqueID = UUID.randomUUID().toString()
     }
 }

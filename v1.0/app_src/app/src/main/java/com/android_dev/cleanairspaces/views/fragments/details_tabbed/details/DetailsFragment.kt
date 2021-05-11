@@ -1,13 +1,15 @@
-package com.android_dev.cleanairspaces.views.fragments.details
+package com.android_dev.cleanairspaces.views.fragments.details_tabbed.details
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentDetailsBinding
@@ -51,7 +53,7 @@ class DetailsFragment : Fragment() {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: LocationDetailsViewModel by activityViewModels()
+    private val viewModel: DetailsViewModel by viewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -72,13 +74,8 @@ class DetailsFragment : Fragment() {
         return binding.root
     }
 
-    private val args: DetailsFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        args.locationDetailsInfo?.let {
-            viewModel.setWatchedLocation(it)
-        }
 
         viewModel.observeWatchedLocation().observe(viewLifecycleOwner, {
             currentlyWatchedLocationHighLights = it

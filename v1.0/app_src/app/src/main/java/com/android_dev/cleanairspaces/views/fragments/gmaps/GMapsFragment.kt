@@ -15,11 +15,13 @@ import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentGMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.android_dev.cleanairspaces.utils.showSnackBar
+import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAdapter
 import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragment
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -110,6 +112,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         initQrScannerLauncher()
 
         watchedLocationsAdapter = WatchedLocationsAdapter(this)
+        monitorsAdapter = MonitorsAdapter(this)
         super.setHomeMapOverlay(binding.mapOverlay)
 
 
@@ -311,13 +314,18 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
 
     override fun onClickWatchedLocation(location: WatchedLocationHighLights) {
         try {
-            val action = GMapsFragmentDirections.actionGMapsFragmentToDetailsFragment(location)
+            viewModel.setWatchedLocationInCache(location)
+            val action = GMapsFragmentDirections.actionGMapsFragmentToDetailsFragment()
             binding.container.findNavController().navigate(action)
         } catch (exc: Exception) {
             myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG  onClickWatchedLocation()", msg = exc.message, exc = exc)
 
 
         }
+    }
+
+    override fun onClickWatchedMonitor(monitor: MonitorDetails) {
+        //todo show history
     }
 
 

@@ -26,8 +26,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.HomeMapOverlayBinding
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
+import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAdapter
 import com.android_dev.cleanairspaces.views.smartqr.CaptureQrCodeActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -37,7 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItemListener {
+abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItemListener, MonitorsAdapter.OnClickItemListener  {
     companion object {
         private val TAG = BaseMapFragment::class.java.simpleName
     }
@@ -54,6 +56,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
 
     private lateinit var homeMapOverlay: HomeMapOverlayBinding
     lateinit var watchedLocationsAdapter: WatchedLocationsAdapter
+    lateinit var monitorsAdapter : MonitorsAdapter
 
 
     fun setHomeMapOverlay(mapOverlay: HomeMapOverlayBinding) {
@@ -87,12 +90,18 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
                 )
                 goToSearchFragment()
             }
+            setupWatchedLocationsRv()
+            setupWatchedMonitorsRv()
+        }
+    }
 
+    private fun setupWatchedLocationsRv(){
+        homeMapOverlay.apply {
             myLocationsRv.apply {
                 layoutManager = LinearLayoutManager(
-                        homeMapOverlay.container.context,
-                        RecyclerView.VERTICAL,
-                        false
+                    homeMapOverlay.container.context,
+                    RecyclerView.VERTICAL,
+                    false
                 )
                 adapter = watchedLocationsAdapter
                 addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -108,17 +117,39 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
             itemTouchHelper.attachToRecyclerView(myLocationsRv)
         }
     }
+    private fun setupWatchedMonitorsRv(){
+        homeMapOverlay.apply {
+            monitorsRv.apply {
+                layoutManager = LinearLayoutManager(
+                    homeMapOverlay.container.context,
+                    RecyclerView.VERTICAL,
+                    false
+                )
+                adapter = monitorsAdapter
+                addItemDecoration(VerticalSpaceItemDecoration(30))
+            }
+            val swipeHandler = object : SwipeToDeleteCallback(monitorsRv.context) {
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val adapter = monitorsRv.adapter as MonitorsAdapter
+                    adapter.removeAt(viewHolder.adapterPosition)
+                }
+
+            }
+            val itemTouchHelper = ItemTouchHelper(swipeHandler)
+            itemTouchHelper.attachToRecyclerView(monitorsRv)
+        }
+    }
 
     /*********** LOCATION ACCESS ***************/
     abstract fun showLocationOnMap(location: Location)
-    fun promptToggleGPSSettings() {
+    fun promptToggleLocationSettings() {
         val manager =
                 requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
-        if (!manager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!manager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             //showTurnOnGPSDialog
             showCustomDialog(
                     ctx = requireContext(),
-                    msgRes = R.string.turn_on_gps_prompt,
+                    msgRes = R.string.turn_on_network_loc_provider,
                     okRes = R.string.go_to_settings,
                     dismissRes = R.string.not_now_txt,
                     positiveAction = {
@@ -141,9 +172,9 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {
-            if (!viewModel.alreadyPromptedUserForGPS) {
-                viewModel.alreadyPromptedUserForGPS = true
-                promptToggleGPSSettings()
+           if (!viewModel.alreadyPromptedUserForLocationSettings) {
+                viewModel.alreadyPromptedUserForLocationSettings = true
+                promptToggleLocationSettings()
             }
         }
     }
@@ -160,6 +191,10 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
                 USER_LOCATION_UPDATE_ON_DISTANCE,
                 locationListener
         )
+        locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)?.let {
+            lastKnownLoc ->
+            showLocationOnMap(lastKnownLoc)
+        }
 
     }
 
@@ -227,7 +262,10 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     abstract fun handleScannedQrIntent(resultCode: Int, data: Intent?)
 
 
-    /************** WATCHED LOCATIONS *********/
+    override fun onSwipeToDeleteMonitor(monitor: MonitorDetails) {
+       viewModel.stopWatchingMonitor(monitor)
+    }
+
     override fun onSwipeToDeleteLocation(location: WatchedLocationHighLights) {
         viewModel.deleteLocation(location)
     }

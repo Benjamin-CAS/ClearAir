@@ -7,9 +7,10 @@
     </string-array>
 
     <string name="default_map_a_map">A Map</string>
+    <string name="map_g_map">Google Maps</string>
     <string-array name="maps">
-        <item>A Map</item>
         <item>Google Maps</item>
+        <item>A Map</item>
     </string-array>
 
     <string name="default_aqi_pm_2_5">PM 2.5</string>

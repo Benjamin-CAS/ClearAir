@@ -178,7 +178,8 @@ class WatchedLocationUpdatesRepo
                             locId = existingData.locId,
                             monitorId = existingData.monitorId,
                             lastRecPwd = existingData.lastRecPwd,
-                            lastRecUsername = existingData.lastRecUsername
+                            lastRecUsername = existingData.lastRecUsername,
+                            is_secure = existingData.is_secure
                     )
                     watchedLocationHighLightsDao.insertLocation(updatedData)
                 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CleanAir Spaces</string>
-    <string name="g_map_act_lbl">G Map</string>
     <string name="a_map_act_lbl">A Map</string>
+    <string name="g_map_act_lbl">G Map</string>
     <string name="loading_txt">Refreshing…</string>
     <string name="clean_air_spaces_logo_description">Clean Air Spaces Logo</string>
     <string name="no_google_play_services_err">Google Maps requires google play services</string>
@@ -61,7 +61,7 @@
     <string name="co_2_lvl_comment">CO2 Level</string>
     <string name="scanned_qr_content_image_desc">Location Logo</string>
     <string name="site_credentials_txt">Site Credentials</string>
-    <string name="user_name_hint">User</string>
+    <string name="user_name_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="add_location_text">Add Location</string>
     <string name="cancel_text">Cancel</string>
@@ -88,7 +88,7 @@
     <string name="device_info_lbl">Device Information</string>
     <string name="remove_location_text">Remove Location</string>
     <string name="failed_to_add_location_check_credentials">Adding location failed. Check your credentials</string>
-    <string name="updated_on_prefix">Updated On</string>
+    <string name="updated_on_prefix">Updated</string>
     <string name="map_menu_settings_txt">Settings</string>
     <string name="air_quality_index_txt">Air Quality Index</string>
     <string name="default_pm_hint_text">PM 2.5 is used by default</string>
@@ -98,11 +98,11 @@
     <string name="tvoc_lbl">TVOC</string>
     <string name="tmp_lbl">Temperature</string>
     <string name="humidity_lbl">Humidity</string>
-    <string name="indoor_energy_title_txt"><![CDATA[Energy Efficiency & Impact]]></string>
+    <string name="indoor_energy_title_txt"><![CDATA[energy efficiency & impact]]></string>
     <string name="carbon_saved_lbl">Carbon Saved</string>
     <string name="last_thirty_lbl">Last 30 Days</string>
     <string name="energy_saved_lbl">Energy Saved</string>
-    <string name="recommendations_txt">Recommendations</string>
+    <string name="recommendations_txt">recommendations</string>
     <string name="mask_image_txt">Mask Image</string>
     <string name="co2_units">ppm</string>
     <string name="tvoc_units">mg/m³</string>
@@ -147,5 +147,14 @@
     <string name="location_added_suffix">added</string>
     <string name="done_txt">DONE</string>
     <string name="add_location_hint">Click the right add icon for each location you wish to track</string>
+    <string name="fetch_monitors_txt">Search Monitors</string>
+    <string name="monitors_fragment_lbl">Monitors</string>
+    <string name="monitor_credentials_required"><![CDATA[Username & password are required]]></string>
+    <string name="monitor_pm_2_5_lbl">PM 2.5:</string>
+    <string name="monitor_tvoc_lbl">TVOC:</string>
+    <string name="monitor_co2_lbl">CO2:</string>
+    <string name="monitor_temperature_lbl">Temperature:</string>
+    <string name="monitor_humidity_lbl">Humidity:</string>
+    <string name="is_watching_loc_iv_desc">is watching location indicator</string>
 
 </resources>

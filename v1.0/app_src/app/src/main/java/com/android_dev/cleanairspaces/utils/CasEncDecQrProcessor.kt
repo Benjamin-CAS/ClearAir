@@ -5,6 +5,7 @@ import android.util.Log
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY
+import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_MONITORS_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.LOCATION_INFO_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.MONITOR_INFO_METHOD_FOR_KEY
 
@@ -243,12 +244,14 @@ object CasEncDecQrProcessor {
         val key = "${INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY}$timeStamp"
         val payload = "{\"$COMP_ID_KEY\":\"$companyId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPass\"}"
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
-        val encoded = toBase64Encoding(casEncrypted)
-        Log.d(
-                TAG,
-                "getEncryptedEncodedPayloadForIndoorLocationOverviewDetails() true key $key PL  $payload encrypted $casEncrypted  encoded $encoded"
-        )
-        return encoded
+        return toBase64Encoding(casEncrypted)
+    }
+
+    fun getEncryptedEncodedPayloadForIndoorLocationMonitors(timeStamp: String, companyId: String, locId: String, userName: String, userPass: String): String {
+        val key = "${INDOOR_LOCATION_MONITORS_METHOD_FOR_KEY}$timeStamp"
+        val payload = "{\"$COMP_ID_KEY\":\"$companyId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPass\",\"p\":\"$PM2_5_STD_PARAM\" }"
+        val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
+        return toBase64Encoding(casEncrypted)
     }
 }
 

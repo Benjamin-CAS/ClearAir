@@ -5,11 +5,11 @@
     <dimen name="md_icon">32dp</dimen>
     <dimen name="md_space">16dp</dimen>
     <dimen name="sm_space">4dp</dimen>
-    <dimen name="location_logo_size">52dp</dimen>
+    <dimen name="location_logo_size">48dp</dimen>
     <dimen name="clickable_std">48dp</dimen>
-    <dimen name="lg_icon">96dp</dimen>
+    <dimen name="lg_icon">88dp</dimen>
     <dimen name="watched_location_card_height">232dp</dimen>
-    <dimen name="chart_height">240dp</dimen>
+    <dimen name="chart_height">100dp</dimen>
     <dimen name="location_logo_size_md">64dp</dimen>
     <dimen name="clickable_md">52dp</dimen>
     <dimen name="clickable_plus_pad">70dp</dimen>

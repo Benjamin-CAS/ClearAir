@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="@dimen/std_space"
+        android:layout_margin="@dimen/sm_space"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/location_logo_size"
         android:adjustViewBounds="true"
@@ -28,7 +28,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
         android:id="@+id/location_name_tv"
-        android:layout_marginTop="@dimen/std_space"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:layout_marginTop="@dimen/sm_space"
         android:gravity="center"
         android:textStyle="bold"/>
 
@@ -40,8 +43,9 @@
         android:gravity="start|center_vertical"
         app:layout_constraintTop_toBottomOf="@id/location_name_tv"
         app:layout_constraintBottom_toBottomOf="@id/info_selector"
-        android:layout_margin="@dimen/std_space"
+        android:layout_margin="@dimen/sm_space"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         android:text="@string/select_history_type_hint"/>
 
     <HorizontalScrollView
@@ -61,12 +65,12 @@
                 android:id="@+id/outdoor_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/std_space"
+                android:layout_margin="@dimen/sm_space"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/grey"
-                app:cardCornerRadius="@dimen/std_space"
-                app:cardElevation="@dimen/std_space">
+                app:cardCornerRadius="@dimen/sm_space"
+                app:cardElevation="@dimen/sm_space">
 
                 <TextView
                     android:id="@+id/outdoors_tv"
@@ -75,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:text="@string/outdoors_air_quality_txt"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
@@ -85,12 +89,12 @@
                 android:id="@+id/pm_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/std_space"
+                android:layout_margin="@dimen/sm_space"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/grey"
-                app:cardCornerRadius="@dimen/std_space"
-                app:cardElevation="@dimen/std_space">
+                app:cardCornerRadius="@dimen/sm_space"
+                app:cardElevation="@dimen/sm_space">
 
                 <TextView
                     android:id="@+id/aqi_tv"
@@ -99,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:text="@string/indoor_air_quality_txt"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
@@ -109,12 +113,12 @@
                 android:id="@+id/co2_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/std_space"
+                android:layout_margin="@dimen/sm_space"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/grey"
-                app:cardCornerRadius="@dimen/std_space"
-                app:cardElevation="@dimen/std_space">
+                app:cardCornerRadius="@dimen/sm_space"
+                app:cardElevation="@dimen/sm_space">
 
                 <TextView
                     android:id="@+id/co2_tv"
@@ -123,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:text="@string/co_lbl"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
@@ -133,12 +137,12 @@
                 android:id="@+id/tmp_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/std_space"
+                android:layout_margin="@dimen/sm_space"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/grey"
-                app:cardCornerRadius="@dimen/std_space"
-                app:cardElevation="@dimen/std_space">
+                app:cardCornerRadius="@dimen/sm_space"
+                app:cardElevation="@dimen/sm_space">
 
                 <TextView
                     android:id="@+id/tmp_tv"
@@ -147,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:text="@string/tmp_lbl"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
@@ -157,12 +161,12 @@
                 android:id="@+id/humidity_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/std_space"
+                android:layout_margin="@dimen/sm_space"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/grey"
-                app:cardCornerRadius="@dimen/std_space"
-                app:cardElevation="@dimen/std_space">
+                app:cardCornerRadius="@dimen/sm_space"
+                app:cardElevation="@dimen/sm_space">
 
                 <TextView
                     android:id="@+id/humidity_tv"
@@ -171,7 +175,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:text="@string/humidity_lbl"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
@@ -181,12 +185,12 @@
                 android:id="@+id/tvoc_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/std_space"
+                android:layout_margin="@dimen/sm_space"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/grey"
-                app:cardCornerRadius="@dimen/std_space"
-                app:cardElevation="@dimen/std_space">
+                app:cardCornerRadius="@dimen/sm_space"
+                app:cardElevation="@dimen/sm_space">
 
                 <TextView
                     android:id="@+id/tvoc_tv"
@@ -195,7 +199,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:text="@string/tvoc_lbl"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
@@ -234,7 +238,7 @@
         android:id="@+id/days_chart_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/std_space"
+        android:layout_marginTop="@dimen/sm_space"
         android:background="@drawable/chart_bg"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
@@ -246,20 +250,21 @@
             android:id="@+id/days_chart"
             android:layout_width="match_parent"
             android:layout_height="@dimen/chart_height"
-            android:layout_marginStart="@dimen/std_space"
-            android:layout_marginTop="@dimen/md_space"
-            android:layout_marginEnd="@dimen/std_space"
-            android:layout_marginBottom="@dimen/md_space"
-            android:padding="@dimen/std_space" />
+            android:layout_marginStart="@dimen/sm_space"
+            android:layout_marginTop="@dimen/std_space"
+            android:layout_marginEnd="@dimen/sm_space"
+            android:layout_marginBottom="@dimen/std_space"
+            android:paddingStart="@dimen/sm_space"
+            android:paddingEnd="@dimen/sm_space"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/days_chart_value"
             style="@style/Theme.CleanAirSpaces.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/std_space"
+            android:layout_marginTop="@dimen/sm_space"
             android:gravity="center"
-            android:textColor="@color/indigo_200"
+            android:textColor="@color/black"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
@@ -280,7 +285,7 @@
         android:id="@+id/week_chart_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/std_space"
+        android:layout_marginTop="@dimen/sm_space"
         android:background="@drawable/chart_bg"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
@@ -292,20 +297,21 @@
             android:id="@+id/week_chart"
             android:layout_width="match_parent"
             android:layout_height="@dimen/chart_height"
-            android:layout_marginStart="@dimen/std_space"
-            android:layout_marginTop="@dimen/md_space"
-            android:layout_marginEnd="@dimen/std_space"
-            android:layout_marginBottom="@dimen/md_space"
-            android:padding="@dimen/std_space" />
+            android:layout_marginStart="@dimen/sm_space"
+            android:layout_marginTop="@dimen/std_space"
+            android:layout_marginEnd="@dimen/sm_space"
+            android:layout_marginBottom="@dimen/std_space"
+            android:paddingStart="@dimen/sm_space"
+            android:paddingEnd="@dimen/sm_space" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/week_chart_value"
             style="@style/Theme.CleanAirSpaces.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/std_space"
+            android:layout_marginTop="@dimen/sm_space"
             android:gravity="center"
-            android:textColor="@color/indigo_200"
+            android:textColor="@color/black"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
@@ -326,7 +332,7 @@
         android:id="@+id/month_chart_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/md_space"
+        android:layout_marginTop="@dimen/std_space"
         android:background="@drawable/chart_bg"
         android:fitsSystemWindows="true"
         android:orientation="vertical"
@@ -338,20 +344,21 @@
             android:id="@+id/month_chart"
             android:layout_width="match_parent"
             android:layout_height="@dimen/chart_height"
-            android:layout_marginStart="@dimen/std_space"
-            android:layout_marginTop="@dimen/md_space"
-            android:layout_marginEnd="@dimen/std_space"
-            android:layout_marginBottom="@dimen/md_space"
-            android:padding="@dimen/std_space" />
+            android:layout_marginStart="@dimen/sm_space"
+            android:layout_marginTop="@dimen/std_space"
+            android:layout_marginEnd="@dimen/sm_space"
+            android:layout_marginBottom="@dimen/std_space"
+            android:paddingStart="@dimen/sm_space"
+            android:paddingEnd="@dimen/sm_space" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/month_chart_value"
             style="@style/Theme.CleanAirSpaces.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/std_space"
+            android:layout_marginTop="@dimen/sm_space"
             android:gravity="center"
-            android:textColor="@color/indigo_200"
+            android:textColor="@color/black"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

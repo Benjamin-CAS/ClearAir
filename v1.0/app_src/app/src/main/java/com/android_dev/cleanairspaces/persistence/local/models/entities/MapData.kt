@@ -25,8 +25,17 @@ data class MapData(
 
         val pm25: Double,
 
-        val last_updated: Long = System.currentTimeMillis()
+        val last_updated: Long = System.currentTimeMillis(),
+
+        val type : MapDataType
 ) : Parcelable {
     fun getAMapLocationLatLng(): ALatLng = ALatLng(lat, lon)
     fun getGMapLocationLatLng(): GLatLng = GLatLng(lat, lon)
+}
+
+enum class MapDataType{
+    USA,
+    TAIWAN,
+    OTHER,
+    MISC
 }

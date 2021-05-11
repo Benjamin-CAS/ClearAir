@@ -11,4 +11,10 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_chart"
         />
+
+    <item android:id="@+id/monitorsFragment"
+        android:title="@string/monitors_fragment_lbl"
+        android:icon="@drawable/ic_monitors"
+        app:showAsAction="ifRoom"
+        />
 </menu>

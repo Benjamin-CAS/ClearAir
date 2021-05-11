@@ -55,10 +55,6 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     private lateinit var homeMapOverlay: HomeMapOverlayBinding
     lateinit var watchedLocationsAdapter: WatchedLocationsAdapter
 
-    private fun toggleProgressView(show: Boolean) {
-        homeMapOverlay.progressRecycler.isVisible = show
-    }
-
 
     fun setHomeMapOverlay(mapOverlay: HomeMapOverlayBinding) {
         homeMapOverlay = mapOverlay
@@ -138,11 +134,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     private var locationManager: LocationManager? = null
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            myLogger.logThis(
-                    tag = LogTags.USER_LOCATION_CHANGED,
-                    from = TAG,
-                    msg = "${location.latitude}$LAT_LON_DELIMITER${location.longitude}"
-            )
+            viewModel.onLocationChanged(location)
             showLocationOnMap(location)
         }
 
@@ -171,7 +163,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
 
     }
 
-    private fun requestPermissionsAndShowUserLocation() {
+   fun requestPermissionsAndShowUserLocation() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             when {
                 ContextCompat.checkSelfPermission(

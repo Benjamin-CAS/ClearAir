@@ -95,7 +95,8 @@ class MainAct : AppCompatActivity() {
                 }
 
                 R.id.detailsFragment,
-                R.id.historyFragment -> {
+                R.id.historyFragment,
+                R.id.monitorsFragment -> {
                     binding.apply {
                         toolbarLayout.apply {
                             toolbar.isVisible = true

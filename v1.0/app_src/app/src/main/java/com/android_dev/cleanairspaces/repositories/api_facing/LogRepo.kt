@@ -25,6 +25,7 @@ class LogRepo
 
     companion object{
         private val TAG = LogRepo::class.java.simpleName
+        private val DEBUG = false
     }
     fun saveLocally(key: String, message: String, isExc: Boolean) {
         coroutineScope.launch(Dispatchers.IO) {
@@ -38,6 +39,7 @@ class LogRepo
                         )
                 )
             } catch (exc: java.lang.Exception) {
+                if(DEBUG)
                 Log.d(
                         TAG, "saveLocally() exc ${exc.message}", exc
                 )
@@ -59,12 +61,14 @@ class LogRepo
                 )
                 request.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                        if(DEBUG)
                         Log.d(
                                 TAG , "pushLogs onResponse->() $response ${response.body()}"
                         )
                     }
 
                     override fun onFailure(call: Call<Any>, t: Throwable) {
+                        if(DEBUG)
                         Log.d(
                                 TAG , "pushLogs onFailure->() ${t.message}"
                         )
@@ -74,6 +78,7 @@ class LogRepo
             }
             loggerDao.clearLogData()
         } catch (exc: Exception) {
+            if(DEBUG)
             Log.d(
                     TAG , "pushLogs ${exc.message}", exc
             )
@@ -86,6 +91,7 @@ class LogRepo
             try {
                 val lat = msg?.substringBefore(LAT_LON_DELIMITER)
                 val lon = msg?.substringAfter(LAT_LON_DELIMITER)
+                if(DEBUG)
                 Log.d(
                         TAG, "updateUserLocation for user $uniqueID  to lat_lon $lat $lon"
                 )
@@ -95,12 +101,14 @@ class LogRepo
                     )
                     request.enqueue(object : Callback<Any> {
                         override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                            if(DEBUG)
                             Log.d(
                                     TAG, "updateUserLocation onResponse->() $response ${response.body()}"
                             )
                         }
 
                         override fun onFailure(call: Call<Any>, t: Throwable) {
+                            if(DEBUG)
                             Log.d(
                                     TAG, "updateUserLocation onFailure->() ${t.message}"
                             )
@@ -109,6 +117,7 @@ class LogRepo
                     })
                 }
             } catch (exc: Exception) {
+                if(DEBUG)
                 Log.d(
                         TAG, "updateUserLocation for user $uniqueID to lat${LAT_LON_DELIMITER}lon $msg ${exc.message}", exc
                 )

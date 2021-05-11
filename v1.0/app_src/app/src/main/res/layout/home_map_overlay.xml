@@ -24,7 +24,7 @@
     <HorizontalScrollView
         android:layout_toEndOf="@id/home_tv"
         android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/std_space"
+        android:layout_margin="@dimen/sm_space"
         android:id="@+id/map_actions_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -43,7 +43,7 @@
                 android:layout_margin="@dimen/std_space">
                 <TextView
                     android:id="@+id/smart_qr"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/Theme.CleanAirSpaces.Button"
@@ -65,7 +65,7 @@
                 android:layout_margin="@dimen/std_space">
                 <TextView
                     android:id="@+id/map_view"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/Theme.CleanAirSpaces.Button"
@@ -87,7 +87,7 @@
                 android:layout_margin="@dimen/std_space">
                 <TextView
                     android:id="@+id/search_location"
-                    android:padding="@dimen/std_space"
+                    android:padding="@dimen/sm_space"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/Theme.CleanAirSpaces.Button"
@@ -115,7 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
         android:layout_marginEnd="@dimen/std_space"
-        android:layout_marginTop="@dimen/std_space"
+        android:layout_marginTop="@dimen/sm_space"
         android:layout_below="@id/progress_recycler"
         />
     <com.google.android.material.floatingactionbutton.FloatingActionButton

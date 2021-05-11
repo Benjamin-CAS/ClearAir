@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<com.google.android.material.card.MaterialCardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_marginLeft="@dimen/std_space"
+    android:layout_marginRight="@dimen/std_space"
+    app:cardBackgroundColor="@color/cas_blue">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/std_space">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/indoor_name"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".6"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            tools:text="17-N"
+            android:textColor="@color/white"/>
+
+        <ImageView
+            android:id="@+id/is_watching_indicator"
+            android:contentDescription="@string/is_watching_loc_iv_desc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="@dimen/std_icon"
+            android:layout_height="@dimen/std_icon"
+            android:scaleType="center"
+            tools:src="@drawable/ic_eye"
+            android:focusable="false"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/pm_lbl"
+            android:layout_marginTop="@dimen/std_space"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".3"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/indoor_name"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/monitor_pm_2_5_lbl"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvoc_lbl"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".3"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pm_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/monitor_tvoc_lbl"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/co2_lbl"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".3"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvoc_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/monitor_co2_lbl"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tmp_lbl"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".3"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/co2_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/monitor_temperature_lbl"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/humid_lbl"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".3"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tmp_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/monitor_humidity_lbl"
+            android:textColor="@color/white"/>
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/pm_val"
+            android:layout_marginTop="@dimen/std_space"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/pm_lbl"
+            app:layout_constraintTop_toBottomOf="@id/indoor_name"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            tools:text="11"
+            android:gravity="end"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvoc_val"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvoc_lbl"
+            app:layout_constraintTop_toBottomOf="@id/pm_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            tools:text="0.64"
+            android:gravity="end"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/co2_val"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/co2_lbl"
+            app:layout_constraintTop_toBottomOf="@id/tvoc_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            tools:text="667"
+            android:gravity="end"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tmp_val"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tmp_lbl"
+            app:layout_constraintTop_toBottomOf="@id/co2_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            tools:text="19"
+            android:gravity="end"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/humid_val"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/humid_lbl"
+            app:layout_constraintTop_toBottomOf="@id/tmp_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            tools:text="69"
+            android:gravity="end"
+            android:textColor="@color/white"/>
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/pm_units"
+            android:layout_marginTop="@dimen/std_space"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/pm_val"
+            app:layout_constraintTop_toBottomOf="@id/indoor_name"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/pm_units"
+            android:paddingStart="2dp"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvoc_units"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvoc_val"
+            app:layout_constraintTop_toBottomOf="@id/pm_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/tvoc_units"
+            android:paddingStart="2dp"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/co2_units"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/co2_val"
+            app:layout_constraintTop_toBottomOf="@id/tvoc_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/co2_units"
+            android:paddingStart="2dp"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tmp_units"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tmp_val"
+            app:layout_constraintTop_toBottomOf="@id/co2_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/tmp_units"
+            android:paddingStart="2dp"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/humid_units"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent=".15"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/humid_val"
+            app:layout_constraintTop_toBottomOf="@id/tmp_lbl"
+            style="@style/Theme.CleanAirSpaces.Subtitle2"
+            android:text="@string/humid_units"
+            android:paddingStart="2dp"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/in_door_pm_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/indoor_name"
+            app:layout_constraintTop_toBottomOf="@id/indoor_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@string/default_aqi_pm_2_5"
+            android:textColor="@color/white"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Body1"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/in_door_pm_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/indoor_name"
+            app:layout_constraintTop_toBottomOf="@id/in_door_pm_index"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="11"
+            android:textColor="@color/white"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Title4"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/indoor_status_indicator_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indoor_name"
+            app:layout_constraintTop_toBottomOf="@id/in_door_pm_value"
+            tools:background="@drawable/aqi_good_status"
+            android:textColor="@color/black"
+            tools:text="Good"
+            android:gravity="center"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Body2"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/updated_on_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/indoor_name"
+            app:layout_constraintTop_toBottomOf="@id/indoor_status_indicator_tv"
+            android:textColor="@color/white"
+            tools:text="10-May 13:07"
+            android:gravity="end"
+            android:layout_marginTop="@dimen/sm_space"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Body2"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
+</layout>

@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.android_dev.cleanairspaces.repositories.api_facing.InDoorLocationsRepo
-import com.android_dev.cleanairspaces.repositories.api_facing.LogRepo
-import com.android_dev.cleanairspaces.repositories.api_facing.OutDoorLocationsRepo
-import com.android_dev.cleanairspaces.repositories.api_facing.WatchedLocationUpdatesRepo
+import com.android_dev.cleanairspaces.repositories.api_facing.*
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -23,7 +20,8 @@ class RefreshLocationsWorker @AssistedInject constructor(
         private val inDoorLocationsRepo: InDoorLocationsRepo,
         private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
         private val myLogger: MyLogger,
-        private val logRepo: LogRepo
+        private val logRepo: LogRepo,
+        private val monitorDetailsUpdatesRepo: MonitorDetailsUpdatesRepo
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val TAG = RefreshLocationsWorker::class.java.simpleName
@@ -34,10 +32,15 @@ class RefreshLocationsWorker @AssistedInject constructor(
             refreshOutDoorLocations()
             refreshInDoorLocations()
             refreshWatchedLocations()
+            refreshWatchedMonitors()
             sendLogData()
         }
 
         return Result.success()
+    }
+
+    private fun refreshWatchedMonitors() {
+        monitorDetailsUpdatesRepo.refreshWatchedMonitors()
     }
 
     private suspend fun refreshWatchedLocations() {

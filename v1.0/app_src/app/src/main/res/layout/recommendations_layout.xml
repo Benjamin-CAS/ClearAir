@@ -10,7 +10,8 @@
         style="@style/Theme.CleanAirSpaces.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/md_icon"
+        android:layout_marginTop="@dimen/md_space"
+        android:textStyle="bold"
         android:gravity="center"
         android:text="@string/recommendations_txt"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,12 +28,13 @@
 
     <ImageView
         android:id="@+id/mask_iv"
-        android:layout_width="@dimen/clickable_std"
-        android:layout_height="@dimen/clickable_std"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon"
         android:contentDescription="@string/mask_image_txt"
-        android:padding="@dimen/std_space"
+        android:layout_marginStart="@dimen/std_space"
         android:scaleType="fitCenter"
         tools:src="@drawable/mask_on"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/line3" />
 
@@ -43,21 +45,24 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/mask_image_txt"
         android:gravity="center_vertical"
-        android:minHeight="@dimen/clickable_std"
+        android:minHeight="@dimen/std_icon"
         android:paddingStart="@dimen/std_space"
         android:paddingEnd="@dimen/std_space"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toEndOf="@+id/mask_iv"
         app:layout_constraintTop_toBottomOf="@id/line3"
         tools:text="No masks necessary" />
 
     <ImageView
         android:id="@+id/can_go_out_iv"
-        android:layout_width="@dimen/clickable_std"
-        android:layout_height="@dimen/clickable_std"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon"
         android:contentDescription="@string/mask_image_txt"
-        android:padding="@dimen/std_space"
+        android:layout_marginStart="@dimen/std_space"
         android:scaleType="fitCenter"
         tools:src="@drawable/outdoors_on"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mask_iv" />
 
@@ -68,21 +73,24 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/mask_image_txt"
         android:gravity="center_vertical"
-        android:minHeight="@dimen/clickable_std"
+        android:minHeight="@dimen/std_icon"
         android:paddingStart="@dimen/std_space"
         android:paddingEnd="@dimen/std_space"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toEndOf="@+id/can_go_out_iv"
         app:layout_constraintTop_toBottomOf="@id/mask_status"
         tools:text="No masks necessary" />
 
     <ImageView
         android:id="@+id/windows_iv"
-        android:layout_width="@dimen/clickable_std"
-        android:layout_height="@dimen/clickable_std"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon"
         android:contentDescription="@string/mask_image_txt"
-        android:padding="@dimen/std_space"
+        android:layout_marginStart="@dimen/std_space"
         android:scaleType="fitCenter"
         tools:src="@drawable/windows_close"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/can_go_out_iv" />
 
@@ -93,20 +101,23 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/mask_image_txt"
         android:gravity="center_vertical"
-        android:minHeight="@dimen/clickable_std"
+        android:minHeight="@dimen/std_icon"
         android:paddingStart="@dimen/std_space"
         android:paddingEnd="@dimen/std_space"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toEndOf="@+id/windows_iv"
         app:layout_constraintTop_toBottomOf="@id/can_go_out_status"
         tools:text="No masks necessary" />
 
     <ImageView
         android:id="@+id/fan_iv"
-        android:layout_width="@dimen/clickable_std"
-        android:layout_height="@dimen/clickable_std"
+        android:layout_width="@dimen/std_icon"
+        android:layout_height="@dimen/std_icon"
         android:contentDescription="@string/mask_image_txt"
-        android:padding="@dimen/std_space"
+        android:layout_marginStart="@dimen/std_space"
         android:scaleType="fitCenter"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/windows_iv"
         tools:src="@drawable/fan_on" />
@@ -118,9 +129,11 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/mask_image_txt"
         android:gravity="center_vertical"
-        android:minHeight="@dimen/clickable_std"
+        android:minHeight="@dimen/std_icon"
         android:paddingStart="@dimen/std_space"
         android:paddingEnd="@dimen/std_space"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="@dimen/sm_space"
         app:layout_constraintStart_toEndOf="@+id/fan_iv"
         app:layout_constraintTop_toBottomOf="@id/windows_status"
         tools:text="No masks necessary" />

@@ -97,10 +97,6 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     ): View {
         _binding = FragmentGMapsBinding.inflate(inflater, container, false)
 
-        watchedLocationsAdapter = WatchedLocationsAdapter(this)
-        super.setHomeMapOverlay(binding.mapOverlay)
-
-
         setHasOptionsMenu(true)
         requireActivity().invalidateOptionsMenu()
 
@@ -109,8 +105,13 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
+
+        watchedLocationsAdapter = WatchedLocationsAdapter(this)
+        super.setHomeMapOverlay(binding.mapOverlay)
+
 
         binding.gMap.apply {
             onCreate(savedInstanceState)
@@ -124,6 +125,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         }
         )
 
+        requestPermissionsAndShowUserLocation()
     }
 
 
@@ -268,6 +270,9 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         binding.gMap.onResume()
+        viewModel.getMyLocationOrNull()?.let{
+            showLocationOnMap(it)
+        }
     }
 
     override fun onStop() {

@@ -131,4 +131,8 @@
             app:popUpTo="@id/addLocationFromLocationsList"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/monitorsFragment"
+        android:name="com.android_dev.cleanairspaces.views.fragments.monitors.MonitorsFragment"
+        android:label="@string/monitors_fragment_lbl" />
 </navigation>

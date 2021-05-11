@@ -45,7 +45,7 @@ class WatchedLocationsAdapter(private val locationListener: OnClickItemListener)
                 if (uiData.hasOutDoorData) {
                     outdoorTv.isVisible = true
                     itemCard.setCardBackgroundColor(
-                            ContextCompat.getColor(ctx, uiData.outDoorAqiStatus!!.aqi_color_res)
+                            ContextCompat.getColor(ctx, uiData.outDoorAqiStatus!!.backGroundColorRes)
                     )
                     outdoorPointsTv.text = uiData.outDoorPmValue.toString()
                     outdoorStatusIndicatorTv.text = ctx.getString(uiData.outDoorAqiStatus.lbl)

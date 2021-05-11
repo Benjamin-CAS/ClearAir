@@ -115,7 +115,8 @@ class AppModule {
             locationHistoryUpdatesTrackerDao: LocationHistoryUpdatesTrackerDao,
             locationHistoriesService: LocationHistoriesService,
             inDoorLocationsApiService: InDoorLocationApiService,
-            myLogger: MyLogger
+            myLogger: MyLogger,
+            monitorDetailsDataDao : MonitorDetailsDataDao
     ): AppDataRepo = AppDataRepo(
             coroutineScope = coroutineScope,
             mapDataDao = mapDataDao,
@@ -128,6 +129,21 @@ class AppModule {
             locationHistoriesService = locationHistoriesService,
             inDoorLocationsApiService = inDoorLocationsApiService,
             myLogger = myLogger,
+            monitorDetailsDataDao = monitorDetailsDataDao
+    )
+
+    @Provides
+    @Singleton
+    fun provideMonitorDetailsUpdatesRepo(
+           coroutineScope: CoroutineScope,
+           monitorDetailsDataDao: MonitorDetailsDataDao,
+           inDoorLocationApiService: InDoorLocationApiService,
+           myLogger: MyLogger
+    ): MonitorDetailsUpdatesRepo = MonitorDetailsUpdatesRepo(
+        coroutineScope = coroutineScope,
+            monitorDetailsDataDao = monitorDetailsDataDao,
+            inDoorLocationApiService = inDoorLocationApiService,
+            myLogger = myLogger
     )
 
     @Provides
@@ -192,8 +208,13 @@ class AppModule {
             casDatabase: CasDatabase
     ): MapDataDao = casDatabase.mapDataDao()
 
-
     @Provides
+    @Singleton
+    fun provideMonitorDetailsDataDao(
+            casDatabase: CasDatabase
+    ):MonitorDetailsDataDao = casDatabase.monitorDetailsDataDao()
+
+            @Provides
     @Singleton
     fun provideSearchSuggestionsDataDao(
             casDatabase: CasDatabase

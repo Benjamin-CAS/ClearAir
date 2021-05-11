@@ -41,8 +41,9 @@ fun formatWatchedHighLightsIndoorExtras(
         tmpLvl: Double?,
         humidLvl: Double?,
         inDoorAqiStatus: AQIStatus,
-        energyMonth: Double?,
-        energyMax: Double?
+        energyMonth: Double? = null,
+        energyMax: Double? = null,
+        addUnitsInVal : Boolean = true
 ): IndoorFormatterExtraDetailsData {
     //initialize --
     val co2LvlTxt: String
@@ -68,7 +69,11 @@ fun formatWatchedHighLightsIndoorExtras(
     co2LvlTxt = if (co2Lvl != null) {
         co2SliderValue = getCO2LvlIn100Scale(co2Lvl)
         coSliderDiskRes = getDiskResFromCO2(co2Lvl)
-        "$co2Lvl ${ctx.getString(R.string.co2_units)}"
+        if (addUnitsInVal) {
+            "$co2Lvl".substringBefore(".") + ctx.getString(R.string.co2_units)
+        }else{
+            "$co2Lvl".substringBefore(".")
+        }
 
     } else ""
 
@@ -76,7 +81,11 @@ fun formatWatchedHighLightsIndoorExtras(
         vocSliderValue = getTVocLvLIn100Scale(vocLvl)
         vocSliderDiskRes = getDiskResFromTVoc(vocLvl)
 
-        "$vocLvl ${ctx.getString(R.string.tvoc_units)}"
+        if (addUnitsInVal) {
+            "$vocLvl ${ctx.getString(R.string.tvoc_units)}"
+        }else{
+            "$vocLvl"
+        }
 
     } else ""
 
@@ -87,8 +96,11 @@ fun formatWatchedHighLightsIndoorExtras(
             else -> ((tmpLvl.toDouble() - 13) * 10).toInt()
         }
         tmpSliderDiskRes = getDiskResFromTmp(tmpLvl)
-
-        "$tmpLvl ${ctx.getString(R.string.tmp_units)}"
+        if (addUnitsInVal) {
+            "$tmpLvl".substringBefore(".") + ctx.getString(R.string.tmp_units)
+        }else{
+            "$tmpLvl".substringBefore(".")
+        }
 
     } else ""
 
@@ -99,8 +111,11 @@ fun formatWatchedHighLightsIndoorExtras(
             else -> ((humidLvl.toDouble() - 25) * 3).toInt()
         }
         humidSliderDiskRes = getDiskResFromHumid(humidLvl.toDouble())
-
-        "$humidLvl ${ctx.getString(R.string.humid_units)}"
+        if (addUnitsInVal) {
+            "$humidLvl".substringBefore(".") + ctx.getString(R.string.humid_units)
+        }else{
+            "$humidLvl".substringBefore(".")
+        }
 
     } else ""
 
@@ -115,11 +130,11 @@ fun formatWatchedHighLightsIndoorExtras(
             carbonSaved = truncate(maxEnInKW * (energyMonth / 100) * 0.28)
             carbonSavedStr = if (carbonSaved > 1000) {
                 val carbonSavedKg = carbonSaved / 1000
-                "$carbonSavedKg ${ctx.getString(R.string.tonnes_txt)}"
+                "$carbonSavedKg".substringBefore(".") +  ctx.getString(R.string.tonnes_txt)
             } else {
-                "$carbonSaved ${ctx.getString(R.string.kg_txt)}"
+                "$carbonSaved".substringBefore(".") +  ctx.getString(R.string.kg_txt)
             }
-            energySavedStr = "$energyMonth ${ctx.getString(R.string.percent)}"
+            energySavedStr = "$energyMonth".substringBefore(".") +  ctx.getString(R.string.percent)
 
         }
     }

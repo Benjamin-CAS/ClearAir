@@ -11,6 +11,7 @@
     <color name="grey">#CCCCCC</color>
 
     <!-- from ios -->
+    <color name="cas_blue">#2E4287</color>
     <color name="green">#00FF33</color>
     <color name="dark_green">#33B266</color>
     <color name="light_green">#8CCC72</color>
@@ -18,11 +19,11 @@
     <color name="red">#E51926</color>
     <color name="yellow">#E5CC00</color>
     <color name="footer_color">#D8D8E5</color>
-    <color name="transparent_green">#3300FF33</color>
-    <color name="transparent_yellow">#66E5CC00</color>
-    <color name="transparent_orange">#55E5663F</color>
-    <color name="transparent_red">#55E51926</color>
-    <color name="transparent_black" >#44000000</color>
+    <color name="transparent_green">#1100FF33</color>
+    <color name="transparent_yellow">#11E5CC00</color>
+    <color name="transparent_orange">#11E5663F</color>
+    <color name="transparent_red">#11E51926</color>
+    <color name="transparent_black" >#22000000</color>
     <!--- AQI COLORS -->
     <color name="aqi_good">#33B266</color>
     <color name="aqi_moderate">#E5D800</color>

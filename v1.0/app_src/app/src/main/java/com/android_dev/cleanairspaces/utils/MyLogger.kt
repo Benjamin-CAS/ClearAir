@@ -16,10 +16,10 @@ class MyLogger @Inject constructor(
 
         if (DEBUG) {
             Log.d("CAS_Logger ${tag.readableMsg}", "User $uniqueID $from $msg", exc)
+        }else {
             if (tag == LogTags.USER_LOCATION_CHANGED){
                 logRepo.updateUserLocation(uniqueID, msg)
             }
-        }else {
             logRepo.saveLocally(tag.readableMsg, "User $uniqueID $from $msg", isExc = (exc != null))
         }
     }

@@ -47,29 +47,41 @@ class SplashFragment : Fragment() {
         viewModel.scheduleDataRefresh()
         viewModel.getMapSelected().observe(
                 viewLifecycleOwner, {
-            if (it != null && it != getString(R.string.default_map_a_map)) {
-                if (checkForGooglePlayServices()) {
-                    //use google maps
-                    navigateToFragment(useDefaultMap = false)
-                } else {
-                    snackBar = binding.container.showSnackBar(
-                            isErrorMsg = true,
-                            msgResId = R.string.no_google_play_services_err,
-                            actionMessage = R.string.switch_to_a_maps,
-                            actionToTake = {
-                                //send to a-maps activity
-                                navigateToFragment(useDefaultMap = true)
-                            }
-                    )
+            when (it) {
+                null -> {
+                    if (checkForGooglePlayServices()) {
+                        //use google maps
+                        navigateToFragment(useDefaultMap = false)
+                    } else {
+                        navigateToFragment(useDefaultMap = true)
+                    }
                 }
-            } else {
-                //use A MAP
 
-                navigateToFragment(useDefaultMap = true)
+                getString(R.string.default_map_a_map) -> {
+
+                    //use A MAP
+                    navigateToFragment(useDefaultMap = true)
+
+                }
+
+                else -> {
+                    if (checkForGooglePlayServices()) {
+                        //use google maps
+                        navigateToFragment(useDefaultMap = false)
+                    } else {
+                        snackBar = binding.container.showSnackBar(
+                                isErrorMsg = true,
+                                msgResId = R.string.no_google_play_services_err,
+                                actionMessage = R.string.switch_to_a_maps,
+                                actionToTake = {
+                                    //send to a-maps activity
+                                    navigateToFragment(useDefaultMap = true)
+                                }
+                        )
+                    }
+                }
             }
-        }
-        )
-
+        })
     }
 
     private fun navigateToFragment(useDefaultMap: Boolean) {

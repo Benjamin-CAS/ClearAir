@@ -5,6 +5,7 @@ import com.android_dev.cleanairspaces.persistence.api.services.OutDoorLocationAp
 import com.android_dev.cleanairspaces.persistence.local.models.dao.MapDataDao
 import com.android_dev.cleanairspaces.persistence.local.models.dao.SearchSuggestionsDataDao
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MapDataType
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
 import com.android_dev.cleanairspaces.utils.*
 import com.google.android.gms.maps.model.LatLng
@@ -197,7 +198,8 @@ class OutDoorLocationsRepo
                                     lat = location.lat.toDouble(),
                                     lon = location.lon.toDouble(),
                                     pm25 = location.pm2p5.toDouble(),
-                                    actualDataTag = "taiwan${location.lat}${location.lon}"
+                                    actualDataTag = "taiwan${location.lat}${location.lon}",
+                                    type = MapDataType.TAIWAN
                             )
                             mapDataList.add(taiwanData)
                             "tag ${taiwanData.actualDataTag} lat ${taiwanData.lat} lon ${taiwanData.lon} getALatLon ${taiwanData.getAMapLocationLatLng()} aLatLon ${
@@ -216,7 +218,8 @@ class OutDoorLocationsRepo
                                             lat = location.sta_lat.toDouble(),
                                             lon = location.sta_lon.toDouble(),
                                             pm25 = location.pm2p5.toDouble(),
-                                            actualDataTag = "us${location.sta_lat}${location.sta_lon}"
+                                            actualDataTag = "us${location.sta_lat}${location.sta_lon}",
+                                            type = MapDataType.USA
                                     )
                             )
                         }
@@ -238,6 +241,7 @@ class OutDoorLocationsRepo
                                             isForIndoorLoc = false,
                                             lat = location.lat.toDouble(),
                                             lon = location.lon.toDouble(),
+                                            is_secure = false
                                     )
                             )
                         }
@@ -250,7 +254,8 @@ class OutDoorLocationsRepo
                                             actualDataTag = "other${location.lat}${location.lon}",
                                             lat = location.lat.toDouble(),
                                             lon = location.lon.toDouble(),
-                                            pm25 = location.reading.toDouble()
+                                            pm25 = location.reading.toDouble(),
+                                            type = MapDataType.OTHER
                                     )
                             )
                         }

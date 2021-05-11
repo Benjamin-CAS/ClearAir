@@ -1,13 +1,22 @@
 package com.android_dev.cleanairspaces.views.fragments.maps_overlay
 
+import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.amap.api.maps.model.Marker
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
+import com.android_dev.cleanairspaces.utils.LAT_LON_DELIMITER
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
+import com.android_dev.cleanairspaces.utils.USER_LOCATION_UPDATE_INTERVAL_MILLS
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,6 +40,45 @@ class MapsViewModel @Inject constructor(
     fun observeWatchedLocations() = appDataRepo.getWatchedLocationHighLights().asLiveData()
     fun deleteLocation(location: WatchedLocationHighLights) {
         appDataRepo.stopWatchingALocation(location)
+    }
+
+
+    fun observeIfAlreadyAskedLocPermission() = dataStoreManager.hasAlreadyAskedLocPermission().asLiveData()
+    fun setAlreadyAskedLocPermission()  = viewModelScope.launch(Dispatchers.IO) {
+        dataStoreManager.setAlreadyAskedLocPermission()
+    }
+
+    private var location : Location? = null
+    fun getMyLocationOrNull() = location
+    private var updatesStarted  = false
+    private var stopSendingLocUpdates = false
+    fun onLocationChanged(newLocation: Location) {
+        location = newLocation
+        if (!updatesStarted){
+            updatesStarted = true
+            viewModelScope.launch(Dispatchers.IO) {
+                sendUserLoc()
+            }
+        }
+    }
+    private suspend fun sendUserLoc(){
+        location?.let { loc ->
+            myLogger.logThis(
+                    tag = LogTags.USER_LOCATION_CHANGED,
+                    from = TAG,
+                    msg = "${loc.latitude}$LAT_LON_DELIMITER${loc.longitude}"
+            )
+        }
+        delay(USER_LOCATION_UPDATE_INTERVAL_MILLS)
+        if (!stopSendingLocUpdates) {
+            sendUserLoc()
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        updatesStarted = false
+        stopSendingLocUpdates = true
     }
 
 }

@@ -41,7 +41,9 @@ data class WatchedLocationHighLights(
         val isIndoorLoc: Boolean,
 
         val last_updated: Long = System.currentTimeMillis(),
-        val monitorId: String
+        val monitorId: String,
+
+        var is_secure: Boolean,
 
 ) : Parcelable {
 

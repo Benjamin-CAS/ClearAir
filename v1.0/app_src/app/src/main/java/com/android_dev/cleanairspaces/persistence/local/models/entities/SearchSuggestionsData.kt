@@ -19,7 +19,7 @@ data class SearchSuggestionsData(
         val location_id: String,
         val monitor_id: String,
         val company_id: String,
-        var is_secure: Boolean = false,
+        var is_secure: Boolean,
         var lat: Double? = null,
         var lon: Double? = null
 ) : Parcelable

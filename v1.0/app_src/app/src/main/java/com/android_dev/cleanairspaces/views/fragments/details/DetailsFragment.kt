@@ -103,7 +103,10 @@ class DetailsFragment : Fragment() {
                         .load(logoURL)
                         .into(locationLogo)
             }
-            locationNameTv.text = currentlyWatchedLocationHighLights.name
+            locationNameTv.text = if(currentlyWatchedLocationHighLights.location_area.isNotBlank())
+                    currentlyWatchedLocationHighLights.location_area
+                    else currentlyWatchedLocationHighLights.name
+            locationNameTv.isSelected = true
         }
     }
 
@@ -118,7 +121,7 @@ class DetailsFragment : Fragment() {
         if (inOutData.hasInDoorData) {
             outOnlyLayoutView.isVisible = false
             inOutLayoutView.isVisible = true
-            displayIndoorInfo(inOutData)
+            displayInOutInfo(inOutData)
             if (inOutData.indoorPmValue != null && inOutData.indoorAQIStatus != null)
                 displayIndoorDetailsSection(
                         indoorAQIStatus = inOutData.indoorAQIStatus,
@@ -272,16 +275,18 @@ class DetailsFragment : Fragment() {
     }
 
 
-    private fun displayIndoorInfo(inOutData: InOutPmFormattedOverviewData) {
+    private fun displayInOutInfo(inOutData: InOutPmFormattedOverviewData) {
         inOutData.indoorAQIStatus?.let { inAqiStatus ->
             inOutLayoutBinding.apply {
                 indoorInfo.setBackgroundResource(inAqiStatus.transparentRes)
                 indoorPmValueTv.text = inOutData.indoorPmValueConverted.toString()
+                indoorPmValueTv.setTextColor(ContextCompat.getColor(requireContext(), inAqiStatus.txtColorRes))
                 indoorPmStatusLine.setImageResource(inAqiStatus.status_bar_res)
                 indoorPmStatusTv.setText(inAqiStatus.lbl)
                 updatedOnTv.text = inOutData.updated
                 indoorPmIndex25Lbl.text = getString(R.string.default_aqi_pm_2_5)
-                indoorPmIndexVal.text = inOutData.indoorPmValue.toString()
+                val pmValTxt =  inOutData.indoorPmValue.toString() + " " + getString(R.string.pm_units)
+                indoorPmIndexVal.text = pmValTxt
             }
         }
         inOutData.outDoorAqiStatus?.let { outAqiStatus ->
@@ -290,7 +295,9 @@ class DetailsFragment : Fragment() {
                 outdoorPmStatusLine.setImageResource(outAqiStatus.status_bar_res)
                 outdoorPmStatusTv.setText(outAqiStatus.lbl)
                 outdoorPmValueTv.text = inOutData.outDoorPmValue.toString()
-                outdoorLocation.text = inOutData.locationArea
+                outdoorPmValueTv.setTextColor(ContextCompat.getColor(requireContext(), outAqiStatus.txtColorRes))
+                outdoorLocation.text = inOutData.locationName
+                outdoorLocation.isSelected = true
             }
         }
     }

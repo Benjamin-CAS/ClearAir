@@ -5,6 +5,7 @@ const val SETTINGS_FILE_NAME = "settings"
 const val MAP_TO_USE_KEY = "map_choice"
 const val AQI_INDEX_TO_USE_KEY = "api_index_choice"
 const val MAP_LANG_TO_USE_KEY = "language_in_map_choice"
+const val HAS_REQUESTED_LOC_PERMISSION = "req_loc_perm_without_prompt"
 
 //NOTE these correspond with strings array
 const val DEFAULT_AQI_INDEX_PM25 = "PM 2.5"
@@ -26,9 +27,9 @@ const val DATA_REFRESH_INTERVAL_MIN = 15L
 
 
 //MAPS
-const val USER_LOCATION_UPDATE_INTERVAL_MILLS = 180000L //3 minutes
+const val USER_LOCATION_UPDATE_INTERVAL_MILLS = 120000L //2 minutes
 const val USER_LOCATION_UPDATE_ON_DISTANCE = 50f //50 meters
-const val MY_LOCATION_ZOOM_LEVEL = 15f
+const val MY_LOCATION_ZOOM_LEVEL = 8f
 
 
 //misc

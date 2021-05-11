@@ -3,7 +3,10 @@ package com.android_dev.cleanairspaces.views.fragments.welcome
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.android_dev.cleanairspaces.bg_work.RefreshLocationsWorker
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
 import com.android_dev.cleanairspaces.utils.DATA_REFRESHER_WORKER_NAME

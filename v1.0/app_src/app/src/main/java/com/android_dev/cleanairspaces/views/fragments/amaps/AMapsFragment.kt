@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import com.amap.api.maps.model.*
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentAMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MapDataType
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
@@ -71,7 +73,7 @@ class AMapsFragment : BaseMapFragment() {
     private val binding get() = _binding!!
 
 
-    private val mapCirlcesMarkers: ArrayList<Marker> = arrayListOf()
+    private val mapCirlcesMarkers: ArrayList<MarkerMapTypeWrapper> = arrayListOf()
     private var mapView: MapView? = null
     private var aMap: AMap? = null
 
@@ -109,8 +111,6 @@ class AMapsFragment : BaseMapFragment() {
             savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAMapsBinding.inflate(inflater, container, false)
-        watchedLocationsAdapter = WatchedLocationsAdapter(this)
-        super.setHomeMapOverlay(binding.mapOverlay)
 
         setHasOptionsMenu(true)
         requireActivity().invalidateOptionsMenu()
@@ -123,6 +123,9 @@ class AMapsFragment : BaseMapFragment() {
 
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
+
+        watchedLocationsAdapter = WatchedLocationsAdapter(this)
+        super.setHomeMapOverlay(binding.mapOverlay)
 
         //user setting - language
         viewModel.observeMapLang().observe(
@@ -138,6 +141,8 @@ class AMapsFragment : BaseMapFragment() {
         }
         )
 
+        requestPermissionsAndShowUserLocation()
+
     }
 
     private fun observeWatchedLocations() {
@@ -146,8 +151,6 @@ class AMapsFragment : BaseMapFragment() {
         })
     }
 
-
-    private var mapDataObserved = false
     private fun initializeMap(savedInstanceState: Bundle?, mapLangSet: String?) {
         binding.apply {
             mapView = map
@@ -163,10 +166,8 @@ class AMapsFragment : BaseMapFragment() {
                     } else {
                         setMapLanguage(AMap.ENGLISH)
                     }
-                    if (!mapDataObserved) {
                         observeMapRelatedData()
-                        mapDataObserved = true
-                    }
+
                 }
             }
         }
@@ -212,7 +213,7 @@ class AMapsFragment : BaseMapFragment() {
 
     private fun drawCirclesOnMap(mapDataPoints: List<MapData>) {
         try {
-            clearMapCircles()
+            clearMapCircles(mapType = mapDataPoints[0].type)
             aMap?.let {
                 for (mapData in mapDataPoints) {
                     val aqiStatus = getAQIStatusFromPM25(mapData.pm25)
@@ -230,13 +231,14 @@ class AMapsFragment : BaseMapFragment() {
                         position(area)
                         draggable(false)
                         anchor(0.5f, 0.5f)
-                        mIcon.let {
-                            icon(it)
-                        }
+                        icon(mIcon)
                     }
                     val circleMarker = aMap?.addMarker(markerOptions)
                     circleMarker?.let { marker ->
-                        mapCirlcesMarkers.add(marker)
+                        mapCirlcesMarkers.add(MarkerMapTypeWrapper(
+                                marker = marker,
+                                mapType = mapData.type
+                        ))
                     }
                 }
             }
@@ -247,9 +249,10 @@ class AMapsFragment : BaseMapFragment() {
     }
 
 
-    private fun clearMapCircles() {
-        for (circle in mapCirlcesMarkers) {
-            circle.remove()
+    private fun clearMapCircles(mapType: MapDataType) {
+        val circlesToClear =  mapCirlcesMarkers.filter { it.mapType == mapType }
+        for (circle in circlesToClear) {
+            circle.marker.remove()
         }
     }
 
@@ -309,6 +312,9 @@ class AMapsFragment : BaseMapFragment() {
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
+        viewModel.getMyLocationOrNull()?.let{
+            showLocationOnMap(it)
+        }
     }
 
 
@@ -351,3 +357,8 @@ class AMapsFragment : BaseMapFragment() {
         }
     }
 }
+
+data class MarkerMapTypeWrapper(
+    val marker  : Marker,
+    val  mapType : MapDataType
+    )

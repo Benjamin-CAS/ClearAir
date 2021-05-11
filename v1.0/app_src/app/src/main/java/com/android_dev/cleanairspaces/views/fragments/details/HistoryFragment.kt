@@ -131,7 +131,10 @@ class HistoryFragment : Fragment() {
                         .load(logoURL)
                         .into(locationLogo)
             }
-            locationNameTv.text = locationDetailsInfo.name
+            locationNameTv.text = if(locationDetailsInfo.location_area.isNotBlank())
+                locationDetailsInfo.location_area
+            else locationDetailsInfo.name
+            locationNameTv.isSelected = true
         }
     }
 
@@ -677,6 +680,7 @@ class HistoryFragment : Fragment() {
     }
 
     private fun getStatusColorForValue(value: Float, paramType: ParamTypes): Int {
+
         val aqiIndex = viewModel.aqiIndex ?: DEFAULT_AQI_INDEX_PM25
         return when (paramType) {
             ParamTypes.IN_PM,

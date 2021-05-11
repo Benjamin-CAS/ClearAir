@@ -1,13 +1,11 @@
 package com.android_dev.cleanairspaces.persistence.local
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.android_dev.cleanairspaces.utils.AQI_INDEX_TO_USE_KEY
-import com.android_dev.cleanairspaces.utils.MAP_LANG_TO_USE_KEY
-import com.android_dev.cleanairspaces.utils.MAP_TO_USE_KEY
-import com.android_dev.cleanairspaces.utils.SETTINGS_FILE_NAME
+import com.android_dev.cleanairspaces.utils.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -61,8 +59,22 @@ class DataStoreManager(appContext: Context) {
                 }
     }
 
+    suspend fun setAlreadyAskedLocPermission() {
+        mDataStore.edit { settings ->
+            settings[hasRequestedLocationKey] = true
+        }
+    }
+
+    fun hasAlreadyAskedLocPermission(): Flow<Boolean> {
+        return mDataStore.data
+                .map { preferences ->
+                    preferences[hasRequestedLocationKey]?:false
+                }
+    }
+
     private val aqiIndexKey = stringPreferencesKey(AQI_INDEX_TO_USE_KEY)
     private val mapToUseKey = stringPreferencesKey(MAP_TO_USE_KEY)
     private val mapLang = stringPreferencesKey(MAP_LANG_TO_USE_KEY)
+    private val hasRequestedLocationKey = booleanPreferencesKey(HAS_REQUESTED_LOC_PERMISSION)
 
 }

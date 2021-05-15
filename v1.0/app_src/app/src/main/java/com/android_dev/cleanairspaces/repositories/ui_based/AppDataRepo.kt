@@ -1,10 +1,10 @@
 package com.android_dev.cleanairspaces.repositories.ui_based
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android_dev.cleanairspaces.persistence.api.responses.*
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD
+import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.MONITOR_HISTORY_METHOD
 import com.android_dev.cleanairspaces.persistence.api.services.InDoorLocationApiService
 import com.android_dev.cleanairspaces.persistence.api.services.LocationHistoriesService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.*
@@ -28,7 +28,6 @@ import javax.inject.Singleton
 @Singleton
 class AppDataRepo
 @Inject constructor(
-        private val coroutineScope: CoroutineScope,
         private val mapDataDao: MapDataDao,
         private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
         private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
@@ -39,14 +38,20 @@ class AppDataRepo
         private val locationHistoriesService: LocationHistoriesService,
         private val inDoorLocationsApiService: InDoorLocationApiService,
         private val myLogger: MyLogger,
-        private val monitorDetailsDataDao : MonitorDetailsDataDao
+        private val monitorDetailsDataDao: MonitorDetailsDataDao
 ) {
 
     /************** CACHES ************* */
     //shared across fragments
-    val watchedLocationHighLights =  MutableLiveData<WatchedLocationHighLights>()
-    fun setCurrentlyWatchedLocation(locationHighLights: WatchedLocationHighLights) {
-        watchedLocationHighLights.value = locationHighLights
+    data class WatchedLocationWithAqi(
+        val aqiIndex : String?,
+        val watchedLocationHighLights : WatchedLocationHighLights
+    )
+    val watchedLocationWithAqi = MutableLiveData<WatchedLocationWithAqi>()
+    fun setCurrentlyWatchedLocationWithAQI(locationHighLights: WatchedLocationHighLights, aqiIndex: String?) {
+        watchedLocationWithAqi.value = WatchedLocationWithAqi(
+            aqiIndex = aqiIndex,
+            watchedLocationHighLights = locationHighLights )
     }
 
     private val TAG = AppDataRepo::class.java.simpleName
@@ -62,16 +67,12 @@ class AppDataRepo
     fun getWatchedLocationHighLights() = watchedLocationHighLightsDao.getWatchedLocationHighLights()
 
 
-    fun watchALocation(watchedLocationHighLight: WatchedLocationHighLights) {
-        coroutineScope.launch(Dispatchers.IO) {
-            watchedLocationHighLightsDao.insertLocation(watchedLocationHighLight)
-        }
+    suspend fun watchALocation(watchedLocationHighLight: WatchedLocationHighLights) {
+        watchedLocationHighLightsDao.insertLocation(watchedLocationHighLight)
     }
 
-    fun stopWatchingALocation(watchedLocationHighLight: WatchedLocationHighLights) {
-        coroutineScope.launch(Dispatchers.IO) {
-            watchedLocationHighLightsDao.deleteWatchedLocationHighLights(watchedLocationHighLight)
-        }
+    suspend fun stopWatchingALocation(watchedLocationHighLight: WatchedLocationHighLights) {
+        watchedLocationHighLightsDao.deleteWatchedLocationHighLights(watchedLocationHighLight)
     }
 
 
@@ -102,6 +103,7 @@ class AppDataRepo
                 when {
                     response.code() == 200 -> {
                         val responseBody = response.body()
+                        Log.d( "getLocationHistoryCall", "$responseBody")
                         try {
                             if (responseBody?.payload != null) {
                                 unEncryptHistoryPayload(
@@ -110,8 +112,9 @@ class AppDataRepo
                                 )
                             }
                         } catch (exc: Exception) {
-                            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getLocationHistoryCallback()", msg = exc.message, exc = exc)
-
+                            CoroutineScope(Dispatchers.IO).launch {
+                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getLocationHistoryCallback()", msg = exc.message, exc = exc)
+                            }
                         }
                     }
                     else -> {
@@ -120,14 +123,21 @@ class AppDataRepo
             }
 
             override fun onFailure(call: Call<LocationHistoriesResponse>, t: Throwable) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    myLogger.logThis(tag = LogTags.EXCEPTION,
+                            from = "$TAG getLocationHistoryCallback() - onFailure()",
+                            msg = "${t.message}"
+                    )
+                }
+
             }
 
         }
     }
 
     private fun unEncryptHistoryPayload(pl: String, lTime: String) {
-        try {
-            coroutineScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
                 val dataMatchingLTime =
                         recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
                 if (!dataMatchingLTime.isNullOrEmpty()) {
@@ -137,6 +147,7 @@ class AppDataRepo
 
                     val unEncryptedPayload: String =
                             CasEncDecQrProcessor.decodeApiResponse(pl)
+                    Log.d("unenc", "$unEncryptedPayload  for $pl")
                     val unEncJson = JSONObject(unEncryptedPayload)
 
                     /** last 72 hours history */
@@ -241,11 +252,11 @@ class AppDataRepo
                             dataTag = actualDataTag
                     )
                 }
+            } catch (exc: Exception) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptHistoryPayload()", msg = exc.message, exc = exc)
             }
-        } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptHistoryPayload()", msg = exc.message, exc = exc)
-
         }
+
     }
 
     private val recentRequestsData = arrayListOf<JsonObject>()
@@ -275,11 +286,10 @@ class AppDataRepo
             )
         } catch (exc: Exception) {
             myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG saveFetchedHistoryForLocation()", msg = exc.message, exc = exc)
-
         }
     }
 
-    fun refreshHistoryForLocation(
+    suspend fun refreshHistoryForLocation(
             compId: String,
             locId: String,
             timeStamp: String,
@@ -310,9 +320,9 @@ class AppDataRepo
             recentRequestsData.add(data)
         } catch (exc: Exception) {
             myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG refreshHistoryForLocation()", msg = exc.message, exc = exc)
-
         }
     }
+
 
     suspend fun addNewWatchedLocationFromOutDoorSearchData(
             outDoorInfo: SearchSuggestionsData
@@ -441,155 +451,177 @@ class AppDataRepo
 
 
     /********** INDOOR ******/
-    private fun fetchIndoorLocationsToWatch(
+    private suspend fun fetchIndoorLocationsToWatch(
             indoorLocation: SearchSuggestionsData,
             userName: String = "",
             userPass: String = "",
             indoorDataResultListener: AsyncResultListener
     ) {
-        //MORE -- DETAILS
-        coroutineScope.launch(Dispatchers.IO) {
-            val timeStamp = System.currentTimeMillis().toString()
-            val pl =
-                    CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocationOverviewDetails(
-                            timeStamp,
-                            companyId = indoorLocation.company_id,
-                            userName = userName,
-                            userPass = userPass
-                    )
-            val data = JsonObject()
-            data.addProperty(L_TIME_KEY, timeStamp)
-            data.addProperty(PAYLOAD_KEY, pl)
-            val indoorDetailsResponse =
-                    inDoorLocationsApiService.fetchInDoorLocationsDetails(pl = data)
-            indoorDetailsResponse.enqueue(object : Callback<IndoorLocationsDetailsResponse> {
-                override fun onResponse(
-                        call: Call<IndoorLocationsDetailsResponse>,
-                        response: Response<IndoorLocationsDetailsResponse>
-                ) {
-                    try {
-                        val decodedResponse =
-                                CasEncDecQrProcessor.decodeApiResponse(response.body()!!.payload!!)
-                        val jsonArray = JSONArray(decodedResponse)
-                        val locationsToWatch = ArrayList<WatchedLocationHighLights>()
-                        for (i in 0 until jsonArray.length()) {
-                            val jsonObject = jsonArray.getJSONObject(i)
-                            val indoorLocationExtraDetails = Gson().fromJson(
-                                    jsonObject.toString(),
-                                    IndoorLocationExtraDetails::class.java
-                            )
+        val timeStamp = System.currentTimeMillis().toString()
+        val pl =
+                CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocationOverviewDetails(
+                        timeStamp,
+                        companyId = indoorLocation.company_id,
+                        userName = userName,
+                        userPass = userPass
+                )
+        val data = JsonObject()
+        data.addProperty(L_TIME_KEY, timeStamp)
+        data.addProperty(PAYLOAD_KEY, pl)
+        val indoorDetailsResponse =
+                inDoorLocationsApiService.fetchInDoorLocationsDetails(pl = data)
+        indoorDetailsResponse.enqueue(object : Callback<IndoorLocationsDetailsResponse> {
+            override fun onResponse(
+                    call: Call<IndoorLocationsDetailsResponse>,
+                    response: Response<IndoorLocationsDetailsResponse>
+            ) {
+                try {
+                    val decodedResponse =
+                            CasEncDecQrProcessor.decodeApiResponse(response.body()!!.payload!!)
+                    val jsonArray = JSONArray(decodedResponse)
+                    val locationsToWatch = ArrayList<WatchedLocationHighLights>()
+                    for (i in 0 until jsonArray.length()) {
+                        val jsonObject = jsonArray.getJSONObject(i)
+                        val indoorLocationExtraDetails = Gson().fromJson(
+                                jsonObject.toString(),
+                                IndoorLocationExtraDetails::class.java
+                        )
 
-                            val tag = "${indoorLocation.company_id}${indoorLocationExtraDetails.location_id}"
-                            locationsToWatch.add(
-                                    WatchedLocationHighLights(
-                                            actualDataTag = tag,
-                                            lat = indoorLocation.lat ?: 0.0,
-                                            lon = indoorLocation.lon ?: 0.0,
-                                            pm_outdoor = null,
-                                            pm_indoor = null,
-                                            name = indoorLocationExtraDetails.name_en,
-                                            logo = indoorLocationExtraDetails.logo,
-                                            location_area = indoorLocation.nameToDisplay,
-                                            indoor_co2 = null,
-                                            indoor_humidity = null,
-                                            indoor_temperature = null,
-                                            indoor_voc = null,
-                                            energyMonth = null,
-                                            energyMax = null,
-                                            isIndoorLoc = true,
-                                            compId = indoorLocation.company_id,
-                                            locId = indoorLocationExtraDetails.location_id,
-                                            monitorId = "",
-                                            lastRecPwd = userPass,
-                                            lastRecUsername = userName,
-                                            is_secure = indoorLocation.is_secure
-                                    )
-                            )
-                        }
-                        //USER MUST SELECT WHICH ONES FROM THIS ...
-                        indoorDataResultListener.onComplete(isSuccess = true, data = locationsToWatch)
-                    } catch (exc: Exception) {
-                        myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG fetchIndoorLocationsToWatch()", msg = exc.message, exc = exc)
-
-                        indoorDataResultListener.onComplete(isSuccess = false)
+                        val tag = "${indoorLocation.company_id}${indoorLocationExtraDetails.location_id}"
+                        locationsToWatch.add(
+                                WatchedLocationHighLights(
+                                        actualDataTag = tag,
+                                        lat = indoorLocation.lat ?: 0.0,
+                                        lon = indoorLocation.lon ?: 0.0,
+                                        pm_outdoor = null,
+                                        pm_indoor = null,
+                                        name = indoorLocationExtraDetails.name_en,
+                                        logo = indoorLocationExtraDetails.logo,
+                                        location_area = indoorLocation.nameToDisplay,
+                                        indoor_co2 = null,
+                                        indoor_humidity = null,
+                                        indoor_temperature = null,
+                                        indoor_voc = null,
+                                        energyMonth = null,
+                                        energyMax = null,
+                                        isIndoorLoc = true,
+                                        compId = indoorLocation.company_id,
+                                        locId = indoorLocationExtraDetails.location_id,
+                                        monitorId = "",
+                                        lastRecPwd = userPass,
+                                        lastRecUsername = userName,
+                                        is_secure = indoorLocation.is_secure
+                                )
+                        )
                     }
-                }
+                    //USER MUST SELECT WHICH ONES FROM THIS ...
+                    indoorDataResultListener.onComplete(isSuccess = true, data = locationsToWatch)
+                } catch (exc: Exception) {
 
-                override fun onFailure(call: Call<IndoorLocationsDetailsResponse>, t: Throwable) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG fetchIndoorLocationsToWatch()", msg = exc.message, exc = exc)
+                    }
+                    indoorDataResultListener.onComplete(isSuccess = false)
+                }
+            }
+
+            override fun onFailure(call: Call<IndoorLocationsDetailsResponse>, t: Throwable) {
+
+                CoroutineScope(Dispatchers.IO).launch {
                     myLogger.logThis(
                             tag = LogTags.EXCEPTION,
                             from = "$TAG _ fetchIndoorLocationsToWatch()",
                             msg = t.message
                     )
-                    indoorDataResultListener.onComplete(isSuccess = false)
                 }
+                indoorDataResultListener.onComplete(isSuccess = false)
+            }
 
-            })
-        }
+        })
     }
 
     /************************* MONITORS ******************************/
-    fun observeMonitorsForLocation(locationsTag : String ) = monitorDetailsDataDao.observeMonitorsForLocation(locationsTag = locationsTag)
-    fun fetchMonitorsForALocation(watchedLocationTag: String, compId: String, locId: String, username: String, password: String) {
-        coroutineScope.launch(Dispatchers.IO) {
-            val timeStamp = System.currentTimeMillis().toString()
-            val pl =
-                    CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocationMonitors(
-                            timeStamp = timeStamp,
-                            companyId = compId,
-                            locId = locId,
-                            userName = username,
-                            userPass = password
-                    )
-            val data = JsonObject()
-            data.addProperty(L_TIME_KEY, timeStamp)
-            data.addProperty(PAYLOAD_KEY, pl)
-            val request =
-                    inDoorLocationsApiService.fetchInDoorLocationsMonitors(pl = data)
-            request.enqueue(object : Callback<IndoorMonitorsResponse> {
-                override fun onResponse(call: Call<IndoorMonitorsResponse>, response: Response<IndoorMonitorsResponse>) {
-                    try {
-                        coroutineScope.launch {
-                        if (response.body()?.payload != null) {
-                            val monitorDetails = ArrayList<MonitorDetails>()
-                            val decodedResponse = CasEncDecQrProcessor.decodeApiResponse(response.body()!!.payload!!)
-                            val monitorDetailsResponseRoot = Gson().fromJson(decodedResponse, MonitorDetailsResponseRoot::class.java)
-                            for ((key, entry) in monitorDetailsResponseRoot.monitor) {
-                                val isWatched : Boolean = monitorDetailsDataDao.checkIfIsWatched(monitorId = key).isNotEmpty()
-                                monitorDetails.add(
-                                        MonitorDetails(
-                                                actualDataTag = "$compId$locId$key",
-                                                for_watched_location_tag = watchedLocationTag,
-                                                company_id = compId,
-                                                location_id = locId,
-                                                monitor_id = key,
-                                                indoor_temperature = entry.indoor?.temperature?.toDoubleOrNull(),
-                                                indoor_pm_25 = entry.indoor?.reading?.toDoubleOrNull(),
-                                                indoor_co2 = entry.indoor?.co2?.toDoubleOrNull(),
-                                                indoor_humidity = entry.indoor?.humidity?.toDoubleOrNull(),
-                                                indoor_name_en = entry.indoor?.name_en ?: "",
-                                                indoor_display_param = entry.indoor?.display_param,
-                                                indoor_tvoc = entry.indoor?.tvoc?.toDoubleOrNull(),
-                                                outdoor_pm = entry.outdoor?.outdoor_pm?.toDoubleOrNull(),
-                                                outdoor_display_param = entry.outdoor?.outdoor_display_param,
-                                                outdoor_name_en = entry.outdoor?.outdoor_name_en,
-                                                lastRecPwd = password,
-                                                lastRecUName = username,
-                                                watch_location = isWatched
-                                        )
-                                )
-
-                            }
-                            if (monitorDetails.isNotEmpty())
-                                monitorDetailsDataDao.insertOrReplaceAll(monitorDetails.toList())
-
-                        } else {
-                            Log.d(
-                                    "fetchMonitorsForALoc", "with tag  $watchedLocationTag returned ${response.body()}"
+    private fun unEncryptMonitorsPayload(payload: String, compId: String, locId: String, userName: String, userPass: String, watchedLocationTag: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val monitorDetails = ArrayList<MonitorDetails>()
+                val decodedResponse = CasEncDecQrProcessor.decodeApiResponse(payload)
+                val monitorDetailsResponseRoot = Gson().fromJson(decodedResponse, MonitorDetailsResponseRoot::class.java)
+                for ((key, entry) in monitorDetailsResponseRoot.monitor) {
+                    val isWatched: Boolean = monitorDetailsDataDao.checkIfIsWatched(monitorId = key).isNotEmpty()
+                    monitorDetails.add(
+                            MonitorDetails(
+                                    actualDataTag = "$compId$locId$key",
+                                    for_watched_location_tag = watchedLocationTag,
+                                    company_id = compId,
+                                    location_id = locId,
+                                    monitor_id = key,
+                                    indoor_temperature = entry.indoor?.temperature?.toDoubleOrNull(),
+                                    indoor_pm_25 = entry.indoor?.reading?.toDoubleOrNull(),
+                                    indoor_co2 = entry.indoor?.co2?.toDoubleOrNull(),
+                                    indoor_humidity = entry.indoor?.humidity?.toDoubleOrNull(),
+                                    indoor_name_en = entry.indoor?.name_en ?: "",
+                                    indoor_display_param = entry.indoor?.display_param,
+                                    indoor_tvoc = entry.indoor?.tvoc?.toDoubleOrNull(),
+                                    outdoor_pm = entry.outdoor?.outdoor_pm?.toDoubleOrNull(),
+                                    outdoor_display_param = entry.outdoor?.outdoor_display_param,
+                                    outdoor_name_en = entry.outdoor?.outdoor_name_en,
+                                    lastRecPwd = userPass,
+                                    lastRecUName = userName,
+                                    watch_location = isWatched
                             )
-                        }
+                    )
+
+                }
+                if (monitorDetails.isNotEmpty())
+                    monitorDetailsDataDao.insertOrReplaceAll(monitorDetails.toList())
+            } catch (exc: Exception) {
+                myLogger.logThis(
+                        tag = LogTags.EXCEPTION,
+                        from = "$TAG unEncryptMonitorsPayload",
+                        msg = exc.message,
+                        exc = exc
+                )
+            }
+        }
+    }
+
+    fun observeMonitorsIWatch() = monitorDetailsDataDao.observeWatchedMonitors()
+    fun observeMonitorsForLocation(locationsTag: String) = monitorDetailsDataDao.observeMonitorsForLocation(locationsTag = locationsTag)
+    suspend fun fetchMonitorsForALocation(watchedLocationTag: String, compId: String, locId: String, username: String, password: String) {
+        val timeStamp = System.currentTimeMillis().toString()
+        val pl =
+                CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocationMonitors(
+                        timeStamp = timeStamp,
+                        companyId = compId,
+                        locId = locId,
+                        userName = username,
+                        userPass = password
+                )
+        val data = JsonObject()
+        data.addProperty(L_TIME_KEY, timeStamp)
+        data.addProperty(PAYLOAD_KEY, pl)
+        val request =
+                inDoorLocationsApiService.fetchInDoorLocationsMonitors(pl = data)
+        request.enqueue(object : Callback<IndoorMonitorsResponse> {
+            override fun onResponse(call: Call<IndoorMonitorsResponse>, response: Response<IndoorMonitorsResponse>) {
+                try {
+                    if (response.body()?.payload != null) {
+                        unEncryptMonitorsPayload(
+                                watchedLocationTag = watchedLocationTag,
+                                payload = response.body()?.payload!!,
+                                compId = compId,
+                                locId = locId,
+                                userName = username,
+                                userPass = password
+                        )
+                    } else {
+                        Log.d(
+                                "fetchMonitorsForALoc", "with tag  $watchedLocationTag returned ${response.body()}"
+                        )
                     }
-                    }catch (exc : Exception){
+                } catch (exc: Exception) {
+                    CoroutineScope(Dispatchers.IO).launch {
                         myLogger.logThis(
                                 tag = LogTags.EXCEPTION,
                                 from = "$TAG _ fetchMonitorsForALocation()_onResponse",
@@ -598,23 +630,63 @@ class AppDataRepo
                         )
                     }
                 }
+            }
 
-                override fun onFailure(call: Call<IndoorMonitorsResponse>, t: Throwable) {
+            override fun onFailure(call: Call<IndoorMonitorsResponse>, t: Throwable) {
+
+                CoroutineScope(Dispatchers.IO).launch {
                     myLogger.logThis(
                             tag = LogTags.EXCEPTION,
                             from = "$TAG _ fetchMonitorsForALocation()",
                             msg = t.message
                     )
                 }
+            }
 
-            })
+        })
+    }
+
+    suspend fun toggleWatchAMonitor(monitor: MonitorDetails, watch: Boolean) {
+        monitorDetailsDataDao.toggleIsWatched(watchLocation = watch, monitorsTag = monitor.actualDataTag)
+    }
+
+    suspend fun refreshHistoryForMonitor(
+        compId: String,
+        locId: String,
+        monitorId: String,
+        payload: String,
+        timeStamp: String,
+        userName: String,
+        userPassword: String,
+        dataTag: String
+    ) {
+        try {
+            val method = MONITOR_HISTORY_METHOD
+            val data = JsonObject()
+            data.addProperty(L_TIME_KEY, timeStamp)
+            data.addProperty(PAYLOAD_KEY, payload)
+            val response = locationHistoriesService.fetchMonitorHistory(
+                data = data,
+                method = method
+            )
+
+            response.enqueue(
+                getLocationHistoryCallback()
+            )
+
+            // keep track of this request data ---
+            data.addProperty(COMP_ID_KEY, compId)
+            data.addProperty(LOC_ID_KEY, locId)
+            data.addProperty(MON_ID_KEY, monitorId)
+            data.addProperty(USER_KEY, userName)
+            data.addProperty(PASSWORD_KEY, userPassword)
+            data.addProperty(API_LOCAL_DATA_BINDER_KEY, dataTag)
+            recentRequestsData.add(data)
+        } catch (exc: Exception) {
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG refreshHistoryForMonitor()", msg = exc.message, exc = exc)
         }
     }
-    fun toggleWatchAMonitor(monitor: MonitorDetails, watch : Boolean) {
-        coroutineScope.launch {
-            monitorDetailsDataDao.toggleIsWatched(watchLocation = watch, monitorsTag = monitor.actualDataTag)
-        }
-    }
+
 
 
 }

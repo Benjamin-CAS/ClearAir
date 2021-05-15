@@ -1,12 +1,10 @@
 package com.android_dev.cleanairspaces.views.fragments.welcome
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.android_dev.cleanairspaces.bg_work.RefreshLocationsWorker
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
 import com.android_dev.cleanairspaces.utils.DATA_REFRESHER_WORKER_NAME
@@ -33,12 +31,11 @@ class SplashViewModel @Inject constructor(
 
 
     fun scheduleDataRefresh() {
-
-//todo .setRequiredNetworkType(NetworkType.CONNECTED)
         val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-        val refreshMapDataRequest =
+        val refreshDataRequest =
                 PeriodicWorkRequestBuilder<RefreshLocationsWorker>(
                         DATA_REFRESH_INTERVAL_MIN,
                         TimeUnit.MINUTES
@@ -48,9 +45,17 @@ class SplashViewModel @Inject constructor(
 
         workManager.enqueueUniquePeriodicWork(
                 DATA_REFRESHER_WORKER_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
-                refreshMapDataRequest
+                ExistingPeriodicWorkPolicy.REPLACE,
+                refreshDataRequest
         )
+        workManager.getWorkInfoByIdLiveData(refreshDataRequest.id)
+                .observeForever {
+                    if (it != null && MyLogger.IS_DEBUG_MODE) {
+                        Log.d(
+                                TAG, it.state.name
+                        )
+                    }
+                }
 
     }
 

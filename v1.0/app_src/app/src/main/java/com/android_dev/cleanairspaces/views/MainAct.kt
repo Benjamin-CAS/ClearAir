@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -18,6 +19,8 @@ import com.android_dev.cleanairspaces.databinding.ActivityMainBinding
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -81,7 +84,8 @@ class MainAct : AppCompatActivity() {
                 R.id.addLocation,
                 R.id.settingsMenuFragment,
                 R.id.searchFragment,
-                R.id.addLocationFromLocationsList -> {
+                R.id.addLocationFromLocationsList,
+                R.id.monitorHistoryFragment-> {
                     binding.apply {
                         toolbarLayout.apply {
                             toolbar.isVisible = true
@@ -120,9 +124,11 @@ class MainAct : AppCompatActivity() {
         }
 
         //log
-        myLogger.logThis(
-                LogTags.USER_ACTION_OPEN_APP, TAG
-        )
+        lifecycleScope.launch(Dispatchers.IO) {
+            myLogger.logThis(
+                    LogTags.USER_ACTION_OPEN_APP, TAG
+            )
+        }
 
     }
 
@@ -144,9 +150,11 @@ class MainAct : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        myLogger.logThis(
-                LogTags.USER_ACTION_CLOSE_APP, TAG
-        )
+        lifecycleScope.launch(Dispatchers.IO) {
+            myLogger.logThis(
+                    LogTags.USER_ACTION_CLOSE_APP, TAG
+            )
+        }
     }
 
 }

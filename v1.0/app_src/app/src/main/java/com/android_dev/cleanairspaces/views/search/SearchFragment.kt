@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,8 @@ import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
 import com.android_dev.cleanairspaces.views.adapters.SearchSuggestionsAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -76,11 +79,13 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
         try {
             val query = binding.searchView.text.toString()
             val msg = "searched $query clicked ${suggestion.nameToDisplay}"
-            myLogger.logThis(
-                    tag = LogTags.USER_ACTION_SEARCH,
-                    from = TAG,
-                    msg = msg
-            )
+            lifecycleScope.launch(Dispatchers.IO) {
+                myLogger.logThis(
+                        tag = LogTags.USER_ACTION_SEARCH,
+                        from = TAG,
+                        msg = msg
+                )
+            }
             val action =
                     when {
                         suggestion.isForIndoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
@@ -96,12 +101,14 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
             }
 
         } catch (exc: Exception) {
-            myLogger.logThis(
-                    tag = LogTags.EXCEPTION,
-                    from = TAG,
-                    msg = exc.message,
-                    exc = exc
-            )
+            lifecycleScope.launch(Dispatchers.IO) {
+                myLogger.logThis(
+                        tag = LogTags.EXCEPTION,
+                        from = TAG,
+                        msg = exc.message,
+                        exc = exc
+                )
+            }
         }
     }
 

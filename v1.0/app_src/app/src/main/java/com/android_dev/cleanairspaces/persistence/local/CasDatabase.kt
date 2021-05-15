@@ -28,5 +28,5 @@ abstract class CasDatabase : RoomDatabase() {
     abstract fun locationHistoryMonthDao(): LocationHistoryMonthDao
     abstract fun locationHistoryUpdatesTrackerDao(): LocationHistoryUpdatesTrackerDao
     abstract fun logsDao(): LogsDao
-    abstract fun monitorDetailsDataDao() : MonitorDetailsDataDao
+    abstract fun monitorDetailsDataDao(): MonitorDetailsDataDao
 }

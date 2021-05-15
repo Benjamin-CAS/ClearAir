@@ -23,8 +23,8 @@ class LocationDetailsRepo
 @Inject constructor(
         private val qrScannedItemsApiService: QrScannedItemsApiService,
         private val myLogger: MyLogger,
-        private val coroutineScope: CoroutineScope
-) {
+
+        ) {
 
     private val TAG = LocationDetailsRepo::class.java.simpleName
     private val recentRequestsData = arrayListOf<JsonObject>()
@@ -112,8 +112,9 @@ class LocationDetailsRepo
                                 }
                             }
                         } catch (exc: Exception) {
-                            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getScannedDeviceQrResponseCallback()", msg = exc.message, exc = exc)
-
+                            CoroutineScope(Dispatchers.IO).launch {
+                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getScannedDeviceQrResponseCallback()", msg = exc.message, exc = exc)
+                            }
                         }
                     }
                     else -> {
@@ -127,9 +128,10 @@ class LocationDetailsRepo
     }
 
     private fun unEncryptScannedDeviceQrWithCompLocResponse(payload: String, lTime: String) {
-        try {
-            //identify requested data
-            coroutineScope.launch(Dispatchers.IO) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                //identify requested data
                 val dataMatchingLTime =
                         recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
                 if (!dataMatchingLTime.isNullOrEmpty()) {
@@ -147,16 +149,17 @@ class LocationDetailsRepo
                         currentlyScannedDeviceData.value = customerDeviceData!!
                     }
                 }
-            }
-        } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptScannedDeviceQrWithCompLocResponse()", msg = exc.message, exc = exc)
+            } catch (exc: Exception) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptScannedDeviceQrWithCompLocResponse()", msg = exc.message, exc = exc)
 
+            }
         }
+
     }
 
     private fun unEncryptScannedDeviceQrWithMonitorIdResponse(payload: String, lTime: String) {
-        try {
-            coroutineScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
                 //identify requested data
                 val dataMatchingLTime =
                         recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
@@ -180,10 +183,10 @@ class LocationDetailsRepo
                         currentlyScannedDeviceData.value = customerDeviceData!!
                     }
                 }
-            }
-        } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptScannedDeviceQrWithMonitorIdResponse()", msg = exc.message, exc = exc)
+            } catch (exc: Exception) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptScannedDeviceQrWithMonitorIdResponse()", msg = exc.message, exc = exc)
 
+            }
         }
     }
 

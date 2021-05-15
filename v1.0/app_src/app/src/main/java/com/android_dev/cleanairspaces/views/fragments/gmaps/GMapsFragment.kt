@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
@@ -23,7 +25,9 @@ import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.android_dev.cleanairspaces.utils.showSnackBar
 import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAdapter
+import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndMonitorsAdapter
 import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragment
+import com.android_dev.cleanairspaces.views.fragments.monitor_details.MonitorDetailsAqiWrapper
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -33,6 +37,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
@@ -48,26 +54,30 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     private val mapCircleMarkers: ArrayList<Marker> = arrayListOf()
 
 
-    private val goodCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.good_circle)
-   }
+    private val goodCircle by lazy {
+        BitmapDescriptorFactory.fromResource(R.drawable.good_circle)
+    }
 
-    private val moderateCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.moderate_circle)
-   }
+    private val moderateCircle by lazy {
+        BitmapDescriptorFactory.fromResource(R.drawable.moderate_circle)
+    }
 
-    private val gUnhealthyCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.g_unhealthy_circle)
-   }
+    private val gUnhealthyCircle by lazy {
+        BitmapDescriptorFactory.fromResource(R.drawable.g_unhealthy_circle)
+    }
 
-    private val unHealthyCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.unhealthy_circle)
-   }
+    private val unHealthyCircle by lazy {
+        BitmapDescriptorFactory.fromResource(R.drawable.unhealthy_circle)
+    }
 
-    private val vUnHealthyCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.v_unhealthy_circle)
-   }
+    private val vUnHealthyCircle by lazy {
+        BitmapDescriptorFactory.fromResource(R.drawable.v_unhealthy_circle)
+    }
 
-    private val hazardCircle by lazy {   BitmapDescriptorFactory.fromResource(R.drawable.hazardous_circle)
-   }
+    private val hazardCircle by lazy {
+        BitmapDescriptorFactory.fromResource(R.drawable.hazardous_circle)
+    }
 
-
-   
 
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
@@ -101,6 +111,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
 
         setHasOptionsMenu(true)
         requireActivity().invalidateOptionsMenu()
+        viewModel.mapHasBeenInitialized.value = false
 
         return binding.root
     }
@@ -111,8 +122,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
 
-        watchedLocationsAdapter = WatchedLocationsAdapter(this)
-        monitorsAdapter = MonitorsAdapter(this)
+        watchedItemsAdapter = WatchedLocationsAndMonitorsAdapter(this)
         super.setHomeMapOverlay(binding.mapOverlay)
 
 
@@ -121,16 +131,30 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             getMapAsync(this@GMapsFragment)
         }
 
-        viewModel.observeSelectedAqiIndex().observe(
-                viewLifecycleOwner, {
-            updateSelectedAqiIndex(it)
-            observeWatchedLocations()
-        }
-        )
-
-        requestPermissionsAndShowUserLocation()
+        viewModel.mapHasBeenInitialized.observe(viewLifecycleOwner, {
+            if (it) {
+                initializeDataAfterMapIsSet()
+            }
+        })
     }
 
+    private fun initializeDataAfterMapIsSet(){
+        viewModel.observeAqiIndex().observe(viewLifecycleOwner, {
+                viewModel.aqiIndex = it
+                updateIndexForWatchedLocations(it)
+        })
+
+        observeWatchedLocations()
+        requestPermissionsAndShowUserLocation()
+        observeMonitorsIWatch()
+    }
+
+    private fun observeMonitorsIWatch(){
+        viewModel.observeMonitorsIWatch().observe(viewLifecycleOwner, {
+            //todo if (it != null)
+            //todo updateWatchedMonitors(monitors = it)
+        })
+    }
 
     override fun onMapReady(gMap: GoogleMap?) {
         if (gMap != null) {
@@ -139,6 +163,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
                 isCompassEnabled = false
             }
             observeMapRelatedData()
+            viewModel.mapHasBeenInitialized.value = true
 
         } else {
             snackBar = binding.container.showSnackBar(
@@ -156,6 +181,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             updateWatchedLocations(it)
         })
     }
+
 
     private fun observeMapRelatedData() {
         //map data -locations & pm values
@@ -192,8 +218,10 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
                 }
             }
         } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG drawCirclesOnMap()", msg = exc.message, exc = exc)
+            lifecycleScope.launch(Dispatchers.IO) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG drawCirclesOnMap()", msg = exc.message, exc = exc)
 
+            }
 
         }
     }
@@ -273,7 +301,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         binding.gMap.onResume()
-        viewModel.getMyLocationOrNull()?.let{
+        viewModel.getMyLocationOrNull()?.let {
             showLocationOnMap(it)
         }
     }
@@ -296,7 +324,11 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
 
     override fun onDestroy() {
         super.onDestroy()
-        binding.gMap.onDestroy()
+        try {
+            binding.gMap.onDestroy()
+        }catch (exc : java.lang.Exception){
+            Log.d(TAG, "${exc.message?:" exception"} onDestroy")
+        }
 
     }
 
@@ -306,26 +338,30 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             val action = GMapsFragmentDirections.actionGMapsFragmentToSearchFragment()
             findNavController().navigate(action)
         } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG goToSearchFragment()", msg = exc.message, exc = exc)
-
-
+            lifecycleScope.launch(Dispatchers.IO) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG goToSearchFragment()", msg = exc.message, exc = exc)
+            }
         }
     }
 
-    override fun onClickWatchedLocation(location: WatchedLocationHighLights) {
+    override fun onClickWatchedLocation(locationHighLights: WatchedLocationHighLights) {
         try {
-            viewModel.setWatchedLocationInCache(location)
+            viewModel.setWatchedLocationInCache(locationHighLights, viewModel.aqiIndex)
             val action = GMapsFragmentDirections.actionGMapsFragmentToDetailsFragment()
             binding.container.findNavController().navigate(action)
         } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG  onClickWatchedLocation()", msg = exc.message, exc = exc)
-
-
+            lifecycleScope.launch(Dispatchers.IO) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG  onClickWatchedLocation()", msg = exc.message, exc = exc)
+            }
         }
     }
 
     override fun onClickWatchedMonitor(monitor: MonitorDetails) {
-        //todo show history
+        val details = MonitorDetailsAqiWrapper(
+            monitorDetails = monitor, aqiIndex = viewModel.aqiIndex
+        )
+       val action = GMapsFragmentDirections.actionGMapsFragmentToMonitorHistoryFragment(details)
+       findNavController().navigate(action)
     }
 
 

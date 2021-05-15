@@ -145,7 +145,9 @@ class AddLocationViewModel @Inject constructor(
         val newList = allIndoorLocationsToChooseFrom.filter { it.name != location.name }
         allIndoorLocationsToChooseFrom = newList
         indoorLocationsToChooseFrom.value = newList
-        appDataRepo.watchALocation(location)
+        viewModelScope.launch(Dispatchers.IO) {
+            appDataRepo.watchALocation(location)
+        }
     }
 
     fun resetWatchLocationState() {

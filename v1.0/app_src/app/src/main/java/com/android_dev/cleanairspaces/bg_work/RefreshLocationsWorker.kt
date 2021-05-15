@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.android_dev.cleanairspaces.repositories.api_facing.*
+import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -29,17 +30,26 @@ class RefreshLocationsWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
 
         withContext(Dispatchers.IO) {
-            refreshOutDoorLocations()
-            refreshInDoorLocations()
-            refreshWatchedLocations()
-            refreshWatchedMonitors()
-            sendLogData()
+            try {
+                refreshOutDoorLocations()
+                refreshInDoorLocations()
+                refreshWatchedLocations()
+                refreshWatchedMonitors()
+                sendLogData()
+            } catch (exc: Exception) {
+                myLogger.logThis(
+                        tag = LogTags.EXCEPTION,
+                        from = "$TAG doWork()",
+                        msg = exc.message,
+                        exc = exc
+                )
+            }
         }
 
         return Result.success()
     }
 
-    private fun refreshWatchedMonitors() {
+    private suspend fun refreshWatchedMonitors() {
         monitorDetailsUpdatesRepo.refreshWatchedMonitors()
     }
 

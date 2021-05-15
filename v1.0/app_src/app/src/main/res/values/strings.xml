@@ -9,7 +9,7 @@
     <string name="my_location_btn_desc">show my location on map</string>
     <string name="settings_txt">Settings</string>
     <string name="about_app_txt">About App</string>
-    <string name="home_top_tv">Home</string>
+    <string name="fragment_map_lbl">Home</string>
     <string name="smart_qr_txt">Smart QR</string>
     <string name="map_view">Map View</string>
     <string name="search_location">Search</string>

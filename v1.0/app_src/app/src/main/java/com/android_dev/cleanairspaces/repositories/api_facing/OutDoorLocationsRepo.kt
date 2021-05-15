@@ -22,7 +22,7 @@ import javax.inject.Singleton
 @Singleton
 class OutDoorLocationsRepo
 @Inject constructor(
-        private val coroutineScope: CoroutineScope,
+
         private val mapDataDao: MapDataDao,
         private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
         private val outDoorLocationApiService: OutDoorLocationApiService,
@@ -46,8 +46,9 @@ class OutDoorLocationsRepo
                                 mapOutDoorLocationsToMapData(otherLocations = locations)
                             }
                         } catch (exc: Exception) {
-                            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getOtherOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
-
+                            CoroutineScope(Dispatchers.IO).launch {
+                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getOtherOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                            }
                         }
                     }
                     else -> {
@@ -56,6 +57,7 @@ class OutDoorLocationsRepo
             }
 
             override fun onFailure(call: Call<OutDoorLocationResponse>, e: Throwable) {
+
             }
         }
     }
@@ -76,8 +78,9 @@ class OutDoorLocationsRepo
                                 )
                             }
                         } catch (exc: Exception) {
-                            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getAmericaOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
-
+                            CoroutineScope(Dispatchers.IO).launch {
+                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getAmericaOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                            }
                         }
                     }
                     else -> {
@@ -106,8 +109,10 @@ class OutDoorLocationsRepo
                                 )
                             }
                         } catch (exc: Exception) {
-                            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getTaiwanOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
 
+                            CoroutineScope(Dispatchers.IO).launch {
+                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getTaiwanOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                            }
                         }
                     }
                     else -> {
@@ -168,8 +173,9 @@ class OutDoorLocationsRepo
                     }
 
                 } catch (exc: Exception) {
-                    myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getOutdoorLocationsDetails()", msg = exc.message, exc = exc)
-
+                    CoroutineScope(Dispatchers.IO).launch {
+                        myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getOutdoorLocationsDetails()", msg = exc.message, exc = exc)
+                    }
                 }
             }
 
@@ -185,7 +191,7 @@ class OutDoorLocationsRepo
             otherLocations: List<OutDoorLocationsOther>? = null,
             outDoorExtraDetailed: List<OutDoorDetailedLocationData>? = null
     ) {
-        coroutineScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
 
             try {
                 //update map data

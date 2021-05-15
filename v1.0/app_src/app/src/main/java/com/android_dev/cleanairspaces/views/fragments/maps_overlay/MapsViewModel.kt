@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.views.fragments.maps_overlay
 
 import android.location.Location
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -32,36 +33,44 @@ class MapsViewModel @Inject constructor(
     var myLocMarkerOnGMap: com.google.android.gms.maps.model.Marker? = null
     var alreadyPromptedUserForLocationSettings = false
 
+    var mapHasBeenInitialized = MutableLiveData<Boolean>(false)
     fun observeMapLang() = dataStoreManager.getMapLang().asLiveData()
-    fun observeSelectedAqiIndex() = dataStoreManager.getAqiIndex().asLiveData()
+
+    var aqiIndex: String? = null
+    fun observeAqiIndex() = dataStoreManager.getAqiIndex().asLiveData()
 
 
     fun observeMapData() = appDataRepo.getMapDataFlow().asLiveData()
     fun observeWatchedLocations() = appDataRepo.getWatchedLocationHighLights().asLiveData()
     fun deleteLocation(location: WatchedLocationHighLights) {
-        appDataRepo.stopWatchingALocation(location)
+        viewModelScope.launch(Dispatchers.IO) {
+            appDataRepo.stopWatchingALocation(location)
+        }
     }
+
+    fun observeMonitorsIWatch() = appDataRepo.observeMonitorsIWatch().asLiveData()
 
 
     fun observeIfAlreadyAskedLocPermission() = dataStoreManager.hasAlreadyAskedLocPermission().asLiveData()
-    fun setAlreadyAskedLocPermission()  = viewModelScope.launch(Dispatchers.IO) {
+    fun setAlreadyAskedLocPermission() = viewModelScope.launch(Dispatchers.IO) {
         dataStoreManager.setAlreadyAskedLocPermission()
     }
 
-    private var location : Location? = null
+    private var location: Location? = null
     fun getMyLocationOrNull() = location
-    private var updatesStarted  = false
+    private var updatesStarted = false
     private var stopSendingLocUpdates = false
     fun onLocationChanged(newLocation: Location) {
         location = newLocation
-        if (!updatesStarted){
+        if (!updatesStarted) {
             updatesStarted = true
             viewModelScope.launch(Dispatchers.IO) {
                 sendUserLoc()
             }
         }
     }
-    private suspend fun sendUserLoc(){
+
+    private suspend fun sendUserLoc() {
         location?.let { loc ->
             myLogger.logThis(
                     tag = LogTags.USER_LOCATION_CHANGED,
@@ -82,11 +91,13 @@ class MapsViewModel @Inject constructor(
     }
 
     fun stopWatchingMonitor(monitor: MonitorDetails) {
-        appDataRepo.toggleWatchAMonitor(monitor, false)
+        viewModelScope.launch(Dispatchers.IO) {
+            appDataRepo.toggleWatchAMonitor(monitor, watch = false)
+        }
     }
 
-    fun setWatchedLocationInCache(location: WatchedLocationHighLights) {
-        appDataRepo.setCurrentlyWatchedLocation(location)
+    fun setWatchedLocationInCache(location: WatchedLocationHighLights, aqiIndex  :String?) {
+        appDataRepo.setCurrentlyWatchedLocationWithAQI(location, aqiIndex)
     }
 
 }

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentSplashBinding
@@ -16,6 +17,8 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -93,8 +96,9 @@ class SplashFragment : Fragment() {
             }
             findNavController().navigate(action)
         } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG navigateToFragment()", msg = exc.message, exc = exc)
-
+            lifecycleScope.launch(Dispatchers.IO) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG navigateToFragment()", msg = exc.message, exc = exc)
+            }
         }
     }
 

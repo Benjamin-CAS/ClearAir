@@ -46,6 +46,7 @@ const val QR_MONITOR_ID_TRUE_LENGTH = 12
 const val API_LOCAL_DATA_BINDER_KEY = "tag"
 const val COMP_ID_KEY = "c"
 const val LOC_ID_KEY = "l"
+const val MON_ID_KEY = "m"
 const val USER_KEY = "user"
 const val HISTORY_KEY = "h"
 const val HISTORY_WEEK_KEY = "w"
@@ -55,4 +56,11 @@ const val PASSWORD_KEY = "password"
 const val L_TIME_KEY = "ltime"
 const val PAYLOAD_KEY = "pl"
 const val MONITOR_ID_KEY = "monitor_id"
-const val LAT_LON_DELIMITER ="_"
+const val LAT_LON_DELIMITER = "_"
+
+
+
+
+
+
+

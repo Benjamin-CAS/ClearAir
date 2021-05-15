@@ -19,9 +19,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -32,7 +29,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
-    /* DEBUG ONLY
+    /* IS_DEBUG_MODE ONLY
       for provideRetrofit() when building retrofit .client(getLogger())
      */
     private fun getLogger(): OkHttpClient {
@@ -83,10 +80,6 @@ class AppModule {
     fun provideLocationHistoriesService(retrofit: Retrofit): LocationHistoriesService =
             retrofit.create(LocationHistoriesService::class.java)
 
-    @Provides
-    @Singleton
-    fun provideCoroutineScopeIO(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
 
     @Provides
     @Singleton
@@ -105,7 +98,6 @@ class AppModule {
     @Provides
     @Singleton
     fun provideAppDataRepo(
-            coroutineScope: CoroutineScope,
             mapDataDao: MapDataDao,
             searchSuggestionsDataDao: SearchSuggestionsDataDao,
             watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
@@ -116,9 +108,8 @@ class AppModule {
             locationHistoriesService: LocationHistoriesService,
             inDoorLocationsApiService: InDoorLocationApiService,
             myLogger: MyLogger,
-            monitorDetailsDataDao : MonitorDetailsDataDao
+            monitorDetailsDataDao: MonitorDetailsDataDao
     ): AppDataRepo = AppDataRepo(
-            coroutineScope = coroutineScope,
             mapDataDao = mapDataDao,
             searchSuggestionsDataDao = searchSuggestionsDataDao,
             watchedLocationHighLightsDao = watchedLocationHighLightsDao,
@@ -135,12 +126,10 @@ class AppModule {
     @Provides
     @Singleton
     fun provideMonitorDetailsUpdatesRepo(
-           coroutineScope: CoroutineScope,
-           monitorDetailsDataDao: MonitorDetailsDataDao,
-           inDoorLocationApiService: InDoorLocationApiService,
-           myLogger: MyLogger
+            monitorDetailsDataDao: MonitorDetailsDataDao,
+            inDoorLocationApiService: InDoorLocationApiService,
+            myLogger: MyLogger
     ): MonitorDetailsUpdatesRepo = MonitorDetailsUpdatesRepo(
-        coroutineScope = coroutineScope,
             monitorDetailsDataDao = monitorDetailsDataDao,
             inDoorLocationApiService = inDoorLocationApiService,
             myLogger = myLogger
@@ -149,13 +138,11 @@ class AppModule {
     @Provides
     @Singleton
     fun provideOutDoorLocationsRepo(
-            coroutineScope: CoroutineScope,
             mapDataDao: MapDataDao,
             searchSuggestionsDataDao: SearchSuggestionsDataDao,
             outDoorLocationApiService: OutDoorLocationApiService,
             myLogger: MyLogger
     ): OutDoorLocationsRepo = OutDoorLocationsRepo(
-            coroutineScope = coroutineScope,
             mapDataDao = mapDataDao,
             searchSuggestionsDataDao = searchSuggestionsDataDao,
             outDoorLocationApiService = outDoorLocationApiService,
@@ -167,22 +154,20 @@ class AppModule {
     fun provideLocationDetailsRepo(
             myLogger: MyLogger,
             qrScannedItemsApiService: QrScannedItemsApiService,
-            coroutineScope: CoroutineScope
-    ): LocationDetailsRepo = LocationDetailsRepo(
+
+            ): LocationDetailsRepo = LocationDetailsRepo(
             myLogger = myLogger,
             qrScannedItemsApiService = qrScannedItemsApiService,
-            coroutineScope = coroutineScope
-    )
+
+            )
 
     @Provides
     @Singleton
     fun provideInDoorLocationsRepo(
-            coroutineScope: CoroutineScope,
             searchSuggestionsDataDao: SearchSuggestionsDataDao,
             inDoorLocationApiService: InDoorLocationApiService,
             myLogger: MyLogger
     ): InDoorLocationsRepo = InDoorLocationsRepo(
-            coroutineScope = coroutineScope,
             searchSuggestionsDataDao = searchSuggestionsDataDao,
             inDoorLocationsApiService = inDoorLocationApiService,
             myLogger = myLogger,
@@ -191,12 +176,10 @@ class AppModule {
     @Provides
     @Singleton
     fun provideWatchedLocationUpdatesRepo(
-            coroutineScope: CoroutineScope,
             locationDetailsService: LocationDetailsService,
             watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
             myLogger: MyLogger
     ): WatchedLocationUpdatesRepo = WatchedLocationUpdatesRepo(
-            coroutineScope = coroutineScope,
             watchedLocationHighLightsDao = watchedLocationHighLightsDao,
             locationDetailsService = locationDetailsService,
             myLogger = myLogger,
@@ -212,9 +195,9 @@ class AppModule {
     @Singleton
     fun provideMonitorDetailsDataDao(
             casDatabase: CasDatabase
-    ):MonitorDetailsDataDao = casDatabase.monitorDetailsDataDao()
+    ): MonitorDetailsDataDao = casDatabase.monitorDetailsDataDao()
 
-            @Provides
+    @Provides
     @Singleton
     fun provideSearchSuggestionsDataDao(
             casDatabase: CasDatabase
@@ -254,11 +237,9 @@ class AppModule {
     @Provides
     @Singleton
     fun provideLogsRepo(
-            coroutineScope: CoroutineScope,
             logsDao: LogsDao,
             loggerService: LoggerService
     ): LogRepo = LogRepo(
-            coroutineScope = coroutineScope,
             loggerDao = logsDao,
             loggerService = loggerService
     )

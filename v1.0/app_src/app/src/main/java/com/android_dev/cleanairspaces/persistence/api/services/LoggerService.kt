@@ -20,9 +20,9 @@ interface LoggerService {
 
     @POST("restapi/loc.php")
     fun sendUserLocation(
-            @Query("uid") uid:String,
+            @Query("uid") uid: String,
             @Query("lat") lat: String,
             @Query("lon") lon: String,
-            @Query("app") app : String = "a",
-    ):Call<Any>
+            @Query("app") app: String = "a",
+    ): Call<Any>
 }

@@ -43,7 +43,7 @@ fun formatWatchedHighLightsIndoorExtras(
         inDoorAqiStatus: AQIStatus,
         energyMonth: Double? = null,
         energyMax: Double? = null,
-        addUnitsInVal : Boolean = true
+        addUnitsInVal: Boolean = true
 ): IndoorFormatterExtraDetailsData {
     //initialize --
     val co2LvlTxt: String
@@ -71,7 +71,7 @@ fun formatWatchedHighLightsIndoorExtras(
         coSliderDiskRes = getDiskResFromCO2(co2Lvl)
         if (addUnitsInVal) {
             "$co2Lvl".substringBefore(".") + ctx.getString(R.string.co2_units)
-        }else{
+        } else {
             "$co2Lvl".substringBefore(".")
         }
 
@@ -83,7 +83,7 @@ fun formatWatchedHighLightsIndoorExtras(
 
         if (addUnitsInVal) {
             "$vocLvl ${ctx.getString(R.string.tvoc_units)}"
-        }else{
+        } else {
             "$vocLvl"
         }
 
@@ -98,7 +98,7 @@ fun formatWatchedHighLightsIndoorExtras(
         tmpSliderDiskRes = getDiskResFromTmp(tmpLvl)
         if (addUnitsInVal) {
             "$tmpLvl".substringBefore(".") + ctx.getString(R.string.tmp_units)
-        }else{
+        } else {
             "$tmpLvl".substringBefore(".")
         }
 
@@ -113,7 +113,7 @@ fun formatWatchedHighLightsIndoorExtras(
         humidSliderDiskRes = getDiskResFromHumid(humidLvl.toDouble())
         if (addUnitsInVal) {
             "$humidLvl".substringBefore(".") + ctx.getString(R.string.humid_units)
-        }else{
+        } else {
             "$humidLvl".substringBefore(".")
         }
 
@@ -130,11 +130,11 @@ fun formatWatchedHighLightsIndoorExtras(
             carbonSaved = truncate(maxEnInKW * (energyMonth / 100) * 0.28)
             carbonSavedStr = if (carbonSaved > 1000) {
                 val carbonSavedKg = carbonSaved / 1000
-                "$carbonSavedKg".substringBefore(".") +  ctx.getString(R.string.tonnes_txt)
+                "$carbonSavedKg".substringBefore(".") + ctx.getString(R.string.tonnes_txt)
             } else {
-                "$carbonSaved".substringBefore(".") +  ctx.getString(R.string.kg_txt)
+                "$carbonSaved".substringBefore(".") + ctx.getString(R.string.kg_txt)
             }
-            energySavedStr = "$energyMonth".substringBefore(".") +  ctx.getString(R.string.percent)
+            energySavedStr = "$energyMonth".substringBefore(".") + ctx.getString(R.string.percent)
 
         }
     }

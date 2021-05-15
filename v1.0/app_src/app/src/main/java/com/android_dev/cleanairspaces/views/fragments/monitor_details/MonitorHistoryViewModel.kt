@@ -1,33 +1,26 @@
-package com.android_dev.cleanairspaces.views.fragments.details_tabbed.location_history
+package com.android_dev.cleanairspaces.views.fragments.monitor_details
 
 import androidx.lifecycle.*
-import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
-import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryMonth
-import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryThreeDays
-import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryWeek
-import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
+import com.android_dev.cleanairspaces.persistence.local.models.entities.*
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.CasEncDecQrProcessor
 import com.android_dev.cleanairspaces.utils.HISTORY_EXPIRE_TIME_MILLS
-import com.android_dev.cleanairspaces.views.fragments.details_tabbed.details.DetailsViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.ArrayList
 import javax.inject.Inject
 
 @HiltViewModel
-class LocationHistoryViewModel
-@Inject constructor(
-        private val repo: AppDataRepo,
+class MonitorHistoryViewModel @Inject constructor(
+    private val repo: AppDataRepo,
 ) : ViewModel() {
 
-    private val TAG = LocationHistoryViewModel::class.java.simpleName
+
+    private val TAG = MonitorHistoryViewModel::class.java.simpleName
     var aqiIndex: String? = null
 
-
-    fun observeWatchedLocationWithAqi(): LiveData<AppDataRepo.WatchedLocationWithAqi> = repo.watchedLocationWithAqi
 
     /******** history *****/
     var currentDatesForDaysChart: ArrayList<String> = ArrayList()
@@ -41,7 +34,7 @@ class LocationHistoryViewModel
 
     private val locationDaysHistoryLive = MutableLiveData<List<LocationHistoryThreeDays>>()
     fun observeLocationDaysHistory(): LiveData<List<LocationHistoryThreeDays>> =
-            locationDaysHistoryLive
+        locationDaysHistoryLive
 
     fun setDaysHistory(history: List<LocationHistoryThreeDays>) {
         locationDaysHistoryLive.value = history
@@ -57,7 +50,7 @@ class LocationHistoryViewModel
 
     private val locationMonthHistoryLive = MutableLiveData<List<LocationHistoryMonth>>()
     fun observeLocationMonthHistory(): LiveData<List<LocationHistoryMonth>> =
-            locationMonthHistoryLive
+        locationMonthHistoryLive
 
     fun setMonthHistory(history: List<LocationHistoryMonth>) {
         locationMonthHistoryLive.value = history
@@ -66,28 +59,29 @@ class LocationHistoryViewModel
 
     fun observeHistories(dataTag: String): TripleHistoryFlow {
         return TripleHistoryFlow(
-                days = repo.getLastDaysHistory(dataTag).asLiveData(),
-                week = repo.getLastWeekHistory(dataTag).asLiveData(),
-                month = repo.getLastMonthHistory(dataTag).asLiveData()
+            days = repo.getLastDaysHistory(dataTag).asLiveData(),
+            week = repo.getLastWeekHistory(dataTag).asLiveData(),
+            month = repo.getLastMonthHistory(dataTag).asLiveData()
         )
     }
 
-    fun refreshHistoryIfNecessary(location: WatchedLocationHighLights) {
-        val dataTag = location.actualDataTag
+    fun refreshHistoryIfNecessary(monitorDetails: MonitorDetails) {
+        val dataTag = monitorDetails.actualDataTag
         viewModelScope.launch(Dispatchers.IO) {
             val lastUpdate = repo.getLastTimeUpdatedHistory(dataTag)
             val timeNow = System.currentTimeMillis()
             if (lastUpdate == null
-                    || hasExpired(timeNow, lastUpdate)
+                || hasExpired(timeNow, lastUpdate)
             ) {
                 withContext(context = Dispatchers.Main) {
-                    fetchHistory(
-                            compId = location.compId,
-                            locId = location.locId,
-                            timeStamp = timeNow.toString().replace(" ", ""),
-                            dataTag = dataTag,
-                            userName = location.lastRecUsername,
-                            userPassword = location.lastRecPwd
+                    fetchMonitorHistory(
+                        compId = monitorDetails.company_id,
+                        locId = monitorDetails.location_id,
+                        monitorId = monitorDetails.monitor_id,
+                        timeStamp = timeNow.toString().replace(" ", ""),
+                        dataTag = dataTag,
+                        userName = monitorDetails.lastRecUName,
+                        userPassword = monitorDetails.lastRecUName
                     )
                 }
             }
@@ -99,26 +93,29 @@ class LocationHistoryViewModel
     }
 
 
-    private fun fetchHistory(
-            compId: String,
-            locId: String,
-            timeStamp: String,
-            dataTag: String,
-            userName: String,
-            userPassword: String
+    private fun fetchMonitorHistory(
+        compId: String,
+        locId: String,
+        timeStamp: String,
+        dataTag: String,
+        userName: String,
+        userPassword: String,
+        monitorId: String
     ) {
-        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForLocationHistory(
-                compId = compId,
-                locId = locId,
-                userName = userName,
-                userPassword = userPassword,
-                timeStamp = timeStamp
+        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForMonitorHistory(
+            compId = compId,
+            locId = locId,
+            monitorId = monitorId,
+            userName = userName,
+            userPassword = userPassword,
+            timeStamp = timeStamp
         )
 
         viewModelScope.launch(Dispatchers.IO) {
-            repo.refreshHistoryForLocation(
+            repo.refreshHistoryForMonitor(
                 compId = compId,
                 locId = locId,
+                monitorId = monitorId,
                 payload = pl,
                 timeStamp = timeStamp,
                 userName = userName,
@@ -132,7 +129,7 @@ class LocationHistoryViewModel
 }
 
 data class TripleHistoryFlow(
-        val days: LiveData<List<LocationHistoryThreeDays>>,
-        val week: LiveData<List<LocationHistoryWeek>>,
-        val month: LiveData<List<LocationHistoryMonth>>
+    val days: LiveData<List<LocationHistoryThreeDays>>,
+    val week: LiveData<List<LocationHistoryWeek>>,
+    val month: LiveData<List<LocationHistoryMonth>>
 )

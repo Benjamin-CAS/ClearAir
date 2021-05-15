@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -29,17 +30,18 @@ import com.android_dev.cleanairspaces.databinding.HomeMapOverlayBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
-import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
-import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAdapter
+import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndMonitorsAdapter
 import com.android_dev.cleanairspaces.views.smartqr.CaptureQrCodeActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItemListener, MonitorsAdapter.OnClickItemListener  {
+abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.OnClickItemListener {
     companion object {
         private val TAG = BaseMapFragment::class.java.simpleName
     }
@@ -55,8 +57,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
     abstract fun goToSearchFragment()
 
     private lateinit var homeMapOverlay: HomeMapOverlayBinding
-    lateinit var watchedLocationsAdapter: WatchedLocationsAdapter
-    lateinit var monitorsAdapter : MonitorsAdapter
+    lateinit var watchedItemsAdapter : WatchedLocationsAndMonitorsAdapter
 
 
     fun setHomeMapOverlay(mapOverlay: HomeMapOverlayBinding) {
@@ -66,79 +67,64 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
                 requestPermissionsAndShowUserLocation()
             }
             mapView.setOnClickListener {
-                myLogger.logThis(
-                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                        from = TAG,
-                        msg = "MAP VIEW TOGGLE"
-                )
-                homeMapOverlay.myLocationsRv.isVisible = !homeMapOverlay.myLocationsRv.isVisible
+                lifecycleScope.launch(Dispatchers.IO) {
+                    myLogger.logThis(
+                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                            from = TAG,
+                            msg = "MAP VIEW TOGGLE"
+                    )
+                }
+                homeMapOverlay.watchedItemsRv.isVisible = !homeMapOverlay.watchedItemsRv.isVisible
             }
             smartQr.setOnClickListener {
-                myLogger.logThis(
-                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                        from = TAG,
-                        msg = "SMART QR"
-                )
+                lifecycleScope.launch(Dispatchers.IO) {
+                    myLogger.logThis(
+                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                            from = TAG,
+                            msg = "SMART QR"
+                    )
+                }
                 scanQRCode()
             }
 
             searchLocation.setOnClickListener {
-                myLogger.logThis(
-                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                        from = TAG,
-                        msg = "SEARCH"
-                )
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    myLogger.logThis(
+                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                            from = TAG,
+                            msg = "SEARCH"
+                    )
+                }
                 goToSearchFragment()
             }
-            setupWatchedLocationsRv()
-            setupWatchedMonitorsRv()
+            setupWatchedItemsRv()
         }
     }
 
-    private fun setupWatchedLocationsRv(){
+    private fun setupWatchedItemsRv() {
         homeMapOverlay.apply {
-            myLocationsRv.apply {
+            watchedItemsRv.apply {
                 layoutManager = LinearLayoutManager(
-                    homeMapOverlay.container.context,
-                    RecyclerView.VERTICAL,
-                    false
+                        homeMapOverlay.container.context,
+                        RecyclerView.VERTICAL,
+                        false
                 )
-                adapter = watchedLocationsAdapter
+                adapter = watchedItemsAdapter
                 addItemDecoration(VerticalSpaceItemDecoration(30))
             }
-            val swipeHandler = object : SwipeToDeleteCallback(myLocationsRv.context) {
+            val swipeHandler = object : SwipeToDeleteCallback(watchedItemsRv.context) {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val adapter = myLocationsRv.adapter as WatchedLocationsAdapter
+                    val adapter = watchedItemsRv.adapter as WatchedLocationsAndMonitorsAdapter
                     adapter.removeAt(viewHolder.adapterPosition)
                 }
 
             }
             val itemTouchHelper = ItemTouchHelper(swipeHandler)
-            itemTouchHelper.attachToRecyclerView(myLocationsRv)
+            itemTouchHelper.attachToRecyclerView(watchedItemsRv)
         }
     }
-    private fun setupWatchedMonitorsRv(){
-        homeMapOverlay.apply {
-            monitorsRv.apply {
-                layoutManager = LinearLayoutManager(
-                    homeMapOverlay.container.context,
-                    RecyclerView.VERTICAL,
-                    false
-                )
-                adapter = monitorsAdapter
-                addItemDecoration(VerticalSpaceItemDecoration(30))
-            }
-            val swipeHandler = object : SwipeToDeleteCallback(monitorsRv.context) {
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val adapter = monitorsRv.adapter as MonitorsAdapter
-                    adapter.removeAt(viewHolder.adapterPosition)
-                }
 
-            }
-            val itemTouchHelper = ItemTouchHelper(swipeHandler)
-            itemTouchHelper.attachToRecyclerView(monitorsRv)
-        }
-    }
 
     /*********** LOCATION ACCESS ***************/
     abstract fun showLocationOnMap(location: Location)
@@ -172,7 +158,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {
-           if (!viewModel.alreadyPromptedUserForLocationSettings) {
+            if (!viewModel.alreadyPromptedUserForLocationSettings) {
                 viewModel.alreadyPromptedUserForLocationSettings = true
                 promptToggleLocationSettings()
             }
@@ -191,14 +177,13 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
                 USER_LOCATION_UPDATE_ON_DISTANCE,
                 locationListener
         )
-        locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)?.let {
-            lastKnownLoc ->
+        locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)?.let { lastKnownLoc ->
             showLocationOnMap(lastKnownLoc)
         }
 
     }
 
-   fun requestPermissionsAndShowUserLocation() {
+    fun requestPermissionsAndShowUserLocation() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             when {
                 ContextCompat.checkSelfPermission(
@@ -214,20 +199,17 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
                             okRes = R.string.got_it_txt,
                             dismissRes = R.string.not_now_txt
                     ) {
-                        requestPermission(isLocation = true)
+                        requestLocationPermission()
                     }
                 }
                 else -> {
-                    requestPermission(isLocation = true)
+                    requestLocationPermission()
                 }
             }
         }
     }
 
-    private fun requestPermission(isLocation: Boolean) {
-        if (isLocation)
-            requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
+    private fun requestLocationPermission() = requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
 
     /******************MENU **************/
@@ -263,20 +245,24 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAdapter.OnClickItem
 
 
     override fun onSwipeToDeleteMonitor(monitor: MonitorDetails) {
-       viewModel.stopWatchingMonitor(monitor)
+        viewModel.stopWatchingMonitor(monitor)
     }
 
-    override fun onSwipeToDeleteLocation(location: WatchedLocationHighLights) {
-        viewModel.deleteLocation(location)
+    override fun onSwipeToDeleteLocation(locationHighLights: WatchedLocationHighLights) {
+        viewModel.deleteLocation(locationHighLights)
     }
 
     fun updateWatchedLocations(watchedLocationHighLights: List<WatchedLocationHighLights>) {
-        watchedLocationsAdapter.setWatchedLocationsList(watchedLocationHighLights)
+        watchedItemsAdapter.setWatchedLocationsList(watchedLocationHighLights)
     }
 
-    fun updateSelectedAqiIndex(selectedAQIIndex: String?) {
+    fun  updateWatchedMonitors(monitors : List<MonitorDetails>){
+        watchedItemsAdapter.setWatchedMonitorsList(monitors)
+    }
+
+    fun updateIndexForWatchedLocations(selectedAQIIndex: String?) {
         val aqiIndex = selectedAQIIndex ?: getString(R.string.default_aqi_pm_2_5)
-        watchedLocationsAdapter.updateSelectedAqiIndex(aqiIndex)
+        watchedItemsAdapter.updateSelectedAqiIndex(aqiIndex)
     }
 
     private fun showCustomDialog(

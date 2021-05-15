@@ -6,26 +6,29 @@ import androidx.core.content.ContextCompat
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
-import com.android_dev.cleanairspaces.utils.AQIStatus
-import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
+import com.android_dev.cleanairspaces.utils.*
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class InOutPmFormattedOverviewData(
-        val locationName: String,
-        val logo: String,
-        val updated: String,
-        val locationArea: String?,
-        val pm25Txt: String,
-        val aqiIndexStr: String,
-        val outDoorPmValue: Int?,
-        val hasOutDoorData: Boolean,
-        val outDoorAqiStatus: AQIStatus?,
-        val defaultBgColor: Int,
-        val indoorPmValue: Int?,
-        val hasInDoorData: Boolean,
-        val indoorAQIStatus: AQIStatus?,
-        val indoorPmValueConverted: Int?
+    val locationName: String,
+    val logo: String,
+    val updated: String,
+    val locationArea: String?,
+    val pm25Txt: String,
+    val aqiIndexStr: String,
+    val outDoorPmValue: Int?,
+    val hasOutDoorData: Boolean,
+    val outDoorAqiStatus: AQIStatus?,
+    val defaultBgColor: Int,
+    val indoorPmValue: Int?,
+    val hasInDoorData: Boolean,
+    val indoorAQIStatus: AQIStatus?,
+    val indoorPmValueConverted: Int?,
+    val co2Color: Int = -1,
+    val vocColor: Int = -1,
+    val tmpColor: Int = -1,
+    val humldColor: Int = -1
 ) : Parcelable
 
 fun formatWatchedHighLightsData(
@@ -33,10 +36,10 @@ fun formatWatchedHighLightsData(
         location: WatchedLocationHighLights,
         aqiIndex: String?
 ): InOutPmFormattedOverviewData {
-    val name =  location.name
+    val name = location.name
     val logo = location.getFullLogoUrl()
     val updated =
-            ctx.getString(R.string.updated_on_prefix) + " " +  location.getUpdatedOnFormatted()
+            ctx.getString(R.string.updated_on_prefix) + " " + location.getUpdatedOnFormatted()
     val locationArea =
             if (location.location_area.isNotBlank()) {
                 val prefix = if (location.isIndoorLoc) {
@@ -65,20 +68,20 @@ fun formatWatchedHighLightsData(
     val indoorPmValueConverted = indoorPmValue?.toInt()
 
     return InOutPmFormattedOverviewData(
-            locationName = name,
-            logo = logo,
-            updated = updated,
-            locationArea = locationArea,
-            pm25Txt = pm25Txt,
-            aqiIndexStr = aqiIndexStr,
-            outDoorPmValue = outDoorPmValue?.toInt(),
-            hasOutDoorData = hasOutDoorData,
-            outDoorAqiStatus = outDoorAqiStatus,
-            defaultBgColor = defaultBgColor,
-            indoorPmValue = indoorPmValue?.toInt(),
-            hasInDoorData = hasInDoorData,
-            indoorAQIStatus = indoorAQIStatus,
-            indoorPmValueConverted = indoorPmValueConverted
+        locationName = name,
+        logo = logo,
+        updated = updated,
+        locationArea = locationArea,
+        pm25Txt = pm25Txt,
+        aqiIndexStr = aqiIndexStr,
+        outDoorPmValue = outDoorPmValue?.toInt(),
+        hasOutDoorData = hasOutDoorData,
+        outDoorAqiStatus = outDoorAqiStatus,
+        defaultBgColor = defaultBgColor,
+        indoorPmValue = indoorPmValue?.toInt(),
+        hasInDoorData = hasInDoorData,
+        indoorAQIStatus = indoorAQIStatus,
+        indoorPmValueConverted = indoorPmValueConverted
     )
 }
 
@@ -104,6 +107,20 @@ fun formatMonitorData(
         getAQIStatusFromPM25(indoorPmValue!!, aqiIndexStr)
     else null
 
+    //other data
+    val co2Lvl = monitor.indoor_co2
+    val vocLvl = monitor.indoor_tvoc
+    val tmpLvl = monitor.indoor_temperature
+    val humidLvl = monitor.indoor_humidity
+    val co2Color = if (co2Lvl != null)
+    getColorResFromCO2(co2Lvl) else R.color.aqi_beyond
+    val vocColor = if (vocLvl != null)
+    getColorResFromVoc(vocLvl)  else R.color.aqi_beyond
+    val tmpColor = if (tmpLvl != null)
+    getColorResFromTmp(tmpLvl) else R.color.aqi_beyond
+    val humidColor = if (humidLvl != null)
+    getColorResFromHumid(humidLvl) else R.color.aqi_beyond
+
     return InOutPmFormattedOverviewData(
             locationName = name,
             logo = "",
@@ -118,6 +135,10 @@ fun formatMonitorData(
             indoorPmValue = indoorPmValue?.toInt(),
             hasInDoorData = hasInDoorData,
             indoorAQIStatus = indoorAQIStatus,
-            indoorPmValueConverted = 0
+            indoorPmValueConverted = 0,
+            co2Color = co2Color,
+            vocColor = vocColor,
+            tmpColor = tmpColor,
+            humldColor = humidColor
     )
 }

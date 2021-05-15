@@ -13,8 +13,8 @@ data class IndoorMonitorsResponse(
 
 )
 
-data class MonitorDetailsResponseRoot (
-    val monitor: HashMap<String, MonitorDetails>
+data class MonitorDetailsResponseRoot(
+        val monitor: HashMap<String, MonitorDetails>
 )
 
 @Parcelize

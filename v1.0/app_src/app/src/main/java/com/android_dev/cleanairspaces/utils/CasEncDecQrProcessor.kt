@@ -7,6 +7,7 @@ import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Com
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_MONITORS_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.LOCATION_INFO_METHOD_FOR_KEY
+import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.MONITOR_HISTORY_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.MONITOR_INFO_METHOD_FOR_KEY
 
 object CasEncDecQrProcessor {
@@ -252,6 +253,26 @@ object CasEncDecQrProcessor {
         val payload = "{\"$COMP_ID_KEY\":\"$companyId\",\"$LOC_ID_KEY\":\"$locId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPass\",\"p\":\"$PM2_5_STD_PARAM\" }"
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
         return toBase64Encoding(casEncrypted)
+    }
+
+    fun getEncryptedEncodedPayloadForMonitorHistory(
+        compId: String,
+        locId: String,
+        monitorId: String,
+        userName: String,
+        userPassword: String,
+        timeStamp: String
+    ): String {
+        val key = "${MONITOR_HISTORY_METHOD_FOR_KEY}$timeStamp"
+        val pl =
+            "{\"$COMP_ID_KEY\":\"$compId\",\"$LOC_ID_KEY\":\"$locId\",\"$MON_ID_KEY\":\"$monitorId\",\"$USER_KEY\":\"$userName\",\"$PASSWORD_KEY\":\"$userPassword\",\"$HISTORY_KEY\":\"1\",\"$HISTORY_WEEK_KEY\":\"1\",\"$HISTORY_DAY_KEY\":\"1\"}"
+        val casEncrypted = doCASEncryptOrDecrypt(payload = pl, key = key)
+        val encoded = toBase64Encoding(casEncrypted)
+        Log.d(
+            TAG,
+            "getEncryptedEncodedPayloadForMonitorHistory(encoded $encoded"
+        )
+        return encoded
     }
 }
 

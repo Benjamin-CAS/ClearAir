@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+import androidx.lifecycle.lifecycleScope
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentDetailsBinding
 import com.android_dev.cleanairspaces.databinding.LocationDetailsInOutLayoutBinding
@@ -27,6 +25,8 @@ import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.getRecommendationsGivenAQIColorRes
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,10 +38,6 @@ class DetailsFragment : Fragment() {
 
     @Inject
     lateinit var myLogger: MyLogger
-
-    //a data copy for this fragment --not LIVE
-    private lateinit var currentlyWatchedLocationHighLights: WatchedLocationHighLights
-
 
     private lateinit var recommendationsViewBinding: RecommendationsLayoutBinding
     private lateinit var recommendationsView: View
@@ -77,22 +73,25 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.observeWatchedLocation().observe(viewLifecycleOwner, {
-            currentlyWatchedLocationHighLights = it
-            updateGenDetails()
-            refreshWatchedLocationDetails()
+        viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner, {
+            it?.let { watchedLocationWithAqi ->
+                updateGenDetails(watchedLocationWithAqi.watchedLocationHighLights)
+                refreshWatchedLocationDetails(watchedLocationWithAqi.watchedLocationHighLights, watchedLocationWithAqi.aqiIndex)
+            }
         })
 
 
     }
 
-    private fun updateGenDetails() {
-        val logoURL = currentlyWatchedLocationHighLights.getFullLogoUrl()
-        myLogger.logThis(
-                tag = LogTags.USER_ACTION_OPEN_SCREEN,
-                from = TAG,
-                msg = "viewing ${currentlyWatchedLocationHighLights.name}"
-        )
+    private fun updateGenDetails(watchedLocation: WatchedLocationHighLights) {
+        val logoURL = watchedLocation.getFullLogoUrl()
+        lifecycleScope.launch(Dispatchers.IO) {
+            myLogger.logThis(
+                    tag = LogTags.USER_ACTION_OPEN_SCREEN,
+                    from = TAG,
+                    msg = "viewing ${watchedLocation.name}"
+            )
+        }
         binding.apply {
             if (logoURL.isNotBlank()) {
                 locationLogo.isVisible = true
@@ -100,19 +99,19 @@ class DetailsFragment : Fragment() {
                         .load(logoURL)
                         .into(locationLogo)
             }
-            locationNameTv.text = if(currentlyWatchedLocationHighLights.location_area.isNotBlank())
-                    currentlyWatchedLocationHighLights.location_area
-                    else currentlyWatchedLocationHighLights.name
+            locationNameTv.text = if (watchedLocation.location_area.isNotBlank())
+                watchedLocation.location_area
+            else watchedLocation.name
             locationNameTv.isSelected = true
         }
     }
 
-    private fun refreshWatchedLocationDetails() {
+    private fun refreshWatchedLocationDetails(watchedLocation: WatchedLocationHighLights, aqiIndex : String?) {
         binding.progressCircular.isVisible = true
         val inOutData = formatWatchedHighLightsData(
                 ctx = requireContext(),
-                location = currentlyWatchedLocationHighLights,
-                aqiIndex = viewModel.aqiIndex
+                location = watchedLocation,
+                aqiIndex = aqiIndex
         )
         binding.aqiIndex.text = inOutData.aqiIndexStr
         if (inOutData.hasInDoorData) {
@@ -122,12 +121,12 @@ class DetailsFragment : Fragment() {
             if (inOutData.indoorPmValue != null && inOutData.indoorAQIStatus != null)
                 displayIndoorDetailsSection(
                         indoorAQIStatus = inOutData.indoorAQIStatus,
-                        indoorHumidity = currentlyWatchedLocationHighLights.indoor_humidity,
-                        indoorCo2 = currentlyWatchedLocationHighLights.indoor_co2,
-                        indoorVoc = currentlyWatchedLocationHighLights.indoor_voc,
-                        indoorTemperature = currentlyWatchedLocationHighLights.indoor_temperature,
-                        energyMax = currentlyWatchedLocationHighLights.energyMax,
-                        energyMonth = currentlyWatchedLocationHighLights.energyMonth
+                        indoorHumidity = watchedLocation.indoor_humidity,
+                        indoorCo2 = watchedLocation.indoor_co2,
+                        indoorVoc = watchedLocation.indoor_voc,
+                        indoorTemperature = watchedLocation.indoor_temperature,
+                        energyMax = watchedLocation.energyMax,
+                        energyMonth = watchedLocation.energyMonth
                 )
         } else {
             inOutLayoutView.isVisible = false
@@ -282,7 +281,7 @@ class DetailsFragment : Fragment() {
                 indoorPmStatusTv.setText(inAqiStatus.lbl)
                 updatedOnTv.text = inOutData.updated
                 indoorPmIndex25Lbl.text = getString(R.string.default_aqi_pm_2_5)
-                val pmValTxt =  inOutData.indoorPmValue.toString() + " " + getString(R.string.pm_units)
+                val pmValTxt = inOutData.indoorPmValue.toString() + " " + getString(R.string.pm_units)
                 indoorPmIndexVal.text = pmValTxt
             }
         }

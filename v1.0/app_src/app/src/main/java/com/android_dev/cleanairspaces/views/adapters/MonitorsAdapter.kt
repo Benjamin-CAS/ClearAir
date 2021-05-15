@@ -1,6 +1,5 @@
 package com.android_dev.cleanairspaces.views.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -33,9 +32,9 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
         ) {
             val ctx = itemView.context
             binding.apply {
-                val isWatchingIndicatorIcon = if(monitor.watch_location){
+                val isWatchingIndicatorIcon = if (monitor.watch_location) {
                     R.drawable.ic_eye
-                }else{
+                } else {
                     R.drawable.ic_add
                 }
                 Glide.with(ctx)
@@ -60,11 +59,15 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
                             inDoorAqiStatus = uiPmData.indoorAQIStatus,
                             addUnitsInVal = false
                     )
-                  tmpVal.text = uiExtraData.tmpLvlTxt
-                  humidVal.text = uiExtraData.humidLvlTxt
-                  tvocVal.text =  uiExtraData.vocLvlTxt
-                  co2Val.text =   uiExtraData.co2LvlTxt
-                  updatedOnTv.text = monitor.getUpdatedOnFormatted()
+                    tmpVal.text = uiExtraData.tmpLvlTxt
+                    tmpVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.tmpColor))
+                    humidVal.text = uiExtraData.humidLvlTxt
+                    humidVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.humldColor))
+                    tvocVal.text = uiExtraData.vocLvlTxt
+                    tvocVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.vocColor))
+                    co2Val.text = uiExtraData.co2LvlTxt
+                    co2Val.setTextColor(ContextCompat.getColor(ctx , uiPmData.co2Color))
+                    updatedOnTv.text = monitor.getUpdatedOnFormatted()
                 }
                 itemView.setOnClickListener { monitorListener.onClickWatchedMonitor(monitor) }
 

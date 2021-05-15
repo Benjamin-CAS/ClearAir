@@ -1,21 +1,22 @@
-package com.android_dev.cleanairspaces.views.fragments.details_tabbed.location_history
+package com.android_dev.cleanairspaces.views.fragments.monitor_details
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat.getFont
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import com.android_dev.cleanairspaces.R
-import com.android_dev.cleanairspaces.databinding.FragmentHistoryBinding
-import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
+import com.android_dev.cleanairspaces.databinding.FragmentMonitorHistoryBinding
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.utils.*
-import com.bumptech.glide.Glide
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.Legend
@@ -30,12 +31,13 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HistoryFragment : Fragment() {
+class MonitorHistoryFragment : Fragment() {
     companion object {
-        private val TAG = HistoryFragment::class.java.simpleName
+        private val TAG = MonitorHistoryFragment::class.java.simpleName
         private const val MONTH_TAG = "m"
         private const val DAY_TAG = "d"
         private const val WEEK_TAG = "w"
@@ -47,17 +49,17 @@ class HistoryFragment : Fragment() {
 
     private var selectedTv: TextView? = null
     private lateinit var selectedParamType: ParamTypes
-    private var _binding: FragmentHistoryBinding? = null
+    private var _binding: FragmentMonitorHistoryBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: LocationHistoryViewModel by viewModels()
+    private val viewModel: MonitorHistoryViewModel by viewModels()
 
 
     private val titleFont by lazy {
-        getFont(requireContext(), R.font.noto_sans)
+        ResourcesCompat.getFont(requireContext(), R.font.noto_sans)
     }
 
     private val bodyFont by lazy {
-        getFont(requireContext(), R.font.fira_sans)
+        ResourcesCompat.getFont(requireContext(), R.font.fira_sans)
     }
 
     private val daysChartTitle by lazy { getString(R.string.last_seven_two_hours) }
@@ -68,101 +70,92 @@ class HistoryFragment : Fragment() {
     private val goodColor by lazy { ContextCompat.getColor(requireContext(), R.color.aqi_good) }
     private val moderateColor by lazy {
         ContextCompat.getColor(
-                requireContext(),
-                R.color.aqi_moderate
+            requireContext(),
+            R.color.aqi_moderate
         )
     }
     private val gUnhealthyColor by lazy {
         ContextCompat.getColor(
-                requireContext(),
-                R.color.aqi_g_unhealthy
+            requireContext(),
+            R.color.aqi_g_unhealthy
         )
     }
     private val unhealthyColor by lazy {
         ContextCompat.getColor(
-                requireContext(),
-                R.color.aqi_unhealthy
+            requireContext(),
+            R.color.aqi_unhealthy
         )
     }
     private val blackColor by lazy { ContextCompat.getColor(requireContext(), R.color.black) }
     private val checkIcon by lazy {
         ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_blue_check
+            requireContext(),
+            R.drawable.ic_blue_check
         )
     }
 
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        _binding = FragmentHistoryBinding.inflate(inflater, container, false)
+        _binding = FragmentMonitorHistoryBinding.inflate(inflater, container, false)
 
         return binding.root
     }
 
+    val args: MonitorHistoryFragmentArgs by navArgs()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         //initially
-        selectedParamType = ParamTypes.OUT_PM
-        setSelectedParamView(binding.outdoorsTv)
+        selectedParamType = ParamTypes.IN_PM
+        setSelectedParamView(binding.aqiTv)
         styleBarChart(binding.daysChart, DAY_TAG)
         styleBarChart(binding.weekChart, WEEK_TAG)
         styleBarChart(binding.monthChart, MONTH_TAG)
 
-        viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner, {
-            if (it != null) {
-                viewModel.aqiIndex = it.aqiIndex
-                viewModel.refreshHistoryIfNecessary(it.watchedLocationHighLights)
-                updateGeneralLocationInfo(it.watchedLocationHighLights)
-                val hasIndoorData = it.watchedLocationHighLights.isIndoorLoc
-                toggleIndoorParameters(hasIndoorData)
-                refreshLocationHistory(it.watchedLocationHighLights.actualDataTag)
-            }
-        })
+        val monitorDetails = args.monitorDetails.monitorDetails as MonitorDetails
+        viewModel.aqiIndex = args.monitorDetails.aqiIndex as String?
+        viewModel.refreshHistoryIfNecessary(monitorDetails)
+        updateGeneralInfo(monitorDetails)
+        val hasIndoorData = true
+        toggleIndoorParameters(hasIndoorData)
+        refreshMonitorHistory(monitorDetails.actualDataTag)
 
         observeHistoryData()
     }
 
-    private fun updateGeneralLocationInfo(locationDetailsInfo: WatchedLocationHighLights) {
-        val logoURL = locationDetailsInfo.getFullLogoUrl()
+    private fun updateGeneralInfo(monitorDetails: MonitorDetails) {
         binding.apply {
-            if (logoURL.isNotBlank()) {
-                locationLogo.isVisible = true
-                Glide.with(requireContext())
-                        .load(logoURL)
-                        .into(locationLogo)
-            }
-            locationNameTv.text = if (locationDetailsInfo.location_area.isNotBlank())
-                locationDetailsInfo.location_area
-            else locationDetailsInfo.name
+            locationNameTv.text = if (monitorDetails.indoor_name_en.isNotBlank())
+                monitorDetails.indoor_name_en
+            else monitorDetails.outdoor_name_en
             locationNameTv.isSelected = true
         }
     }
 
-    private fun refreshLocationHistory(actualDataTag: String) {
+    private fun refreshMonitorHistory(actualDataTag: String) {
         viewModel.observeHistories(actualDataTag).days.observe(
-                viewLifecycleOwner,
-                {
-                    if (it != null)
-                        viewModel.setDaysHistory(it)
-                })
+            viewLifecycleOwner,
+            {
+                if (it != null)
+                    viewModel.setDaysHistory(it)
+            })
         viewModel.observeHistories(actualDataTag).week.observe(
-                viewLifecycleOwner,
-                {
-                    if (it != null)
-                        viewModel.setWeekHistory(it)
-                })
+            viewLifecycleOwner,
+            {
+                if (it != null)
+                    viewModel.setWeekHistory(it)
+            })
 
         viewModel.observeHistories(actualDataTag).month.observe(
-                viewLifecycleOwner,
-                {
-                    if (it != null)
-                        viewModel.setMonthHistory(it)
-                })
+            viewLifecycleOwner,
+            {
+                if (it != null)
+                    viewModel.setMonthHistory(it)
+            })
 
     }
 
@@ -180,15 +173,15 @@ class HistoryFragment : Fragment() {
                 setSelectedParamView(aqiTv)
                 clearClickedValue("")
                 refreshChartData(
-                        refreshDaysHistory = true,
-                        refreshWeeksHistory = true,
-                        refreshMonthsHistory = true
+                    refreshDaysHistory = true,
+                    refreshWeeksHistory = true,
+                    refreshMonthsHistory = true
                 )
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "Indoor PM"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "Monitor Indoor PM"
                     )
                 }
             }
@@ -197,15 +190,15 @@ class HistoryFragment : Fragment() {
                 setSelectedParamView(tvocTv)
                 clearClickedValue("")
                 refreshChartData(
-                        refreshDaysHistory = true,
-                        refreshWeeksHistory = true,
-                        refreshMonthsHistory = true
+                    refreshDaysHistory = true,
+                    refreshWeeksHistory = true,
+                    refreshMonthsHistory = true
                 )
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "Indoor TVOC"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "Monitor Indoor TVOC"
                     )
                 }
             }
@@ -214,16 +207,16 @@ class HistoryFragment : Fragment() {
                 setSelectedParamView(tmpTv)
                 clearClickedValue("")
                 refreshChartData(
-                        refreshDaysHistory = true,
-                        refreshWeeksHistory = true,
-                        refreshMonthsHistory = true
+                    refreshDaysHistory = true,
+                    refreshWeeksHistory = true,
+                    refreshMonthsHistory = true
                 )
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "Indoor Temperature"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "Monitor Indoor Temperature"
                     )
                 }
             }
@@ -232,16 +225,16 @@ class HistoryFragment : Fragment() {
                 setSelectedParamView(humidityTv)
                 clearClickedValue("")
                 refreshChartData(
-                        refreshDaysHistory = true,
-                        refreshWeeksHistory = true,
-                        refreshMonthsHistory = true
+                    refreshDaysHistory = true,
+                    refreshWeeksHistory = true,
+                    refreshMonthsHistory = true
                 )
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "Indoor Humidity"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "Monitor Indoor Humidity"
                     )
                 }
             }
@@ -250,34 +243,16 @@ class HistoryFragment : Fragment() {
                 setSelectedParamView(co2Tv)
                 clearClickedValue("")
                 refreshChartData(
-                        refreshDaysHistory = true,
-                        refreshWeeksHistory = true,
-                        refreshMonthsHistory = true
+                    refreshDaysHistory = true,
+                    refreshWeeksHistory = true,
+                    refreshMonthsHistory = true
                 )
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "Indoor Carbon Dioxide"
-                    )
-                }
-            }
-            outdoorsTv.setOnClickListener {
-                selectedParamType = ParamTypes.OUT_PM
-                setSelectedParamView(outdoorsTv)
-                clearClickedValue("")
-                refreshChartData(
-                        refreshDaysHistory = true,
-                        refreshWeeksHistory = true,
-                        refreshMonthsHistory = true
-                )
-
-                lifecycleScope.launch(Dispatchers.IO) {
-                    myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "Outdoor PM"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "Monitor Indoor Carbon Dioxide"
                     )
                 }
             }
@@ -309,58 +284,58 @@ class HistoryFragment : Fragment() {
     private var clickListenersSet = false
     private fun observeHistoryData() {
         viewModel.observeLocationDaysHistory().observe(
-                viewLifecycleOwner, { list ->
-            list?.let {
-                viewModel.currentlyDisplayedDaysHistoryData = list
-                if (!clickListenersSet) {
-                    clickListenersSet = true
-                    setParametersClickListeners()
+            viewLifecycleOwner, { list ->
+                list?.let {
+                    viewModel.currentlyDisplayedDaysHistoryData = list
+                    if (!clickListenersSet) {
+                        clickListenersSet = true
+                        setParametersClickListeners()
+                    }
+                    refreshChartData(refreshDaysHistory = true)
                 }
-                refreshChartData(refreshDaysHistory = true)
             }
-        }
         )
 
         viewModel.observeLocationWeekHistory().observe(
-                viewLifecycleOwner, { list ->
-            list?.let {
-                viewModel.currentlyDisplayedWeekHistoryData = list
-                refreshChartData(refreshWeeksHistory = true)
+            viewLifecycleOwner, { list ->
+                list?.let {
+                    viewModel.currentlyDisplayedWeekHistoryData = list
+                    refreshChartData(refreshWeeksHistory = true)
+                }
             }
-        }
         )
 
         viewModel.observeLocationMonthHistory().observe(
-                viewLifecycleOwner, { list ->
-            list?.let {
-                viewModel.currentlyDisplayedMonthHistoryData = list
-                refreshChartData(refreshMonthsHistory = true)
+            viewLifecycleOwner, { list ->
+                list?.let {
+                    viewModel.currentlyDisplayedMonthHistoryData = list
+                    refreshChartData(refreshMonthsHistory = true)
+                }
             }
-        }
         )
     }
 
     private fun refreshChartData(
-            refreshDaysHistory: Boolean = false,
-            refreshWeeksHistory: Boolean = false,
-            refreshMonthsHistory: Boolean = false
+        refreshDaysHistory: Boolean = false,
+        refreshWeeksHistory: Boolean = false,
+        refreshMonthsHistory: Boolean = false
     ) {
 
         if (refreshDaysHistory) {
             val dayData = getChartDataForParam(forDays = true)
             updateChart(
-                    chart = binding.daysChart,
-                    title = daysChartTitle,
-                    chartData = dayData
+                chart = binding.daysChart,
+                title = daysChartTitle,
+                chartData = dayData
             )
         }
 
         if (refreshWeeksHistory) {
             val weekData = getChartDataForParam(forWeek = true)
             updateChart(
-                    chart = binding.weekChart,
-                    title = weekChartTitle,
-                    chartData = weekData
+                chart = binding.weekChart,
+                title = weekChartTitle,
+                chartData = weekData
             )
         }
 
@@ -368,17 +343,17 @@ class HistoryFragment : Fragment() {
         if (refreshMonthsHistory) {
             val monthData = getChartDataForParam(forMonth = true)
             updateChart(
-                    chart = binding.monthChart,
-                    title = monthChartTitle,
-                    chartData = monthData
+                chart = binding.monthChart,
+                title = monthChartTitle,
+                chartData = monthData
             )
         }
     }
 
     private fun getChartDataForParam(
-            forDays: Boolean = false,
-            forWeek: Boolean = false,
-            forMonth: Boolean = false
+        forDays: Boolean = false,
+        forWeek: Boolean = false,
+        forMonth: Boolean = false
     ): List<Float> {
 
         val chartData = arrayListOf<Float>()
@@ -710,8 +685,8 @@ class HistoryFragment : Fragment() {
         return when (paramType) {
             ParamTypes.IN_PM,
             ParamTypes.OUT_PM -> getAQIStatusFromPM25(
-                    aqiIndex = aqiIndex,
-                    pm25 = value.toDouble()
+                aqiIndex = aqiIndex,
+                pm25 = value.toDouble()
             ).aqi_color_res
             ParamTypes.TMP -> getColorResFromTmp(value.toDouble())
             ParamTypes.TVOC -> getColorResFromVoc(value.toDouble())
@@ -722,9 +697,9 @@ class HistoryFragment : Fragment() {
     }
 
     private fun updateChart(
-            chart: BarChart,
-            title: String,
-            chartData: List<Float>
+        chart: BarChart,
+        title: String,
+        chartData: List<Float>
     ) {
         try {
             val entries = ArrayList<BarEntry>()
@@ -753,8 +728,8 @@ class HistoryFragment : Fragment() {
 }
 
 internal class MyBarDataSet(
-        yVals: List<BarEntry?>?,
-        label: String?
+    yVals: List<BarEntry?>?,
+    label: String?
 ) : BarDataSet(yVals, label) {
     override fun getEntryIndex(e: BarEntry?): Int {
         return super.getEntryIndex(e)
@@ -773,3 +748,9 @@ internal enum class ParamTypes {
     CO2,
     OUT_PM
 }
+
+@Parcelize
+data class MonitorDetailsAqiWrapper(
+    val monitorDetails  : MonitorDetails,
+    val aqiIndex : String?
+): Parcelable

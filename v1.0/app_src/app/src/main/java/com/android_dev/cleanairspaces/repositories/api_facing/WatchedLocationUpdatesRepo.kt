@@ -23,7 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class WatchedLocationUpdatesRepo
 @Inject constructor(
-        private val coroutineScope: CoroutineScope,
+
         private val watchedLocationHighLightsDao: WatchedLocationHighLightsDao,
         private val locationDetailsService: LocationDetailsService,
         private val myLogger: MyLogger
@@ -101,8 +101,9 @@ class WatchedLocationUpdatesRepo
                         }
                     }
                 } catch (exc: Exception) {
-                    myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getWatchedLocationDetailsResponseCallback()", msg = exc.message, exc = exc)
-
+                    CoroutineScope(Dispatchers.IO).launch {
+                        myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getWatchedLocationDetailsResponseCallback()", msg = exc.message, exc = exc)
+                    }
                 }
             }
 
@@ -112,8 +113,8 @@ class WatchedLocationUpdatesRepo
     }
 
     private fun unEncryptWatchedLocationDetailsPayload(payload: String, lTime: String) {
-        try {
-            coroutineScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
                 val dataMatchingLTime =
                         recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
                 if (!dataMatchingLTime.isNullOrEmpty()) {
@@ -139,11 +140,10 @@ class WatchedLocationUpdatesRepo
                         }
                     }
                 }
+            } catch (exc: Exception) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptWatchedLocationDetailsPayload()", msg = exc.message, exc = exc)
+
             }
-
-        } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptWatchedLocationDetailsPayload()", msg = exc.message, exc = exc)
-
         }
     }
 

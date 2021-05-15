@@ -45,7 +45,7 @@ data class WatchedLocationHighLights(
 
         var is_secure: Boolean,
 
-) : Parcelable {
+        ) : Parcelable {
 
     fun getFullLogoUrl(): String {
         return if (logo.isEmpty()) ""

@@ -17,4 +17,12 @@ interface LocationHistoriesService {
             @Query("nonce") nonce: String = NONCE,
             @Body data: JsonObject
     ): Call<LocationHistoriesResponse>
+
+    @POST("index.php/api/approuter")
+    fun fetchMonitorHistory(
+        @Query("app_id") app_id: Int = API_APP_ID,
+        @Query("method") method: String,
+        @Query("nonce") nonce: String = NONCE,
+        @Body data: JsonObject
+    ): Call<LocationHistoriesResponse>
 }

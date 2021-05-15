@@ -68,7 +68,7 @@ class DataStoreManager(appContext: Context) {
     fun hasAlreadyAskedLocPermission(): Flow<Boolean> {
         return mDataStore.data
                 .map { preferences ->
-                    preferences[hasRequestedLocationKey]?:false
+                    preferences[hasRequestedLocationKey] ?: false
                 }
     }
 

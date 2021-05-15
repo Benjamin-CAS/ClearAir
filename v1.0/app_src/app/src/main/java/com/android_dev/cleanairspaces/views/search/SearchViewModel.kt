@@ -6,7 +6,9 @@ import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,11 +30,13 @@ class SearchLocationViewModel @Inject constructor(
     fun search(query: String) {
         searchQuery.value = query
         if (query.length > 2) {
-            myLogger.logThis(
-                    tag = LogTags.USER_ACTION_SEARCH,
-                    from = TAG,
-                    msg = "searching... for $query"
-            )
+            viewModelScope.launch(Dispatchers.IO) {
+                myLogger.logThis(
+                        tag = LogTags.USER_ACTION_SEARCH,
+                        from = TAG,
+                        msg = "searching... for $query"
+                )
+            }
         }
     }
 

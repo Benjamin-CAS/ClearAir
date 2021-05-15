@@ -17,7 +17,7 @@ private val pm25UpperLimitsCn = arrayOf<Double>(35.0, 75.0, 115.0, 150.0, 250.0,
 private val aqiUpperLimitsCn = arrayOf<Double>(50.0, 100.0, 150.0, 200.0, 300.0, 500.0)
 
 
-fun getAQIStatusFromPM25(pm25: Double, aqiIndex: String = DEFAULT_AQI_INDEX_PM25): AQIStatus {
+fun getAQIStatusFromPM25(pm25: Double, aqiIndex: String? = DEFAULT_AQI_INDEX_PM25): AQIStatus {
     val scaleToUse = if (aqiIndex == DEFAULT_AQI_INDEX_PM25 ||
             aqiIndex == AQI_INDEX_AQI_US
     ) {
@@ -108,8 +108,8 @@ enum class AQIStatus(
         val transparentRes: Int,
         val diskRes: Int,
         val transparentCircleRes: Int,
-        val backGroundColorRes :  Int,
-        val txtColorRes : Int
+        val backGroundColorRes: Int,
+        val txtColorRes: Int
 ) {
     GOOD(
             level_intensity = 1.0,
@@ -119,8 +119,8 @@ enum class AQIStatus(
             transparentRes = R.color.transparent_green,
             diskRes = R.drawable.green_seekbar_thumb,
             transparentCircleRes = R.drawable.good_circle,
-            backGroundColorRes = R.color.dark_green,
-            txtColorRes = R.color.dark_green
+            backGroundColorRes = R.color.background_good,
+            txtColorRes = R.color.aqi_good
     ),
     MODERATE(
             level_intensity = 2.0,
@@ -130,8 +130,8 @@ enum class AQIStatus(
             transparentRes = R.color.transparent_yellow,
             diskRes = R.drawable.yellow_seekbar_thumb,
             transparentCircleRes = R.drawable.moderate_circle,
-            backGroundColorRes = R.color.yellow,
-            txtColorRes = R.color.yellow
+            backGroundColorRes = R.color.background_moderate,
+            txtColorRes = R.color.aqi_moderate
     ),
     GUnhealthyColor(
             level_intensity = 3.0,
@@ -141,8 +141,8 @@ enum class AQIStatus(
             transparentRes = R.color.transparent_orange,
             diskRes = R.drawable.yellow_seekbar_thumb,
             transparentCircleRes = R.drawable.g_unhealthy_circle,
-            backGroundColorRes = R.color.orange,
-            txtColorRes = R.color.orange
+            backGroundColorRes = R.color.background_moderate,
+            txtColorRes = R.color.aqi_g_unhealthy
     ),
     UnhealthyColor(
             level_intensity = 4.0,
@@ -152,8 +152,8 @@ enum class AQIStatus(
             transparentRes = R.color.transparent_red,
             diskRes = R.drawable.red_seekbar_thumb,
             transparentCircleRes = R.drawable.unhealthy_circle,
-            backGroundColorRes = R.color.red,
-            txtColorRes = R.color.red
+            backGroundColorRes = R.color.background_bad,
+            txtColorRes = R.color.aqi_unhealthy
     ),
     VUnhealthyColor(
             level_intensity = 5.0,
@@ -163,8 +163,8 @@ enum class AQIStatus(
             transparentRes = R.color.transparent_red,
             diskRes = R.drawable.red_seekbar_thumb,
             transparentCircleRes = R.drawable.v_unhealthy_circle,
-            backGroundColorRes = R.color.red,
-            txtColorRes = R.color.red
+            backGroundColorRes = R.color.background_bad,
+            txtColorRes = R.color.aqi_v_unhealthy
     ),
     HazardousColor(
             level_intensity = 6.0,
@@ -174,8 +174,8 @@ enum class AQIStatus(
             transparentRes = R.color.transparent_red,
             diskRes = R.drawable.red_seekbar_thumb,
             transparentCircleRes = R.drawable.hazardous_circle,
-            backGroundColorRes = R.color.red,
-            txtColorRes = R.color.red
+            backGroundColorRes = R.color.background_bad,
+            txtColorRes = R.color.aqi_hazardous
     ),
 }
 

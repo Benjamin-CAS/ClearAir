@@ -19,7 +19,7 @@
         android:layout_alignBottom="@id/map_actions_container"
         android:layout_margin="@dimen/std_space"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/home_top_tv"/>
+        android:text="@string/fragment_map_lbl"/>
 
     <HorizontalScrollView
         android:layout_toEndOf="@id/home_tv"
@@ -43,6 +43,7 @@
                 android:layout_margin="@dimen/std_space">
                 <TextView
                     android:id="@+id/smart_qr"
+                    android:focusable="true"
                     android:padding="@dimen/sm_space"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -66,6 +67,7 @@
                 <TextView
                     android:id="@+id/map_view"
                     android:padding="@dimen/sm_space"
+                    android:focusable="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/Theme.CleanAirSpaces.Button"
@@ -88,6 +90,7 @@
                 <TextView
                     android:id="@+id/search_location"
                     android:padding="@dimen/sm_space"
+                    android:focusable="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/Theme.CleanAirSpaces.Button"
@@ -110,7 +113,7 @@
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/monitors_rv"
+        android:id="@+id/watched_items_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
@@ -119,15 +122,6 @@
         android:layout_below="@id/progress_recycler"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/my_locations_rv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/std_space"
-        android:layout_marginEnd="@dimen/std_space"
-        android:layout_marginTop="@dimen/sm_space"
-        android:layout_below="@id/monitors_rv"
-        />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/my_location_btn"
         android:layout_width="wrap_content"

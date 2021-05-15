@@ -12,12 +12,12 @@ class MyLogger @Inject constructor(
 ) {
 
 
-    fun logThis(tag: LogTags, from: String, msg: String? = "", exc: Exception? = null) {
+    suspend fun logThis(tag: LogTags, from: String, msg: String? = "", exc: Exception? = null) {
 
-        if (DEBUG) {
+        if (IS_DEBUG_MODE) {
             Log.d("CAS_Logger ${tag.readableMsg}", "User $uniqueID $from $msg", exc)
-        }else {
-            if (tag == LogTags.USER_LOCATION_CHANGED){
+        } else {
+            if (tag == LogTags.USER_LOCATION_CHANGED) {
                 logRepo.updateUserLocation(uniqueID, msg)
             }
             logRepo.saveLocally(tag.readableMsg, "User $uniqueID $from $msg", isExc = (exc != null))
@@ -26,7 +26,7 @@ class MyLogger @Inject constructor(
 
 
     companion object {
-        private const val DEBUG = true
+        const val IS_DEBUG_MODE = true
         private val uniqueID = UUID.randomUUID().toString()
     }
 }
@@ -38,6 +38,7 @@ enum class LogTags(val readableMsg: String) {
     USER_ACTION_SEARCH(readableMsg = "user action | search"),
     USER_ACTION_OPEN_APP(readableMsg = "user action | open app"),
     USER_ACTION_CLOSE_APP(readableMsg = "user action | close app"),
-    USER_LOCATION_CHANGED(readableMsg = "user location changed")
+    USER_LOCATION_CHANGED(readableMsg = "user location changed"),
+    USER_ACTION_SETTINGS(readableMsg = "user changed settings")
 
 }

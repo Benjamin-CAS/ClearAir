@@ -20,7 +20,7 @@ import javax.inject.Singleton
 @Singleton
 class InDoorLocationsRepo
 @Inject constructor(
-        private val coroutineScope: CoroutineScope,
+
         private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
         private val inDoorLocationsApiService: InDoorLocationApiService,
         private val myLogger: MyLogger
@@ -38,7 +38,7 @@ class InDoorLocationsRepo
 
 
     private fun mapIndoorLocationsToSearchableData(indoorLocations: List<IndoorLocations>) {
-        coroutineScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val searchData = ArrayList<SearchSuggestionsData>()
                 for (location in indoorLocations) {
@@ -85,9 +85,9 @@ class InDoorLocationsRepo
                                 )
                             }
                         } catch (exc: Exception) {
-
-                            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getInDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
-
+                            CoroutineScope(Dispatchers.IO).launch {
+                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getInDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                            }
                         }
                     }
                     else -> {

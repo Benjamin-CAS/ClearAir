@@ -5,9 +5,11 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentSettingsMenuBinding
 import com.android_dev.cleanairspaces.utils.MyLogger
@@ -60,6 +62,18 @@ class SettingsMenuFragment : Fragment() {
 
         initViews()
         observeSettings()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object  : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+              reloadApp()
+            }
+
+        })
+    }
+
+    private fun reloadApp(){
+        val action  = SettingsMenuFragmentDirections.actionSettingsMenuFragmentToSplashFragment()
+        findNavController().navigate(action)
     }
 
     private fun initViews() {
@@ -170,9 +184,7 @@ class SettingsMenuFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.save -> {
-                val action =
-                        SettingsMenuFragmentDirections.actionSettingsMenuFragmentToSplashFragment()
-                findNavController().navigate(action)
+                 reloadApp()
                 true
             }
             else -> super.onOptionsItemSelected(item)

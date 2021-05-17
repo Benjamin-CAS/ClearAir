@@ -7,7 +7,7 @@
         app:showAsAction="never"
         android:visible="false"/>
 
-    <item android:id="@+id/save"
+    <item android:id="@+id/splashFragment"
         android:icon="@drawable/ic_save_settings"
         app:showAsAction="ifRoom"
         android:title="@string/save_changes_txt"

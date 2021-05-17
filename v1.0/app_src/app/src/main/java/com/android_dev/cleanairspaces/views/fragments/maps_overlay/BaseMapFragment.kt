@@ -11,7 +11,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
-import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,8 +19,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -58,6 +55,11 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
 
     private lateinit var homeMapOverlay: HomeMapOverlayBinding
     lateinit var watchedItemsAdapter : WatchedLocationsAndMonitorsAdapter
+
+    //goes to home act
+    fun goHome(){
+        activity?.moveTaskToBack(true);
+    }
 
 
     fun setHomeMapOverlay(mapOverlay: HomeMapOverlayBinding) {
@@ -215,14 +217,8 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
     /******************MENU **************/
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.save).isVisible = false
+        menu.findItem(R.id.splashFragment).isVisible = false
         menu.findItem(R.id.settingsMenuFragment).isVisible = true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(
-                item
-        )
     }
 
     /************** qr code act **********/

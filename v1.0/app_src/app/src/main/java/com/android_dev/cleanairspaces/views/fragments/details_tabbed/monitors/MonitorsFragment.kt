@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
@@ -20,6 +21,7 @@ import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
 import com.android_dev.cleanairspaces.utils.myTxt
 import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
+import com.android_dev.cleanairspaces.views.fragments.monitor_details.MonitorDetailsAqiWrapper
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +58,7 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
 
         viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner, {
             it?.let {
+                viewModel.aqiIndex = it.aqiIndex
                 updateGenDetails(it.watchedLocationHighLights)
                 observeMonitorsForLoc(it.watchedLocationHighLights.actualDataTag, it.aqiIndex)
             }
@@ -147,7 +150,16 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
     }
 
     override fun onClickWatchedMonitor(monitor: MonitorDetails) {
-        viewModel.watchThisMonitor(monitor, watchMonitor = !monitor.watch_location)
+        if(monitor.watch_location) {
+            //user is watching this location
+            val action = MonitorsFragmentDirections.actionMonitorsFragmentToMonitorHistoryFragment(monitorDetails = MonitorDetailsAqiWrapper(
+                monitorDetails = monitor,
+               aqiIndex = viewModel.aqiIndex)
+            )
+            findNavController().navigate(action)
+        }else {
+            viewModel.watchThisMonitor(monitor, watchMonitor = !monitor.watch_location)
+        }
     }
 
     override fun onSwipeToDeleteMonitor(monitor: MonitorDetails) {

@@ -23,6 +23,7 @@ class MonitorsViewModel
         private val myLogger: MyLogger
 ) : ViewModel() {
 
+    var aqiIndex: String? = null
     private val TAG = MonitorsViewModel::class.java.simpleName
 
     fun observeWatchedLocationWithAqi(): LiveData<AppDataRepo.WatchedLocationWithAqi> = repo.watchedLocationWithAqi

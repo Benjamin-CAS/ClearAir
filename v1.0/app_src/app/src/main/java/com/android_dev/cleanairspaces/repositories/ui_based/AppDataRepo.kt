@@ -147,8 +147,8 @@ class AppDataRepo
 
                     val unEncryptedPayload: String =
                             CasEncDecQrProcessor.decodeApiResponse(pl)
-                    Log.d("unenc", "$unEncryptedPayload  for $pl")
                     val unEncJson = JSONObject(unEncryptedPayload)
+                    Log.d("unenc", " json $unEncJson")
 
                     /** last 72 hours history */
                     val sevenTwoHrsJsonArray =

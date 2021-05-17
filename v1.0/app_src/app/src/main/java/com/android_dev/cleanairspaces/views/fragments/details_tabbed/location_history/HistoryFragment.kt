@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.location_history
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,19 +19,18 @@ import com.android_dev.cleanairspaces.utils.*
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LegendEntry
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class HistoryFragment : Fragment() {
@@ -107,8 +107,12 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //initially
-        selectedParamType = ParamTypes.OUT_PM
-        setSelectedParamView(binding.outdoorsTv)
+        selectedParamType = ParamTypes.IN_OUT_PM
+        toggleCombinedCharts(showCombined = true)
+        setSelectedParamView(binding.aqiTv)
+        styleCombinedChart(binding.daysCombinedChart, DAY_TAG)
+        styleCombinedChart(binding.weekChartCombined, WEEK_TAG)
+        styleCombinedChart(binding.monthChartCombined, MONTH_TAG)
         styleBarChart(binding.daysChart, DAY_TAG)
         styleBarChart(binding.weekChart, WEEK_TAG)
         styleBarChart(binding.monthChart, MONTH_TAG)
@@ -118,8 +122,8 @@ class HistoryFragment : Fragment() {
                 viewModel.aqiIndex = it.aqiIndex
                 viewModel.refreshHistoryIfNecessary(it.watchedLocationHighLights)
                 updateGeneralLocationInfo(it.watchedLocationHighLights)
-                val hasIndoorData = it.watchedLocationHighLights.isIndoorLoc
-                toggleIndoorParameters(hasIndoorData)
+                viewModel.hasIndoorData = it.watchedLocationHighLights.isIndoorLoc
+                toggleIndoorParameters()
                 refreshLocationHistory(it.watchedLocationHighLights.actualDataTag)
             }
         })
@@ -173,10 +177,21 @@ class HistoryFragment : Fragment() {
     }
 
     /*********** graph controls ***********/
+    private fun toggleCombinedCharts(showCombined : Boolean){
+        binding.apply {
+            daysChart.isVisible = !showCombined
+            daysCombinedChart.isVisible = showCombined
+            weekChart.isVisible = !showCombined
+            weekChartCombined.isVisible = showCombined
+            monthChart.isVisible = !showCombined
+            monthChartCombined.isVisible = showCombined
+        }
+    }
     private fun setParametersClickListeners() {
         binding.apply {
             aqiTv.setOnClickListener {
-                selectedParamType = ParamTypes.IN_PM
+                selectedParamType = ParamTypes.IN_OUT_PM
+                toggleCombinedCharts(showCombined = true)
                 setSelectedParamView(aqiTv)
                 clearClickedValue("")
                 refreshChartData(
@@ -188,12 +203,13 @@ class HistoryFragment : Fragment() {
                     myLogger.logThis(
                             tag = LogTags.USER_ACTION_CLICK_FEATURE,
                             from = TAG,
-                            msg = "Indoor PM"
+                            msg = "AIR QUALITY"
                     )
                 }
             }
             tvocTv.setOnClickListener {
                 selectedParamType = ParamTypes.TVOC
+                toggleCombinedCharts(showCombined = false)
                 setSelectedParamView(tvocTv)
                 clearClickedValue("")
                 refreshChartData(
@@ -211,6 +227,7 @@ class HistoryFragment : Fragment() {
             }
             tmpTv.setOnClickListener {
                 selectedParamType = ParamTypes.TMP
+                toggleCombinedCharts(showCombined = false)
                 setSelectedParamView(tmpTv)
                 clearClickedValue("")
                 refreshChartData(
@@ -229,6 +246,7 @@ class HistoryFragment : Fragment() {
             }
             humidityTv.setOnClickListener {
                 selectedParamType = ParamTypes.HUMIDITY
+                toggleCombinedCharts(showCombined = false)
                 setSelectedParamView(humidityTv)
                 clearClickedValue("")
                 refreshChartData(
@@ -247,6 +265,7 @@ class HistoryFragment : Fragment() {
             }
             co2Tv.setOnClickListener {
                 selectedParamType = ParamTypes.CO2
+                toggleCombinedCharts(showCombined = false)
                 setSelectedParamView(co2Tv)
                 clearClickedValue("")
                 refreshChartData(
@@ -263,24 +282,6 @@ class HistoryFragment : Fragment() {
                     )
                 }
             }
-            outdoorsTv.setOnClickListener {
-                selectedParamType = ParamTypes.OUT_PM
-                setSelectedParamView(outdoorsTv)
-                clearClickedValue("")
-                refreshChartData(
-                        refreshDaysHistory = true,
-                        refreshWeeksHistory = true,
-                        refreshMonthsHistory = true
-                )
-
-                lifecycleScope.launch(Dispatchers.IO) {
-                    myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "Outdoor PM"
-                    )
-                }
-            }
         }
     }
 
@@ -294,13 +295,12 @@ class HistoryFragment : Fragment() {
         this.selectedTv = selectedParamView
     }
 
-    private fun toggleIndoorParameters(hasIndoorData: Boolean) {
+    private fun toggleIndoorParameters() {
         binding.apply {
-            pmCard.isVisible = hasIndoorData
-            co2Card.isVisible = hasIndoorData
-            tmpCard.isVisible = hasIndoorData
-            humidityCard.isVisible = hasIndoorData
-            tvocCard.isVisible = hasIndoorData
+            co2Card.isVisible = viewModel.hasIndoorData
+            tmpCard.isVisible = viewModel.hasIndoorData
+            humidityCard.isVisible = viewModel.hasIndoorData
+            tvocCard.isVisible = viewModel.hasIndoorData
         }
     }
 
@@ -345,35 +345,62 @@ class HistoryFragment : Fragment() {
             refreshWeeksHistory: Boolean = false,
             refreshMonthsHistory: Boolean = false
     ) {
-
-        if (refreshDaysHistory) {
-            val dayData = getChartDataForParam(forDays = true)
-            updateChart(
-                    chart = binding.daysChart,
-                    title = daysChartTitle,
-                    chartData = dayData
-            )
-        }
-
-        if (refreshWeeksHistory) {
-            val weekData = getChartDataForParam(forWeek = true)
-            updateChart(
-                    chart = binding.weekChart,
-                    title = weekChartTitle,
-                    chartData = weekData
-            )
-        }
-
-
-        if (refreshMonthsHistory) {
-            val monthData = getChartDataForParam(forMonth = true)
-            updateChart(
-                    chart = binding.monthChart,
-                    title = monthChartTitle,
-                    chartData = monthData
-            )
-        }
+       if (selectedParamType == ParamTypes.IN_OUT_PM) {
+           if (refreshDaysHistory) {
+               val dayData = getChartDataForParam(forDays = true)
+               updateCombinedChart(
+                   chart = binding.daysCombinedChart,
+                   title = daysChartTitle,
+                   indoorChartData = dayData
+               )
+           }
+           if (refreshWeeksHistory) {
+               val weekData = getChartDataForParam(forWeek = true)
+               updateCombinedChart(
+                   chart = binding.weekChartCombined,
+                   title = weekChartTitle,
+                   indoorChartData = weekData
+               )
+           }
+           if (refreshMonthsHistory) {
+               val monthData = getChartDataForParam(forMonth = true)
+               updateCombinedChart(
+                   chart = binding.monthChartCombined,
+                   title = monthChartTitle,
+                   indoorChartData = monthData
+               )
+           }
+       }else {
+           if (refreshDaysHistory) {
+               val dayData = getChartDataForParam(forDays = true)
+               updateBarChart(
+                   chart = binding.daysChart,
+                   title = daysChartTitle,
+                   chartData = dayData
+               )
+           }
+           if (refreshWeeksHistory) {
+               val weekData = getChartDataForParam(forWeek = true)
+               updateBarChart(
+                   chart = binding.weekChart,
+                   title = weekChartTitle,
+                   chartData = weekData
+               )
+           }
+           if (refreshMonthsHistory) {
+               val monthData = getChartDataForParam(forMonth = true)
+               updateBarChart(
+                   chart = binding.monthChart,
+                   title = monthChartTitle,
+                   chartData = monthData
+               )
+           }
+       }
     }
+
+    /******** outdoor data ***************/
+    private val outChartData = arrayListOf<Float>()
+    private val outChartDates = arrayListOf<String>()
 
     private fun getChartDataForParam(
             forDays: Boolean = false,
@@ -383,32 +410,61 @@ class HistoryFragment : Fragment() {
 
         val chartData = arrayListOf<Float>()
         val chartDates = arrayListOf<String>()
+
+        //outdoor data
+        outChartData.clear()
+        outChartDates.clear()
+
         when (selectedParamType) {
-            ParamTypes.IN_PM -> {
+            ParamTypes.IN_OUT_PM -> {
                 when {
                     forDays -> {
-                        for (aData in viewModel.currentlyDisplayedDaysHistoryData)
-                            aData.data.indoor_pm.let {
-                                chartData.add(it)
-                                chartDates.add(aData.data.dates)
+                        for (aData in viewModel.currentlyDisplayedDaysHistoryData) {
+                            if (viewModel.hasIndoorData) {
+                                aData.data.indoor_pm.let {
+                                    chartData.add(it)
+                                    chartDates.add(aData.data.dates)
+                                }
                             }
+                            aData.data.outdoor_pm.let {
+                                outChartData.add(it)
+                                outChartDates.add(aData.data.dates)
+                            }
+                        }
                         viewModel.currentDatesForDaysChart = chartDates
+                        viewModel.currentOutdoorDatesForDaysChart = outChartDates
                     }
                     forWeek -> {
-                        for (aData in viewModel.currentlyDisplayedWeekHistoryData)
-                            aData.data.indoor_pm.let {
-                                chartData.add(it)
-                                chartDates.add(aData.data.dates)
+                        for (aData in viewModel.currentlyDisplayedWeekHistoryData) {
+                            if (viewModel.hasIndoorData) {
+                                aData.data.indoor_pm.let {
+                                    chartData.add(it)
+                                    chartDates.add(aData.data.dates)
+                                }
                             }
+                            aData.data.outdoor_pm.let {
+                                outChartData.add(it)
+                                outChartDates.add(aData.data.dates)
+                            }
+                        }
                         viewModel.currentDatesForWeekChart = chartDates
+                        viewModel.currentOutdoorDatesForWeekChart = outChartDates
                     }
                     forMonth -> {
-                        for (aData in viewModel.currentlyDisplayedMonthHistoryData)
-                            aData.data.indoor_pm.let {
-                                chartData.add(it)
-                                chartDates.add(aData.data.dates)
+                        for (aData in viewModel.currentlyDisplayedMonthHistoryData){
+                            if (viewModel.hasIndoorData) {
+                                aData.data.indoor_pm.let {
+                                    chartData.add(it)
+                                    chartDates.add(aData.data.dates)
+                                }
                             }
+                            aData.data.outdoor_pm.let {
+                                outChartData.add(it)
+                                outChartDates.add(aData.data.dates)
+                            }
+                        }
                         viewModel.currentDatesForMonthChart = chartDates
+                        viewModel.currentOutdoorDatesForMonthChart = outChartDates
                     }
                 }
             }
@@ -525,34 +581,6 @@ class HistoryFragment : Fragment() {
                 }
             }
 
-            ParamTypes.OUT_PM -> {
-                when {
-                    forDays -> {
-                        for (aData in viewModel.currentlyDisplayedDaysHistoryData)
-                            aData.data.outdoor_pm.let {
-                                chartData.add(it)
-                                chartDates.add(aData.data.dates)
-                            }
-                        viewModel.currentDatesForDaysChart = chartDates
-                    }
-                    forWeek -> {
-                        for (aData in viewModel.currentlyDisplayedWeekHistoryData)
-                            aData.data.outdoor_pm.let {
-                                chartData.add(it)
-                                chartDates.add(aData.data.dates)
-                            }
-                        viewModel.currentDatesForWeekChart = chartDates
-                    }
-                    forMonth -> {
-                        for (aData in viewModel.currentlyDisplayedMonthHistoryData)
-                            aData.data.outdoor_pm.let {
-                                chartData.add(it)
-                                chartDates.add(aData.data.dates)
-                            }
-                        viewModel.currentDatesForMonthChart = chartDates
-                    }
-                }
-            }
         }
         return chartData
     }
@@ -610,6 +638,7 @@ class HistoryFragment : Fragment() {
             setNoDataTextColor(blackColor)
             animateX(1000, Easing.EaseInExpo)
 
+
             setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                 override fun onValueSelected(e: Entry?, h: Highlight?) {
                     e?.let { entry ->
@@ -624,37 +653,121 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    private fun displayClickedValue(entry: Entry, chartIdentifierTag: String) {
+    private fun styleCombinedChart(combinedChart: CombinedChart, combinedChartTag: String) {
+        combinedChart.apply {
+            axisRight.isEnabled = false
+            axisLeft.isEnabled = false
+            tag = combinedChartTag
+
+
+            val legendGood = LegendEntry()
+            legendGood.label = getString(R.string.good_air_status_txt)
+            legendGood.formColor = goodColor
+
+            val legendModerate = LegendEntry()
+            legendModerate.label = getString(R.string.moderate_air_status_txt)
+            legendModerate.formColor = moderateColor
+
+            val legendSBad = LegendEntry()
+            legendSBad.label = getString(R.string.aqi_status_unhealthy_sensitive_groups_abbrev)
+            legendSBad.formColor = gUnhealthyColor
+
+            val legendBad = LegendEntry()
+            legendBad.label = getString(R.string.danger_txt)
+            legendBad.formColor = unhealthyColor
+
+            legend.apply {
+                typeface = bodyFont
+                horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+                yOffset = 0f
+                setCustom(listOf(legendGood, legendModerate, legendSBad, legendBad))
+            }
+
+            xAxis.apply {
+                labelRotationAngle = 0f
+                setDrawGridLines(false)
+                position = XAxis.XAxisPosition.BOTTOM
+                typeface = titleFont
+                textSize = 12f
+                axisMinimum = 1f
+                xAxis.setDrawLabels(false)
+
+            }
+
+            setNoDataTextTypeface(titleFont)
+
+
+            setTouchEnabled(true)
+            setPinchZoom(false)
+            description.isEnabled = false
+            setNoDataText(getString(R.string.loading_graph_data))
+            setNoDataTextTypeface(bodyFont)
+            setNoDataTextColor(blackColor)
+            animateX(1000, Easing.EaseInExpo)
+
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    e?.let { entry ->
+                        val isOutDoorData = h?.dataIndex != 1
+                        displayClickedValue(entry, combinedChartTag, isOutDoorData = isOutDoorData)
+                    }
+                }
+
+                override fun onNothingSelected() {
+                    clearClickedValue(combinedChartTag)
+                }
+            })
+
+        }
+    }
+
+    private fun displayClickedValue(entry: Entry, chartIdentifierTag: String, isOutDoorData : Boolean = false) {
         try {
             val pos = entry.x.toInt()
             val value = entry.y
-            val clickedVal: String
+            var clickedVal: String = ""
             val unitsTxt = when (selectedParamType) {
-                ParamTypes.IN_PM,
-                ParamTypes.OUT_PM -> getString(R.string.pm_units)
+                ParamTypes.IN_OUT_PM -> getString(R.string.pm_units)
                 ParamTypes.TMP -> getString(R.string.tmp_units)
                 ParamTypes.TVOC -> getString(R.string.tvoc_units)
                 ParamTypes.HUMIDITY -> getString(R.string.humid_units)
                 ParamTypes.CO2 -> getString(R.string.co2_units)
             }
+            val prefixTxt = when (selectedParamType) {
+                ParamTypes.IN_OUT_PM -> if(isOutDoorData)getString(R.string.outdoor_txt)
+                                        else getString(R.string.indoor_txt)
+                ParamTypes.TMP -> getString(R.string.tmp_lbl)
+                ParamTypes.TVOC -> getString(R.string.tvoc_lbl)
+                ParamTypes.HUMIDITY -> getString(R.string.humidity_lbl)
+                ParamTypes.CO2 -> getString(R.string.co_lbl)
+            }
             when (chartIdentifierTag) {
                 DAY_TAG -> {
-                    clickedVal = "${viewModel.currentDatesForDaysChart[pos]} $value $unitsTxt"
+                    clickedVal = if (isOutDoorData)
+                        "$prefixTxt ${viewModel.currentOutdoorDatesForDaysChart[pos]} $value $unitsTxt"
+                    else
+                         "$prefixTxt ${viewModel.currentDatesForDaysChart[pos]} $value $unitsTxt"
                     binding.daysChartValue.text = clickedVal
                 }
                 WEEK_TAG -> {
-                    clickedVal = "${viewModel.currentDatesForWeekChart[pos]} $value $unitsTxt"
+                    clickedVal= if (isOutDoorData)
+                                "$prefixTxt ${viewModel.currentOutdoorDatesForWeekChart[pos]} $value $unitsTxt"
+                            else
+                                "$prefixTxt ${viewModel.currentDatesForWeekChart[pos]} $value $unitsTxt"
                     binding.weekChartValue.text = clickedVal
 
                 }
                 MONTH_TAG -> {
-                    clickedVal = "${viewModel.currentDatesForMonthChart[pos]} $value $unitsTxt"
+                    clickedVal= if (isOutDoorData)
+                            "$prefixTxt ${viewModel.currentOutdoorDatesForMonthChart[pos]} $value $unitsTxt"
+                        else
+                            "$prefixTxt ${viewModel.currentDatesForMonthChart[pos]} $value $unitsTxt"
                     binding.monthChartValue.text = clickedVal
 
                 }
             }
         } catch (exc: Exception) {
-
             lifecycleScope.launch(Dispatchers.IO) {
                 myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG displayClickedValue()", msg = exc.message, exc = exc)
             }
@@ -689,7 +802,7 @@ class HistoryFragment : Fragment() {
         }
     }
 
-    private fun styleDataSet(barDataSet: BarDataSet, valColorMap: ArrayList<Int>) {
+    private fun styleBarDataSet(barDataSet: BarDataSet, valColorMap: ArrayList<Int>) {
         barDataSet.apply {
             //color of the bar
             colors = valColorMap
@@ -704,12 +817,34 @@ class HistoryFragment : Fragment() {
         }
     }
 
+    private fun styleLineDataSet(lineDataSet: LineDataSet, valColorMap: ArrayList<Int>) {
+        lineDataSet.apply {
+            //color of the bar
+            colors = valColorMap
+            //Setting the size of the legend box
+            formSize = 10f
+            //showing the value of the bar at the top, default true if not set
+            setDrawValues(false)
+            //setting the text size of the value of the bar
+            valueTextSize = 12f
+            valueTextColor = blackColor
+            valueTypeface = titleFont
+
+
+            setDrawCircleHole(false)
+
+            lineWidth = 1f
+            circleRadius = 2.5f
+
+
+        }
+    }
+
     private fun getStatusColorForValue(value: Float, paramType: ParamTypes): Int {
 
         val aqiIndex = viewModel.aqiIndex ?: DEFAULT_AQI_INDEX_PM25
         return when (paramType) {
-            ParamTypes.IN_PM,
-            ParamTypes.OUT_PM -> getAQIStatusFromPM25(
+            ParamTypes.IN_OUT_PM -> getAQIStatusFromPM25(
                     aqiIndex = aqiIndex,
                     pm25 = value.toDouble()
             ).aqi_color_res
@@ -721,7 +856,7 @@ class HistoryFragment : Fragment() {
 
     }
 
-    private fun updateChart(
+    private fun updateBarChart(
             chart: BarChart,
             title: String,
             chartData: List<Float>
@@ -736,7 +871,7 @@ class HistoryFragment : Fragment() {
                 valColorMap.add(ContextCompat.getColor(requireContext(), color))
             }
             val daysHistoryDataSet = MyBarDataSet(entries, title)
-            styleDataSet(daysHistoryDataSet, valColorMap)
+            styleBarDataSet(daysHistoryDataSet, valColorMap)
 
             chart.apply {
                 invalidate()
@@ -750,7 +885,60 @@ class HistoryFragment : Fragment() {
             }
         }
     }
+
+private fun updateCombinedChart(
+    chart: CombinedChart,
+    title: String,
+    indoorChartData: List<Float>
+) {
+    try {
+
+        //Outdoor data --- line data
+        val mLineData = LineData()
+        val outDoorEntries = ArrayList<Entry>()
+        val outdoorValColorMap = ArrayList<Int>()
+
+        for ((index, aData) in outChartData.withIndex()) {
+            val entry = Entry(index.toFloat(), aData)
+            outDoorEntries.add(entry)
+            val color = getStatusColorForValue(aData, ParamTypes.IN_OUT_PM)
+            outdoorValColorMap.add(ContextCompat.getColor(requireContext(), color))
+        }
+
+        val outDoorDataLbl = getString(R.string.outdoors_air_quality_txt)
+        val set = MyLineDataSet(outDoorEntries, outDoorDataLbl)
+        styleLineDataSet(set, outdoorValColorMap)
+        mLineData.addDataSet(set)
+
+        //Indoor data --- bar data
+        val entries = ArrayList<BarEntry>()
+        val valColorMap = ArrayList<Int>()
+        for ((index, aData) in indoorChartData.withIndex()) {
+            val entry = BarEntry(index.toFloat(), aData)
+            entries.add(entry)
+            val color = getStatusColorForValue(aData, selectedParamType)
+            valColorMap.add(ContextCompat.getColor(requireContext(), color))
+        }
+        val mBarDataset = MyBarDataSet(entries, title)
+        styleBarDataSet(mBarDataset, valColorMap)
+
+        val combinedData = CombinedData()
+        combinedData.setData(BarData(mBarDataset))
+        combinedData.setData(mLineData)
+
+        chart.apply {
+            invalidate()
+            data = combinedData
+            notifyDataSetChanged()
+        }
+    } catch (exc: Exception) {
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            myLogger.logThis(tag = LogTags.EXCEPTION, from = "${HistoryFragment.TAG} updateChart()", msg = exc.message, exc = exc)
+        }
+    }
 }
+
 
 internal class MyBarDataSet(
         yVals: List<BarEntry?>?,
@@ -765,11 +953,29 @@ internal class MyBarDataSet(
     }
 }
 
+internal class MyLineDataSet(
+    yVals: List<Entry?>?,
+    label: String?
+)  : LineDataSet(yVals, label){
+
+    override fun getCircleColor(index: Int): Int {
+        return mColors[index]
+    }
+
+    override fun getEntryIndex(e: Entry?): Int {
+        return super.getEntryIndex(e)
+    }
+
+    override fun getColor(index: Int): Int {
+        return Color.rgb(128, 128, 128)
+    }
+
+}}
+
 internal enum class ParamTypes {
-    IN_PM,
+    IN_OUT_PM,
     TMP,
     TVOC,
     HUMIDITY,
-    CO2,
-    OUT_PM
+    CO2
 }

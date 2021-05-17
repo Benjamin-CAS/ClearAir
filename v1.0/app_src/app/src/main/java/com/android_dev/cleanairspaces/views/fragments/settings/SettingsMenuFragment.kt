@@ -9,7 +9,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentSettingsMenuBinding
 import com.android_dev.cleanairspaces.utils.MyLogger
@@ -176,20 +175,10 @@ class SettingsMenuFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.save).isVisible = true
+        menu.findItem(R.id.splashFragment).isVisible = true
         menu.findItem(R.id.settingsMenuFragment).isVisible = false
     }
 
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.save -> {
-                 reloadApp()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

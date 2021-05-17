@@ -7,6 +7,7 @@ import android.location.Location
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
@@ -125,6 +126,13 @@ class AMapsFragment : BaseMapFragment() {
         setHasOptionsMenu(true)
         requireActivity().invalidateOptionsMenu()
         viewModel.mapHasBeenInitialized.value = false
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object  : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                goHome()
+            }
+
+        })
 
         return binding.root
     }
@@ -374,7 +382,7 @@ class AMapsFragment : BaseMapFragment() {
     /******************MENU **************/
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.save).isVisible = false
+        menu.findItem(R.id.splashFragment).isVisible = false
         menu.findItem(R.id.settingsMenuFragment).isVisible = true
     }
 

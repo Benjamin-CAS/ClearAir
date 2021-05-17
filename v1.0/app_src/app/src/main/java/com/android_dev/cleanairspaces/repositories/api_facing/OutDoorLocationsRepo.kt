@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.repositories.api_facing
 
+import android.util.Log
 import com.android_dev.cleanairspaces.persistence.api.responses.*
 import com.android_dev.cleanairspaces.persistence.api.services.OutDoorLocationApiService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.MapDataDao
@@ -166,7 +167,7 @@ class OutDoorLocationsRepo
 
                 val responseBody = response.body()
                 try {
-                    if (responseBody?.data?.isNullOrEmpty() == true) {
+                    if (responseBody?.data?.isNullOrEmpty() == false) {
                         mapOutDoorLocationsToMapData(
                                 outDoorExtraDetailed = responseBody.data
                         )
@@ -251,6 +252,7 @@ class OutDoorLocationsRepo
                                     )
                             )
                         }
+
                     }
 
                     otherLocations != null -> {

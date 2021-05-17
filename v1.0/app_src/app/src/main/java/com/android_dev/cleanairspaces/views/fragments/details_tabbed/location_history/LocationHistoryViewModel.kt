@@ -23,6 +23,7 @@ class LocationHistoryViewModel
         private val repo: AppDataRepo,
 ) : ViewModel() {
 
+    var hasIndoorData: Boolean = true
     private val TAG = LocationHistoryViewModel::class.java.simpleName
     var aqiIndex: String? = null
 
@@ -33,6 +34,10 @@ class LocationHistoryViewModel
     var currentDatesForDaysChart: ArrayList<String> = ArrayList()
     var currentDatesForWeekChart: ArrayList<String> = ArrayList()
     var currentDatesForMonthChart: ArrayList<String> = ArrayList()
+    var currentOutdoorDatesForDaysChart: ArrayList<String> = ArrayList()
+    var currentOutdoorDatesForWeekChart: ArrayList<String> = ArrayList()
+    var currentOutdoorDatesForMonthChart: ArrayList<String> = ArrayList()
+
 
     lateinit var currentlyDisplayedDaysHistoryData: List<LocationHistoryThreeDays>
     lateinit var currentlyDisplayedMonthHistoryData: List<LocationHistoryMonth>

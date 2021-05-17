@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
@@ -135,6 +136,13 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             if (it) {
                 initializeDataAfterMapIsSet()
             }
+        })
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object  : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                goHome()
+            }
+
         })
     }
 

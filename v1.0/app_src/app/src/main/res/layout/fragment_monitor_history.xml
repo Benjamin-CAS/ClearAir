@@ -7,10 +7,23 @@
     tools:context=".views.fragments.monitor_details.MonitorHistoryFragment">
 
 
+    <ImageView
+        android:id="@+id/location_logo"
+        android:contentDescription="@string/location_logo_image_desc"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/sm_space"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/location_logo_size"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        />
+
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
@@ -68,7 +81,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/sm_space"
-                    android:text="@string/indoor_air_quality_txt"
+                    android:text="@string/air_quality_txt"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
             </com.google.android.material.card.MaterialCardView>
@@ -188,7 +201,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/days_chart_lbl"
-                style="@style/Theme.CleanAirSpaces.Subtitle1"
+                style="@style/Theme.CleanAirSpaces.Body2"
                 android:layout_width="0dp"
                 android:gravity="start"
                 android:paddingStart="@dimen/std_space"
@@ -198,8 +211,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="@dimen/md_space"
-                android:text="@string/last_seven_two_hours"
-                android:textStyle="bold"/>
+                android:text="@string/last_seven_two_hours"/>
 
             <View
                 android:id="@+id/line1"
@@ -234,7 +246,7 @@
                     android:paddingStart="@dimen/sm_space"
                     android:paddingEnd="@dimen/sm_space"/>
 
-                <com.google.android.material.textview.MaterialTextView
+         <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/days_chart_value"
                     style="@style/Theme.CleanAirSpaces.Body2"
                     android:layout_width="wrap_content"
@@ -247,7 +259,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/week_chart_lbl"
-                style="@style/Theme.CleanAirSpaces.Subtitle1"
+                style="@style/Theme.CleanAirSpaces.Body2"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:gravity="start"
@@ -255,7 +267,6 @@
                 android:paddingEnd="@dimen/std_space"
                 android:layout_marginTop="@dimen/md_space"
                 android:text="@string/last_week_lbl"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/days_chart_container" />
@@ -305,7 +316,7 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/months_chart_lbl"
-                style="@style/Theme.CleanAirSpaces.Subtitle1"
+                style="@style/Theme.CleanAirSpaces.Body2"
                 android:layout_width="0dp"
                 android:gravity="start"
                 android:paddingStart="@dimen/std_space"
@@ -313,7 +324,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/md_space"
                 android:text="@string/last_thirty_lbl"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/week_chart_container" />
@@ -350,6 +360,7 @@
                     android:layout_marginBottom="@dimen/std_space"
                     android:paddingStart="@dimen/sm_space"
                     android:paddingEnd="@dimen/sm_space" />
+
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/month_chart_value"

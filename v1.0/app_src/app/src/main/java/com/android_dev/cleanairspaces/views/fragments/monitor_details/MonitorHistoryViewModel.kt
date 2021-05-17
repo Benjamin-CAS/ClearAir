@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.views.fragments.monitor_details
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.android_dev.cleanairspaces.persistence.local.models.entities.*
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
@@ -70,9 +71,7 @@ class MonitorHistoryViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val lastUpdate = repo.getLastTimeUpdatedHistory(dataTag)
             val timeNow = System.currentTimeMillis()
-            if (lastUpdate == null
-                || hasExpired(timeNow, lastUpdate)
-            ) {
+            if (lastUpdate == null || hasExpired(timeNow, lastUpdate)) {
                 withContext(context = Dispatchers.Main) {
                     fetchMonitorHistory(
                         compId = monitorDetails.company_id,

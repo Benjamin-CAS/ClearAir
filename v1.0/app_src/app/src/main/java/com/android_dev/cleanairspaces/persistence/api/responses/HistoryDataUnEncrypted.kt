@@ -9,3 +9,13 @@ data class HistoryDataUnEncrypted(
         var avg_humidity: Double?,
         var reading_comp: Double?,//outdoor
 )
+
+data class MonitorHistoryDataUnEncrypted(
+        var date_reading: String?,
+        var reading: Double?,//indoor
+        var tvoc: String?,
+        var co2: Double?,
+        var temperature: Double?,
+        var humidity: Double?,
+        var reading_comp: Double?,//outdoor
+)

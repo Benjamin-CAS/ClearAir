@@ -2,6 +2,7 @@ package com.android_dev.cleanairspaces.views.fragments.monitor_details
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -299,6 +300,7 @@ class MonitorHistoryFragment : Fragment() {
         viewModel.observeLocationWeekHistory().observe(
             viewLifecycleOwner, { list ->
                 list?.let {
+
                     viewModel.currentlyDisplayedWeekHistoryData = list
                     refreshChartData(refreshWeeksHistory = true)
                 }
@@ -702,6 +704,7 @@ class MonitorHistoryFragment : Fragment() {
         chartData: List<Float>
     ) {
         try {
+
             val entries = ArrayList<BarEntry>()
             val valColorMap = ArrayList<Int>()
             for ((index, aData) in chartData.withIndex()) {
@@ -717,6 +720,7 @@ class MonitorHistoryFragment : Fragment() {
                 invalidate()
                 data = BarData(daysHistoryDataSet)
                 notifyDataSetChanged()
+                visibility = View.VISIBLE
             }
         } catch (exc: Exception) {
 

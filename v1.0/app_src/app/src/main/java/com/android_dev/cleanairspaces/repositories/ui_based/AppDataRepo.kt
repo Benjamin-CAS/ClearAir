@@ -94,7 +94,7 @@ class AppDataRepo
 
 
     /******************** DATA API **********/
-    private fun getLocationHistoryCallback(): Callback<LocationHistoriesResponse> {
+    private fun getLocationHistoryCallback(isMonitor : Boolean = false): Callback<LocationHistoriesResponse> {
         return object : Callback<LocationHistoriesResponse> {
             override fun onResponse(
                     call: Call<LocationHistoriesResponse>,
@@ -103,13 +103,19 @@ class AppDataRepo
                 when {
                     response.code() == 200 -> {
                         val responseBody = response.body()
-                        Log.d( "getLocationHistoryCall", "$responseBody")
                         try {
                             if (responseBody?.payload != null) {
-                                unEncryptHistoryPayload(
+                                if (isMonitor){
+                                    unEncryptMonitorHistoryPayload(
                                         pl = responseBody.payload,
                                         lTime = responseBody.ltime ?: "0"
-                                )
+                                    )
+                                }else {
+                                    unEncryptHistoryPayload(
+                                        pl = responseBody.payload,
+                                        lTime = responseBody.ltime ?: "0"
+                                    )
+                                }
                             }
                         } catch (exc: Exception) {
                             CoroutineScope(Dispatchers.IO).launch {
@@ -148,11 +154,13 @@ class AppDataRepo
                     val unEncryptedPayload: String =
                             CasEncDecQrProcessor.decodeApiResponse(pl)
                     val unEncJson = JSONObject(unEncryptedPayload)
-                    Log.d("unenc", " json $unEncJson")
+
 
                     /** last 72 hours history */
                     val sevenTwoHrsJsonArray =
                             unEncJson.getJSONArray(LocationHistoriesResponse.daysResponseKey)
+
+
                     val sevenTwoHrsArrList = arrayListOf<LocationHistoryThreeDays>()
                     val sevenTwoHrsTotal = sevenTwoHrsJsonArray.length()
                     var i = 0
@@ -259,6 +267,131 @@ class AppDataRepo
 
     }
 
+    private fun unEncryptMonitorHistoryPayload(pl: String, lTime: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val dataMatchingLTime =
+                    recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+                if (!dataMatchingLTime.isNullOrEmpty()) {
+                    val requestedData = dataMatchingLTime[0]
+                    recentRequestsData.remove(requestedData)
+                    val actualDataTag = requestedData.get(API_LOCAL_DATA_BINDER_KEY).asString
+
+                    val unEncryptedPayload: String =
+                        CasEncDecQrProcessor.decodeApiResponse(pl)
+                    val unEncJson = JSONObject(unEncryptedPayload)
+
+
+                    /** last 72 hours history */
+                    val sevenTwoHrsJsonArray =
+                        unEncJson.getJSONArray(LocationHistoriesResponse.daysResponseKey)
+
+
+                    val sevenTwoHrsArrList = arrayListOf<LocationHistoryThreeDays>()
+                    val sevenTwoHrsTotal = sevenTwoHrsJsonArray.length()
+                    var i = 0
+                    while (i < sevenTwoHrsTotal) {
+                        val daysData =
+                            Gson().fromJson(
+                                sevenTwoHrsJsonArray.getJSONObject(i).toString(),
+                                MonitorHistoryDataUnEncrypted::class.java
+                            )
+                        if (daysData.date_reading != null) {
+                            val parsedDaysData = LocationHistoryThreeDays(
+                                autoId = 0,
+                                data = HistoryData(
+                                    actualDataTag = actualDataTag,
+                                    dates = daysData.date_reading!!,
+                                    indoor_pm = (daysData.reading ?: 0.0).toFloat(),
+                                    outdoor_pm = (daysData.reading_comp ?: 0.0).toFloat(),
+                                    temperature = (daysData.temperature
+                                        ?: 0.0).toFloat(),
+                                    co2 = (daysData.co2 ?: 0.0).toFloat(),
+                                    tvoc = (daysData.tvoc ?: "0.0").toFloat(),
+                                    humidity = (daysData.humidity ?: 0.0).toFloat(),
+                                )
+                            )
+                            sevenTwoHrsArrList.add(parsedDaysData)
+                        }
+                        i++
+                    }
+
+
+                    /** last week history */
+                    val weekJsonArray = unEncJson.getJSONArray(LocationHistoriesResponse.weekResponseKey)
+                    val weekArrList = arrayListOf<LocationHistoryWeek>()
+                    val weekTotal = weekJsonArray.length()
+                    var j = 0
+                    while (j < weekTotal) {
+                        val weekData =
+                            Gson().fromJson(
+                                weekJsonArray.getJSONObject(j).toString(),
+                                MonitorHistoryDataUnEncrypted::class.java
+                            )
+                        if (weekData.date_reading != null) {
+                            val parsedWeekData = LocationHistoryWeek(
+                                autoId = 0,
+                                data = HistoryData(
+                                    actualDataTag = actualDataTag,
+                                    dates = weekData.date_reading!!,
+                                    indoor_pm = (weekData.reading ?: 0.0).toFloat(),
+                                    outdoor_pm = (weekData.reading_comp ?: 0.0).toFloat(),
+                                    temperature = (weekData.temperature
+                                        ?: 0.0).toFloat(),
+                                    co2 = (weekData.co2 ?: 0.0).toFloat(),
+                                    tvoc = (weekData.tvoc ?: "0.0").toFloat(),
+                                    humidity = (weekData.humidity ?: 0.0).toFloat(),
+                                )
+                            )
+                            weekArrList.add(parsedWeekData)
+                        }
+                        j++
+                    }
+
+                    /** last month history */
+                    val monthJsonArray = unEncJson.getJSONArray(LocationHistoriesResponse.monthResponseKey)
+                    val monthArrList = arrayListOf<LocationHistoryMonth>()
+                    val monthTotal = monthJsonArray.length()
+                    var k = 0
+                    while (k < monthTotal) {
+                        val monthData =
+                            Gson().fromJson(
+                                monthJsonArray.getJSONObject(k).toString(),
+                                MonitorHistoryDataUnEncrypted::class.java
+                            )
+                        if (monthData.date_reading != null) {
+                            val parsedMonthData = LocationHistoryMonth(
+                                autoId = 0,
+                                data = HistoryData(
+                                    actualDataTag = actualDataTag,
+                                    dates = monthData.date_reading!!,
+                                    indoor_pm = (monthData.reading ?: 0.0).toFloat(),
+                                    outdoor_pm = (monthData.reading_comp ?: 0.0).toFloat(),
+                                    temperature = (monthData.temperature
+                                        ?: 0.0).toFloat(),
+                                    co2 = (monthData.co2 ?: 0.0).toFloat(),
+                                    tvoc = (monthData.tvoc ?: "0.0").toFloat(),
+                                    humidity = (monthData.humidity ?: 0.0).toFloat(),
+                                )
+                            )
+                            monthArrList.add(parsedMonthData)
+                        }
+                        k++
+                    }
+
+                    saveFetchedHistoryForLocation(
+                        daysHistory = sevenTwoHrsArrList,
+                        weekHistory = weekArrList,
+                        monthHistory = monthArrList,
+                        dataTag = actualDataTag
+                    )
+                }
+            } catch (exc: Exception) {
+                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptHistoryPayload()", msg = exc.message, exc = exc)
+            }
+        }
+
+    }
     private val recentRequestsData = arrayListOf<JsonObject>()
     private suspend fun saveFetchedHistoryForLocation(
             daysHistory: ArrayList<LocationHistoryThreeDays>,
@@ -615,10 +748,6 @@ class AppDataRepo
                                 userName = username,
                                 userPass = password
                         )
-                    } else {
-                        Log.d(
-                                "fetchMonitorsForALoc", "with tag  $watchedLocationTag returned ${response.body()}"
-                        )
                     }
                 } catch (exc: Exception) {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -670,10 +799,6 @@ class AppDataRepo
                 method = method
             )
 
-            response.enqueue(
-                getLocationHistoryCallback()
-            )
-
             // keep track of this request data ---
             data.addProperty(COMP_ID_KEY, compId)
             data.addProperty(LOC_ID_KEY, locId)
@@ -681,6 +806,10 @@ class AppDataRepo
             data.addProperty(USER_KEY, userName)
             data.addProperty(PASSWORD_KEY, userPassword)
             data.addProperty(API_LOCAL_DATA_BINDER_KEY, dataTag)
+            response.enqueue(
+                getLocationHistoryCallback(isMonitor = true)
+            )
+
             recentRequestsData.add(data)
         } catch (exc: Exception) {
             myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG refreshHistoryForMonitor()", msg = exc.message, exc = exc)

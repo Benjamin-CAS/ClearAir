@@ -43,7 +43,7 @@ fun formatWatchedHighLightsData(
     val locationArea =
             if (location.location_area.isNotBlank()) {
                 val prefix = if (location.isIndoorLoc) {
-                    ctx.getString(R.string.indoor_txt)
+                    ctx.getString(R.string.outdoor_txt) //todo indoor?
                 } else {
                     ctx.getString(R.string.outdoor_txt)
                 }
@@ -142,3 +142,5 @@ fun formatMonitorData(
             humldColor = humidColor
     )
 }
+
+

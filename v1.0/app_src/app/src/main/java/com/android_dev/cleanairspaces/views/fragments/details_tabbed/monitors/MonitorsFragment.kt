@@ -60,7 +60,7 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
             it?.let {
                 viewModel.aqiIndex = it.aqiIndex
                 updateGenDetails(it.watchedLocationHighLights)
-                observeMonitorsForLoc(it.watchedLocationHighLights.actualDataTag, it.aqiIndex)
+                observeMonitorsForLoc( isIndoorLoc = it.watchedLocationHighLights.isIndoorLoc, actualDataTag = it.watchedLocationHighLights.actualDataTag, aqiIndex = it.aqiIndex)
             }
         })
         binding.searchMonitorsBtn.setOnClickListener {
@@ -98,9 +98,14 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
 
     }
 
-    private fun observeMonitorsForLoc(actualDataTag: String, aqiIndex : String?) {
+    private fun observeMonitorsForLoc(
+        actualDataTag: String,
+        aqiIndex: String?,
+        isIndoorLoc: Boolean
+    ) {
         viewModel.observeMonitorsForLocation(locationsTag = actualDataTag).observe(viewLifecycleOwner, {
             it?.let {
+                monitorsAdapter.updateLocationType(isIndoorLoc)
                 monitorsAdapter.updateSelectedAqiIndex(aqiIndex)
                 monitorsAdapter.setWatchedMonitorsList(it)
                 binding.progressCircular.isVisible = false
@@ -125,9 +130,9 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
                         .load(logoURL)
                         .into(locationLogo)
             }
-            locationNameTv.text = if (currentlyWatchedLocationHighLights.location_area.isNotBlank())
-                currentlyWatchedLocationHighLights.location_area
-            else currentlyWatchedLocationHighLights.name
+            locationNameTv.text = if (currentlyWatchedLocationHighLights.name.isNotBlank())
+                currentlyWatchedLocationHighLights.name
+            else currentlyWatchedLocationHighLights.location_area
             locationNameTv.isSelected = true
             val isSecure = currentlyWatchedLocationHighLights.is_secure
             userName.isVisible = isSecure

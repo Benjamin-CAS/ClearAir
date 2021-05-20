@@ -99,9 +99,9 @@ class DetailsFragment : Fragment() {
                         .load(logoURL)
                         .into(locationLogo)
             }
-            locationNameTv.text = if (watchedLocation.location_area.isNotBlank())
-                watchedLocation.location_area
-            else watchedLocation.name
+            locationNameTv.text = if (watchedLocation.name.isNotBlank())
+                watchedLocation.name
+            else watchedLocation.location_area
             locationNameTv.isSelected = true
         }
     }
@@ -159,7 +159,8 @@ class DetailsFragment : Fragment() {
                 vocLvl = indoorVoc,
                 tmpLvl = indoorTemperature,
                 energyMax = energyMax,
-                energyMonth = energyMonth
+                energyMonth = energyMonth,
+                addUnitsInVal = false
         )
 
         inOutLayoutBinding.apply {
@@ -281,7 +282,7 @@ class DetailsFragment : Fragment() {
                 indoorPmStatusTv.setText(inAqiStatus.lbl)
                 updatedOnTv.text = inOutData.updated
                 indoorPmIndex25Lbl.text = getString(R.string.default_aqi_pm_2_5)
-                val pmValTxt = inOutData.indoorPmValue.toString() + " " + getString(R.string.pm_units)
+                val pmValTxt = inOutData.indoorPmValue.toString()
                 indoorPmIndexVal.text = pmValTxt
             }
         }
@@ -292,7 +293,7 @@ class DetailsFragment : Fragment() {
                 outdoorPmStatusTv.setText(outAqiStatus.lbl)
                 outdoorPmValueTv.text = inOutData.outDoorPmValue.toString()
                 outdoorPmValueTv.setTextColor(ContextCompat.getColor(requireContext(), outAqiStatus.txtColorRes))
-                outdoorLocation.text = inOutData.locationName
+                outdoorLocation.text = inOutData.locationArea
                 outdoorLocation.isSelected = true
             }
         }

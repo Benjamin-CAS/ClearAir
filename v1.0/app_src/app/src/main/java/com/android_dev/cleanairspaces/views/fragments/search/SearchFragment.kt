@@ -1,4 +1,4 @@
-package com.android_dev.cleanairspaces.views.search
+package com.android_dev.cleanairspaces.views.fragments.search
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -139,7 +139,11 @@ class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListen
                     indoorPmIndexTv.text = uiData.aqiIndexStr
                 } else {
                     //hide data
-                    indoorTv.isVisible = false
+                    indoorTv.isVisible = true
+                    indoorTv.text = ""
+                    indoorPointsTv.text = ""
+                    indoorStatusIndicatorTv.text = ""
+                    indoorPmIndexTv.text = ""
                 }
                 itemView.setOnClickListener { locationListener.onClickWatchedLocation(location) }
             }

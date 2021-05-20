@@ -11,6 +11,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +31,7 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorD
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndMonitorsAdapter
-import com.android_dev.cleanairspaces.views.smartqr.CaptureQrCodeActivity
+import com.android_dev.cleanairspaces.views.fragments.smartqr.CaptureQrCodeActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
@@ -67,6 +70,9 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
         homeMapOverlay.apply {
             myLocationBtn.setOnClickListener {
                 requestPermissionsAndShowUserLocation()
+                viewModel.getMyLocationOrNull()?.let {
+                    showLocationOnMap(it)
+                }
             }
             mapView.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -219,7 +225,15 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
         super.onPrepareOptionsMenu(menu)
         menu.findItem(R.id.splashFragment).isVisible = false
         menu.findItem(R.id.settingsMenuFragment).isVisible = true
+        menu.findItem(R.id.aboutAppFragment).isVisible = true
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(
+            item
+        )
+    }
+
 
     /************** qr code act **********/
     private fun scanQRCode() {

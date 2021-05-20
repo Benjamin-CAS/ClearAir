@@ -1,4 +1,4 @@
-package com.android_dev.cleanairspaces.views.search
+package com.android_dev.cleanairspaces.views.fragments.search
 
 import androidx.lifecycle.*
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData

@@ -173,7 +173,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_pm_index_2_5_lbl"
-        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        style="@style/Theme.CleanAirSpaces.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
@@ -187,7 +187,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_co_2_lbl"
-        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        style="@style/Theme.CleanAirSpaces.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
@@ -197,11 +197,11 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/indoor_pm_index_2_5_lbl"
-        app:layout_constraintWidth_percent=".25" />
+        app:layout_constraintWidth_percent=".3" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_tvoc_lbl"
-        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        style="@style/Theme.CleanAirSpaces.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
@@ -211,11 +211,11 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/indoor_co_2_lbl"
-        app:layout_constraintWidth_percent=".25" />
+        app:layout_constraintWidth_percent=".3" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_tmp_lbl"
-        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        style="@style/Theme.CleanAirSpaces.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
@@ -229,7 +229,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_humidity_lbl"
-        style="@style/Theme.CleanAirSpaces.Subtitle1"
+        style="@style/Theme.CleanAirSpaces.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/std_space"
@@ -246,76 +246,141 @@
         style="@style/Theme.CleanAirSpaces.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/std_space"
         android:layout_marginTop="@dimen/sm_space"
         android:gravity="end"
         android:textColor="@color/blue_500"
         app:layout_constraintStart_toEndOf="@id/indoor_pm_index_2_5_lbl"
         app:layout_constraintTop_toBottomOf="@id/line1"
-        app:layout_constraintWidth_percent=".2"
+        app:layout_constraintWidth_percent=".1"
         tools:text="20.4" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/indoor_pm_index_units"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/sm_space"
+        android:layout_marginTop="@dimen/sm_space"
+        android:gravity="start"
+        android:textColor="@color/blue_500"
+        app:layout_constraintStart_toEndOf="@id/indoor_pm_index_val"
+        app:layout_constraintTop_toBottomOf="@id/line1"
+        app:layout_constraintWidth_percent=".15"
+        android:text="@string/pm_units" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_co_2_val"
         style="@style/Theme.CleanAirSpaces.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/std_space"
         android:layout_marginTop="@dimen/sm_space"
         android:gravity="end"
         android:textColor="@color/blue_500"
         app:layout_constraintStart_toEndOf="@id/indoor_co_2_lbl"
         app:layout_constraintTop_toBottomOf="@id/indoor_pm_index_2_5_lbl"
-        app:layout_constraintWidth_percent=".25"
-        tools:text="@string/co_lbl" />
+        app:layout_constraintWidth_percent=".1"
+        tools:text="1000" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/indoor_co_2_units"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/sm_space"
+        android:layout_marginTop="@dimen/sm_space"
+        android:gravity="start"
+        android:textColor="@color/blue_500"
+        app:layout_constraintStart_toEndOf="@id/indoor_co_2_val"
+        app:layout_constraintTop_toBottomOf="@id/indoor_pm_index_2_5_lbl"
+        app:layout_constraintWidth_percent=".15"
+        android:text="@string/co2_units" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_tvoc_val"
         style="@style/Theme.CleanAirSpaces.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/std_space"
         android:layout_marginTop="@dimen/sm_space"
         android:gravity="end"
         android:textColor="@color/blue_500"
         app:layout_constraintStart_toEndOf="@id/indoor_tvoc_lbl"
         app:layout_constraintTop_toBottomOf="@id/indoor_co_2_lbl"
-        app:layout_constraintWidth_percent=".25"
-        tools:text="@string/tvoc_lbl" />
+        app:layout_constraintWidth_percent=".1"
+        tools:text="1000" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/indoor_tvoc_units"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/sm_space"
+        android:layout_marginTop="@dimen/sm_space"
+        android:gravity="start"
+        android:textColor="@color/blue_500"
+        app:layout_constraintStart_toEndOf="@id/indoor_tvoc_val"
+        app:layout_constraintTop_toBottomOf="@id/indoor_co_2_lbl"
+        app:layout_constraintWidth_percent=".15"
+        android:text="@string/tvoc_units"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_tmp_value"
         style="@style/Theme.CleanAirSpaces.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/std_space"
         android:layout_marginTop="@dimen/sm_space"
         android:gravity="end"
         android:textColor="@color/blue_500"
         app:layout_constraintStart_toEndOf="@id/indoor_tmp_lbl"
         app:layout_constraintTop_toBottomOf="@id/indoor_tvoc_lbl"
-        app:layout_constraintWidth_percent=".2"
-        tools:text="@string/tmp_lbl" />
+        app:layout_constraintWidth_percent=".1"
+        tools:text="100" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/indoor_tmp_units"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/sm_space"
+        android:layout_marginTop="@dimen/sm_space"
+        android:gravity="start"
+        android:textColor="@color/blue_500"
+        app:layout_constraintStart_toEndOf="@id/indoor_tmp_value"
+        app:layout_constraintTop_toBottomOf="@id/indoor_tvoc_lbl"
+        app:layout_constraintWidth_percent=".15"
+        android:text="@string/tmp_units" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/indoor_humidity_val"
         style="@style/Theme.CleanAirSpaces.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/std_space"
         android:layout_marginTop="@dimen/sm_space"
         android:gravity="end"
         android:textColor="@color/blue_500"
         app:layout_constraintStart_toEndOf="@+id/indoor_humidity_lbl"
         app:layout_constraintTop_toBottomOf="@id/indoor_tmp_lbl"
-        app:layout_constraintWidth_percent=".2"
-        tools:text="@string/humidity_lbl" />
+        app:layout_constraintWidth_percent=".1"
+        tools:text="100" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/indoor_humidity_units"
+        style="@style/Theme.CleanAirSpaces.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/sm_space"
+        android:layout_marginTop="@dimen/sm_space"
+        android:gravity="start"
+        android:textColor="@color/blue_500"
+        app:layout_constraintStart_toEndOf="@+id/indoor_humidity_val"
+        app:layout_constraintTop_toBottomOf="@id/indoor_tmp_lbl"
+        app:layout_constraintWidth_percent=".15"
+        android:text="@string/humid_units"/>
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/indoor_pm_index_gradient"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginStart="@dimen/sm_space"
         android:layout_marginTop="@dimen/sm_space"
         android:progressDrawable="@drawable/three_gradient_progress"
         app:layout_constraintBottom_toBottomOf="@id/indoor_pm_index_2_5_lbl"
@@ -328,7 +393,7 @@
         android:id="@+id/indoor_co_2_gradient"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginStart="@dimen/sm_space"
         android:layout_marginTop="@dimen/sm_space"
         android:progressDrawable="@drawable/three_gradient_progress"
         app:layout_constraintBottom_toBottomOf="@id/indoor_co_2_lbl"
@@ -341,7 +406,7 @@
         android:id="@+id/indoor_tvoc_gradient"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginStart="@dimen/sm_space"
         android:layout_marginTop="@dimen/sm_space"
         android:progressDrawable="@drawable/three_gradient_progress"
         app:layout_constraintBottom_toBottomOf="@id/indoor_tvoc_lbl"
@@ -354,7 +419,7 @@
         android:id="@+id/indoor_tmp_gradient"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginStart="@dimen/sm_space"
         android:layout_marginTop="@dimen/sm_space"
         android:progressDrawable="@drawable/six_gradient_progress"
         app:layout_constraintBottom_toBottomOf="@id/indoor_tmp_lbl"
@@ -367,7 +432,7 @@
         android:id="@+id/indoor_humiditygradient"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginStart="@dimen/sm_space"
         android:layout_marginTop="@dimen/sm_space"
         android:progressDrawable="@drawable/six_gradient_progress"
         app:layout_constraintBottom_toBottomOf="@id/indoor_humidity_lbl"

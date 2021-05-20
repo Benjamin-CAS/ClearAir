@@ -26,7 +26,7 @@ class MyLogger @Inject constructor(
 
 
     companion object {
-        const val IS_DEBUG_MODE = true
+        const val IS_DEBUG_MODE = false
         private val uniqueID = UUID.randomUUID().toString()
     }
 }
@@ -40,5 +40,4 @@ enum class LogTags(val readableMsg: String) {
     USER_ACTION_CLOSE_APP(readableMsg = "user action | close app"),
     USER_LOCATION_CHANGED(readableMsg = "user location changed"),
     USER_ACTION_SETTINGS(readableMsg = "user changed settings")
-
 }

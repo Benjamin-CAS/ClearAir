@@ -166,7 +166,7 @@ class WatchedLocationUpdatesRepo
                             pm_indoor = indoorPm,
                             name = existingData.name,
                             logo = existingData.logo,
-                            location_area = existingData.location_area,
+                            location_area = locationDetails.outdoor?.name_en?:existingData.location_area,
                             indoor_co2 = locationDetails.indoor?.indoor_co2?.toDoubleOrNull(),
                             indoor_humidity = locationDetails.indoor?.indoor_humidity?.toDoubleOrNull(),
                             indoor_temperature = locationDetails.indoor?.indoor_temperature?.toDoubleOrNull(),

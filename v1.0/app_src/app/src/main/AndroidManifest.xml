@@ -48,7 +48,7 @@
             android:value="${GMAPS_API_DEBUG_KEY}" />
 
         <activity
-            android:name=".views.smartqr.CaptureQrCodeActivity"
+            android:name=".views.fragments.smartqr.CaptureQrCodeActivity"
             android:screenOrientation="portrait"
             android:stateNotNeeded="true"/>
 

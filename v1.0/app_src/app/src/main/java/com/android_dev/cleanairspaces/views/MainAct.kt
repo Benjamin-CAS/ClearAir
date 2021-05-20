@@ -81,6 +81,8 @@ class MainAct : AppCompatActivity() {
                     }
                 }
 
+                R.id.aboutAppFragment,
+                R.id.webViewFragment,
                 R.id.addLocation,
                 R.id.settingsMenuFragment,
                 R.id.searchFragment,

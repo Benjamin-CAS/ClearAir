@@ -5,9 +5,7 @@ import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
@@ -15,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentGMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
@@ -339,6 +338,8 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         }
 
     }
+
+
 
     /********************* NAVIGATION ***************/
     override fun goToSearchFragment() {

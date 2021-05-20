@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".views.fragments.about_app.AboutAppFragment">
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/app_name"
+        android:text="@string/app_name"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Title5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/logo"
+        android:layout_marginBottom="@dimen/std_space"/>
+
+    <ImageView
+        android:id="@+id/logo"
+        android:contentDescription="@string/app_logo_image_desc"
+        android:layout_width="@dimen/location_logo_size_md"
+        android:layout_height="@dimen/location_logo_size_md"
+        android:src="@mipmap/ic_launcher_round"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/app_version"
+        android:text="@string/app_version_desc"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        android:layout_marginTop="@dimen/std_space"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/app_copyright"
+        android:text="@string/app_copyright_txt"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Body1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/app_version"
+        android:layout_marginTop="@dimen/std_space"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

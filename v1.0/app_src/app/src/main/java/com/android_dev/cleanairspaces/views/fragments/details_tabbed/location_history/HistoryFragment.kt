@@ -140,9 +140,9 @@ class HistoryFragment : Fragment() {
                         .load(logoURL)
                         .into(locationLogo)
             }
-            locationNameTv.text = if (locationDetailsInfo.location_area.isNotBlank())
-                locationDetailsInfo.location_area
-            else locationDetailsInfo.name
+            locationNameTv.text = if (locationDetailsInfo.name.isNotBlank())
+                locationDetailsInfo.name
+            else locationDetailsInfo.location_area
             locationNameTv.isSelected = true
         }
     }

@@ -1,8 +1,10 @@
 package com.android_dev.cleanairspaces.views.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.MonitorItemBinding
@@ -14,6 +16,7 @@ import com.bumptech.glide.Glide
 class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
         RecyclerView.Adapter<MonitorsAdapter.MonitorsAdapterViewHolder>() {
 
+    private var isForIndoorLoc: Boolean = true
     private val monitorList = ArrayList<MonitorDetails>()
 
     private var aqiIndex: String? = null
@@ -26,23 +29,29 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
     class MonitorsAdapterViewHolder(private val binding: MonitorItemBinding) :
             RecyclerView.ViewHolder(binding.root) {
         fun bind(
-                monitor: MonitorDetails,
-                monitorListener: OnClickItemListener,
-                aqiIndex: String?
+            monitor: MonitorDetails,
+            monitorListener: OnClickItemListener,
+            aqiIndex: String?,
+            isForIndoorLoc: Boolean
         ) {
             val ctx = itemView.context
             binding.apply {
-                val isWatchingIndicatorIcon = if (monitor.watch_location) {
-                    R.drawable.ic_eye
-                } else {
-                    R.drawable.ic_add
-                }
+                if (isForIndoorLoc) {
+                    val isWatchingIndicatorIcon = if (monitor.watch_location) {
+                        R.drawable.ic_eye
+                    } else {
+                        R.drawable.ic_add
+                    }
                 Glide.with(ctx)
-                        .load(isWatchingIndicatorIcon)
-                        .into(isWatchingIndicator)
+                    .load(isWatchingIndicatorIcon)
+                    .into(isWatchingIndicator)
+                }else{
+                    isWatchingIndicator.isVisible = false
+                }
                 val uiPmData =
                         formatMonitorData(ctx = ctx, monitor = monitor, aqiIndex = aqiIndex)
                 indoorName.text = uiPmData.locationName
+                pmLbl.text = uiPmData.aqiIndexStr
                 pmVal.text = uiPmData.indoorPmValue.toString()
                 inDoorPmValue.text = uiPmData.indoorPmValue.toString()
                 uiPmData.indoorAQIStatus?.status_bar_res?.let {
@@ -50,6 +59,9 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
                             ContextCompat.getDrawable(ctx, it)
 
                     indoorStatusIndicatorTv.setText(uiPmData.indoorAQIStatus.lbl)
+                    val pmColor = ContextCompat.getColor(ctx, uiPmData.indoorAQIStatus.txtColorRes)
+                    pmVal.setTextColor(pmColor)
+                    inDoorPmValue.setTextColor(pmColor)
                     val uiExtraData = formatWatchedHighLightsIndoorExtras(
                             ctx = ctx,
                             co2Lvl = monitor.indoor_co2,
@@ -69,8 +81,9 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
                     co2Val.setTextColor(ContextCompat.getColor(ctx , uiPmData.co2Color))
                     updatedOnTv.text = monitor.getUpdatedOnFormatted()
                 }
-                itemView.setOnClickListener { monitorListener.onClickWatchedMonitor(monitor) }
-
+                if (isForIndoorLoc) {
+                    itemView.setOnClickListener { monitorListener.onClickWatchedMonitor(monitor) }
+                }
             }
         }
     }
@@ -87,7 +100,7 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
 
     override fun onBindViewHolder(holder: MonitorsAdapterViewHolder, position: Int) {
         val monitor = monitorList[position]
-        holder.bind(monitor, monitorListener, aqiIndex)
+        holder.bind(monitor, monitorListener, aqiIndex, isForIndoorLoc)
     }
 
     fun setWatchedMonitorsList(monitorList: List<MonitorDetails>) {
@@ -108,5 +121,10 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
     fun removeAt(adapterPosition: Int) {
         val monitor = monitorList[adapterPosition]
         monitorListener.onSwipeToDeleteMonitor(monitor)
+    }
+
+    fun updateLocationType(indoorLoc: Boolean) {
+        this.isForIndoorLoc = indoorLoc
+        notifyDataSetChanged()
     }
 }

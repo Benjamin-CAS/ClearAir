@@ -12,4 +12,11 @@
         app:showAsAction="ifRoom"
         android:title="@string/save_changes_txt"
         android:visible="false"/>
+
+    <item
+        android:id="@+id/aboutAppFragment"
+        android:title="@string/about_app_txt"
+        app:showAsAction="never"
+        android:visible="false"/>
+
 </menu>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/whitish"
-    tools:context=".views.search.SearchFragment">
+    tools:context=".views.fragments.search.SearchFragment">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/search_card"

@@ -277,6 +277,7 @@ class AppDataRepo
                     recentRequestsData.remove(requestedData)
                     val actualDataTag = requestedData.get(API_LOCAL_DATA_BINDER_KEY).asString
 
+
                     val unEncryptedPayload: String =
                         CasEncDecQrProcessor.decodeApiResponse(pl)
                     val unEncJson = JSONObject(unEncryptedPayload)
@@ -809,6 +810,7 @@ class AppDataRepo
             response.enqueue(
                 getLocationHistoryCallback(isMonitor = true)
             )
+
 
             recentRequestsData.add(data)
         } catch (exc: Exception) {

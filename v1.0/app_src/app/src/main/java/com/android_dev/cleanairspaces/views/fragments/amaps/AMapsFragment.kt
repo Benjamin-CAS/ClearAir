@@ -379,18 +379,6 @@ class AMapsFragment : BaseMapFragment() {
     }
 
 
-    /******************MENU **************/
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.splashFragment).isVisible = false
-        menu.findItem(R.id.settingsMenuFragment).isVisible = true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(
-                item
-        )
-    }
 
     /********************* NAVIGATION ***************/
     override fun goToSearchFragment() {

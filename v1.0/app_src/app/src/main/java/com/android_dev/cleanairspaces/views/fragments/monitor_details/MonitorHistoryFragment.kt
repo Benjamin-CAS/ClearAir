@@ -111,8 +111,8 @@ class MonitorHistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //initially
-        selectedParamType = ParamTypes.IN_PM
-        setSelectedParamView(binding.aqiTv)
+        selectedParamType = ParamTypes.OUT_PM
+        setSelectedParamView(binding.outPmTv)
         styleBarChart(binding.daysChart, DAY_TAG)
         styleBarChart(binding.weekChart, WEEK_TAG)
         styleBarChart(binding.monthChart, MONTH_TAG)
@@ -141,8 +141,9 @@ class MonitorHistoryFragment : Fragment() {
         viewModel.observeHistories(actualDataTag).days.observe(
             viewLifecycleOwner,
             {
-                if (it != null)
+                if (it != null) {
                     viewModel.setDaysHistory(it)
+                }
             })
         viewModel.observeHistories(actualDataTag).week.observe(
             viewLifecycleOwner,
@@ -169,6 +170,24 @@ class MonitorHistoryFragment : Fragment() {
     /*********** graph controls ***********/
     private fun setParametersClickListeners() {
         binding.apply {
+            outPmTv.setOnClickListener {
+                selectedParamType = ParamTypes.OUT_PM
+                setSelectedParamView(outPmTv)
+                clearClickedValue("")
+                refreshChartData(
+                    refreshDaysHistory = true,
+                    refreshWeeksHistory = true,
+                    refreshMonthsHistory = true
+                )
+                lifecycleScope.launch(Dispatchers.IO) {
+                    myLogger.logThis(
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "Monitor Outdoor PM"
+                    )
+                }
+            }
+
             aqiTv.setOnClickListener {
                 selectedParamType = ParamTypes.IN_PM
                 setSelectedParamView(aqiTv)
@@ -300,7 +319,6 @@ class MonitorHistoryFragment : Fragment() {
         viewModel.observeLocationWeekHistory().observe(
             viewLifecycleOwner, { list ->
                 list?.let {
-
                     viewModel.currentlyDisplayedWeekHistoryData = list
                     refreshChartData(refreshWeeksHistory = true)
                 }
@@ -325,6 +343,7 @@ class MonitorHistoryFragment : Fragment() {
 
         if (refreshDaysHistory) {
             val dayData = getChartDataForParam(forDays = true)
+
             updateChart(
                 chart = binding.daysChart,
                 title = daysChartTitle,

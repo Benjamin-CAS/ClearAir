@@ -157,5 +157,8 @@
     <string name="monitor_humidity_lbl">Humidity:</string>
     <string name="is_watching_loc_iv_desc">is watching location indicator</string>
     <string name="turn_on_network_loc_provider">"Turn on location access in settings"</string>
+    <string name="fragment_about_app_lbl">About CleanAir Spaces</string>
+    <string name="app_copyright_txt">Copyright &#169; 2021 CleanAir Spaces</string>
+    <string name="web_view_fragment_lbl">CleanAir Spaces</string>
 
 </resources>

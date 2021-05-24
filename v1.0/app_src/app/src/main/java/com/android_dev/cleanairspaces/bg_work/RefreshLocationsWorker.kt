@@ -15,14 +15,14 @@ import kotlinx.coroutines.withContext
 
 @HiltWorker
 class RefreshLocationsWorker @AssistedInject constructor(
-        @Assisted appContext: Context,
-        @Assisted workerParams: WorkerParameters,
-        private val outDoorLocationsRepo: OutDoorLocationsRepo,
-        private val inDoorLocationsRepo: InDoorLocationsRepo,
-        private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
-        private val myLogger: MyLogger,
-        private val logRepo: LogRepo,
-        private val monitorDetailsUpdatesRepo: MonitorDetailsUpdatesRepo
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val outDoorLocationsRepo: OutDoorLocationsRepo,
+    private val inDoorLocationsRepo: InDoorLocationsRepo,
+    private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
+    private val myLogger: MyLogger,
+    private val logRepo: LogRepo,
+    private val monitorDetailsUpdatesRepo: MonitorDetailsUpdatesRepo
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val TAG = RefreshLocationsWorker::class.java.simpleName
@@ -38,10 +38,10 @@ class RefreshLocationsWorker @AssistedInject constructor(
                 sendLogData()
             } catch (exc: Exception) {
                 myLogger.logThis(
-                        tag = LogTags.EXCEPTION,
-                        from = "$TAG doWork()",
-                        msg = exc.message,
-                        exc = exc
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG doWork()",
+                    msg = exc.message,
+                    exc = exc
                 )
             }
         }

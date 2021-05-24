@@ -21,9 +21,9 @@ import javax.inject.Singleton
 class InDoorLocationsRepo
 @Inject constructor(
 
-        private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
-        private val inDoorLocationsApiService: InDoorLocationApiService,
-        private val myLogger: MyLogger
+    private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
+    private val inDoorLocationsApiService: InDoorLocationApiService,
+    private val myLogger: MyLogger
 ) {
 
     private val TAG = IndoorLocationsResponse::class.java.simpleName
@@ -31,7 +31,7 @@ class InDoorLocationsRepo
     suspend fun refreshInDoorLocations() {
         val timeStamp = System.currentTimeMillis().toString()
         val pl =
-                CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocation(timeStamp = timeStamp)
+            CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocation(timeStamp = timeStamp)
         val indoorLocationsResponse = inDoorLocationsApiService.fetchInDoorLocations(pl = pl)
         indoorLocationsResponse.enqueue(getInDoorLocationsResponseCallback())
     }
@@ -46,23 +46,28 @@ class InDoorLocationsRepo
                         continue
                     val tag = location.company_id
                     searchData.add(
-                            SearchSuggestionsData(
-                                    actualDataTag = tag,
-                                    isForOutDoorLoc = false,
-                                    nameToDisplay = location.name_en,
-                                    location_id = "",
-                                    monitor_id = "",
-                                    company_id = location.company_id,
-                                    isForMonitor = false,
-                                    isForIndoorLoc = true,
-                                    is_secure = location.secure.toInt() == 1
-                            )
+                        SearchSuggestionsData(
+                            actualDataTag = tag,
+                            isForOutDoorLoc = false,
+                            nameToDisplay = location.name_en,
+                            location_id = "",
+                            monitor_id = "",
+                            company_id = location.company_id,
+                            isForMonitor = false,
+                            isForIndoorLoc = true,
+                            is_secure = location.secure.toInt() == 1
+                        )
                     )
                 }
                 searchSuggestionsDataDao.deleteAllInDoorSearchSuggestions()
                 searchSuggestionsDataDao.insertSuggestions(searchData)
             } catch (exc: Exception) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG mapIndoorLocationsToSearchableData()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG mapIndoorLocationsToSearchableData()",
+                    msg = exc.message,
+                    exc = exc
+                )
 
             }
         }
@@ -72,8 +77,8 @@ class InDoorLocationsRepo
     private fun getInDoorLocationsResponseCallback(): Callback<IndoorLocationsResponse> {
         return object : Callback<IndoorLocationsResponse> {
             override fun onResponse(
-                    call: Call<IndoorLocationsResponse>,
-                    response: Response<IndoorLocationsResponse>
+                call: Call<IndoorLocationsResponse>,
+                response: Response<IndoorLocationsResponse>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -81,12 +86,17 @@ class InDoorLocationsRepo
                         try {
                             if (responseBody != null && !responseBody.data.isNullOrEmpty()) {
                                 mapIndoorLocationsToSearchableData(
-                                        responseBody.data
+                                    responseBody.data
                                 )
                             }
                         } catch (exc: Exception) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getInDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                                myLogger.logThis(
+                                    tag = LogTags.EXCEPTION,
+                                    from = "$TAG getInDoorLocationsResponseCallback()",
+                                    msg = exc.message,
+                                    exc = exc
+                                )
                             }
                         }
                     }

@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.onNavDestinationSelected
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentGMapsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
@@ -23,8 +22,6 @@ import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.android_dev.cleanairspaces.utils.showSnackBar
-import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
-import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAdapter
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndMonitorsAdapter
 import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragment
 import com.android_dev.cleanairspaces.views.fragments.monitor_details.MonitorDetailsAqiWrapper
@@ -82,7 +79,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
         requestLocationPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
+            ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
                 showUserLocation()
@@ -93,19 +90,19 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     override fun initQrScannerLauncher() {
         //scan-qr launcher must be set
         scanQrCodeLauncher =
-                registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-                { result: ActivityResult ->
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        //  you will get result here in result.data
-                        handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
-                    }
-
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    //  you will get result here in result.data
+                    handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
                 }
+
+            }
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGMapsBinding.inflate(inflater, container, false)
 
@@ -137,18 +134,20 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             }
         })
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object  : OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                goHome()
-            }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    goHome()
+                }
 
-        })
+            })
     }
 
-    private fun initializeDataAfterMapIsSet(){
+    private fun initializeDataAfterMapIsSet() {
         viewModel.observeAqiIndex().observe(viewLifecycleOwner, {
-                viewModel.aqiIndex = it
-                updateIndexForWatchedLocations(it)
+            viewModel.aqiIndex = it
+            updateIndexForWatchedLocations(it)
         })
 
         observeWatchedLocations()
@@ -156,7 +155,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         observeMonitorsIWatch()
     }
 
-    private fun observeMonitorsIWatch(){
+    private fun observeMonitorsIWatch() {
         viewModel.observeMonitorsIWatch().observe(viewLifecycleOwner, {
             //todo if (it != null)
             //todo updateWatchedMonitors(monitors = it)
@@ -174,9 +173,9 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
 
         } else {
             snackBar = binding.container.showSnackBar(
-                    isErrorMsg = true,
-                    msgResId = R.string.failed_to_load_gmap,
-                    actionMessage = R.string.dismiss
+                isErrorMsg = true,
+                msgResId = R.string.failed_to_load_gmap,
+                actionMessage = R.string.dismiss
             )
         }
 
@@ -193,11 +192,11 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     private fun observeMapRelatedData() {
         //map data -locations & pm values
         viewModel.observeMapData().observe(
-                this, {
-            if (it.isNotEmpty()) {
-                drawCirclesOnMap(it)
+            this, {
+                if (it.isNotEmpty()) {
+                    drawCirclesOnMap(it)
+                }
             }
-        }
         )
     }
 
@@ -216,8 +215,8 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
                         else -> hazardCircle
                     }
                     val circleMarker = mMap?.addMarker(
-                            MarkerOptions().position(mapData.getGMapLocationLatLng())
-                                    .icon(mIcon)
+                        MarkerOptions().position(mapData.getGMapLocationLatLng())
+                            .icon(mIcon)
                     )
                     circleMarker?.let { marker ->
                         mapCircleMarkers.add(marker)
@@ -226,7 +225,12 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             }
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG drawCirclesOnMap()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG drawCirclesOnMap()",
+                    msg = exc.message,
+                    exc = exc
+                )
 
             }
 
@@ -243,15 +247,15 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     override fun showLocationOnMap(location: Location) {
         val currentUserLocation = LatLng(location.latitude, location.longitude)
         mMap?.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                        currentUserLocation,
-                        MY_LOCATION_ZOOM_LEVEL
-                )
+            CameraUpdateFactory.newLatLngZoom(
+                currentUserLocation,
+                MY_LOCATION_ZOOM_LEVEL
+            )
         )
         viewModel.myLocMarkerOnGMap?.remove()
         viewModel.myLocMarkerOnGMap = mMap?.addMarker(
-                MarkerOptions().position(currentUserLocation)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_my_location_marker))
+            MarkerOptions().position(currentUserLocation)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_my_location_marker))
         )
     }
 
@@ -260,23 +264,23 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         if (intentResult != null) {
             if (intentResult.contents == null) {
                 Toast.makeText(
-                        requireContext(),
-                        R.string.scan_qr_code_cancelled,
-                        Toast.LENGTH_LONG
+                    requireContext(),
+                    R.string.scan_qr_code_cancelled,
+                    Toast.LENGTH_LONG
                 ).show()
             } else {
                 // if the intentResult is not null we'll set
                 // the content and format of scan message
                 val qrContent = intentResult.contents
                 val action = GMapsFragmentDirections.actionGMapsFragmentToAddLocation(
-                        locDataFromQr = qrContent
+                    locDataFromQr = qrContent
                 )
                 findNavController().navigate(action)
             }
         } else {
             Toast.makeText(
-                    requireContext(), R.string.scan_qr_code_unknown,
-                    Toast.LENGTH_LONG
+                requireContext(), R.string.scan_qr_code_unknown,
+                Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -333,12 +337,11 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         super.onDestroy()
         try {
             binding.gMap.onDestroy()
-        }catch (exc : java.lang.Exception){
-            Log.d(TAG, "${exc.message?:" exception"} onDestroy")
+        } catch (exc: java.lang.Exception) {
+            Log.d(TAG, "${exc.message ?: " exception"} onDestroy")
         }
 
     }
-
 
 
     /********************* NAVIGATION ***************/
@@ -348,7 +351,12 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             findNavController().navigate(action)
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG goToSearchFragment()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG goToSearchFragment()",
+                    msg = exc.message,
+                    exc = exc
+                )
             }
         }
     }
@@ -360,7 +368,12 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             binding.container.findNavController().navigate(action)
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG  onClickWatchedLocation()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG  onClickWatchedLocation()",
+                    msg = exc.message,
+                    exc = exc
+                )
             }
         }
     }
@@ -369,8 +382,8 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         val details = MonitorDetailsAqiWrapper(
             monitorDetails = monitor, aqiIndex = viewModel.aqiIndex
         )
-       val action = GMapsFragmentDirections.actionGMapsFragmentToMonitorHistoryFragment(details)
-       findNavController().navigate(action)
+        val action = GMapsFragmentDirections.actionGMapsFragmentToMonitorHistoryFragment(details)
+        findNavController().navigate(action)
     }
 
 

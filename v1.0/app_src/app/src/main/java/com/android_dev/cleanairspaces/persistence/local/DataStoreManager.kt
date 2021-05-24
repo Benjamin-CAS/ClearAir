@@ -20,9 +20,9 @@ class DataStoreManager(appContext: Context) {
 
     fun getAqiIndex(): Flow<String?> {
         return mDataStore.data
-                .map { preferences ->
-                    preferences[aqiIndexKey]
-                }
+            .map { preferences ->
+                preferences[aqiIndexKey]
+            }
     }
 
 
@@ -41,9 +41,9 @@ class DataStoreManager(appContext: Context) {
 
     fun getSelectedMap(): Flow<String?> {
         return mDataStore.data
-                .map { preferences ->
-                    preferences[mapToUseKey]
-                }
+            .map { preferences ->
+                preferences[mapToUseKey]
+            }
     }
 
     suspend fun saveMapLang(selectedMapLang: String) {
@@ -54,9 +54,9 @@ class DataStoreManager(appContext: Context) {
 
     fun getMapLang(): Flow<String?> {
         return mDataStore.data
-                .map { preferences ->
-                    preferences[mapLang]
-                }
+            .map { preferences ->
+                preferences[mapLang]
+            }
     }
 
     suspend fun setAlreadyAskedLocPermission() {
@@ -67,9 +67,9 @@ class DataStoreManager(appContext: Context) {
 
     fun hasAlreadyAskedLocPermission(): Flow<Boolean> {
         return mDataStore.data
-                .map { preferences ->
-                    preferences[hasRequestedLocationKey] ?: false
-                }
+            .map { preferences ->
+                preferences[hasRequestedLocationKey] ?: false
+            }
     }
 
     private val aqiIndexKey = stringPreferencesKey(AQI_INDEX_TO_USE_KEY)

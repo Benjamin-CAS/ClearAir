@@ -5,7 +5,9 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
@@ -13,7 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.onNavDestinationSelected
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.MapView
@@ -44,38 +45,38 @@ class AMapsFragment : BaseMapFragment() {
 
     private val goodCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory
-                        .decodeResource(resources, R.drawable.good_circle)
+            BitmapFactory
+                .decodeResource(resources, R.drawable.good_circle)
         )
     }
     private val moderateCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory
-                        .decodeResource(resources, R.drawable.moderate_circle)
+            BitmapFactory
+                .decodeResource(resources, R.drawable.moderate_circle)
         )
     }
     private val gUnhealthyCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory
-                        .decodeResource(resources, R.drawable.g_unhealthy_circle)
+            BitmapFactory
+                .decodeResource(resources, R.drawable.g_unhealthy_circle)
         )
     }
     private val unHealthyCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory
-                        .decodeResource(resources, R.drawable.unhealthy_circle)
+            BitmapFactory
+                .decodeResource(resources, R.drawable.unhealthy_circle)
         )
     }
     private val vUnHealthyCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory
-                        .decodeResource(resources, R.drawable.v_unhealthy_circle)
+            BitmapFactory
+                .decodeResource(resources, R.drawable.v_unhealthy_circle)
         )
     }
     private val hazardCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory
-                        .decodeResource(resources, R.drawable.hazardous_circle)
+            BitmapFactory
+                .decodeResource(resources, R.drawable.hazardous_circle)
         )
     }
 
@@ -96,7 +97,7 @@ class AMapsFragment : BaseMapFragment() {
     override fun initLocationPermissionsLauncher() {
         //location permission launcher must be set
         requestLocationPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
+            ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
                 showUserLocation()
@@ -107,19 +108,19 @@ class AMapsFragment : BaseMapFragment() {
     override fun initQrScannerLauncher() {
         //scan-qr launcher must be set
         scanQrCodeLauncher =
-                registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-                { result: ActivityResult ->
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        //  you will get result here in result.data
-                        handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
-                    }
-
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    //  you will get result here in result.data
+                    handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
                 }
+
+            }
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAMapsBinding.inflate(inflater, container, false)
 
@@ -127,12 +128,14 @@ class AMapsFragment : BaseMapFragment() {
         requireActivity().invalidateOptionsMenu()
         viewModel.mapHasBeenInitialized.value = false
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object  : OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                goHome()
-            }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    goHome()
+                }
 
-        })
+            })
 
         return binding.root
     }
@@ -147,9 +150,9 @@ class AMapsFragment : BaseMapFragment() {
         super.setHomeMapOverlay(binding.mapOverlay)
 
 
-
         //user setting - language
-        viewModel.mapHasBeenInitialized.value = initializeMap(savedInstanceState = savedInstanceState)
+        viewModel.mapHasBeenInitialized.value =
+            initializeMap(savedInstanceState = savedInstanceState)
         observeMapRelatedData()
         requestPermissionsAndShowUserLocation()
 
@@ -160,7 +163,7 @@ class AMapsFragment : BaseMapFragment() {
         })
     }
 
-    private fun initializeDataAfterMapIsReady(){
+    private fun initializeDataAfterMapIsReady() {
         viewModel.observeMapLang().observe(viewLifecycleOwner, {
             setMapLang(mapLangSet = it)
         })
@@ -173,10 +176,10 @@ class AMapsFragment : BaseMapFragment() {
         observeMonitorsIWatch()
     }
 
-    private fun observeMonitorsIWatch(){
+    private fun observeMonitorsIWatch() {
         viewModel.observeMonitorsIWatch().observe(viewLifecycleOwner, {
             //todo if (it != null)
-                //todo updateWatchedMonitors(monitors = it)
+            //todo updateWatchedMonitors(monitors = it)
         })
     }
 
@@ -198,7 +201,7 @@ class AMapsFragment : BaseMapFragment() {
         }
     }
 
-    private fun setMapLang(mapLangSet: String?){
+    private fun setMapLang(mapLangSet: String?) {
         aMap?.apply {
             if (mapLangSet == null || mapLangSet == getString(R.string.map_lang_chinese)) {
                 setMapLanguage(AMap.CHINESE)
@@ -217,26 +220,26 @@ class AMapsFragment : BaseMapFragment() {
     private fun observeMapRelatedData() {
         //map data -locations & pm values
         viewModel.observeMapData().observe(
-                viewLifecycleOwner, {
-            if (it.isNotEmpty()) {
-                drawCirclesOnMap(it)
+            viewLifecycleOwner, {
+                if (it.isNotEmpty()) {
+                    drawCirclesOnMap(it)
+                }
             }
-        }
         )
     }
 
     override fun showLocationOnMap(location: Location) {
         val currentUserLocation = LatLng(location.latitude, location.longitude)
         aMap?.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                        currentUserLocation,
-                        MY_LOCATION_ZOOM_LEVEL
-                )
+            CameraUpdateFactory.newLatLngZoom(
+                currentUserLocation,
+                MY_LOCATION_ZOOM_LEVEL
+            )
         )
         viewModel.myLocMarkerOnAMap?.remove()
         val mIcon = BitmapDescriptorFactory.fromBitmap(
-                BitmapFactory
-                        .decodeResource(resources, R.drawable.ic_my_location_marker)
+            BitmapFactory
+                .decodeResource(resources, R.drawable.ic_my_location_marker)
         )
 
         val markerOptions = MarkerOptions()
@@ -277,16 +280,23 @@ class AMapsFragment : BaseMapFragment() {
                     }
                     val circleMarker = aMap?.addMarker(markerOptions)
                     circleMarker?.let { marker ->
-                        mapCirlcesMarkers.add(MarkerMapTypeWrapper(
+                        mapCirlcesMarkers.add(
+                            MarkerMapTypeWrapper(
                                 marker = marker,
                                 mapType = mapData.type
-                        ))
+                            )
+                        )
                     }
                 }
             }
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG drawCirclesOnMap()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG drawCirclesOnMap()",
+                    msg = exc.message,
+                    exc = exc
+                )
             }
         }
     }
@@ -304,23 +314,23 @@ class AMapsFragment : BaseMapFragment() {
         if (intentResult != null) {
             if (intentResult.contents == null) {
                 Toast.makeText(
-                        requireContext(),
-                        R.string.scan_qr_code_cancelled,
-                        Toast.LENGTH_LONG
+                    requireContext(),
+                    R.string.scan_qr_code_cancelled,
+                    Toast.LENGTH_LONG
                 ).show()
             } else {
                 // if the intentResult is not null we'll set
                 // the content and format of scan message
                 val qrContent = intentResult.contents
                 val action = AMapsFragmentDirections.actionAMapsFragmentToAddLocation(
-                        locDataFromQr = qrContent
+                    locDataFromQr = qrContent
                 )
                 findNavController().navigate(action)
             }
         } else {
             Toast.makeText(
-                    requireContext(), R.string.scan_qr_code_unknown,
-                    Toast.LENGTH_LONG
+                requireContext(), R.string.scan_qr_code_unknown,
+                Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -379,7 +389,6 @@ class AMapsFragment : BaseMapFragment() {
     }
 
 
-
     /********************* NAVIGATION ***************/
     override fun goToSearchFragment() {
         try {
@@ -387,7 +396,12 @@ class AMapsFragment : BaseMapFragment() {
             findNavController().navigate(action)
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG goToSearchFragment()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG goToSearchFragment()",
+                    msg = exc.message,
+                    exc = exc
+                )
             }
         }
     }
@@ -399,7 +413,12 @@ class AMapsFragment : BaseMapFragment() {
             binding.container.findNavController().navigate(action)
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG onClickWatchedLocation", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG onClickWatchedLocation",
+                    msg = exc.message,
+                    exc = exc
+                )
             }
         }
     }
@@ -408,12 +427,12 @@ class AMapsFragment : BaseMapFragment() {
         val details = MonitorDetailsAqiWrapper(
             monitorDetails = monitor, aqiIndex = viewModel.aqiIndex
         )
-       val action = AMapsFragmentDirections.actionAMapsFragmentToMonitorHistoryFragment(details)
+        val action = AMapsFragmentDirections.actionAMapsFragmentToMonitorHistoryFragment(details)
         findNavController().navigate(action)
     }
 }
 
 data class MarkerMapTypeWrapper(
-        val marker: Marker,
-        val mapType: MapDataType
+    val marker: Marker,
+    val mapType: MapDataType
 )

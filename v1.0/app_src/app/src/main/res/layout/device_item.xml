@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_margin="@dimen/sm_space">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/std_space">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/device_name"
+            android:paddingStart="@dimen/std_space"
+            android:paddingEnd="@dimen/std_space"
+            android:drawablePadding="@dimen/std_space"
+            android:drawableStart="@drawable/ic_devices_white"
+            android:textColor="@color/white"
+            android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@color/background_good"
+            tools:text="CAS IT"
+            android:gravity="center_vertical"/>
+
+         <com.google.android.material.textview.MaterialTextView
+             android:id="@+id/device_type"
+             android:layout_width="0dp"
+             app:layout_constraintWidth_percent=".25"
+             android:layout_height="@dimen/clickable_std"
+             android:gravity="center_vertical"
+             android:text="@string/device_type_lbl"
+             android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle2"
+             android:layout_marginTop="@dimen/sm_space"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintTop_toBottomOf="@id/device_name"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/device_status_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center_vertical"
+                android:text="@string/device_status_lbl"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle2"
+                android:layout_marginTop="@dimen/sm_space"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/device_type"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/device_mode_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center_vertical"
+                android:text="@string/device_mode_lbl"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle2"
+                android:layout_marginTop="@dimen/sm_space"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/device_status_lbl"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/device_fan_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center_vertical"
+                android:text="@string/device_fan_speed_lbl"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle2"
+                android:layout_marginTop="@dimen/sm_space"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/device_mode_lbl"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/device_type_val"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle2"
+                android:layout_marginTop="@dimen/sm_space"
+                android:layout_marginStart="@dimen/sm_space"
+                app:layout_constraintStart_toEndOf="@+id/device_type"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/device_name"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/status_on_btn"
+                android:text="@string/status_on"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_filled_blue"
+                app:layout_constraintStart_toEndOf="@id/device_status_lbl"
+                app:layout_constraintTop_toBottomOf="@id/device_type_val"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                app:layout_constraintBottom_toBottomOf="@id/device_status_lbl"
+                android:layout_height="@dimen/md_icon" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/status_off_btn"
+                android:text="@string/status_off"
+                android:textColor="@color/cas_blue"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_outline_blue"
+                app:layout_constraintStart_toEndOf="@id/status_on_btn"
+                app:layout_constraintTop_toBottomOf="@id/device_type_val"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_marginStart="@dimen/sm_space"
+                app:layout_constraintBottom_toBottomOf="@id/device_status_lbl"
+                android:layout_height="@dimen/md_icon" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/mode_manual_btn"
+                android:text="@string/status_manual"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_filled_blue"
+                app:layout_constraintStart_toEndOf="@id/device_mode_lbl"
+                app:layout_constraintTop_toBottomOf="@id/device_status_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                app:layout_constraintBottom_toBottomOf="@id/device_mode_lbl"
+                android:layout_height="@dimen/md_icon" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/mode_auto_btn"
+                android:text="@string/status_automatic"
+                android:textColor="@color/cas_blue"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_outline_blue"
+                app:layout_constraintStart_toEndOf="@id/mode_manual_btn"
+                app:layout_constraintTop_toBottomOf="@id/device_status_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_marginStart="@dimen/xls_space"
+                app:layout_constraintBottom_toBottomOf="@id/device_mode_lbl"
+                android:layout_height="@dimen/md_icon" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/fan_off_btn"
+                android:text="@string/status_off"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_filled_blue"
+                app:layout_constraintStart_toEndOf="@id/device_fan_lbl"
+                app:layout_constraintTop_toBottomOf="@id/device_mode_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                app:layout_constraintBottom_toBottomOf="@id/device_fan_lbl"
+                android:layout_height="@dimen/md_icon" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/fan_low_btn"
+                android:text="@string/status_low"
+                android:textColor="@color/cas_blue"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_outline_blue"
+                app:layout_constraintStart_toEndOf="@id/fan_off_btn"
+                app:layout_constraintTop_toBottomOf="@id/device_mode_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_marginStart="@dimen/sm_space"
+                app:layout_constraintBottom_toBottomOf="@id/device_fan_lbl"
+                android:layout_height="@dimen/md_icon" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/fan_med_btn"
+                android:text="@string/status_medium"
+                android:textColor="@color/cas_blue"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_outline_blue"
+                app:layout_constraintStart_toEndOf="@id/fan_low_btn"
+                app:layout_constraintTop_toBottomOf="@id/device_mode_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_marginStart="@dimen/sm_space"
+                app:layout_constraintBottom_toBottomOf="@id/device_fan_lbl"
+                android:layout_height="@dimen/md_icon" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/fan_high_btn"
+                android:text="@string/status_high"
+                android:textColor="@color/cas_blue"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:background="@drawable/cas_outline_blue"
+                app:layout_constraintStart_toEndOf="@id/fan_med_btn"
+                app:layout_constraintTop_toBottomOf="@id/device_mode_lbl"
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".2"
+                android:layout_marginStart="@dimen/sm_space"
+                app:layout_constraintBottom_toBottomOf="@id/device_fan_lbl"
+                android:layout_height="@dimen/md_icon" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

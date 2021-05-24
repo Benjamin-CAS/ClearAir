@@ -21,10 +21,10 @@ import javax.inject.Singleton
 @Singleton
 class LocationDetailsRepo
 @Inject constructor(
-        private val qrScannedItemsApiService: QrScannedItemsApiService,
-        private val myLogger: MyLogger,
+    private val qrScannedItemsApiService: QrScannedItemsApiService,
+    private val myLogger: MyLogger,
 
-        ) {
+    ) {
 
     private val TAG = LocationDetailsRepo::class.java.simpleName
     private val recentRequestsData = arrayListOf<JsonObject>()
@@ -42,30 +42,35 @@ class LocationDetailsRepo
             data.addProperty(L_TIME_KEY, payLoadTimeStamp)
             data.addProperty(PAYLOAD_KEY, base64Str)
             val response = qrScannedItemsApiService.fetchDataForScannedDeviceWithCompLoc(
-                    data = data
+                data = data
             )
 
             // keep track of this request data ---
             recentRequestsData.add(data)
             response.enqueue(getScannedDeviceQrResponseCallback(hasCompLocId = true))
         } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG fetchDataForScannedDeviceWithCompLoc()", msg = exc.message, exc = exc)
+            myLogger.logThis(
+                tag = LogTags.EXCEPTION,
+                from = "$TAG fetchDataForScannedDeviceWithCompLoc()",
+                msg = exc.message,
+                exc = exc
+            )
 
         }
     }
 
 
     suspend fun fetchDataForScannedDeviceWithMonitorId(
-            base64Str: String,
-            payLoadTimeStamp: String,
-            monitorId: String
+        base64Str: String,
+        payLoadTimeStamp: String,
+        monitorId: String
     ) {
         try {
             val data = JsonObject()
             data.addProperty(L_TIME_KEY, payLoadTimeStamp)
             data.addProperty(PAYLOAD_KEY, base64Str)
             val response = qrScannedItemsApiService.fetchDataForScannedDeviceWithMonitorId(
-                    data = data
+                data = data
             )
 
             // keep track of this request data ---
@@ -73,7 +78,12 @@ class LocationDetailsRepo
             recentRequestsData.add(data)
             response.enqueue(getScannedDeviceQrResponseCallback(hasMonitorId = true))
         } catch (exc: Exception) {
-            myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG fetchDataForScannedDeviceWithMonitorId()", msg = exc.message, exc = exc)
+            myLogger.logThis(
+                tag = LogTags.EXCEPTION,
+                from = "$TAG fetchDataForScannedDeviceWithMonitorId()",
+                msg = exc.message,
+                exc = exc
+            )
 
         }
     }
@@ -81,13 +91,13 @@ class LocationDetailsRepo
 
     /************** call backs *************/
     private fun getScannedDeviceQrResponseCallback(
-            hasMonitorId: Boolean = false,
-            hasCompLocId: Boolean = false
+        hasMonitorId: Boolean = false,
+        hasCompLocId: Boolean = false
     ): Callback<ScannedDeviceQrWithCompLocResponse> {
         return object : Callback<ScannedDeviceQrWithCompLocResponse> {
             override fun onResponse(
-                    call: Call<ScannedDeviceQrWithCompLocResponse>,
-                    response: Response<ScannedDeviceQrWithCompLocResponse>
+                call: Call<ScannedDeviceQrWithCompLocResponse>,
+                response: Response<ScannedDeviceQrWithCompLocResponse>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -97,14 +107,14 @@ class LocationDetailsRepo
                                 when {
                                     hasCompLocId -> {
                                         unEncryptScannedDeviceQrWithCompLocResponse(
-                                                responseBody.payload,
-                                                responseBody.ltime ?: "0"
+                                            responseBody.payload,
+                                            responseBody.ltime ?: "0"
                                         )
                                     }
                                     hasMonitorId -> {
                                         unEncryptScannedDeviceQrWithMonitorIdResponse(
-                                                responseBody.payload,
-                                                responseBody.ltime ?: "0"
+                                            responseBody.payload,
+                                            responseBody.ltime ?: "0"
                                         )
                                     }
                                     else -> {
@@ -113,7 +123,12 @@ class LocationDetailsRepo
                             }
                         } catch (exc: Exception) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getScannedDeviceQrResponseCallback()", msg = exc.message, exc = exc)
+                                myLogger.logThis(
+                                    tag = LogTags.EXCEPTION,
+                                    from = "$TAG getScannedDeviceQrResponseCallback()",
+                                    msg = exc.message,
+                                    exc = exc
+                                )
                             }
                         }
                     }
@@ -133,24 +148,31 @@ class LocationDetailsRepo
             try {
                 //identify requested data
                 val dataMatchingLTime =
-                        recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+                    recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
                 if (!dataMatchingLTime.isNullOrEmpty()) {
                     val requestedData = dataMatchingLTime[0]
                     recentRequestsData.remove(requestedData)
                     //un encrypt
                     val unEncryptedPayload =
-                            CasEncDecQrProcessor.decodeApiResponse(payload)
+                        CasEncDecQrProcessor.decodeApiResponse(payload)
                     val unEncJson = JSONObject(unEncryptedPayload)
 
-                    val companyData = unEncJson.getString(ScannedDeviceQrWithCompLocResponse.response_key)
-                    val customerDeviceData = Gson().fromJson(companyData, LocationDataFromQr::class.java)
+                    val companyData =
+                        unEncJson.getString(ScannedDeviceQrWithCompLocResponse.response_key)
+                    val customerDeviceData =
+                        Gson().fromJson(companyData, LocationDataFromQr::class.java)
 
                     withContext(Dispatchers.Main) {
                         currentlyScannedDeviceData.value = customerDeviceData!!
                     }
                 }
             } catch (exc: Exception) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptScannedDeviceQrWithCompLocResponse()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG unEncryptScannedDeviceQrWithCompLocResponse()",
+                    msg = exc.message,
+                    exc = exc
+                )
 
             }
         }
@@ -162,17 +184,19 @@ class LocationDetailsRepo
             try {
                 //identify requested data
                 val dataMatchingLTime =
-                        recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+                    recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
                 if (!dataMatchingLTime.isNullOrEmpty()) {
                     val requestedData = dataMatchingLTime[0]
                     recentRequestsData.remove(requestedData)
                     //un encrypt
                     val unEncryptedPayload =
-                            CasEncDecQrProcessor.decodeApiResponse(payload)
+                        CasEncDecQrProcessor.decodeApiResponse(payload)
                     val unEncJson = JSONObject(unEncryptedPayload)
 
-                    val companyData = unEncJson.getString(ScannedDeviceQrWithCompLocResponse.response_key)
-                    val customerDeviceData = Gson().fromJson(companyData, LocationDataFromQr::class.java)
+                    val companyData =
+                        unEncJson.getString(ScannedDeviceQrWithCompLocResponse.response_key)
+                    val customerDeviceData =
+                        Gson().fromJson(companyData, LocationDataFromQr::class.java)
                     val monitorId = requestedData.get(MONITOR_ID_KEY).asString
 
                     val type = unEncJson.getString(LocationDataFromQr.RESPONSE_MONITOR_TYPE_KEY)
@@ -184,7 +208,12 @@ class LocationDetailsRepo
                     }
                 }
             } catch (exc: Exception) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG unEncryptScannedDeviceQrWithMonitorIdResponse()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG unEncryptScannedDeviceQrWithMonitorIdResponse()",
+                    msg = exc.message,
+                    exc = exc
+                )
 
             }
         }

@@ -1,10 +1,10 @@
 package com.android_dev.cleanairspaces.views.fragments.about_app
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.android_dev.cleanairspaces.databinding.FragmentAboutAppBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class AboutAppFragment : Fragment() {
 
     companion object {
-        private val TAG =  AboutAppFragment::class.java.simpleName
+        private val TAG = AboutAppFragment::class.java.simpleName
     }
 
     private var _binding: FragmentAboutAppBinding? = null

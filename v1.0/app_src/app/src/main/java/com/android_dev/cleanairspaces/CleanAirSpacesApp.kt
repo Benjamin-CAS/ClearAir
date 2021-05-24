@@ -14,7 +14,7 @@ class CleanAirSpacesApp : Application(), Configuration.Provider {
     lateinit var workerFactory: HiltWorkerFactory
 
     override fun getWorkManagerConfiguration() =
-            Configuration.Builder()
-                    .setWorkerFactory(workerFactory)
-                    .build()
+        Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 }

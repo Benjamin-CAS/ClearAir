@@ -5,13 +5,13 @@ import com.android_dev.cleanairspaces.R
 
 /**** from range of 1 to 6, 1 being good, six being hazardous *********/
 private val pm25UpperLimits = arrayOf<Double>(
-        12.0,
-        35.4,
-        55.4,
-        150.4,
-        250.4,
-        350.4,
-        500.0,
+    12.0,
+    35.4,
+    55.4,
+    150.4,
+    250.4,
+    350.4,
+    500.0,
 )
 private val pm25UpperLimitsCn = arrayOf<Double>(35.0, 75.0, 115.0, 150.0, 250.0, 500.0)
 private val aqiUpperLimitsCn = arrayOf<Double>(50.0, 100.0, 150.0, 200.0, 300.0, 500.0)
@@ -19,7 +19,7 @@ private val aqiUpperLimitsCn = arrayOf<Double>(50.0, 100.0, 150.0, 200.0, 300.0,
 
 fun getAQIStatusFromPM25(pm25: Double, aqiIndex: String? = DEFAULT_AQI_INDEX_PM25): AQIStatus {
     val scaleToUse = if (aqiIndex == DEFAULT_AQI_INDEX_PM25 ||
-            aqiIndex == AQI_INDEX_AQI_US
+        aqiIndex == AQI_INDEX_AQI_US
     ) {
         pm25UpperLimits
     } else {
@@ -40,19 +40,19 @@ fun getRecommendationsGivenAQIColorRes(aqiColorRes: Int): Array<ResourceCommentW
         R.color.aqi_good -> {
 
             arrayOf(
-                    ResourceCommentWrapper(
-                            resourceId = R.drawable.mask_off,
-                            commentRes = R.string.no_mask
-                    ), ResourceCommentWrapper(
+                ResourceCommentWrapper(
+                    resourceId = R.drawable.mask_off,
+                    commentRes = R.string.no_mask
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.outdoors_on,
                     commentRes = R.string.outdoor_acts_suitable
-            ), ResourceCommentWrapper(
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.windows_open,
                     commentRes = R.string.windoors_open
-            ), ResourceCommentWrapper(
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.fan_off,
                     commentRes = R.string.air_purify_not_needed
-            )
+                )
             )
 
 
@@ -61,38 +61,38 @@ fun getRecommendationsGivenAQIColorRes(aqiColorRes: Int): Array<ResourceCommentW
         R.color.aqi_g_unhealthy -> {
 
             arrayOf(
-                    ResourceCommentWrapper(
-                            resourceId = R.drawable.mask_on,
-                            commentRes = R.string.masks_recommended_sensitive
-                    ), ResourceCommentWrapper(
+                ResourceCommentWrapper(
+                    resourceId = R.drawable.mask_on,
+                    commentRes = R.string.masks_recommended_sensitive
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.outdoors_off,
                     commentRes = R.string.minimal_outdoor_acts
-            ), ResourceCommentWrapper(
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.windows_close,
                     commentRes = R.string.close_windows
-            ), ResourceCommentWrapper(
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.fan_on,
                     commentRes = R.string.air_purify_recommended
-            )
+                )
             )
 
 
         }
         else -> {
             arrayOf(
-                    ResourceCommentWrapper(
-                            resourceId = R.drawable.mask_on_necessary,
-                            commentRes = R.string.masks_recommended
-                    ), ResourceCommentWrapper(
+                ResourceCommentWrapper(
+                    resourceId = R.drawable.mask_on_necessary,
+                    commentRes = R.string.masks_recommended
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.outdoors_off_necessary,
                     commentRes = R.string.avoid_outdoors
-            ), ResourceCommentWrapper(
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.windows_close_necessary,
                     commentRes = R.string.close_windows
-            ), ResourceCommentWrapper(
+                ), ResourceCommentWrapper(
                     resourceId = R.drawable.fan_on_necessary,
                     commentRes = R.string.air_purify_needed
-            )
+                )
             )
 
         }
@@ -101,81 +101,81 @@ fun getRecommendationsGivenAQIColorRes(aqiColorRes: Int): Array<ResourceCommentW
 
 
 enum class AQIStatus(
-        val level_intensity: Double,
-        val aqi_color_res: Int,
-        val status_bar_res: Int,
-        val lbl: Int,
-        val transparentRes: Int,
-        val diskRes: Int,
-        val transparentCircleRes: Int,
-        val backGroundColorRes: Int,
-        val txtColorRes: Int
+    val level_intensity: Double,
+    val aqi_color_res: Int,
+    val status_bar_res: Int,
+    val lbl: Int,
+    val transparentRes: Int,
+    val diskRes: Int,
+    val transparentCircleRes: Int,
+    val backGroundColorRes: Int,
+    val txtColorRes: Int
 ) {
     GOOD(
-            level_intensity = 1.0,
-            aqi_color_res = R.color.aqi_good,
-            status_bar_res = R.drawable.aqi_good_status,
-            lbl = R.string.good_air_status_txt,
-            transparentRes = R.color.transparent_green,
-            diskRes = R.drawable.green_seekbar_thumb,
-            transparentCircleRes = R.drawable.good_circle,
-            backGroundColorRes = R.color.background_good,
-            txtColorRes = R.color.aqi_good
+        level_intensity = 1.0,
+        aqi_color_res = R.color.aqi_good,
+        status_bar_res = R.drawable.aqi_good_status,
+        lbl = R.string.good_air_status_txt,
+        transparentRes = R.color.transparent_green,
+        diskRes = R.drawable.green_seekbar_thumb,
+        transparentCircleRes = R.drawable.good_circle,
+        backGroundColorRes = R.color.background_good,
+        txtColorRes = R.color.aqi_good
     ),
     MODERATE(
-            level_intensity = 2.0,
-            aqi_color_res = R.color.aqi_moderate,
-            status_bar_res = R.drawable.aqi_moderate_status,
-            lbl = R.string.moderate_air_status_txt,
-            transparentRes = R.color.transparent_yellow,
-            diskRes = R.drawable.yellow_seekbar_thumb,
-            transparentCircleRes = R.drawable.moderate_circle,
-            backGroundColorRes = R.color.background_moderate,
-            txtColorRes = R.color.aqi_moderate
+        level_intensity = 2.0,
+        aqi_color_res = R.color.aqi_moderate,
+        status_bar_res = R.drawable.aqi_moderate_status,
+        lbl = R.string.moderate_air_status_txt,
+        transparentRes = R.color.transparent_yellow,
+        diskRes = R.drawable.yellow_seekbar_thumb,
+        transparentCircleRes = R.drawable.moderate_circle,
+        backGroundColorRes = R.color.background_moderate,
+        txtColorRes = R.color.aqi_moderate
     ),
     GUnhealthyColor(
-            level_intensity = 3.0,
-            aqi_color_res = R.color.aqi_g_unhealthy,
-            status_bar_res = R.drawable.aqi_g_unhealthy_status,
-            lbl = R.string.aqi_status_unhealthy_sensitive_groups,
-            transparentRes = R.color.transparent_orange,
-            diskRes = R.drawable.yellow_seekbar_thumb,
-            transparentCircleRes = R.drawable.g_unhealthy_circle,
-            backGroundColorRes = R.color.background_moderate,
-            txtColorRes = R.color.aqi_g_unhealthy
+        level_intensity = 3.0,
+        aqi_color_res = R.color.aqi_g_unhealthy,
+        status_bar_res = R.drawable.aqi_g_unhealthy_status,
+        lbl = R.string.aqi_status_unhealthy_sensitive_groups,
+        transparentRes = R.color.transparent_orange,
+        diskRes = R.drawable.yellow_seekbar_thumb,
+        transparentCircleRes = R.drawable.g_unhealthy_circle,
+        backGroundColorRes = R.color.background_moderate,
+        txtColorRes = R.color.aqi_g_unhealthy
     ),
     UnhealthyColor(
-            level_intensity = 4.0,
-            aqi_color_res = R.color.aqi_unhealthy,
-            status_bar_res = R.drawable.aqi_unhealthy_status,
-            lbl = R.string.aqi_status_unhealthy,
-            transparentRes = R.color.transparent_red,
-            diskRes = R.drawable.red_seekbar_thumb,
-            transparentCircleRes = R.drawable.unhealthy_circle,
-            backGroundColorRes = R.color.background_bad,
-            txtColorRes = R.color.aqi_unhealthy
+        level_intensity = 4.0,
+        aqi_color_res = R.color.aqi_unhealthy,
+        status_bar_res = R.drawable.aqi_unhealthy_status,
+        lbl = R.string.aqi_status_unhealthy,
+        transparentRes = R.color.transparent_red,
+        diskRes = R.drawable.red_seekbar_thumb,
+        transparentCircleRes = R.drawable.unhealthy_circle,
+        backGroundColorRes = R.color.background_bad,
+        txtColorRes = R.color.aqi_unhealthy
     ),
     VUnhealthyColor(
-            level_intensity = 5.0,
-            aqi_color_res = R.color.aqi_v_unhealthy,
-            status_bar_res = R.drawable.aqi_v_unhealthy_status,
-            lbl = R.string.aqi_status_very_unhealthy,
-            transparentRes = R.color.transparent_red,
-            diskRes = R.drawable.red_seekbar_thumb,
-            transparentCircleRes = R.drawable.v_unhealthy_circle,
-            backGroundColorRes = R.color.background_bad,
-            txtColorRes = R.color.aqi_v_unhealthy
+        level_intensity = 5.0,
+        aqi_color_res = R.color.aqi_v_unhealthy,
+        status_bar_res = R.drawable.aqi_v_unhealthy_status,
+        lbl = R.string.aqi_status_very_unhealthy,
+        transparentRes = R.color.transparent_red,
+        diskRes = R.drawable.red_seekbar_thumb,
+        transparentCircleRes = R.drawable.v_unhealthy_circle,
+        backGroundColorRes = R.color.background_bad,
+        txtColorRes = R.color.aqi_v_unhealthy
     ),
     HazardousColor(
-            level_intensity = 6.0,
-            R.color.aqi_hazardous,
-            status_bar_res = R.drawable.aqi_hazardous_status,
-            R.string.aqi_status_hazardous,
-            transparentRes = R.color.transparent_red,
-            diskRes = R.drawable.red_seekbar_thumb,
-            transparentCircleRes = R.drawable.hazardous_circle,
-            backGroundColorRes = R.color.background_bad,
-            txtColorRes = R.color.aqi_hazardous
+        level_intensity = 6.0,
+        R.color.aqi_hazardous,
+        status_bar_res = R.drawable.aqi_hazardous_status,
+        R.string.aqi_status_hazardous,
+        transparentRes = R.color.transparent_red,
+        diskRes = R.drawable.red_seekbar_thumb,
+        transparentCircleRes = R.drawable.hazardous_circle,
+        backGroundColorRes = R.color.background_bad,
+        txtColorRes = R.color.aqi_hazardous
     ),
 }
 
@@ -267,6 +267,6 @@ fun getDiskResFromHumid(humid: Double): Int {
 
 //generic class that ties a resource drawable/color/string value to an optional comment string
 data class ResourceCommentWrapper(
-        val resourceId: Int,
-        val commentRes: Int? = null
+    val resourceId: Int,
+    val commentRes: Int? = null
 )

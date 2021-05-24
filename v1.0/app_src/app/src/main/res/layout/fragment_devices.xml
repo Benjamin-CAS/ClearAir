@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".views.fragments.details_tabbed.devices.DevicesFragment">
+
+
+    <ImageView
+        android:id="@+id/location_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/location_logo_size"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/std_space"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/location_logo_image_desc"
+        android:visibility="gone" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/location_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/std_space"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="@dimen/md_icon"
+        android:layout_height="@dimen/md_icon"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/std_space"
+        android:visibility="invisible" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/md_space">
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/user_name"
+                style="@style/Theme.CleanAirSpaces.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/md_space"
+                app:hintTextAppearance="@style/Theme.CleanAirSpaces.Caption"
+                app:hintTextColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/Theme.CleanAirSpaces.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/user_name_hint"
+                    android:inputType="textShortMessage"
+                    android:textColorHint="@color/black" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password"
+                style="@style/Theme.CleanAirSpaces.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/md_space"
+                app:hintTextAppearance="@style/Theme.CleanAirSpaces.Caption"
+                app:hintTextColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/user_name">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/Theme.CleanAirSpaces.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/password_hint"
+                    android:inputType="textPassword"
+                    android:textColorHint="@color/black" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/search_devices_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/md_space"
+                android:background="@color/blue_700"
+                android:elevation="@dimen/std_space"
+                android:paddingStart="@dimen/md_space"
+                android:paddingEnd="@dimen/md_space"
+                android:text="@string/fetch_devices_txt"
+                android:textAppearance="@style/Theme.CleanAirSpaces.Button"
+                android:textColor="@color/white"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/password" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/found_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/std_space"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_devices_btn" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 class MyLogger @Inject constructor(
-        private val logRepo: LogRepo
+    private val logRepo: LogRepo
 ) {
 
 
@@ -26,7 +26,7 @@ class MyLogger @Inject constructor(
 
 
     companion object {
-        const val IS_DEBUG_MODE = false
+        const val IS_DEBUG_MODE = true
         private val uniqueID = UUID.randomUUID().toString()
     }
 }

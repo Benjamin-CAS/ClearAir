@@ -17,9 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-        private val dataStoreManager: DataStoreManager,
-        private val workManager: WorkManager,
-        private val myLogger: MyLogger
+    private val dataStoreManager: DataStoreManager,
+    private val workManager: WorkManager,
+    private val myLogger: MyLogger
 ) : ViewModel() {
 
     companion object {
@@ -32,30 +32,30 @@ class SplashViewModel @Inject constructor(
 
     fun scheduleDataRefresh() {
         val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
         val refreshDataRequest =
-                PeriodicWorkRequestBuilder<RefreshLocationsWorker>(
-                        DATA_REFRESH_INTERVAL_MIN,
-                        TimeUnit.MINUTES
-                )
-                        .setConstraints(constraints)
-                        .build()
+            PeriodicWorkRequestBuilder<RefreshLocationsWorker>(
+                DATA_REFRESH_INTERVAL_MIN,
+                TimeUnit.MINUTES
+            )
+                .setConstraints(constraints)
+                .build()
 
         workManager.enqueueUniquePeriodicWork(
-                DATA_REFRESHER_WORKER_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
-                refreshDataRequest
+            DATA_REFRESHER_WORKER_NAME,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            refreshDataRequest
         )
         workManager.getWorkInfoByIdLiveData(refreshDataRequest.id)
-                .observeForever {
-                    if (it != null && MyLogger.IS_DEBUG_MODE) {
-                        Log.d(
-                                TAG, it.state.name
-                        )
-                    }
+            .observeForever {
+                if (it != null && MyLogger.IS_DEBUG_MODE) {
+                    Log.d(
+                        TAG, it.state.name
+                    )
                 }
+            }
 
     }
 

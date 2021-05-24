@@ -1,8 +1,10 @@
 package com.android_dev.cleanairspaces.views.fragments.monitor_details
 
-import android.util.Log
 import androidx.lifecycle.*
-import com.android_dev.cleanairspaces.persistence.local.models.entities.*
+import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryMonth
+import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryThreeDays
+import com.android_dev.cleanairspaces.persistence.local.models.entities.LocationHistoryWeek
+import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.CasEncDecQrProcessor
 import com.android_dev.cleanairspaces.utils.HISTORY_EXPIRE_TIME_MILLS
@@ -10,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,12 +23,16 @@ class MonitorHistoryViewModel @Inject constructor(
 
     private val TAG = MonitorHistoryViewModel::class.java.simpleName
     var aqiIndex: String? = null
+    var hasIndoorData: Boolean = true
 
 
     /******** history *****/
     var currentDatesForDaysChart: ArrayList<String> = ArrayList()
     var currentDatesForWeekChart: ArrayList<String> = ArrayList()
     var currentDatesForMonthChart: ArrayList<String> = ArrayList()
+    var currentOutdoorDatesForDaysChart: ArrayList<String> = ArrayList()
+    var currentOutdoorDatesForWeekChart: ArrayList<String> = ArrayList()
+    var currentOutdoorDatesForMonthChart: ArrayList<String> = ArrayList()
 
     lateinit var currentlyDisplayedDaysHistoryData: List<LocationHistoryThreeDays>
     lateinit var currentlyDisplayedMonthHistoryData: List<LocationHistoryMonth>
@@ -80,7 +86,7 @@ class MonitorHistoryViewModel @Inject constructor(
                         timeStamp = timeNow.toString().replace(" ", ""),
                         dataTag = dataTag,
                         userName = monitorDetails.lastRecUName,
-                        userPassword = monitorDetails.lastRecUName
+                        userPassword = monitorDetails.lastRecPwd
                     )
                 }
             }
@@ -109,6 +115,7 @@ class MonitorHistoryViewModel @Inject constructor(
             userPassword = userPassword,
             timeStamp = timeStamp
         )
+
 
         viewModelScope.launch(Dispatchers.IO) {
             repo.refreshHistoryForMonitor(

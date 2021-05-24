@@ -45,8 +45,8 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
     private val viewModel: MonitorsViewModel by viewModels()
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentMonitorsBinding.inflate(inflater, container, false)
@@ -60,7 +60,11 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
             it?.let {
                 viewModel.aqiIndex = it.aqiIndex
                 updateGenDetails(it.watchedLocationHighLights)
-                observeMonitorsForLoc( isIndoorLoc = it.watchedLocationHighLights.isIndoorLoc, actualDataTag = it.watchedLocationHighLights.actualDataTag, aqiIndex = it.aqiIndex)
+                observeMonitorsForLoc(
+                    isIndoorLoc = it.watchedLocationHighLights.isIndoorLoc,
+                    actualDataTag = it.watchedLocationHighLights.actualDataTag,
+                    aqiIndex = it.aqiIndex
+                )
             }
         })
         binding.searchMonitorsBtn.setOnClickListener {
@@ -69,9 +73,9 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
 
         binding.foundMonitors.apply {
             layoutManager = LinearLayoutManager(
-                    requireContext(),
-                    RecyclerView.VERTICAL,
-                    false
+                requireContext(),
+                RecyclerView.VERTICAL,
+                false
             )
             adapter = monitorsAdapter
             addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -84,9 +88,9 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
         val password = binding.password.myTxt(binding.password)
         if (username.isNullOrBlank() || password.isNullOrBlank()) {
             Toast.makeText(
-                    requireContext(),
-                    R.string.monitor_credentials_required,
-                    Toast.LENGTH_LONG
+                requireContext(),
+                R.string.monitor_credentials_required,
+                Toast.LENGTH_LONG
             ).show()
         } else {
             binding.apply {
@@ -103,14 +107,17 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
         aqiIndex: String?,
         isIndoorLoc: Boolean
     ) {
-        viewModel.observeMonitorsForLocation(locationsTag = actualDataTag).observe(viewLifecycleOwner, {
-            it?.let {
-                monitorsAdapter.updateLocationType(isIndoorLoc)
-                monitorsAdapter.updateSelectedAqiIndex(aqiIndex)
-                monitorsAdapter.setWatchedMonitorsList(it)
-                binding.progressCircular.isVisible = false
-            }
-        })
+        viewModel.observeMonitorsForLocation(locationsTag = actualDataTag)
+            .observe(viewLifecycleOwner, {
+                it?.let {
+                    binding.progressCircular.isVisible = false
+                    monitorsAdapter.updateLocationType(isIndoorLoc)
+                    monitorsAdapter.updateSelectedAqiIndex(aqiIndex)
+                    monitorsAdapter.setWatchedMonitorsList(it)
+                    if (it.isNotEmpty())
+                        toggleCredentialsFormVisibility(show = false)
+                }
+            })
     }
 
     private fun updateGenDetails(currentlyWatchedLocationHighLights: WatchedLocationHighLights) {
@@ -118,26 +125,24 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
 
         lifecycleScope.launch(Dispatchers.IO) {
             myLogger.logThis(
-                    tag = LogTags.USER_ACTION_OPEN_SCREEN,
-                    from = TAG,
-                    msg = "viewing ${currentlyWatchedLocationHighLights.name}"
+                tag = LogTags.USER_ACTION_OPEN_SCREEN,
+                from = TAG,
+                msg = "viewing monitors for ${currentlyWatchedLocationHighLights.name}"
             )
         }
         binding.apply {
             if (logoURL.isNotBlank()) {
                 locationLogo.isVisible = true
                 Glide.with(requireContext())
-                        .load(logoURL)
-                        .into(locationLogo)
+                    .load(logoURL)
+                    .into(locationLogo)
             }
             locationNameTv.text = if (currentlyWatchedLocationHighLights.name.isNotBlank())
                 currentlyWatchedLocationHighLights.name
             else currentlyWatchedLocationHighLights.location_area
             locationNameTv.isSelected = true
             val isSecure = currentlyWatchedLocationHighLights.is_secure
-            userName.isVisible = isSecure
-            password.isVisible = isSecure
-            searchMonitorsBtn.isVisible = isSecure
+            toggleCredentialsFormVisibility(show = isSecure)
             if (!isSecure) {
                 //password and username are not required
                 binding.apply {
@@ -148,6 +153,13 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
         }
     }
 
+    private fun toggleCredentialsFormVisibility(show: Boolean) {
+        binding.apply {
+            userName.isVisible = show
+            password.isVisible = show
+            searchMonitorsBtn.isVisible = show
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -155,14 +167,16 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
     }
 
     override fun onClickWatchedMonitor(monitor: MonitorDetails) {
-        if(monitor.watch_location) {
+        if (monitor.watch_location) {
             //user is watching this location
-            val action = MonitorsFragmentDirections.actionMonitorsFragmentToMonitorHistoryFragment(monitorDetails = MonitorDetailsAqiWrapper(
-                monitorDetails = monitor,
-               aqiIndex = viewModel.aqiIndex)
+            val action = MonitorsFragmentDirections.actionMonitorsFragmentToMonitorHistoryFragment(
+                monitorDetails = MonitorDetailsAqiWrapper(
+                    monitorDetails = monitor,
+                    aqiIndex = viewModel.aqiIndex
+                )
             )
             findNavController().navigate(action)
-        }else {
+        } else {
             viewModel.watchThisMonitor(monitor, watchMonitor = !monitor.watch_location)
         }
     }

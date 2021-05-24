@@ -15,7 +15,6 @@ import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatM
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsData
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsIndoorExtras
 import com.bumptech.glide.Glide
-import java.lang.Exception
 
 class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -69,13 +68,13 @@ class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListen
                         addUnitsInVal = false
                     )
                     tmpVal.text = uiExtraData.tmpLvlTxt
-                    tmpVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.tmpColor))
+                    tmpVal.setTextColor(ContextCompat.getColor(ctx, uiPmData.tmpColor))
                     humidVal.text = uiExtraData.humidLvlTxt
-                    humidVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.humldColor))
+                    humidVal.setTextColor(ContextCompat.getColor(ctx, uiPmData.humldColor))
                     tvocVal.text = uiExtraData.vocLvlTxt
-                    tvocVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.vocColor))
+                    tvocVal.setTextColor(ContextCompat.getColor(ctx, uiPmData.vocColor))
                     co2Val.text = uiExtraData.co2LvlTxt
-                    co2Val.setTextColor(ContextCompat.getColor(ctx , uiPmData.co2Color))
+                    co2Val.setTextColor(ContextCompat.getColor(ctx, uiPmData.co2Color))
                     updatedOnTv.text = monitor.getUpdatedOnFormatted()
                 }
                 itemView.setOnClickListener { listener.onClickWatchedMonitor(monitor) }
@@ -156,19 +155,21 @@ class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListen
         changeDataset()
     }
 
-    private fun changeDataset(){
+    private fun changeDataset() {
         dataset.clear()
         for (newLoc in locationsList)
-            dataset.add(LocationMonitorWrapper(
-                locationHighLights = newLoc
-            ))
-        for(newMonitor in monitorsList)
+            dataset.add(
+                LocationMonitorWrapper(
+                    locationHighLights = newLoc
+                )
+            )
+        for (newMonitor in monitorsList)
             dataset.add(
                 LocationMonitorWrapper(
                     monitor = newMonitor
                 )
             )
-       notifyDataSetChanged()
+        notifyDataSetChanged()
     }
 
     fun removeAt(adapterPosition: Int) {
@@ -185,9 +186,6 @@ class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListen
         this.aqiIndex = selectedAQIIndex
         notifyDataSetChanged()
     }
-
-
-
 
 
     /************** Recycler view Holder *******/
@@ -216,7 +214,7 @@ class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListen
                     aqiIndex = aqiIndex
                 )
             }
-        }catch (exc : Exception){
+        } catch (exc: Exception) {
             Log.d(
                 TAG, "${exc.message}", exc
             )
@@ -235,7 +233,7 @@ class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListen
     }
 
     data class LocationMonitorWrapper(
-        val monitor : MonitorDetails? = null,
+        val monitor: MonitorDetails? = null,
         val locationHighLights: WatchedLocationHighLights? = null
     )
 

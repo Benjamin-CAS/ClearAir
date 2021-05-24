@@ -6,18 +6,19 @@ import com.android_dev.cleanairspaces.persistence.local.models.dao.*
 import com.android_dev.cleanairspaces.persistence.local.models.entities.*
 
 @Database(
-        entities = [
-            MapData::class,
-            SearchSuggestionsData::class,
-            WatchedLocationHighLights::class,
-            LocationHistoryThreeDays::class,
-            LocationHistoryWeek::class,
-            LocationHistoryMonth::class,
-            LocationHistoryUpdatesTracker::class,
-            Logs::class,
-            MonitorDetails::class],
-        version = 1,
-        exportSchema = false
+    entities = [
+        MapData::class,
+        SearchSuggestionsData::class,
+        WatchedLocationHighLights::class,
+        LocationHistoryThreeDays::class,
+        LocationHistoryWeek::class,
+        LocationHistoryMonth::class,
+        LocationHistoryUpdatesTracker::class,
+        Logs::class,
+        MonitorDetails::class,
+        DevicesDetails::class],
+    version = 1,
+    exportSchema = false
 )
 abstract class CasDatabase : RoomDatabase() {
     abstract fun mapDataDao(): MapDataDao
@@ -29,4 +30,5 @@ abstract class CasDatabase : RoomDatabase() {
     abstract fun locationHistoryUpdatesTrackerDao(): LocationHistoryUpdatesTrackerDao
     abstract fun logsDao(): LogsDao
     abstract fun monitorDetailsDataDao(): MonitorDetailsDataDao
+    abstract fun deviceDetailsDataDao(): DeviceDetailsDao
 }

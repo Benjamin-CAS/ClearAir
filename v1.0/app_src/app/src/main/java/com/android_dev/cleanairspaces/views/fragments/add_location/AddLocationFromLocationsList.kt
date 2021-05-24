@@ -38,8 +38,8 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
 
     private lateinit var foundLocationsAdapter: FoundLocationsAdapter
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddLocationFromListBinding.inflate(inflater, container, false)
         return binding.root
@@ -60,7 +60,8 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
         })
         binding.doneBtn.setOnClickListener {
             viewModel.refreshRecentlyAddedLocationDetails()
-            val action = AddLocationFromLocationsListDirections.actionAddLocationFromLocationsListToSplashFragment()
+            val action =
+                AddLocationFromLocationsListDirections.actionAddLocationFromLocationsListToSplashFragment()
             findNavController().navigate(action)
         }
     }
@@ -69,9 +70,9 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
         foundLocationsAdapter = FoundLocationsAdapter(this)
         binding.locationSuggestionsRv.apply {
             layoutManager = LinearLayoutManager(
-                    requireContext(),
-                    RecyclerView.VERTICAL,
-                    false
+                requireContext(),
+                RecyclerView.VERTICAL,
+                false
             )
             adapter = foundLocationsAdapter
             addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -89,7 +90,7 @@ class AddLocationFromLocationsList : Fragment(), FoundLocationsAdapter.OnClickIt
         viewModel.saveIndoorLocationFromFoundList(location)
         val msg = location.name + " " + getString(R.string.location_added_suffix)
         Toast.makeText(
-                requireContext(), msg, Toast.LENGTH_LONG
+            requireContext(), msg, Toast.LENGTH_LONG
         ).show()
     }
 

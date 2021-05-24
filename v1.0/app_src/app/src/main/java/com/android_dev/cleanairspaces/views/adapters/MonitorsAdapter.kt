@@ -1,6 +1,5 @@
 package com.android_dev.cleanairspaces.views.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -14,7 +13,7 @@ import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatW
 import com.bumptech.glide.Glide
 
 class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
-        RecyclerView.Adapter<MonitorsAdapter.MonitorsAdapterViewHolder>() {
+    RecyclerView.Adapter<MonitorsAdapter.MonitorsAdapterViewHolder>() {
 
     private var isForIndoorLoc: Boolean = true
     private val monitorList = ArrayList<MonitorDetails>()
@@ -27,7 +26,7 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
     }
 
     class MonitorsAdapterViewHolder(private val binding: MonitorItemBinding) :
-            RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(
             monitor: MonitorDetails,
             monitorListener: OnClickItemListener,
@@ -42,43 +41,43 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
                     } else {
                         R.drawable.ic_add
                     }
-                Glide.with(ctx)
-                    .load(isWatchingIndicatorIcon)
-                    .into(isWatchingIndicator)
-                }else{
+                    Glide.with(ctx)
+                        .load(isWatchingIndicatorIcon)
+                        .into(isWatchingIndicator)
+                } else {
                     isWatchingIndicator.isVisible = false
                 }
                 val uiPmData =
-                        formatMonitorData(ctx = ctx, monitor = monitor, aqiIndex = aqiIndex)
+                    formatMonitorData(ctx = ctx, monitor = monitor, aqiIndex = aqiIndex)
                 indoorName.text = uiPmData.locationName
                 pmLbl.text = uiPmData.aqiIndexStr
                 pmVal.text = uiPmData.indoorPmValue.toString()
                 inDoorPmValue.text = uiPmData.indoorPmValue.toString()
                 uiPmData.indoorAQIStatus?.status_bar_res?.let {
                     indoorStatusIndicatorTv.background =
-                            ContextCompat.getDrawable(ctx, it)
+                        ContextCompat.getDrawable(ctx, it)
 
                     indoorStatusIndicatorTv.setText(uiPmData.indoorAQIStatus.lbl)
                     val pmColor = ContextCompat.getColor(ctx, uiPmData.indoorAQIStatus.txtColorRes)
                     pmVal.setTextColor(pmColor)
                     inDoorPmValue.setTextColor(pmColor)
                     val uiExtraData = formatWatchedHighLightsIndoorExtras(
-                            ctx = ctx,
-                            co2Lvl = monitor.indoor_co2,
-                            vocLvl = monitor.indoor_tvoc,
-                            tmpLvl = monitor.indoor_temperature,
-                            humidLvl = monitor.indoor_humidity,
-                            inDoorAqiStatus = uiPmData.indoorAQIStatus,
-                            addUnitsInVal = false
+                        ctx = ctx,
+                        co2Lvl = monitor.indoor_co2,
+                        vocLvl = monitor.indoor_tvoc,
+                        tmpLvl = monitor.indoor_temperature,
+                        humidLvl = monitor.indoor_humidity,
+                        inDoorAqiStatus = uiPmData.indoorAQIStatus,
+                        addUnitsInVal = false
                     )
                     tmpVal.text = uiExtraData.tmpLvlTxt
-                    tmpVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.tmpColor))
+                    tmpVal.setTextColor(ContextCompat.getColor(ctx, uiPmData.tmpColor))
                     humidVal.text = uiExtraData.humidLvlTxt
-                    humidVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.humldColor))
+                    humidVal.setTextColor(ContextCompat.getColor(ctx, uiPmData.humldColor))
                     tvocVal.text = uiExtraData.vocLvlTxt
-                    tvocVal.setTextColor(ContextCompat.getColor(ctx , uiPmData.vocColor))
+                    tvocVal.setTextColor(ContextCompat.getColor(ctx, uiPmData.vocColor))
                     co2Val.text = uiExtraData.co2LvlTxt
-                    co2Val.setTextColor(ContextCompat.getColor(ctx , uiPmData.co2Color))
+                    co2Val.setTextColor(ContextCompat.getColor(ctx, uiPmData.co2Color))
                     updatedOnTv.text = monitor.getUpdatedOnFormatted()
                 }
                 if (isForIndoorLoc) {
@@ -90,11 +89,11 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
 
 
     override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
+        parent: ViewGroup,
+        viewType: Int
     ): MonitorsAdapterViewHolder {
         val binding =
-                MonitorItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            MonitorItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MonitorsAdapterViewHolder(binding)
     }
 

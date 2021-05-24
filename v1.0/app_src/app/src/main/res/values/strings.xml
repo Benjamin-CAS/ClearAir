@@ -160,5 +160,20 @@
     <string name="fragment_about_app_lbl">About CleanAir Spaces</string>
     <string name="app_copyright_txt">Copyright &#169; 2021 CleanAir Spaces</string>
     <string name="web_view_fragment_lbl">CleanAir Spaces</string>
+    <string name="devices_fragment_lbl">Devices</string>
+    <string name="fetch_devices_txt">Show Devices</string>
+    <string name="device_credentials_required">Please provide username and password</string>
+    <string name="invalid_device_credentials">Invalid username or password</string>
+    <string name="device_type_lbl">Device Type</string>
+    <string name="device_mode_lbl">Mode</string>
+    <string name="device_status_lbl">Status</string>
+    <string name="status_on">On</string>
+    <string name="status_off">Off</string>
+    <string name="status_manual">Manual</string>
+    <string name="device_fan_speed_lbl">Fan Speed</string>
+    <string name="status_low">Low</string>
+    <string name="status_automatic">Auto</string>
+    <string name="status_medium">Med</string>
+    <string name="status_high">High</string>
 
 </resources>

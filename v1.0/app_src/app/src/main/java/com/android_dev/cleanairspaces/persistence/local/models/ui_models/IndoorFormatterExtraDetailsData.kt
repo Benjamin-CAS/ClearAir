@@ -11,21 +11,21 @@ import kotlin.math.truncate
 
 @Parcelize
 data class IndoorFormatterExtraDetailsData(
-        val co2LvlTxt: String,
-        val vocLvlTxt: String,
-        val tmpLvlTxt: String,
-        val humidLvlTxt: String,
-        val pmSliderValue: Int,
-        val co2SliderValue: Int?,
-        val coSliderDiskRes: Int?,
-        val tmpSliderValue: Int?,
-        val tmpSliderDiskRes: Int?,
-        val vocSliderValue: Int?,
-        val vocSliderDiskRes: Int?,
-        val humidSliderValue: Int?,
-        val humidSliderDiskRes: Int?,
-        var carbonSavedStr: String,
-        var energySavedStr: String
+    val co2LvlTxt: String,
+    val vocLvlTxt: String,
+    val tmpLvlTxt: String,
+    val humidLvlTxt: String,
+    val pmSliderValue: Int,
+    val co2SliderValue: Int?,
+    val coSliderDiskRes: Int?,
+    val tmpSliderValue: Int?,
+    val tmpSliderDiskRes: Int?,
+    val vocSliderValue: Int?,
+    val vocSliderDiskRes: Int?,
+    val humidSliderValue: Int?,
+    val humidSliderDiskRes: Int?,
+    var carbonSavedStr: String,
+    var energySavedStr: String
 ) : Parcelable {
     companion object {
         const val sliderMin = 0
@@ -35,15 +35,15 @@ data class IndoorFormatterExtraDetailsData(
 }
 
 fun formatWatchedHighLightsIndoorExtras(
-        ctx: Context,
-        co2Lvl: Double?,
-        vocLvl: Double?,
-        tmpLvl: Double?,
-        humidLvl: Double?,
-        inDoorAqiStatus: AQIStatus,
-        energyMonth: Double? = null,
-        energyMax: Double? = null,
-        addUnitsInVal: Boolean = true
+    ctx: Context,
+    co2Lvl: Double?,
+    vocLvl: Double?,
+    tmpLvl: Double?,
+    humidLvl: Double?,
+    inDoorAqiStatus: AQIStatus,
+    energyMonth: Double? = null,
+    energyMax: Double? = null,
+    addUnitsInVal: Boolean = true
 ): IndoorFormatterExtraDetailsData {
     //initialize --
     val co2LvlTxt: String
@@ -140,21 +140,21 @@ fun formatWatchedHighLightsIndoorExtras(
     }
 
     return IndoorFormatterExtraDetailsData(
-            co2LvlTxt = co2LvlTxt,
-            vocLvlTxt = vocLvlTxt,
-            tmpLvlTxt = tmpLvlTxt,
-            humidLvlTxt = humidLvlTxt,
-            pmSliderValue = pmSliderValue,
-            co2SliderValue = co2SliderValue,
-            coSliderDiskRes = coSliderDiskRes,
-            tmpSliderValue = tmpSliderValue,
-            tmpSliderDiskRes = tmpSliderDiskRes,
-            vocSliderValue = vocSliderValue,
-            vocSliderDiskRes = vocSliderDiskRes,
-            humidSliderValue = humidSliderValue,
-            humidSliderDiskRes = humidSliderDiskRes,
-            carbonSavedStr = carbonSavedStr,
-            energySavedStr = energySavedStr
+        co2LvlTxt = co2LvlTxt,
+        vocLvlTxt = vocLvlTxt,
+        tmpLvlTxt = tmpLvlTxt,
+        humidLvlTxt = humidLvlTxt,
+        pmSliderValue = pmSliderValue,
+        co2SliderValue = co2SliderValue,
+        coSliderDiskRes = coSliderDiskRes,
+        tmpSliderValue = tmpSliderValue,
+        tmpSliderDiskRes = tmpSliderDiskRes,
+        vocSliderValue = vocSliderValue,
+        vocSliderDiskRes = vocSliderDiskRes,
+        humidSliderValue = humidSliderValue,
+        humidSliderDiskRes = humidSliderDiskRes,
+        carbonSavedStr = carbonSavedStr,
+        energySavedStr = energySavedStr
     )
 }
 

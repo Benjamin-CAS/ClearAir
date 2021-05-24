@@ -16,8 +16,8 @@ import javax.inject.Singleton
 @Singleton
 class LogRepo
 @Inject constructor(
-        private val loggerDao: LogsDao,
-        private val loggerService: LoggerService
+    private val loggerDao: LogsDao,
+    private val loggerService: LoggerService
 ) {
 
     companion object {
@@ -27,17 +27,17 @@ class LogRepo
     suspend fun saveLocally(key: String, message: String, isExc: Boolean) {
         try {
             loggerDao.insertLog(
-                    Logs(
-                            id = 0,
-                            key = key,
-                            message = message,
-                            tag = if (isExc) "Exception" else ""
-                    )
+                Logs(
+                    id = 0,
+                    key = key,
+                    message = message,
+                    tag = if (isExc) "Exception" else ""
+                )
             )
         } catch (exc: java.lang.Exception) {
             if (MyLogger.IS_DEBUG_MODE)
                 Log.d(
-                        TAG, "saveLocally() exc ${exc.message}", exc
+                    TAG, "saveLocally() exc ${exc.message}", exc
                 )
         }
     }
@@ -51,20 +51,20 @@ class LogRepo
                 data.addProperty("message", log.message)
                 data.addProperty("tag", "${log.tag}_${log.recordedAt}")
                 val request = loggerService.sendLogs(
-                        data = data
+                    data = data
                 )
                 request.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         if (MyLogger.IS_DEBUG_MODE)
                             Log.d(
-                                    TAG, "pushLogs onResponse->() $response ${response.body()}"
+                                TAG, "pushLogs onResponse->() $response ${response.body()}"
                             )
                     }
 
                     override fun onFailure(call: Call<Any>, t: Throwable) {
                         if (MyLogger.IS_DEBUG_MODE)
                             Log.d(
-                                    TAG, "pushLogs onFailure->() ${t.message}"
+                                TAG, "pushLogs onFailure->() ${t.message}"
                             )
                     }
 
@@ -74,7 +74,7 @@ class LogRepo
         } catch (exc: Exception) {
             if (MyLogger.IS_DEBUG_MODE)
                 Log.d(
-                        TAG, "pushLogs ${exc.message}", exc
+                    TAG, "pushLogs ${exc.message}", exc
                 )
         }
 
@@ -86,24 +86,25 @@ class LogRepo
             val lon = msg?.substringAfter(LAT_LON_DELIMITER)
             if (MyLogger.IS_DEBUG_MODE)
                 Log.d(
-                        TAG, "updateUserLocation for user $uniqueID  to lat_lon $lat $lon"
+                    TAG, "updateUserLocation for user $uniqueID  to lat_lon $lat $lon"
                 )
             if (lat != null && lon != null) {
                 val request = loggerService.sendUserLocation(
-                        uid = uniqueID, lat = lat, lon = lon
+                    uid = uniqueID, lat = lat, lon = lon
                 )
                 request.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         if (MyLogger.IS_DEBUG_MODE)
                             Log.d(
-                                    TAG, "updateUserLocation onResponse->() $response ${response.body()}"
+                                TAG,
+                                "updateUserLocation onResponse->() $response ${response.body()}"
                             )
                     }
 
                     override fun onFailure(call: Call<Any>, t: Throwable) {
                         if (MyLogger.IS_DEBUG_MODE)
                             Log.d(
-                                    TAG, "updateUserLocation onFailure->() ${t.message}"
+                                TAG, "updateUserLocation onFailure->() ${t.message}"
                             )
                     }
 
@@ -112,7 +113,9 @@ class LogRepo
         } catch (exc: Exception) {
             if (MyLogger.IS_DEBUG_MODE)
                 Log.d(
-                        TAG, "updateUserLocation for user $uniqueID to lat${LAT_LON_DELIMITER}lon $msg ${exc.message}", exc
+                    TAG,
+                    "updateUserLocation for user $uniqueID to lat${LAT_LON_DELIMITER}lon $msg ${exc.message}",
+                    exc
                 )
         }
     }

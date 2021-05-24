@@ -39,8 +39,8 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
 
     private lateinit var searchSuggestionsAdapter: SearchSuggestionsAdapter
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -59,9 +59,9 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
         searchSuggestionsAdapter = SearchSuggestionsAdapter(this)
         binding.locationSuggestionsRv.apply {
             layoutManager = LinearLayoutManager(
-                    requireContext(),
-                    RecyclerView.VERTICAL,
-                    false
+                requireContext(),
+                RecyclerView.VERTICAL,
+                false
             )
             adapter = searchSuggestionsAdapter
             addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -81,21 +81,21 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
             val msg = "searched $query clicked ${suggestion.nameToDisplay}"
             lifecycleScope.launch(Dispatchers.IO) {
                 myLogger.logThis(
-                        tag = LogTags.USER_ACTION_SEARCH,
-                        from = TAG,
-                        msg = msg
+                    tag = LogTags.USER_ACTION_SEARCH,
+                    from = TAG,
+                    msg = msg
                 )
             }
             val action =
-                    when {
-                        suggestion.isForIndoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
-                                locDataIsIndoorQuery = suggestion
-                        )
-                        suggestion.isForOutDoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
-                                locDataIsOutdoorQuery = suggestion
-                        )
-                        else -> null
-                    }
+                when {
+                    suggestion.isForIndoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
+                        locDataIsIndoorQuery = suggestion
+                    )
+                    suggestion.isForOutDoorLoc -> SearchFragmentDirections.actionSearchFragmentToAddLocation(
+                        locDataIsOutdoorQuery = suggestion
+                    )
+                    else -> null
+                }
             action?.let { navDirection ->
                 findNavController().navigate(navDirection)
             }
@@ -103,10 +103,10 @@ class SearchFragment : Fragment(), SearchSuggestionsAdapter.OnClickItemListener 
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
                 myLogger.logThis(
-                        tag = LogTags.EXCEPTION,
-                        from = TAG,
-                        msg = exc.message,
-                        exc = exc
+                    tag = LogTags.EXCEPTION,
+                    from = TAG,
+                    msg = exc.message,
+                    exc = exc
                 )
             }
         }

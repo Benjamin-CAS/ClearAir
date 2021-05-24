@@ -9,6 +9,4 @@ import javax.inject.Inject
 class AboutAppViewModel
 @Inject constructor(
     private val repo: AppDataRepo,
-)  : ViewModel() {
-
-}
+) : ViewModel()

@@ -13,8 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchLocationViewModel @Inject constructor(
-        private val appDataRepo: AppDataRepo,
-        private val myLogger: MyLogger
+    private val appDataRepo: AppDataRepo,
+    private val myLogger: MyLogger
 
 ) : ViewModel() {
 
@@ -32,9 +32,9 @@ class SearchLocationViewModel @Inject constructor(
         if (query.length > 2) {
             viewModelScope.launch(Dispatchers.IO) {
                 myLogger.logThis(
-                        tag = LogTags.USER_ACTION_SEARCH,
-                        from = TAG,
-                        msg = "searching... for $query"
+                    tag = LogTags.USER_ACTION_SEARCH,
+                    from = TAG,
+                    msg = "searching... for $query"
                 )
             }
         }

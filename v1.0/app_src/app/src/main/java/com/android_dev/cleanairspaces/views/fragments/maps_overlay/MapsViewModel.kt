@@ -22,9 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapsViewModel @Inject constructor(
-        private val dataStoreManager: DataStoreManager,
-        private val appDataRepo: AppDataRepo,
-        private val myLogger: MyLogger
+    private val dataStoreManager: DataStoreManager,
+    private val appDataRepo: AppDataRepo,
+    private val myLogger: MyLogger
 ) : ViewModel() {
 
     private val TAG = MapsViewModel::class.java.simpleName
@@ -51,7 +51,9 @@ class MapsViewModel @Inject constructor(
     fun observeMonitorsIWatch() = appDataRepo.observeMonitorsIWatch().asLiveData()
 
 
-    fun observeIfAlreadyAskedLocPermission() = dataStoreManager.hasAlreadyAskedLocPermission().asLiveData()
+    fun observeIfAlreadyAskedLocPermission() =
+        dataStoreManager.hasAlreadyAskedLocPermission().asLiveData()
+
     fun setAlreadyAskedLocPermission() = viewModelScope.launch(Dispatchers.IO) {
         dataStoreManager.setAlreadyAskedLocPermission()
     }
@@ -73,9 +75,9 @@ class MapsViewModel @Inject constructor(
     private suspend fun sendUserLoc() {
         location?.let { loc ->
             myLogger.logThis(
-                    tag = LogTags.USER_LOCATION_CHANGED,
-                    from = TAG,
-                    msg = "${loc.latitude}$LAT_LON_DELIMITER${loc.longitude}"
+                tag = LogTags.USER_LOCATION_CHANGED,
+                from = TAG,
+                msg = "${loc.latitude}$LAT_LON_DELIMITER${loc.longitude}"
             )
         }
         delay(USER_LOCATION_UPDATE_INTERVAL_MILLS)
@@ -96,7 +98,7 @@ class MapsViewModel @Inject constructor(
         }
     }
 
-    fun setWatchedLocationInCache(location: WatchedLocationHighLights, aqiIndex  :String?) {
+    fun setWatchedLocationInCache(location: WatchedLocationHighLights, aqiIndex: String?) {
         appDataRepo.setCurrentlyWatchedLocationWithAQI(location, aqiIndex)
     }
 

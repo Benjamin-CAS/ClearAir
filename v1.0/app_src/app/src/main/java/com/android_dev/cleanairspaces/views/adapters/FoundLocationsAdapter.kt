@@ -7,7 +7,7 @@ import com.android_dev.cleanairspaces.databinding.SearchItemBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 
 class FoundLocationsAdapter(private val locationsListener: OnClickItemListener) :
-        RecyclerView.Adapter<FoundLocationsAdapter.FoundLocationsViewHolder>() {
+    RecyclerView.Adapter<FoundLocationsAdapter.FoundLocationsViewHolder>() {
 
     private val locationsList = ArrayList<WatchedLocationHighLights>()
 
@@ -16,7 +16,7 @@ class FoundLocationsAdapter(private val locationsListener: OnClickItemListener) 
     }
 
     class FoundLocationsViewHolder(private val binding: SearchItemBinding) :
-            RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(location: WatchedLocationHighLights, locationsListener: OnClickItemListener) {
             binding.apply {
                 searchItemTv.text = location.name
@@ -27,11 +27,11 @@ class FoundLocationsAdapter(private val locationsListener: OnClickItemListener) 
 
 
     override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
+        parent: ViewGroup,
+        viewType: Int
     ): FoundLocationsViewHolder {
         val binding =
-                SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return FoundLocationsViewHolder(binding)
     }
 

@@ -8,12 +8,12 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "logs")
 @Parcelize
 data class Logs(
-        @PrimaryKey(autoGenerate = true)
-        val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
 
-        val key: String,
-        val message: String,
-        val tag: String,
-        val recordedAt: Long = System.currentTimeMillis()
+    val key: String,
+    val message: String,
+    val tag: String,
+    val recordedAt: Long = System.currentTimeMillis()
 
 ) : Parcelable

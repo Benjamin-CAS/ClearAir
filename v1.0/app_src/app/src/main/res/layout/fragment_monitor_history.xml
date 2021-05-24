@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".views.fragments.monitor_details.MonitorHistoryFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
 
     <ImageView
@@ -62,32 +61,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/out_pm_card"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/sm_space"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="@color/grey"
-                app:cardCornerRadius="@dimen/sm_space"
-                app:cardElevation="@dimen/sm_space">
-
-                <TextView
-                    android:id="@+id/out_pm_tv"
-                    style="@style/Theme.CleanAirSpaces.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:padding="@dimen/sm_space"
-                    android:text="@string/outdoors_air_quality_txt"
-                    android:textStyle="bold"
-                    android:drawablePadding="@dimen/sm_space" />
-            </com.google.android.material.card.MaterialCardView>
-
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/pm_card"
                 android:layout_width="wrap_content"
@@ -107,7 +80,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/sm_space"
-                    android:text="@string/indoor_air_quality_txt"
+                    android:text="@string/air_quality_txt"
                     android:textStyle="bold"
                     android:drawablePadding="@dimen/sm_space" />
             </com.google.android.material.card.MaterialCardView>
@@ -272,7 +245,19 @@
                     android:paddingStart="@dimen/sm_space"
                     android:paddingEnd="@dimen/sm_space"/>
 
-         <com.google.android.material.textview.MaterialTextView
+                <com.github.mikephil.charting.charts.CombinedChart
+                    android:id="@+id/days_combined_chart"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/chart_height"
+                    android:layout_marginStart="@dimen/sm_space"
+                    android:layout_marginTop="@dimen/std_space"
+                    android:layout_marginEnd="@dimen/sm_space"
+                    android:layout_marginBottom="@dimen/std_space"
+                    android:paddingStart="@dimen/sm_space"
+                    android:paddingEnd="@dimen/sm_space"/>
+
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/days_chart_value"
                     style="@style/Theme.CleanAirSpaces.Body2"
                     android:layout_width="wrap_content"
@@ -320,6 +305,18 @@
 
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/week_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/chart_height"
+                    android:layout_marginStart="@dimen/sm_space"
+                    android:layout_marginTop="@dimen/std_space"
+                    android:layout_marginEnd="@dimen/sm_space"
+                    android:layout_marginBottom="@dimen/std_space"
+                    android:paddingStart="@dimen/sm_space"
+                    android:paddingEnd="@dimen/sm_space" />
+
+                <com.github.mikephil.charting.charts.CombinedChart
+                    android:id="@+id/week_chart_combined"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/chart_height"
                     android:layout_marginStart="@dimen/sm_space"
@@ -387,6 +384,17 @@
                     android:paddingStart="@dimen/sm_space"
                     android:paddingEnd="@dimen/sm_space" />
 
+                <com.github.mikephil.charting.charts.CombinedChart
+                    android:id="@+id/month_chart_combined"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/chart_height"
+                    android:layout_marginStart="@dimen/sm_space"
+                    android:layout_marginTop="@dimen/std_space"
+                    android:layout_marginEnd="@dimen/sm_space"
+                    android:layout_marginBottom="@dimen/std_space"
+                    android:paddingStart="@dimen/sm_space"
+                    android:paddingEnd="@dimen/sm_space" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/month_chart_value"

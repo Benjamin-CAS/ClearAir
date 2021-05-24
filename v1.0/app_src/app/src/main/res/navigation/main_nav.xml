@@ -171,10 +171,15 @@
     </fragment>
     <fragment
         android:id="@+id/webViewFragment"
-        android:name="com.android_dev.cleanairspaces.views.fragments.WebViewFragment"
+        android:name="com.android_dev.cleanairspaces.views.fragments.webview.WebViewFragment"
         android:label="WebViewFragment" >
         <argument
             android:name="url"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/devicesFragment"
+        android:name="com.android_dev.cleanairspaces.views.fragments.details_tabbed.devices.DevicesFragment"
+        android:label="@string/devices_fragment_lbl"
+        tools:layout="@layout/fragment_devices" />
 </navigation>

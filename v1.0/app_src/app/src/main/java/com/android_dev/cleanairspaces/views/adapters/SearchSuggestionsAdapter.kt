@@ -7,7 +7,7 @@ import com.android_dev.cleanairspaces.databinding.SearchItemBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.SearchSuggestionsData
 
 class SearchSuggestionsAdapter(private val suggestionsListener: OnClickItemListener) :
-        RecyclerView.Adapter<SearchSuggestionsAdapter.SearchSuggestionsViewHolder>() {
+    RecyclerView.Adapter<SearchSuggestionsAdapter.SearchSuggestionsViewHolder>() {
 
     private val suggestionsList = ArrayList<SearchSuggestionsData>()
 
@@ -16,7 +16,7 @@ class SearchSuggestionsAdapter(private val suggestionsListener: OnClickItemListe
     }
 
     class SearchSuggestionsViewHolder(private val binding: SearchItemBinding) :
-            RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(suggestion: SearchSuggestionsData, suggestionsListener: OnClickItemListener) {
             binding.apply {
                 searchItemTv.text = suggestion.nameToDisplay
@@ -27,11 +27,11 @@ class SearchSuggestionsAdapter(private val suggestionsListener: OnClickItemListe
 
 
     override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
+        parent: ViewGroup,
+        viewType: Int
     ): SearchSuggestionsViewHolder {
         val binding =
-                SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return SearchSuggestionsViewHolder(binding)
     }
 

@@ -13,4 +13,5 @@
     <dimen name="location_logo_size_md">64dp</dimen>
     <dimen name="clickable_md">52dp</dimen>
     <dimen name="clickable_plus_pad">70dp</dimen>
+    <dimen name="xls_space">2dp</dimen>
 </resources>

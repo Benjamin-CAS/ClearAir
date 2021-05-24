@@ -1,6 +1,5 @@
 package com.android_dev.cleanairspaces.repositories.api_facing
 
-import android.util.Log
 import com.android_dev.cleanairspaces.persistence.api.responses.*
 import com.android_dev.cleanairspaces.persistence.api.services.OutDoorLocationApiService
 import com.android_dev.cleanairspaces.persistence.local.models.dao.MapDataDao
@@ -24,10 +23,10 @@ import javax.inject.Singleton
 class OutDoorLocationsRepo
 @Inject constructor(
 
-        private val mapDataDao: MapDataDao,
-        private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
-        private val outDoorLocationApiService: OutDoorLocationApiService,
-        private val myLogger: MyLogger
+    private val mapDataDao: MapDataDao,
+    private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
+    private val outDoorLocationApiService: OutDoorLocationApiService,
+    private val myLogger: MyLogger
 ) {
 
     private val TAG = OutDoorLocationsRepo::class.java.simpleName
@@ -35,8 +34,8 @@ class OutDoorLocationsRepo
     private fun getOtherOutDoorLocationsResponseCallback(): Callback<OutDoorLocationResponse> {
         return object : Callback<OutDoorLocationResponse> {
             override fun onResponse(
-                    call: Call<OutDoorLocationResponse>,
-                    response: Response<OutDoorLocationResponse>
+                call: Call<OutDoorLocationResponse>,
+                response: Response<OutDoorLocationResponse>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -48,7 +47,12 @@ class OutDoorLocationsRepo
                             }
                         } catch (exc: Exception) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getOtherOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                                myLogger.logThis(
+                                    tag = LogTags.EXCEPTION,
+                                    from = "$TAG getOtherOutDoorLocationsResponseCallback()",
+                                    msg = exc.message,
+                                    exc = exc
+                                )
                             }
                         }
                     }
@@ -66,8 +70,8 @@ class OutDoorLocationsRepo
     private fun getAmericaOutDoorLocationsResponseCallback(): Callback<List<OutDoorLocationAmerica>> {
         return object : Callback<List<OutDoorLocationAmerica>> {
             override fun onResponse(
-                    call: Call<List<OutDoorLocationAmerica>>,
-                    response: Response<List<OutDoorLocationAmerica>>
+                call: Call<List<OutDoorLocationAmerica>>,
+                response: Response<List<OutDoorLocationAmerica>>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -75,12 +79,17 @@ class OutDoorLocationsRepo
                         try {
                             if (!responseBody.isNullOrEmpty()) {
                                 mapOutDoorLocationsToMapData(
-                                        usLocations = responseBody
+                                    usLocations = responseBody
                                 )
                             }
                         } catch (exc: Exception) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getAmericaOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                                myLogger.logThis(
+                                    tag = LogTags.EXCEPTION,
+                                    from = "$TAG getAmericaOutDoorLocationsResponseCallback()",
+                                    msg = exc.message,
+                                    exc = exc
+                                )
                             }
                         }
                     }
@@ -97,8 +106,8 @@ class OutDoorLocationsRepo
     private fun getTaiwanOutDoorLocationsResponseCallback(): Callback<List<OutDoorLocationTaiwan>> {
         return object : Callback<List<OutDoorLocationTaiwan>> {
             override fun onResponse(
-                    call: Call<List<OutDoorLocationTaiwan>>,
-                    response: Response<List<OutDoorLocationTaiwan>>
+                call: Call<List<OutDoorLocationTaiwan>>,
+                response: Response<List<OutDoorLocationTaiwan>>
             ) {
                 when {
                     response.code() == 200 -> {
@@ -106,13 +115,18 @@ class OutDoorLocationsRepo
                         try {
                             if (!responseBody.isNullOrEmpty()) {
                                 mapOutDoorLocationsToMapData(
-                                        taiwanLocations = responseBody
+                                    taiwanLocations = responseBody
                                 )
                             }
                         } catch (exc: Exception) {
 
                             CoroutineScope(Dispatchers.IO).launch {
-                                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getTaiwanOutDoorLocationsResponseCallback()", msg = exc.message, exc = exc)
+                                myLogger.logThis(
+                                    tag = LogTags.EXCEPTION,
+                                    from = "$TAG getTaiwanOutDoorLocationsResponseCallback()",
+                                    msg = exc.message,
+                                    exc = exc
+                                )
                             }
                         }
                     }
@@ -144,15 +158,15 @@ class OutDoorLocationsRepo
         //refreshing outdoor location details -- more detailed locations
         val rand10 = (0..10)
         val timeStamp =
-                (rand10.random().toString() + System.currentTimeMillis().toString()).replace(" ", "")
+            (rand10.random().toString() + System.currentTimeMillis().toString()).replace(" ", "")
         val data = JsonObject()
         val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForOutdoorLocation(
-                timeStamp = timeStamp
+            timeStamp = timeStamp
         )
         data.addProperty(L_TIME_KEY, timeStamp)
         data.addProperty(PAYLOAD_KEY, pl)
         val request = outDoorLocationApiService.fetchOutDoorLocationsExtraDetails(
-                data = data
+            data = data
         )
         request.enqueue(getOutdoorLocationsDetails())
 
@@ -161,21 +175,26 @@ class OutDoorLocationsRepo
     private fun getOutdoorLocationsDetails(): Callback<OutDoorDetailsLocationResponse> {
         return object : Callback<OutDoorDetailsLocationResponse> {
             override fun onResponse(
-                    call: Call<OutDoorDetailsLocationResponse>,
-                    response: Response<OutDoorDetailsLocationResponse>
+                call: Call<OutDoorDetailsLocationResponse>,
+                response: Response<OutDoorDetailsLocationResponse>
             ) {
 
                 val responseBody = response.body()
                 try {
                     if (responseBody?.data?.isNullOrEmpty() == false) {
                         mapOutDoorLocationsToMapData(
-                                outDoorExtraDetailed = responseBody.data
+                            outDoorExtraDetailed = responseBody.data
                         )
                     }
 
                 } catch (exc: Exception) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG getOutdoorLocationsDetails()", msg = exc.message, exc = exc)
+                        myLogger.logThis(
+                            tag = LogTags.EXCEPTION,
+                            from = "$TAG getOutdoorLocationsDetails()",
+                            msg = exc.message,
+                            exc = exc
+                        )
                     }
                 }
             }
@@ -187,10 +206,10 @@ class OutDoorLocationsRepo
 
 
     private fun mapOutDoorLocationsToMapData(
-            taiwanLocations: List<OutDoorLocationTaiwan>? = null,
-            usLocations: List<OutDoorLocationAmerica>? = null,
-            otherLocations: List<OutDoorLocationsOther>? = null,
-            outDoorExtraDetailed: List<OutDoorDetailedLocationData>? = null
+        taiwanLocations: List<OutDoorLocationTaiwan>? = null,
+        usLocations: List<OutDoorLocationAmerica>? = null,
+        otherLocations: List<OutDoorLocationsOther>? = null,
+        outDoorExtraDetailed: List<OutDoorDetailedLocationData>? = null
     ) {
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -202,17 +221,17 @@ class OutDoorLocationsRepo
                     taiwanLocations != null -> {
                         for (location in taiwanLocations) {
                             val taiwanData = MapData(
-                                    lat = location.lat.toDouble(),
-                                    lon = location.lon.toDouble(),
-                                    pm25 = location.pm2p5.toDouble(),
-                                    actualDataTag = "taiwan${location.lat}${location.lon}",
-                                    type = MapDataType.TAIWAN
+                                lat = location.lat.toDouble(),
+                                lon = location.lon.toDouble(),
+                                pm25 = location.pm2p5.toDouble(),
+                                actualDataTag = "taiwan${location.lat}${location.lon}",
+                                type = MapDataType.TAIWAN
                             )
                             mapDataList.add(taiwanData)
                             "tag ${taiwanData.actualDataTag} lat ${taiwanData.lat} lon ${taiwanData.lon} getALatLon ${taiwanData.getAMapLocationLatLng()} aLatLon ${
                                 LatLng(
-                                        taiwanData.lat,
-                                        taiwanData.lon
+                                    taiwanData.lat,
+                                    taiwanData.lon
                                 )
                             }"
                         }
@@ -221,13 +240,13 @@ class OutDoorLocationsRepo
                     usLocations != null -> {
                         for (location in usLocations) {
                             mapDataList.add(
-                                    MapData(
-                                            lat = location.sta_lat.toDouble(),
-                                            lon = location.sta_lon.toDouble(),
-                                            pm25 = location.pm2p5.toDouble(),
-                                            actualDataTag = "us${location.sta_lat}${location.sta_lon}",
-                                            type = MapDataType.USA
-                                    )
+                                MapData(
+                                    lat = location.sta_lat.toDouble(),
+                                    lon = location.sta_lon.toDouble(),
+                                    pm25 = location.pm2p5.toDouble(),
+                                    actualDataTag = "us${location.sta_lat}${location.sta_lon}",
+                                    type = MapDataType.USA
+                                )
                             )
                         }
                     }
@@ -237,19 +256,19 @@ class OutDoorLocationsRepo
                         for (location in outDoorExtraDetailed) {
                             val tag = "${location.company_id}${location.location_id}"
                             searchData.add(
-                                    SearchSuggestionsData(
-                                            actualDataTag = tag,
-                                            nameToDisplay = location.location_name,
-                                            location_id = location.location_id,
-                                            monitor_id = "",
-                                            company_id = location.company_id,
-                                            isForOutDoorLoc = true,
-                                            isForMonitor = false,
-                                            isForIndoorLoc = false,
-                                            lat = location.lat.toDouble(),
-                                            lon = location.lon.toDouble(),
-                                            is_secure = false
-                                    )
+                                SearchSuggestionsData(
+                                    actualDataTag = tag,
+                                    nameToDisplay = location.location_name,
+                                    location_id = location.location_id,
+                                    monitor_id = "",
+                                    company_id = location.company_id,
+                                    isForOutDoorLoc = true,
+                                    isForMonitor = false,
+                                    isForIndoorLoc = false,
+                                    lat = location.lat.toDouble(),
+                                    lon = location.lon.toDouble(),
+                                    is_secure = false
+                                )
                             )
                         }
 
@@ -258,13 +277,13 @@ class OutDoorLocationsRepo
                     otherLocations != null -> {
                         for (location in otherLocations) {
                             mapDataList.add(
-                                    MapData(
-                                            actualDataTag = "other${location.lat}${location.lon}",
-                                            lat = location.lat.toDouble(),
-                                            lon = location.lon.toDouble(),
-                                            pm25 = location.reading.toDouble(),
-                                            type = MapDataType.OTHER
-                                    )
+                                MapData(
+                                    actualDataTag = "other${location.lat}${location.lon}",
+                                    lat = location.lat.toDouble(),
+                                    lon = location.lon.toDouble(),
+                                    pm25 = location.reading.toDouble(),
+                                    type = MapDataType.OTHER
+                                )
                             )
                         }
                     }
@@ -280,7 +299,12 @@ class OutDoorLocationsRepo
                 }
 
             } catch (exc: Exception) {
-                myLogger.logThis(tag = LogTags.EXCEPTION, from = "$TAG mapOutDoorLocationsToMapData()", msg = exc.message, exc = exc)
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG mapOutDoorLocationsToMapData()",
+                    msg = exc.message,
+                    exc = exc
+                )
             }
         }
 

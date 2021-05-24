@@ -47,15 +47,15 @@ class MainAct : AppCompatActivity() {
         setContentView(view)
 
         val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()
         //specify home fragments
         appBarConfiguration = AppBarConfiguration(
-                setOf(
-                        R.id.splashFragment,
-                        R.id.AMapsFragment,
-                        R.id.GMapsFragment
-                )
+            setOf(
+                R.id.splashFragment,
+                R.id.AMapsFragment,
+                R.id.GMapsFragment
+            )
         )
         setSupportActionBar(binding.toolbarLayout.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -87,7 +87,7 @@ class MainAct : AppCompatActivity() {
                 R.id.settingsMenuFragment,
                 R.id.searchFragment,
                 R.id.addLocationFromLocationsList,
-                R.id.monitorHistoryFragment-> {
+                R.id.monitorHistoryFragment -> {
                     binding.apply {
                         toolbarLayout.apply {
                             toolbar.isVisible = true
@@ -102,7 +102,8 @@ class MainAct : AppCompatActivity() {
 
                 R.id.detailsFragment,
                 R.id.historyFragment,
-                R.id.monitorsFragment -> {
+                R.id.monitorsFragment,
+                R.id.devicesFragment -> {
                     binding.apply {
                         toolbarLayout.apply {
                             toolbar.isVisible = true
@@ -128,7 +129,7 @@ class MainAct : AppCompatActivity() {
         //log
         lifecycleScope.launch(Dispatchers.IO) {
             myLogger.logThis(
-                    LogTags.USER_ACTION_OPEN_APP, TAG
+                LogTags.USER_ACTION_OPEN_APP, TAG
             )
         }
 
@@ -154,7 +155,7 @@ class MainAct : AppCompatActivity() {
         super.onDestroy()
         lifecycleScope.launch(Dispatchers.IO) {
             myLogger.logThis(
-                    LogTags.USER_ACTION_CLOSE_APP, TAG
+                LogTags.USER_ACTION_CLOSE_APP, TAG
             )
         }
     }

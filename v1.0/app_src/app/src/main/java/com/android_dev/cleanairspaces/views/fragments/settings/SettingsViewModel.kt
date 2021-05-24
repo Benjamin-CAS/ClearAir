@@ -13,8 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-        private val dataStoreManager: DataStoreManager,
-        private val myLogger: MyLogger
+    private val dataStoreManager: DataStoreManager,
+    private val myLogger: MyLogger
 ) : ViewModel() {
 
     private val TAG = SettingsViewModel::class.java.simpleName
@@ -28,9 +28,9 @@ class SettingsViewModel @Inject constructor(
         dataStoreManager.saveAqiIndex(newAqiIndex = selectedAqi)
         viewModelScope.launch(Dispatchers.IO) {
             myLogger.logThis(
-                    tag = LogTags.USER_ACTION_SETTINGS,
-                    from = TAG,
-                    msg = "changed AQI to $selectedAqi"
+                tag = LogTags.USER_ACTION_SETTINGS,
+                from = TAG,
+                msg = "changed AQI to $selectedAqi"
             )
         }
     }
@@ -41,9 +41,9 @@ class SettingsViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             myLogger.logThis(
-                    tag = LogTags.USER_ACTION_SETTINGS,
-                    from = TAG,
-                    msg = "changed map type to $selectedMap"
+                tag = LogTags.USER_ACTION_SETTINGS,
+                from = TAG,
+                msg = "changed map type to $selectedMap"
             )
         }
     }
@@ -54,9 +54,9 @@ class SettingsViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             myLogger.logThis(
-                    tag = LogTags.USER_ACTION_SETTINGS,
-                    from = TAG,
-                    msg = "changed map language to $selectedMapLang"
+                tag = LogTags.USER_ACTION_SETTINGS,
+                from = TAG,
+                msg = "changed map language to $selectedMapLang"
             )
         }
     }

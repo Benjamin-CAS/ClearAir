@@ -41,7 +41,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.OnClickItemListener {
+abstract class BaseMapFragment : Fragment(),
+    WatchedLocationsAndMonitorsAdapter.OnClickItemListener {
     companion object {
         private val TAG = BaseMapFragment::class.java.simpleName
     }
@@ -57,11 +58,11 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
     abstract fun goToSearchFragment()
 
     private lateinit var homeMapOverlay: HomeMapOverlayBinding
-    lateinit var watchedItemsAdapter : WatchedLocationsAndMonitorsAdapter
+    lateinit var watchedItemsAdapter: WatchedLocationsAndMonitorsAdapter
 
     //goes to home act
-    fun goHome(){
-        activity?.moveTaskToBack(true);
+    fun goHome() {
+        activity?.moveTaskToBack(true)
     }
 
 
@@ -77,9 +78,9 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
             mapView.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "MAP VIEW TOGGLE"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "MAP VIEW TOGGLE"
                     )
                 }
                 homeMapOverlay.watchedItemsRv.isVisible = !homeMapOverlay.watchedItemsRv.isVisible
@@ -87,9 +88,9 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
             smartQr.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "SMART QR"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "SMART QR"
                     )
                 }
                 scanQRCode()
@@ -99,9 +100,9 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
-                            tag = LogTags.USER_ACTION_CLICK_FEATURE,
-                            from = TAG,
-                            msg = "SEARCH"
+                        tag = LogTags.USER_ACTION_CLICK_FEATURE,
+                        from = TAG,
+                        msg = "SEARCH"
                     )
                 }
                 goToSearchFragment()
@@ -114,9 +115,9 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
         homeMapOverlay.apply {
             watchedItemsRv.apply {
                 layoutManager = LinearLayoutManager(
-                        homeMapOverlay.container.context,
-                        RecyclerView.VERTICAL,
-                        false
+                    homeMapOverlay.container.context,
+                    RecyclerView.VERTICAL,
+                    false
                 )
                 adapter = watchedItemsAdapter
                 addItemDecoration(VerticalSpaceItemDecoration(30))
@@ -138,21 +139,21 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
     abstract fun showLocationOnMap(location: Location)
     fun promptToggleLocationSettings() {
         val manager =
-                requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
+            requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
         if (!manager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             //showTurnOnGPSDialog
             showCustomDialog(
-                    ctx = requireContext(),
-                    msgRes = R.string.turn_on_network_loc_provider,
-                    okRes = R.string.go_to_settings,
-                    dismissRes = R.string.not_now_txt,
-                    positiveAction = {
-                        startActivity(
-                                Intent(
-                                        Settings.ACTION_LOCATION_SOURCE_SETTINGS
-                                )
+                ctx = requireContext(),
+                msgRes = R.string.turn_on_network_loc_provider,
+                okRes = R.string.go_to_settings,
+                dismissRes = R.string.not_now_txt,
+                positiveAction = {
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_LOCATION_SOURCE_SETTINGS
                         )
-                    })
+                    )
+                })
         }
     }
 
@@ -178,16 +179,17 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
     @SuppressLint("MissingPermission")
     fun showUserLocation() {
         locationManager =
-                requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
+            requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
         locationManager?.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER,
-                USER_LOCATION_UPDATE_INTERVAL_MILLS,
-                USER_LOCATION_UPDATE_ON_DISTANCE,
-                locationListener
+            LocationManager.NETWORK_PROVIDER,
+            USER_LOCATION_UPDATE_INTERVAL_MILLS,
+            USER_LOCATION_UPDATE_ON_DISTANCE,
+            locationListener
         )
-        locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)?.let { lastKnownLoc ->
-            showLocationOnMap(lastKnownLoc)
-        }
+        locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            ?.let { lastKnownLoc ->
+                showLocationOnMap(lastKnownLoc)
+            }
 
     }
 
@@ -195,17 +197,17 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             when {
                 ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     showUserLocation()
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     showCustomDialog(
-                            ctx = requireContext(),
-                            msgRes = R.string.location_permission_rationale,
-                            okRes = R.string.got_it_txt,
-                            dismissRes = R.string.not_now_txt
+                        ctx = requireContext(),
+                        msgRes = R.string.location_permission_rationale,
+                        okRes = R.string.got_it_txt,
+                        dismissRes = R.string.not_now_txt
                     ) {
                         requestLocationPermission()
                     }
@@ -217,7 +219,8 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
         }
     }
 
-    private fun requestLocationPermission() = requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    private fun requestLocationPermission() =
+        requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
 
     /******************MENU **************/
@@ -266,7 +269,7 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
         watchedItemsAdapter.setWatchedLocationsList(watchedLocationHighLights)
     }
 
-    fun  updateWatchedMonitors(monitors : List<MonitorDetails>){
+    fun updateWatchedMonitors(monitors: List<MonitorDetails>) {
         watchedItemsAdapter.setWatchedMonitorsList(monitors)
     }
 
@@ -276,28 +279,28 @@ abstract class BaseMapFragment : Fragment(), WatchedLocationsAndMonitorsAdapter.
     }
 
     private fun showCustomDialog(
-            ctx: Context,
-            msgRes: Int,
-            okRes: Int,
-            dismissRes: Int,
-            positiveAction: () -> Unit
+        ctx: Context,
+        msgRes: Int,
+        okRes: Int,
+        dismissRes: Int,
+        positiveAction: () -> Unit
     ) {
         popUp?.let {
             if (it.isShowing) it.dismiss()
         }
         popUp = MaterialAlertDialogBuilder(ctx)
-                .setTitle(msgRes)
-                .setPositiveButton(
-                        okRes
-                ) { dialog, _ ->
-                    positiveAction.invoke()
-                    dialog.dismiss()
-                }
-                .setNeutralButton(
-                        dismissRes
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }.create()
+            .setTitle(msgRes)
+            .setPositiveButton(
+                okRes
+            ) { dialog, _ ->
+                positiveAction.invoke()
+                dialog.dismiss()
+            }
+            .setNeutralButton(
+                dismissRes
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }.create()
 
         popUp?.show()
     }

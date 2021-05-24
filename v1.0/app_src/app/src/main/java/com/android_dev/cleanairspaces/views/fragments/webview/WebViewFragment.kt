@@ -1,4 +1,4 @@
-package com.android_dev.cleanairspaces.views.fragments
+package com.android_dev.cleanairspaces.views.fragments.webview
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class WebViewFragment : Fragment() {
 
     companion object {
-        private val TAG =  WebViewFragment::class.java.simpleName
+        private val TAG = WebViewFragment::class.java.simpleName
     }
 
     private var _binding: FragmentWebViewBinding? = null

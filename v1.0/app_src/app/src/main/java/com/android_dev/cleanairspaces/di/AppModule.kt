@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import androidx.work.WorkManager
+import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
 import com.android_dev.cleanairspaces.persistence.api.services.*
 import com.android_dev.cleanairspaces.persistence.local.CasDatabase
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
@@ -256,6 +257,14 @@ class AppModule {
     fun provideLogger(logRepo: LogRepo): MyLogger = MyLogger(
         logRepo = logRepo
     )
+
+    @Provides
+    @Singleton
+    fun provideMqttClient(
+        logger: MyLogger
+    ) : CasMqttClient = CasMqttClient (
+            myLogger = logger
+            )
 
     @Provides
     @Singleton

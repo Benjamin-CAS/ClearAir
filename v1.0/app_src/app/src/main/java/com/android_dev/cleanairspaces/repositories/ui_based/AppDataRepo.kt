@@ -920,7 +920,7 @@ class AppDataRepo
         locId: String,
         username: String,
         password: String,
-        resultListener: AsyncResultListener
+        resultListener: AsyncResultListener? = null
     ) {
         val timeStamp = System.currentTimeMillis().toString()
         val pl =
@@ -930,7 +930,7 @@ class AppDataRepo
                 locId = locId,
                 userName = username,
                 userPass = password
-            )
+            ).replace("\n", "").replace(" ", "")
         val data = JsonObject()
         data.addProperty(L_TIME_KEY, timeStamp)
         data.addProperty(PAYLOAD_KEY, pl)
@@ -953,14 +953,11 @@ class AppDataRepo
                             resultListener = resultListener
                         )
                     } else {
-                        Log.d(
-                            "here", "no payload"
-                        )
                         //wrong password probably
-                        resultListener.onComplete(isSuccess = false)
+                        resultListener?.onComplete(isSuccess = false)
                     }
                 } catch (exc: Exception) {
-                    resultListener.onComplete(isSuccess = false)
+                    resultListener?.onComplete(isSuccess = false)
                     CoroutineScope(Dispatchers.IO).launch {
                         myLogger.logThis(
                             tag = LogTags.EXCEPTION,
@@ -973,7 +970,7 @@ class AppDataRepo
             }
 
             override fun onFailure(call: Call<DevicesDetailsResponse>, t: Throwable) {
-                resultListener.onComplete(isSuccess = false)
+                resultListener?.onComplete(isSuccess = false)
                 CoroutineScope(Dispatchers.IO).launch {
                     myLogger.logThis(
                         tag = LogTags.EXCEPTION,
@@ -993,7 +990,7 @@ class AppDataRepo
         locId: String,
         userName: String,
         userPass: String,
-        resultListener: AsyncResultListener
+        resultListener: AsyncResultListener? = null
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -1011,15 +1008,18 @@ class AppDataRepo
                     aDevice.lastRecUname = userName
                     aDevice.lastRecPwd = userPass
                     aDevice.for_watched_location_tag = watchedLocationTag
+                    aDevice.compId = compId
+                    aDevice.locId = locId
                     i++
                     foundDevices.add(aDevice)
                 }
                 if (foundDevices.isNotEmpty())
                     deviceDetailsDao.insertOrReplaceAll(foundDevices.toList())
 
-                resultListener.onComplete(isSuccess = true)
+
+                resultListener?.onComplete(isSuccess = true, data = foundDevices.size)
             } catch (exc: Exception) {
-                resultListener.onComplete(isSuccess = false)
+                resultListener?.onComplete(isSuccess = false)
                 myLogger.logThis(
                     tag = LogTags.EXCEPTION,
                     from = "$TAG unEncryptDevicesPayload",
@@ -1028,6 +1028,103 @@ class AppDataRepo
                 )
             }
         }
+    }
+
+    /***************** DEVICE CHANGES **********/
+    suspend fun onToggleFreshAir(device: DevicesDetails, status: String): DevicesDetails {
+        val updatedDevice = getUpdatedDevice(device, status = status, changeParam = "freshAir")
+        deviceDetailsDao.insertOrReplace(updatedDevice)
+        return updatedDevice
+    }
+
+    suspend fun onToggleFanSpeed(device: DevicesDetails, status: String, speed: String?): DevicesDetails {
+        val fanSpeed = speed ?: status
+        val updatedDevice = getUpdatedDevice(device, status = fanSpeed, changeParam = "fanSpeed")
+        deviceDetailsDao.insertOrReplace(updatedDevice)
+        return updatedDevice
+    }
+
+    suspend fun onToggleMode(device: DevicesDetails, toMode: String): DevicesDetails {
+        val updatedDevice = getUpdatedDevice(device, status = toMode, changeParam = "mode")
+        deviceDetailsDao.insertOrReplace(updatedDevice)
+        return updatedDevice
+    }
+
+    suspend fun onToggleDuctFit(device: DevicesDetails, status: String): DevicesDetails {
+        val updatedDevice = getUpdatedDevice(device, status, changeParam = "ductFit")
+        deviceDetailsDao.insertOrReplace(updatedDevice)
+        return updatedDevice
+    }
+
+    private fun getUpdatedDevice(
+        device: DevicesDetails,
+        status: String,
+        changeParam: String
+    ): DevicesDetails {
+
+        //check what has changed
+        var mode = if (changeParam == "mode") status else device.mode
+        var ductFit = if (changeParam == "ductFit") {
+            mode = MANUAL
+            status
+        } else device.df
+        var fanSpeed = if (changeParam == "fanSpeed") {
+            mode = MANUAL
+            status
+        } else device.fan_speed
+        var freshAir = if (changeParam == "freshAir") {
+            mode = MANUAL
+            status
+        } else device.fa
+
+        if (changeParam == "mode") {
+            if (status == AUTO) {
+                //RESET fan and fa and ductFit
+                ductFit = OFF_STATUS
+                fanSpeed = OFF_STATUS
+                freshAir = OFF_STATUS
+            }
+        }
+
+        if (changeParam == "fanSpeed" && fanSpeed == OFF_STATUS)
+            ductFit = OFF_STATUS
+
+        if (changeParam == "freshAir" && freshAir == OFF_STATUS)
+            ductFit = OFF_STATUS
+
+        if (changeParam == "freshAir" && freshAir == ON_STATUS)
+            if (fanSpeed == OFF_STATUS)
+                fanSpeed = ON_STATUS
+
+        if (changeParam == "ductFit" && ductFit == ON_STATUS){
+            if (fanSpeed == OFF_STATUS)
+                fanSpeed = ON_STATUS
+        }
+
+        return DevicesDetails(
+            watch_device = device.watch_device,
+            id = device.id,
+            device_type = device.device_type,
+            dev_name = device.dev_name,
+            mac = device.mac,
+            mode = mode,
+            fan_speed = fanSpeed,
+            df = ductFit,
+            iforce = device.iforce,
+            fa = freshAir,
+            last_mode = device.last_mode,
+            last_fan = device.last_fan,
+            last_fa = device.last_fa,
+            last_voc = device.last_voc,
+            last_time = device.last_time,
+            status = REFRESHING,
+            actualDataTag = device.actualDataTag,
+            compId = device.compId,
+            locId = device.locId,
+            lastRecUname = device.lastRecUname,
+            lastRecPwd = device.lastRecPwd,
+            for_watched_location_tag = device.for_watched_location_tag,
+        )
     }
 
 

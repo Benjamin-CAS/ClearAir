@@ -38,6 +38,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -178,18 +179,29 @@ abstract class BaseMapFragment : Fragment(),
 
     @SuppressLint("MissingPermission")
     fun showUserLocation() {
-        locationManager =
-            requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
-        locationManager?.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER,
-            USER_LOCATION_UPDATE_INTERVAL_MILLS,
-            USER_LOCATION_UPDATE_ON_DISTANCE,
-            locationListener
-        )
-        locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-            ?.let { lastKnownLoc ->
-                showLocationOnMap(lastKnownLoc)
+        try {
+            locationManager =
+                requireContext().getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager?
+            locationManager?.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                USER_LOCATION_UPDATE_INTERVAL_MILLS,
+                USER_LOCATION_UPDATE_ON_DISTANCE,
+                locationListener
+            )
+            locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                ?.let { lastKnownLoc ->
+                    showLocationOnMap(lastKnownLoc)
+                }
+        }catch (exc : Exception){
+            lifecycleScope.launch(Dispatchers.IO) {
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG showUserLocation()",
+                    msg = exc.message,
+                    exc =  exc
+                )
             }
+        }
 
     }
 

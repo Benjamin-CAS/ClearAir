@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file locationName.
 #-renamesourcefileattribute SourceFile
+
+#MQTT
+-keepclassmembernames class io.netty.** { *; }
+-keepclassmembers class org.jctools.** { *; }

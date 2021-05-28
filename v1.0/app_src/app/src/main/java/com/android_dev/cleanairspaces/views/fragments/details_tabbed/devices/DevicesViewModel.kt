@@ -1,14 +1,16 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.devices
 
+import android.util.Log
 import androidx.lifecycle.*
+import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
-import com.android_dev.cleanairspaces.utils.AsyncResultListener
-import com.android_dev.cleanairspaces.utils.LogTags
-import com.android_dev.cleanairspaces.utils.MyLogger
+import com.android_dev.cleanairspaces.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -30,13 +32,20 @@ class DevicesViewModel
         return repo.observeDevicesForLocation(locationsTag = locationsTag).asLiveData()
     }
 
-    private val areDevicesLoaded = MutableLiveData<Boolean>()
-    fun observeDeviceLoading(): LiveData<Boolean> = areDevicesLoaded
+    private val areDevicesLoaded = MutableLiveData<DevicesLoadingState>(DevicesLoadingState.IDLE)
+    fun observeDeviceLoading(): LiveData<DevicesLoadingState> = areDevicesLoaded
 
     private val resultListener = object : AsyncResultListener {
         override fun onComplete(data: Any?, isSuccess: Boolean) {
             viewModelScope.launch(Dispatchers.Main) {
-                areDevicesLoaded.value = isSuccess
+                if (isSuccess && data is Int) {
+                    if (data > 0 )
+                    areDevicesLoaded.value = DevicesLoadingState.LOADED_SUCCESS
+                    else
+                    areDevicesLoaded.value = DevicesLoadingState.LOADED_SUCCESS_EMPTY
+                }
+                else
+                    areDevicesLoaded.value =  DevicesLoadingState.LOADING_FAILED
             }
         }
 
@@ -56,7 +65,9 @@ class DevicesViewModel
                     resultListener = resultListener
                 )
             }
+            areDevicesLoaded.value = DevicesLoadingState.LOADING
         } catch (exc: Exception) {
+            areDevicesLoaded.value = DevicesLoadingState.LOADING_FAILED
             viewModelScope.launch(Dispatchers.IO) {
                 myLogger.logThis(
                     tag = LogTags.EXCEPTION,
@@ -70,9 +81,88 @@ class DevicesViewModel
 
     fun watchThisDevice(Devices: DevicesDetails, watchDevice: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.toggleWatchADevice(Devices, watch = watchDevice)
+             repo.toggleWatchADevice(Devices, watch = watchDevice)
+        }
+    }
+
+    fun onToggleFreshAir(device: DevicesDetails, status: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedDevice = repo.onToggleFreshAir(device, status)
+            withContext(Dispatchers.Main) {
+                setMqttStatus(updatedDevice)
+            }
+        }
+    }
+
+    fun onToggleFanSpeed(device: DevicesDetails, status: String, speed: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedDevice = repo.onToggleFanSpeed(device, status, speed)
+            withContext(Dispatchers.Main) {
+            setMqttStatus(updatedDevice)
+            }
+        }
+    }
+
+    fun onToggleMode(device: DevicesDetails, toMode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedDevice =  repo.onToggleMode(device, toMode)
+            withContext(Dispatchers.Main) {
+            setMqttStatus(updatedDevice)
+            }
+        }
+    }
+
+    fun onToggleDuctFit(device: DevicesDetails, status: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedDevice =  repo.onToggleDuctFit(device, status)
+            withContext(Dispatchers.Main) {
+                setMqttStatus(updatedDevice)
+            }
+        }
+    }
+
+    private val mqttParamsToSend = MutableLiveData<DeviceUpdateMqttMessage?>(null)
+    fun getMqttMessage() : LiveData<DeviceUpdateMqttMessage?> = mqttParamsToSend
+    private var lastUpdateDevice : DevicesDetails? =  null
+    fun setMqttStatus(updatedDevice: DevicesDetails?) {
+        if (updatedDevice == null) {
+            //reset
+            mqttParamsToSend.value = null
+        }
+        else {
+            lastUpdateDevice = updatedDevice
+            lastUpdateDevice?.let {
+                val param = if (DevicesTypes.getDeviceInfoByType(it.device_type)?.hasDuctFit ==true)
+                                "${it.fan_speed}${it.df}${it.mode}"
+                            else "${it.fan_speed}${it.fa}${it.mode}"
+                mqttParamsToSend.value = DeviceUpdateMqttMessage(
+                    device_mac_address =it.mac.trim(),
+                    param = param
+                )
+            }
+        }
+    }
+
+    fun refreshDevicesAfterDelay() {
+        viewModelScope.launch(Dispatchers.IO) {
+            lastUpdateDevice?.let {
+                delay(REFRESHED_DEVICE_DELAY)
+                withContext(Dispatchers.Main) {
+                    fetchDevicesForLocation(
+                        username = it.lastRecUname,
+                        password = it.lastRecPwd
+                    )
+                }
+            }
         }
     }
 
 
+}
+enum class DevicesLoadingState{
+    IDLE,
+    LOADING,
+    LOADED_SUCCESS,
+    LOADED_SUCCESS_EMPTY,
+    LOADING_FAILED
 }

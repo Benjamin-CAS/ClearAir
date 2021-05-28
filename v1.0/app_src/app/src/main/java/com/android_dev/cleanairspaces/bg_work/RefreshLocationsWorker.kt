@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.android_dev.cleanairspaces.persistence.local.models.dao.DeviceDetailsDao
 import com.android_dev.cleanairspaces.repositories.api_facing.*
+import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.assisted.Assisted
@@ -20,6 +22,8 @@ class RefreshLocationsWorker @AssistedInject constructor(
     private val outDoorLocationsRepo: OutDoorLocationsRepo,
     private val inDoorLocationsRepo: InDoorLocationsRepo,
     private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
+    private val deviceDetailsDao: DeviceDetailsDao,
+    private val appDataRepo: AppDataRepo,
     private val myLogger: MyLogger,
     private val logRepo: LogRepo,
     private val monitorDetailsUpdatesRepo: MonitorDetailsUpdatesRepo
@@ -35,6 +39,7 @@ class RefreshLocationsWorker @AssistedInject constructor(
                 refreshInDoorLocations()
                 refreshWatchedLocations()
                 refreshWatchedMonitors()
+                refreshWatchedDevices()
                 sendLogData()
             } catch (exc: Exception) {
                 myLogger.logThis(
@@ -66,6 +71,28 @@ class RefreshLocationsWorker @AssistedInject constructor(
     private suspend fun refreshInDoorLocations() {
 
         inDoorLocationsRepo.refreshInDoorLocations()
+    }
+
+    private suspend fun refreshWatchedDevices(){
+            try {
+                val devices  = deviceDetailsDao.getAllDevicesNonObservable()
+                for (device in devices) {
+                  appDataRepo.fetchDevicesForALocation(
+                        watchedLocationTag = device.for_watched_location_tag,
+                        compId = device.compId,
+                        locId = device.locId,
+                        username = device.lastRecUname,
+                        password = device.lastRecPwd,
+                    )
+                }
+            } catch (exc: Exception) {
+                myLogger.logThis(
+                    tag = LogTags.EXCEPTION,
+                    from = "$TAG _ refreshWatchedDevices()",
+                    msg = exc.message,
+                    exc = exc
+                )
+            }
     }
 
     private suspend fun sendLogData() {

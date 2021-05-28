@@ -24,17 +24,6 @@
             tools:text="17-N"
             android:textColor="@color/white"/>
 
-        <ImageView
-            android:id="@+id/is_watching_indicator"
-            android:contentDescription="@string/is_watching_loc_iv_desc"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="@dimen/std_icon"
-            android:layout_height="@dimen/std_icon"
-            android:scaleType="center"
-            tools:src="@drawable/ic_eye"
-            android:focusable="false"/>
-
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/pm_lbl"
             android:layout_marginTop="@dimen/std_space"

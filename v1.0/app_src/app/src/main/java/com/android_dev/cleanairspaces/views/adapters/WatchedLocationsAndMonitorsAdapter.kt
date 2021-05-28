@@ -47,9 +47,7 @@ class WatchedLocationsAndMonitorsAdapter(private val listener: OnClickItemListen
         ) {
             val ctx = itemView.context
             binding.apply {
-                isWatchingIndicator.isVisible = false
-                val uiPmData =
-                    formatMonitorData(ctx = ctx, monitor = monitor, aqiIndex = aqiIndex)
+                val uiPmData = formatMonitorData(ctx = ctx, monitor = monitor, aqiIndex = aqiIndex)
                 indoorName.text = uiPmData.locationName
                 pmVal.text = uiPmData.indoorPmValue.toString()
                 inDoorPmValue.text = uiPmData.indoorPmValue.toString()

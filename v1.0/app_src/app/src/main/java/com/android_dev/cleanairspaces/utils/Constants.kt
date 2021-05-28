@@ -59,7 +59,8 @@ const val MONITOR_ID_KEY = "monitor_id"
 const val LAT_LON_DELIMITER = "_"
 
 
-
+//device refresh
+const val REFRESHED_DEVICE_DELAY =  10000L
 
 
 

@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.devices
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +9,14 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentDevicesBinding
+import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
+import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.LogTags
@@ -59,7 +63,6 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
                 viewModel.aqiIndex = it.aqiIndex
                 updateGenDetails(it.watchedLocationHighLights)
                 observeDevicesForLoc(
-                    isIndoorLoc = it.watchedLocationHighLights.isIndoorLoc,
                     actualDataTag = it.watchedLocationHighLights.actualDataTag,
                     aqiIndex = it.aqiIndex
                 )
@@ -80,17 +83,45 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
         }
 
         viewModel.observeDeviceLoading().observe(viewLifecycleOwner, {
-            it?.let { isSuccess ->
-                if (!isSuccess) {
-                    toggleProgressVisibility(false)
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.invalid_device_credentials,
-                        Toast.LENGTH_LONG
-                    ).show()
+            it?.let { loadingState ->
+
+                when(loadingState) {
+                    DevicesLoadingState.IDLE -> {
+                        toggleProgressVisibility(false)
+                    }
+                    DevicesLoadingState.LOADING -> {
+                        toggleProgressVisibility(true)
+                    }
+                    DevicesLoadingState.LOADED_SUCCESS -> {
+                        toggleProgressVisibility(false)
+                    }
+                    DevicesLoadingState.LOADED_SUCCESS_EMPTY -> {
+                        toggleProgressVisibility(false)
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.no_devices_found,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    DevicesLoadingState.LOADING_FAILED -> {
+                        toggleProgressVisibility(false)
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.invalid_device_credentials,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         })
+
+        viewModel.getMqttMessage().observe(
+            viewLifecycleOwner, Observer {
+               it?.let{ newMsg ->
+                    connectAndPublish(newMsg)
+                }
+            }
+        )
     }
 
     private fun fetchDevices() {
@@ -103,7 +134,6 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
                 Toast.LENGTH_LONG
             ).show()
         } else {
-            toggleProgressVisibility(isLoadingDevices = true)
             viewModel.fetchDevicesForLocation(username, password)
         }
 
@@ -118,8 +148,7 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
 
     private fun observeDevicesForLoc(
         actualDataTag: String,
-        aqiIndex: String?,
-        isIndoorLoc: Boolean
+        aqiIndex: String?
     ) {
         viewModel.observeDevicesForLocation(locationsTag = actualDataTag)
             .observe(viewLifecycleOwner, {
@@ -128,8 +157,6 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
 
                     if (it.isNotEmpty())
                         toggleCredentialsFormVisibility(show = false)
-
-                    devicesAdapter.updateLocationType(isIndoorLoc)
                     devicesAdapter.updateSelectedAqiIndex(aqiIndex)
                     devicesAdapter.setWatchedDevicesList(it)
                 }
@@ -169,20 +196,45 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 
-    override fun onClickWatchedDevice(device: DevicesDetails) {
-        if (device.watch_device) {
-            //user is watching this location --TODO
-        } else {
-            viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
-        }
+    /*************************** DEVICE RELATED ACTIONS ********************/
+    override fun onClickToggleWatchDevice(device: DevicesDetails) {
+        viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
     }
 
     override fun onSwipeToDeleteDevice(device: DevicesDetails) {
         //do nothing --
     }
+
+    override fun onToggleFreshAir(device: DevicesDetails, status : String) {
+      viewModel.onToggleFreshAir(device, status)
+    }
+
+    override fun onToggleFanSpeed(device: DevicesDetails, status : String, speed: String?) {
+        viewModel.onToggleFanSpeed(device, status, speed)
+    }
+
+    override fun onToggleMode(device: DevicesDetails, toMode: String) {
+        viewModel.onToggleMode(device, toMode)
+    }
+
+    override fun onToggleDuctFit(device: DevicesDetails, status : String) {
+        viewModel.onToggleDuctFit(device, status)
+    }
+
+
+    /************ MQTT **************/
+    @Inject lateinit var casMqttClient: CasMqttClient
+    private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
+        casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
+        viewModel.setMqttStatus(null) //clear
+        viewModel.refreshDevicesAfterDelay()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        casMqttClient.disconnect()
+    }
+
 }

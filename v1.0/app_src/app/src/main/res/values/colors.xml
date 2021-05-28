@@ -9,6 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="whitish">#f1f1f1</color>
     <color name="grey">#CCCCCC</color>
+    <color name="dark_grey">#A9A9A9</color>
+    <color name="refresh">#E5D800</color>
 
     <!-- from ios -->
     <color name="cas_blue">#2E4287</color>

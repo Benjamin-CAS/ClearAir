@@ -12,6 +12,8 @@ class MyLogger @Inject constructor(
 ) {
 
 
+    val uniqueID = UUID.randomUUID().toString()
+
     suspend fun logThis(tag: LogTags, from: String, msg: String? = "", exc: Exception? = null) {
 
         if (IS_DEBUG_MODE) {
@@ -27,7 +29,6 @@ class MyLogger @Inject constructor(
 
     companion object {
         const val IS_DEBUG_MODE = true
-        private val uniqueID = UUID.randomUUID().toString()
     }
 }
 

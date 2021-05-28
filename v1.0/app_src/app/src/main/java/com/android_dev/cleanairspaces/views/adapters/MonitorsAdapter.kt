@@ -35,18 +35,7 @@ class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
         ) {
             val ctx = itemView.context
             binding.apply {
-                if (isForIndoorLoc) {
-                    val isWatchingIndicatorIcon = if (monitor.watch_location) {
-                        R.drawable.ic_eye
-                    } else {
-                        R.drawable.ic_add
-                    }
-                    Glide.with(ctx)
-                        .load(isWatchingIndicatorIcon)
-                        .into(isWatchingIndicator)
-                } else {
-                    isWatchingIndicator.isVisible = false
-                }
+
                 val uiPmData =
                     formatMonitorData(ctx = ctx, monitor = monitor, aqiIndex = aqiIndex)
                 indoorName.text = uiPmData.locationName

@@ -1,7 +1,6 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.devices
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +23,7 @@ import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
 import com.android_dev.cleanairspaces.utils.myTxt
 import com.android_dev.cleanairspaces.views.adapters.DevicesAdapter
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
+class DevicesFragment : Fragment(), WatchedItemsActionListener {
 
     companion object {
         private val TAG = DevicesFragment::class.java.simpleName
@@ -85,7 +85,7 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
         viewModel.observeDeviceLoading().observe(viewLifecycleOwner, {
             it?.let { loadingState ->
 
-                when(loadingState) {
+                when (loadingState) {
                     DevicesLoadingState.IDLE -> {
                         toggleProgressVisibility(false)
                     }
@@ -117,7 +117,7 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
 
         viewModel.getMqttMessage().observe(
             viewLifecycleOwner, Observer {
-               it?.let{ newMsg ->
+                it?.let { newMsg ->
                     connectAndPublish(newMsg)
                 }
             }
@@ -206,11 +206,11 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
         //do nothing --
     }
 
-    override fun onToggleFreshAir(device: DevicesDetails, status : String) {
-      viewModel.onToggleFreshAir(device, status)
+    override fun onToggleFreshAir(device: DevicesDetails, status: String) {
+        viewModel.onToggleFreshAir(device, status)
     }
 
-    override fun onToggleFanSpeed(device: DevicesDetails, status : String, speed: String?) {
+    override fun onToggleFanSpeed(device: DevicesDetails, status: String, speed: String?) {
         viewModel.onToggleFanSpeed(device, status, speed)
     }
 
@@ -218,13 +218,22 @@ class DevicesFragment : Fragment(), DevicesAdapter.OnClickItemListener {
         viewModel.onToggleMode(device, toMode)
     }
 
-    override fun onToggleDuctFit(device: DevicesDetails, status : String) {
+    override fun onToggleDuctFit(device: DevicesDetails, status: String) {
         viewModel.onToggleDuctFit(device, status)
+    }
+
+    override fun onClickWatchedLocation(locationHighLights: WatchedLocationHighLights) {
+        //pass -- no locations in this fragment
+    }
+
+    override fun onSwipeToDeleteLocation(locationHighLights: WatchedLocationHighLights) {
+        //pass -- no locations in this fragment
     }
 
 
     /************ MQTT **************/
-    @Inject lateinit var casMqttClient: CasMqttClient
+    @Inject
+    lateinit var casMqttClient: CasMqttClient
     private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
         casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
         viewModel.setMqttStatus(null) //clear

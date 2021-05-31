@@ -31,7 +31,7 @@ object DevicesTypes {
                     deviceTitleRes = R.string.device_type_four,
                     deviceLogoName = "cmd.png",
                     deviceTrueName = "CMD 900",
-                            hasFanCalibrations = true,
+                    hasFanCalibrations = true,
                     hasFanBasic = false,
                     hasDuctFit = true
                 )
@@ -53,7 +53,7 @@ object DevicesTypes {
                     deviceTitleRes = R.string.device_type_six,
                     deviceLogoName = "cmd.png",
                     deviceTrueName = "FA",
-                            hasFanCalibrations = false,
+                    hasFanCalibrations = false,
                     hasFanBasic = true,
                     hasDuctFit = false
                 )
@@ -133,12 +133,12 @@ object DevicesTypes {
     data class DeviceInfo(
         val deviceTitleRes: Int,
         val deviceLogoName: String,
-        val deviceTrueName : String,
-        val hasMode : Boolean = true,
-        val hasExtendedFanCalibrations : Boolean = false, //OFF TURBO-SLOW LOW MED HIGH TURBO
-        val hasFanCalibrations : Boolean, //off low med & high
-        val hasFanBasic : Boolean, //on or off only
-        val hasDuctFit : Boolean,
-        val hasFreshAir : Boolean  = false
+        val deviceTrueName: String,
+        val hasMode: Boolean = true,
+        val hasExtendedFanCalibrations: Boolean = false, //OFF TURBO-SLOW LOW MED HIGH TURBO
+        val hasFanCalibrations: Boolean, //off low med & high
+        val hasFanBasic: Boolean, //on or off only
+        val hasDuctFit: Boolean,
+        val hasFreshAir: Boolean = false
     )
 }

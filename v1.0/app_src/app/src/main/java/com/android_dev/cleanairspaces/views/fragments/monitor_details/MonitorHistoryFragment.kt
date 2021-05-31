@@ -119,7 +119,7 @@ class MonitorHistoryFragment : Fragment() {
         styleBarChart(binding.weekChart, WEEK_TAG)
         styleBarChart(binding.monthChart, MONTH_TAG)
 
-        val monitorDetails = args.monitorDetails.monitorDetails as MonitorDetails
+        val monitorDetails = args.monitorDetails.monitorDetails
         viewModel.aqiIndex = args.monitorDetails.aqiIndex
         viewModel.refreshHistoryIfNecessary(monitorDetails)
         updateGeneralLocationInfo(monitorDetails)

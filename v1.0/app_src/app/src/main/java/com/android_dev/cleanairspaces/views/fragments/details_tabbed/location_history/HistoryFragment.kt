@@ -769,7 +769,7 @@ class HistoryFragment : Fragment() {
                         )
 
                         "$prefixTxt ${viewModel.currentOutdoorDatesForWeekChart[pos]} $value $unitsTxt"
-                    }else
+                    } else
                         "$prefixTxt ${viewModel.currentDatesForWeekChart[pos]} $value $unitsTxt"
                     binding.weekChartValue.text = clickedVal
 
@@ -787,7 +787,7 @@ class HistoryFragment : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 myLogger.logThis(
                     tag = LogTags.EXCEPTION,
-                    from = "$TAG displayClickedValue()" ,
+                    from = "$TAG displayClickedValue()",
                     msg = exc.message,
                     exc = exc
                 )

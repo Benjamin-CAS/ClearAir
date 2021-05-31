@@ -1,6 +1,5 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.devices
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
@@ -39,13 +38,12 @@ class DevicesViewModel
         override fun onComplete(data: Any?, isSuccess: Boolean) {
             viewModelScope.launch(Dispatchers.Main) {
                 if (isSuccess && data is Int) {
-                    if (data > 0 )
-                    areDevicesLoaded.value = DevicesLoadingState.LOADED_SUCCESS
+                    if (data > 0)
+                        areDevicesLoaded.value = DevicesLoadingState.LOADED_SUCCESS
                     else
-                    areDevicesLoaded.value = DevicesLoadingState.LOADED_SUCCESS_EMPTY
-                }
-                else
-                    areDevicesLoaded.value =  DevicesLoadingState.LOADING_FAILED
+                        areDevicesLoaded.value = DevicesLoadingState.LOADED_SUCCESS_EMPTY
+                } else
+                    areDevicesLoaded.value = DevicesLoadingState.LOADING_FAILED
             }
         }
 
@@ -81,7 +79,7 @@ class DevicesViewModel
 
     fun watchThisDevice(Devices: DevicesDetails, watchDevice: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-             repo.toggleWatchADevice(Devices, watch = watchDevice)
+            repo.toggleWatchADevice(Devices, watch = watchDevice)
         }
     }
 
@@ -90,6 +88,7 @@ class DevicesViewModel
             val updatedDevice = repo.onToggleFreshAir(device, status)
             withContext(Dispatchers.Main) {
                 setMqttStatus(updatedDevice)
+                sendRequestByHttp(updatedDevice)
             }
         }
     }
@@ -98,54 +97,63 @@ class DevicesViewModel
         viewModelScope.launch(Dispatchers.IO) {
             val updatedDevice = repo.onToggleFanSpeed(device, status, speed)
             withContext(Dispatchers.Main) {
-            setMqttStatus(updatedDevice)
+                setMqttStatus(updatedDevice)
+                sendRequestByHttp(updatedDevice)
             }
         }
     }
 
     fun onToggleMode(device: DevicesDetails, toMode: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val updatedDevice =  repo.onToggleMode(device, toMode)
+            val updatedDevice = repo.onToggleMode(device, toMode)
             withContext(Dispatchers.Main) {
-            setMqttStatus(updatedDevice)
+                setMqttStatus(updatedDevice)
+                sendRequestByHttp(updatedDevice)
             }
         }
     }
 
     fun onToggleDuctFit(device: DevicesDetails, status: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val updatedDevice =  repo.onToggleDuctFit(device, status)
+            val updatedDevice = repo.onToggleDuctFit(device, status)
             withContext(Dispatchers.Main) {
                 setMqttStatus(updatedDevice)
+                sendRequestByHttp(updatedDevice)
             }
         }
     }
 
     private val mqttParamsToSend = MutableLiveData<DeviceUpdateMqttMessage?>(null)
-    fun getMqttMessage() : LiveData<DeviceUpdateMqttMessage?> = mqttParamsToSend
-    private var lastUpdateDevice : DevicesDetails? =  null
+    fun getMqttMessage(): LiveData<DeviceUpdateMqttMessage?> = mqttParamsToSend
+    private var lastUpdateDevice: DevicesDetails? = null
     fun setMqttStatus(updatedDevice: DevicesDetails?) {
         if (updatedDevice == null) {
             //reset
             mqttParamsToSend.value = null
-        }
-        else {
+        } else {
             lastUpdateDevice = updatedDevice
             lastUpdateDevice?.let {
-                val param = if (DevicesTypes.getDeviceInfoByType(it.device_type)?.hasDuctFit ==true)
-                                "${it.fan_speed}${it.df}${it.mode}"
-                            else "${it.fan_speed}${it.fa}${it.mode}"
+                val param =
+                    if (DevicesTypes.getDeviceInfoByType(it.device_type)?.hasDuctFit == true)
+                        "${it.fan_speed}${it.df}${it.mode}"
+                    else "${it.fan_speed}${it.fa}${it.mode}"
                 mqttParamsToSend.value = DeviceUpdateMqttMessage(
-                    device_mac_address =it.mac.trim(),
+                    device_mac_address = it.mac.trim(),
                     param = param
                 )
             }
         }
     }
 
+    private var refreshedTimesAlready = 0
     fun refreshDevicesAfterDelay() {
+        if(refreshedTimesAlready == 2) {
+            refreshedTimesAlready = 0
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             lastUpdateDevice?.let {
+                refreshedTimesAlready++
                 delay(REFRESHED_DEVICE_DELAY)
                 withContext(Dispatchers.Main) {
                     fetchDevicesForLocation(
@@ -153,13 +161,26 @@ class DevicesViewModel
                         password = it.lastRecPwd
                     )
                 }
+                delay(REFRESHED_DEVICE_DELAY)
+                withContext(Dispatchers.Main){
+                    refreshDevicesAfterDelay()
+                }
             }
+        }
+    }
+
+    private fun sendRequestByHttp(device: DevicesDetails) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.updateDeviceStatusByHttp(
+                device = device
+            )
         }
     }
 
 
 }
-enum class DevicesLoadingState{
+
+enum class DevicesLoadingState {
     IDLE,
     LOADING,
     LOADED_SUCCESS,

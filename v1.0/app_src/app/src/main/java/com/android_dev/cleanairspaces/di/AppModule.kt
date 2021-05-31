@@ -262,9 +262,9 @@ class AppModule {
     @Singleton
     fun provideMqttClient(
         logger: MyLogger
-    ) : CasMqttClient = CasMqttClient (
-            myLogger = logger
-            )
+    ): CasMqttClient = CasMqttClient(
+        myLogger = logger
+    )
 
     @Provides
     @Singleton

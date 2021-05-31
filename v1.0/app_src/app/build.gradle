@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId "com.android_dev.cleanairspaces"
         minSdkVersion 24
-        targetSdkVersion 28 //keep this for a-map compatibility
+        targetSdkVersion 29 //28 is best for a-map compatibility
         versionCode 1
         versionName "1.0"
         ndk.abiFilters 'armeabi, armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'

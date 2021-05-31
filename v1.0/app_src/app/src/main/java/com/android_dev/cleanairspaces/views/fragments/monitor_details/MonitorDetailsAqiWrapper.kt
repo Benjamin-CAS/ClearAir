@@ -8,4 +8,4 @@ import kotlinx.parcelize.Parcelize
 data class MonitorDetailsAqiWrapper(
     val monitorDetails: MonitorDetails,
     val aqiIndex: String?
-):Parcelable
+) : Parcelable

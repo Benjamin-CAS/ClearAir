@@ -167,18 +167,14 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
     }
 
     override fun onClickWatchedMonitor(monitor: MonitorDetails) {
-        if (monitor.watch_location) {
-            //user is watching this location
-            val action = MonitorsFragmentDirections.actionMonitorsFragmentToMonitorHistoryFragment(
-                monitorDetails = MonitorDetailsAqiWrapper(
-                    monitorDetails = monitor,
-                    aqiIndex = viewModel.aqiIndex
-                )
+        //show history
+        val action = MonitorsFragmentDirections.actionMonitorsFragmentToMonitorHistoryFragment(
+            monitorDetails = MonitorDetailsAqiWrapper(
+                monitorDetails = monitor,
+                aqiIndex = viewModel.aqiIndex
             )
-            findNavController().navigate(action)
-        } else {
-            viewModel.watchThisMonitor(monitor, watchMonitor = !monitor.watch_location)
-        }
+        )
+        findNavController().navigate(action)
     }
 
     override fun onSwipeToDeleteMonitor(monitor: MonitorDetails) {

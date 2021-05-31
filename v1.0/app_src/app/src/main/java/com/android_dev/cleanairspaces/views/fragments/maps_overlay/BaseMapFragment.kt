@@ -27,10 +27,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.HomeMapOverlayBinding
-import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
+import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
-import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndMonitorsAdapter
+import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndDevicesAdapter
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
 import com.android_dev.cleanairspaces.views.fragments.smartqr.CaptureQrCodeActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -38,12 +39,11 @@ import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 @AndroidEntryPoint
 abstract class BaseMapFragment : Fragment(),
-    WatchedLocationsAndMonitorsAdapter.OnClickItemListener {
+    WatchedItemsActionListener {
     companion object {
         private val TAG = BaseMapFragment::class.java.simpleName
     }
@@ -59,7 +59,7 @@ abstract class BaseMapFragment : Fragment(),
     abstract fun goToSearchFragment()
 
     private lateinit var homeMapOverlay: HomeMapOverlayBinding
-    lateinit var watchedItemsAdapter: WatchedLocationsAndMonitorsAdapter
+    lateinit var watchedItemsAdapter: WatchedLocationsAndDevicesAdapter
 
     //goes to home act
     fun goHome() {
@@ -125,7 +125,7 @@ abstract class BaseMapFragment : Fragment(),
             }
             val swipeHandler = object : SwipeToDeleteCallback(watchedItemsRv.context) {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val adapter = watchedItemsRv.adapter as WatchedLocationsAndMonitorsAdapter
+                    val adapter = watchedItemsRv.adapter as WatchedLocationsAndDevicesAdapter
                     adapter.removeAt(viewHolder.adapterPosition)
                 }
 
@@ -192,13 +192,13 @@ abstract class BaseMapFragment : Fragment(),
                 ?.let { lastKnownLoc ->
                     showLocationOnMap(lastKnownLoc)
                 }
-        }catch (exc : Exception){
+        } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
                 myLogger.logThis(
                     tag = LogTags.EXCEPTION,
                     from = "$TAG showUserLocation()",
                     msg = exc.message,
-                    exc =  exc
+                    exc = exc
                 )
             }
         }
@@ -269,8 +269,8 @@ abstract class BaseMapFragment : Fragment(),
     abstract fun handleScannedQrIntent(resultCode: Int, data: Intent?)
 
 
-    override fun onSwipeToDeleteMonitor(monitor: MonitorDetails) {
-        viewModel.stopWatchingMonitor(monitor)
+    override fun onSwipeToDeleteDevice(device: DevicesDetails) {
+        //TODO viewModel.stopWatchingDevice(device)
     }
 
     override fun onSwipeToDeleteLocation(locationHighLights: WatchedLocationHighLights) {
@@ -281,8 +281,8 @@ abstract class BaseMapFragment : Fragment(),
         watchedItemsAdapter.setWatchedLocationsList(watchedLocationHighLights)
     }
 
-    fun updateWatchedMonitors(monitors: List<MonitorDetails>) {
-        watchedItemsAdapter.setWatchedMonitorsList(monitors)
+    fun updateWatchedDevices(devices: List<DevicesDetails>) {
+        watchedItemsAdapter.setWatchedDevicesList(devices)
     }
 
     fun updateIndexForWatchedLocations(selectedAQIIndex: String?) {

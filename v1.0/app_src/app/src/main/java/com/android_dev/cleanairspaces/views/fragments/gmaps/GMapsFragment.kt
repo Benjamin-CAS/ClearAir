@@ -15,16 +15,17 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentGMapsBinding
+import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
+import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
+import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
-import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.android_dev.cleanairspaces.utils.showSnackBar
-import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndMonitorsAdapter
+import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndDevicesAdapter
 import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragment
-import com.android_dev.cleanairspaces.views.fragments.monitor_details.MonitorDetailsAqiWrapper
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -36,6 +37,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
@@ -119,7 +121,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
 
-        watchedItemsAdapter = WatchedLocationsAndMonitorsAdapter(this)
+        watchedItemsAdapter = WatchedLocationsAndDevicesAdapter(this, displayFav = false)
         super.setHomeMapOverlay(binding.mapOverlay)
 
 
@@ -152,13 +154,21 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
 
         observeWatchedLocations()
         requestPermissionsAndShowUserLocation()
-        observeMonitorsIWatch()
+        observeDevicesIWatch()
+        viewModel.getMqttMessage().observe(
+            viewLifecycleOwner, {
+                it?.let { newMsg ->
+                    connectAndPublish(newMsg)
+                }
+            }
+        )
     }
 
-    private fun observeMonitorsIWatch() {
-        viewModel.observeMonitorsIWatch().observe(viewLifecycleOwner, {
-            //todo if (it != null)
-            //todo updateWatchedMonitors(monitors = it)
+    private fun observeDevicesIWatch() {
+        viewModel.observeDevicesIWatch().observe(viewLifecycleOwner, {
+            it?.let { devices ->
+                updateWatchedDevices(devices)
+            }
         })
     }
 
@@ -378,12 +388,40 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         }
     }
 
-    override fun onClickWatchedMonitor(monitor: MonitorDetails) {
-        val details = MonitorDetailsAqiWrapper(
-            monitorDetails = monitor, aqiIndex = viewModel.aqiIndex
-        )
-        val action = GMapsFragmentDirections.actionGMapsFragmentToMonitorHistoryFragment(details)
-        findNavController().navigate(action)
+
+    /************************* WATCHED DEVICES *************************/
+    override fun onClickToggleWatchDevice(device: DevicesDetails) {
+        viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
+    }
+
+    override fun onSwipeToDeleteDevice(device: DevicesDetails) {
+        viewModel.stopWatchingDevice(device)
+    }
+
+    override fun onToggleFreshAir(device: DevicesDetails, status: String) {
+        viewModel.onToggleFreshAir(device, status)
+    }
+
+    override fun onToggleFanSpeed(device: DevicesDetails, status: String, speed: String?) {
+        viewModel.onToggleFanSpeed(device, status, speed)
+    }
+
+    override fun onToggleMode(device: DevicesDetails, toMode: String) {
+        viewModel.onToggleMode(device, toMode)
+    }
+
+    override fun onToggleDuctFit(device: DevicesDetails, status: String) {
+        viewModel.onToggleDuctFit(device, status)
+    }
+
+
+    /************ MQTT **************/
+    @Inject
+    lateinit var casMqttClient: CasMqttClient
+    private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
+        casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
+        viewModel.setMqttStatus(null) //clear
+        viewModel.refreshDevicesAfterDelay()
     }
 
 

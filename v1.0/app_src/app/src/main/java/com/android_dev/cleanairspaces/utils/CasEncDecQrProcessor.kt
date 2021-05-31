@@ -3,6 +3,7 @@ package com.android_dev.cleanairspaces.utils
 import android.util.Base64
 import android.util.Log
 import com.android_dev.cleanairspaces.R
+import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.CONTROL_DEVICE_METHOD_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_DETAILS_METHOD_FOR_KEY
@@ -10,6 +11,7 @@ import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Com
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.LOCATION_INFO_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.MONITOR_HISTORY_METHOD_FOR_KEY
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.MONITOR_INFO_METHOD_FOR_KEY
+import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 
 object CasEncDecQrProcessor {
 
@@ -299,6 +301,24 @@ object CasEncDecQrProcessor {
         Log.d(
             TAG,
             "getEncryptedEncodedPayloadForDevices(encoded $encoded"
+        )
+        return encoded
+    }
+
+    fun getEncryptedEncodedPayloadForControllingDevices(
+        device: DevicesDetails,
+        timeStamp: String
+    ): String {
+        val key = "${CONTROL_DEVICE_METHOD_KEY}$timeStamp"
+        val faOrDf =
+            if (DevicesTypes.getDeviceInfoByType(device.device_type)?.hasDuctFit == true) device.df else device.fa
+        val pl =
+            "{\"$COMP_ID_KEY\":\"${device.compId}\",\"$LOC_ID_KEY\":\"${device.locId}\",\"$USER_KEY\":\"${device.lastRecUname}\",\"$PASSWORD_KEY\":\"${device.lastRecPwd}\",\"mac\":\"${device.mac}\",\"device_type\":\"${device.device_type}\",\"fan\":\"${device.fan_speed}\",\"df\":\"${faOrDf}\",\"mode\":\"${device.mode}\"}"
+        val casEncrypted = doCASEncryptOrDecrypt(payload = pl, key = key)
+        val encoded = toBase64Encoding(casEncrypted)
+        Log.d(
+            TAG,
+            "getEncryptedEncodedPayloadForControllingDevices(encoded $encoded"
         )
         return encoded
     }

@@ -21,6 +21,8 @@ interface AppApiService {
         const val MONITOR_HISTORY_METHOD = "MonDataGet"
         const val DEVICE_METHOD_FOR_KEY = "GetDevicesByLocIdCAS"
         const val DEVICE_METHOD = "GetDevicesByLocId"
+        const val CONTROL_DEVICE_METHOD = "SetDevice"
+        const val CONTROL_DEVICE_METHOD_KEY = "SetDeviceCAS"
 
     }
 }

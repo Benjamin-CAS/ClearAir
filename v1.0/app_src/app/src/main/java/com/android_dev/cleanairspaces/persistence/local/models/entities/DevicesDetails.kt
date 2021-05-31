@@ -10,7 +10,7 @@ import java.util.*
 @Entity(tableName = "devices_data")
 @Parcelize
 data class DevicesDetails(
-    val watch_device: Boolean = false,
+    var watch_device: Boolean = false,
     val id: String,
     val device_type: String,
     val dev_name: String,
@@ -28,8 +28,8 @@ data class DevicesDetails(
     val status: String, //off on dis paused low med high uv issues refreshing...
     @PrimaryKey(autoGenerate = false)
     var actualDataTag: String = "", //comp_id+loc_id+monitor_id+device_id
-    var compId : String,
-    var locId : String,
+    var compId: String,
+    var locId: String,
     var lastRecUname: String = "",
     var lastRecPwd: String = "",
     var for_watched_location_tag: String,
@@ -40,15 +40,16 @@ data class DevicesDetails(
     }
 
     fun getStatusColor(): DeviceDetailsStatus {
-        return when(status.trim().toLowerCase(Locale.ENGLISH)) {
+        return when (status.trim().toLowerCase(Locale.ENGLISH)) {
             IS_OFF -> DeviceDetailsStatus.OFF
-            IS_ON-> DeviceDetailsStatus.ON
+            IS_ON -> DeviceDetailsStatus.ON
             IS_PAUSED -> DeviceDetailsStatus.PAUSED
             IS_DISCONNECTED -> DeviceDetailsStatus.DISCONNECTED
             IS_UV_OFF -> DeviceDetailsStatus.UV_ISSUES
             IS_LOW -> DeviceDetailsStatus.ON_LOW
             IS_MEDIUM -> DeviceDetailsStatus.ON_MED
-            IS_HIGH ->  DeviceDetailsStatus.ON_HIGH
+            IS_HIGH -> DeviceDetailsStatus.ON_HIGH
+            IS_RESTARTING -> DeviceDetailsStatus.RESTARTING
             else -> DeviceDetailsStatus.REFRESHING
         }
     }
@@ -98,8 +99,8 @@ data class DevicesDetails(
         return fan_speed.trim().toLowerCase(Locale.ENGLISH) == TURBO_LOW_SPEED
     }
 
-    fun isTurboFanSlow(): Boolean {
-        return fan_speed.trim().toLowerCase(Locale.ENGLISH) == TURBO_SLOW_SPEED
+    fun isTurboFanSleep(): Boolean {
+        return fan_speed.trim().toLowerCase(Locale.ENGLISH) == TURBO_SLEEP_SPEED
     }
 
     override fun toString(): String {
@@ -107,16 +108,20 @@ data class DevicesDetails(
     }
 }
 
-enum class DeviceDetailsStatus(val statusTxt: Int, val colorRes  : Int){
-    OFF( statusTxt = R.string.status_off, colorRes = R.color.background_bad),
+enum class DeviceDetailsStatus(val statusTxt: Int, val colorRes: Int) {
+    OFF(statusTxt = R.string.status_off, colorRes = R.color.cas_blue),
     ON(statusTxt = R.string.status_on, colorRes = R.color.background_good),
     PAUSED(statusTxt = R.string.status_paused, colorRes = R.color.cas_blue),
     DISCONNECTED(statusTxt = R.string.status_disconnected, colorRes = R.color.background_bad),
     REFRESHING(statusTxt = R.string.status_refreshing, colorRes = R.color.refresh),
+    RESTARTING(statusTxt = R.string.status_restarting, colorRes = R.color.dark_grey),
     ON_LOW(statusTxt = R.string.status_low, colorRes = R.color.background_good),
     ON_MED(statusTxt = R.string.status_med, colorRes = R.color.background_good),
     ON_HIGH(statusTxt = R.string.status_high, colorRes = R.color.background_good),
-    UV_ISSUES(statusTxt = R.string.device_status_uv_issues_display_lbl, colorRes = R.color.dark_grey)
+    UV_ISSUES(
+        statusTxt = R.string.device_status_uv_issues_display_lbl,
+        colorRes = R.color.dark_grey
+    )
 }
 
 const val LOW_SPEED = "1"
@@ -129,13 +134,14 @@ const val MANUAL = "1"
 const val REFRESHING = "refreshing..."
 const val IS_PAUSED = "paused"
 const val IS_DISCONNECTED = "dis"
-const val IS_UV_OFF = "uv off"
-const val IS_LOW ="low"
+const val IS_UV_OFF = "uv issues"
+const val IS_RESTARTING = "restarting"
+const val IS_LOW = "low"
 const val IS_MEDIUM = "med"
 const val IS_HIGH = "high"
 const val IS_ON = "on"
 const val IS_OFF = "off"
-const val TURBO_SLOW_SPEED = "1"
+const val TURBO_SLEEP_SPEED = "1"
 const val TURBO_LOW_SPEED = "2"
 const val TURBO_MED_SPEED = "3"
 const val TURBO_HIGH_SPEED = "4"

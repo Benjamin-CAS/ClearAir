@@ -1004,6 +1004,7 @@ class AppDataRepo
                             devices.getJSONObject(i).toString(),
                             DevicesDetails::class.java
                         )
+
                     aDevice.actualDataTag = "$compId$locId${aDevice.id}"
                     aDevice.lastRecUname = userName
                     aDevice.lastRecPwd = userPass
@@ -1013,9 +1014,14 @@ class AppDataRepo
                     i++
                     foundDevices.add(aDevice)
                 }
-                if (foundDevices.isNotEmpty())
-                    deviceDetailsDao.insertOrReplaceAll(foundDevices.toList())
 
+                if (foundDevices.isNotEmpty() ) {
+                    for (foundDevice in foundDevices) {
+                        val isWatched = deviceDetailsDao.checkIfIsWatched(deviceId = foundDevice.id) > 0
+                        foundDevice.watch_device = isWatched
+                    }
+                    deviceDetailsDao.insertOrReplaceAll(foundDevices.toList())
+                }
 
                 resultListener?.onComplete(isSuccess = true, data = foundDevices.size)
             } catch (exc: Exception) {
@@ -1037,7 +1043,11 @@ class AppDataRepo
         return updatedDevice
     }
 
-    suspend fun onToggleFanSpeed(device: DevicesDetails, status: String, speed: String?): DevicesDetails {
+    suspend fun onToggleFanSpeed(
+        device: DevicesDetails,
+        status: String,
+        speed: String?
+    ): DevicesDetails {
         val fanSpeed = speed ?: status
         val updatedDevice = getUpdatedDevice(device, status = fanSpeed, changeParam = "fanSpeed")
         deviceDetailsDao.insertOrReplace(updatedDevice)
@@ -1096,7 +1106,7 @@ class AppDataRepo
             if (fanSpeed == OFF_STATUS)
                 fanSpeed = ON_STATUS
 
-        if (changeParam == "ductFit" && ductFit == ON_STATUS){
+        if (changeParam == "ductFit" && ductFit == ON_STATUS) {
             if (fanSpeed == OFF_STATUS)
                 fanSpeed = ON_STATUS
         }
@@ -1125,6 +1135,79 @@ class AppDataRepo
             lastRecPwd = device.lastRecPwd,
             for_watched_location_tag = device.for_watched_location_tag,
         )
+    }
+
+    suspend fun updateDeviceStatusByHttp(device: DevicesDetails) {
+        val timeStamp = System.currentTimeMillis().toString()
+        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForControllingDevices(
+            device, timeStamp
+        ).replace("\n", "").replace(" ", "")
+        val data = JsonObject()
+        data.addProperty(L_TIME_KEY, timeStamp)
+        data.addProperty(PAYLOAD_KEY, pl)
+        val request =
+            inDoorLocationsApiService.updateDeviceStatusByHttp(pl = data)
+        request.enqueue(object : Callback<Any> {
+            override fun onResponse(
+                call: Call<Any>,
+                response: Response<Any>
+            ) {
+                try {
+                    if (response.body() != null) {
+                        Log.d(
+                            TAG, "updateDeviceStatusByHttp() response ${response.body()}"
+                        )
+                    } else {
+                        Log.d(
+                            TAG, "updateDeviceStatusByHttp() response $response  -- body is null"
+                        )
+                    }
+                } catch (exc: Exception) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        myLogger.logThis(
+                            tag = LogTags.EXCEPTION,
+                            from = "$TAG _ updateDeviceStatusByHttp()_onResponse",
+                            msg = exc.message,
+                            exc = exc
+                        )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<Any>, t: Throwable) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    myLogger.logThis(
+                        tag = LogTags.EXCEPTION,
+                        from = "$TAG _ updateDeviceStatusByHttp()_onFailure",
+                        msg = t.message
+                    )
+                }
+            }
+        })
+
+    }
+
+    fun observeDevicesIWatch() = deviceDetailsDao.observeDevicesIWatch()
+    suspend fun refreshWatchedDevices() {
+        try {
+            val devices = deviceDetailsDao.getAllDevicesNonObservable()
+            for (device in devices) {
+                fetchDevicesForALocation(
+                    watchedLocationTag = device.for_watched_location_tag,
+                    compId = device.compId,
+                    locId = device.locId,
+                    username = device.lastRecUname,
+                    password = device.lastRecPwd
+                )
+            }
+        } catch (exc: Exception) {
+            myLogger.logThis(
+                tag = LogTags.EXCEPTION,
+                from = "$TAG _ refreshWatchedDevices()",
+                msg = exc.message,
+                exc = exc
+            )
+        }
     }
 
 

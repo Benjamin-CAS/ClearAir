@@ -185,8 +185,9 @@
     <string name="status_high">High speed</string>
     <string name="device_status_uv_issues_display_lbl">On</string>
     <string name="device_type_thirteen">DuctFit Mobile</string>
-    <string name="fan_ext_slow">Slow</string>
+    <string name="fan_ext_sleep">Sleep</string>
     <string name="fan_ext_turbo">Turbo</string>
     <string name="is_watching_dev_iv_desc">Watch this device</string>
+    <string name="status_restarting">Restarting</string>
 
 </resources>

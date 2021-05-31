@@ -22,7 +22,6 @@ class RefreshLocationsWorker @AssistedInject constructor(
     private val outDoorLocationsRepo: OutDoorLocationsRepo,
     private val inDoorLocationsRepo: InDoorLocationsRepo,
     private val watchedLocationUpdatesRepo: WatchedLocationUpdatesRepo,
-    private val deviceDetailsDao: DeviceDetailsDao,
     private val appDataRepo: AppDataRepo,
     private val myLogger: MyLogger,
     private val logRepo: LogRepo,
@@ -73,26 +72,8 @@ class RefreshLocationsWorker @AssistedInject constructor(
         inDoorLocationsRepo.refreshInDoorLocations()
     }
 
-    private suspend fun refreshWatchedDevices(){
-            try {
-                val devices  = deviceDetailsDao.getAllDevicesNonObservable()
-                for (device in devices) {
-                  appDataRepo.fetchDevicesForALocation(
-                        watchedLocationTag = device.for_watched_location_tag,
-                        compId = device.compId,
-                        locId = device.locId,
-                        username = device.lastRecUname,
-                        password = device.lastRecPwd,
-                    )
-                }
-            } catch (exc: Exception) {
-                myLogger.logThis(
-                    tag = LogTags.EXCEPTION,
-                    from = "$TAG _ refreshWatchedDevices()",
-                    msg = exc.message,
-                    exc = exc
-                )
-            }
+    private suspend fun refreshWatchedDevices() {
+        appDataRepo.refreshWatchedDevices()
     }
 
     private suspend fun sendLogData() {

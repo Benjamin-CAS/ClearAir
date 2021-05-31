@@ -28,7 +28,7 @@ class MyLogger @Inject constructor(
 
 
     companion object {
-        const val IS_DEBUG_MODE = true
+        const val IS_DEBUG_MODE = false
     }
 }
 

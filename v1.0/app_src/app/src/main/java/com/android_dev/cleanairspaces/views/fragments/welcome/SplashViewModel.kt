@@ -35,6 +35,7 @@ class SplashViewModel @Inject constructor(
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+
         val refreshDataRequest =
             PeriodicWorkRequestBuilder<RefreshLocationsWorker>(
                 DATA_REFRESH_INTERVAL_MIN,

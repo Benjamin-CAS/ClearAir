@@ -3,14 +3,11 @@ package com.android_dev.cleanairspaces.views.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.MonitorItemBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatMonitorData
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsIndoorExtras
-import com.bumptech.glide.Glide
 
 class MonitorsAdapter(private val monitorListener: OnClickItemListener) :
     RecyclerView.Adapter<MonitorsAdapter.MonitorsAdapterViewHolder>() {

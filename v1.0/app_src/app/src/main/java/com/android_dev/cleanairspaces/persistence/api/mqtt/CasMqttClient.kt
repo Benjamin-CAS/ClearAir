@@ -19,6 +19,7 @@ class CasMqttClient @Inject constructor(
 ) {
 
     var client: Mqtt5AsyncClient? = null
+
     companion object {
         private val TAG = CasMqttClient::class.java.simpleName
     }
@@ -65,17 +66,18 @@ class CasMqttClient @Inject constructor(
                             .whenComplete { publish: Mqtt5PublishResult?, throwable: Throwable? ->
                                 if (throwable != null) {
                                     // handle failure to publish
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            myLogger.logThis(
-                                                tag = LogTags.EXCEPTION,
-                                                from = "$TAG connectAndPublish() publish()",
-                                                msg = "publish() fail ${publish?.error} ${throwable.message}"
-                                            )
-                                        }
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        myLogger.logThis(
+                                            tag = LogTags.EXCEPTION,
+                                            from = "$TAG connectAndPublish() publish()",
+                                            msg = "publish() fail ${publish?.error} ${throwable.message}"
+                                        )
+                                    }
                                 } else {
                                     // handle successful publish, e.g. logging or incrementing a metric
                                     Log.d(
-                                        TAG, "publish() ${deviceUpdateMqttMessage.getPayLoadId()} ${deviceUpdateMqttMessage.param} success ${publish?.publish}"
+                                        TAG,
+                                        "publish() ${deviceUpdateMqttMessage.getPayLoadId()} ${deviceUpdateMqttMessage.param} success ${publish?.publish}"
                                     )
                                 }
                                 client?.disconnect()
@@ -98,12 +100,12 @@ class CasMqttClient @Inject constructor(
 }
 
 data class DeviceUpdateMqttMessage(
-        val device_mac_address : String,
-        val param : String,
-        val id_prefix : String = "CAS_"
-){
+    val device_mac_address: String,
+    val param: String,
+    val id_prefix: String = "CAS_"
+) {
     fun getPayLoadId(): String {
-        return  id_prefix + device_mac_address
+        return id_prefix + device_mac_address
     }
 
 }

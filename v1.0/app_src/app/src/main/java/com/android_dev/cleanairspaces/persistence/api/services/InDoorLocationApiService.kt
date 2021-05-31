@@ -4,6 +4,7 @@ import com.android_dev.cleanairspaces.persistence.api.responses.DevicesDetailsRe
 import com.android_dev.cleanairspaces.persistence.api.responses.IndoorLocationsDetailsResponse
 import com.android_dev.cleanairspaces.persistence.api.responses.IndoorLocationsResponse
 import com.android_dev.cleanairspaces.persistence.api.responses.IndoorMonitorsResponse
+import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.CONTROL_DEVICE_METHOD
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_METHOD
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_DETAILS_METHOD
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.INDOOR_LOCATION_MONITORS_METHOD
@@ -52,5 +53,13 @@ interface InDoorLocationApiService {
         @Query("nonce") nonce: String = NONCE,
         @Body pl: JsonObject
     ): Call<DevicesDetailsResponse>
+
+    @POST("index.php/api/approuter")
+    fun updateDeviceStatusByHttp(
+        @Query("app_id") app_id: Int = API_APP_ID,
+        @Query("method") method: String = CONTROL_DEVICE_METHOD,
+        @Query("nonce") nonce: String = NONCE,
+        @Body pl: JsonObject
+    ): Call<Any>
 
 }

@@ -60,7 +60,7 @@ const val LAT_LON_DELIMITER = "_"
 
 
 //device refresh
-const val REFRESHED_DEVICE_DELAY =  10000L
+const val REFRESHED_DEVICE_DELAY = 8000L
 
 
 

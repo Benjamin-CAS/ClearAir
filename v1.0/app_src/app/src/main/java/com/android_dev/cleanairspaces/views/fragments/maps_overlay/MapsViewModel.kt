@@ -161,9 +161,9 @@ class MapsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             lastUpdateDevice?.let {
                 //refreshing twice ---
-                delay(REFRESHED_DEVICE_DELAY)
+                delay(REFRESHED_DEVICE_MQTT_DELAY)
                 repo.refreshWatchedDevices()
-                delay(REFRESHED_DEVICE_DELAY)
+                delay(REFRESHED_DEVICE_HTTP_DELAY)
                 repo.refreshWatchedDevices()
             }
         }

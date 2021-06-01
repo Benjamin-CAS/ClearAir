@@ -55,7 +55,8 @@ object DevicesTypes {
                     deviceTrueName = "FA",
                     hasFanCalibrations = false,
                     hasFanBasic = true,
-                    hasDuctFit = false
+                    hasDuctFit = false,
+                    hasFreshAir = true
                 )
             }
 
@@ -89,7 +90,8 @@ object DevicesTypes {
                     deviceTrueName = "FA3",
                     hasFanCalibrations = true,
                     hasFanBasic = false,
-                    hasDuctFit = false
+                    hasDuctFit = false,
+                    hasFreshAir = true
                 )
             }
 

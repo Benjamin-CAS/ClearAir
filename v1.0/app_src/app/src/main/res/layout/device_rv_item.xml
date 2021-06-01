@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/background_good"
+        app:cardCornerRadius="@dimen/std_space"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="@dimen/sm_space"
+        app:cardElevation="@dimen/std_space"
+        android:layout_margin="@dimen/sm_space">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/watch_device"
+                android:layout_width="@dimen/std_icon"
+                android:layout_height="@dimen/std_icon"
+                android:contentDescription="@string/is_watching_dev_iv_desc"
+                tools:src="@drawable/ic_not_fav"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/device_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/std_icon"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="Disconnected"
+                android:textAllCaps="true"
+                style="@style/Theme.CleanAirSpaces.Button"
+                app:layout_constraintEnd_toStartOf="@id/watch_device"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginEnd="@dimen/std_space"
+                android:layout_marginStart="@dimen/std_space"
+                tools:background="@drawable/grey_rounded_bg"
+                android:paddingStart="@dimen/std_space"
+                android:paddingEnd="@dimen/std_space"
+                app:layout_constraintStart_toEndOf="@id/device_name"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/std_icon"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:id="@+id/device_name"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent=".45"
+                tools:text="SG_17-15"
+                style="@style/Theme.CleanAirSpaces.Title6"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:id="@+id/device_type"
+                android:layout_marginTop="@dimen/sm_space"
+                app:layout_constraintTop_toBottomOf="@id/device_name"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Device Type CMD DuctFit"
+                style="@style/Theme.CleanAirSpaces.Caption"
+                android:textSize="16sp"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:id="@+id/mode_lbl"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/device_type"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/device_mode_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:id="@+id/fan_lbl"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/device_type"
+                app:layout_constraintStart_toEndOf="@id/mode_lbl"
+                android:text="@string/device_fan_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:id="@+id/device_duct_fit_lbl"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/device_type"
+                app:layout_constraintStart_toEndOf="@id/fan_lbl"
+                android:text="@string/device_duct_fit_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:id="@+id/device_fresh_air_lbl"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/device_type"
+                app:layout_constraintStart_toEndOf="@id/fan_lbl"
+                android:text="@string/device_fresh_air_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_status_off"
+                android:id="@+id/mode_status_iv"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/mode_lbl"
+                app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="@string/device_mode_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_fan_low"
+                android:id="@+id/fan_status_iv"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/fan_lbl"
+                app:layout_constraintStart_toEndOf="@id/mode_status_iv"
+                android:contentDescription="@string/device_fan_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_status_on"
+                android:id="@+id/device_duct_fit_status_iv"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/device_duct_fit_lbl"
+                app:layout_constraintStart_toEndOf="@id/fan_status_iv"
+                android:contentDescription="@string/device_duct_fit_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                app:layout_constraintWidth_percent=".33"
+                android:layout_height="@dimen/clickable_std"
+                android:gravity="center"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_status_off"
+                android:id="@+id/device_fresh_air_status_iv"
+                android:layout_marginTop="@dimen/std_space"
+                app:layout_constraintTop_toBottomOf="@id/device_fresh_air_lbl"
+                app:layout_constraintStart_toEndOf="@id/fan_status_iv"
+                android:contentDescription="@string/device_fresh_air_lbl"
+                style="@style/Theme.CleanAirSpaces.Body1"
+                android:visibility="gone"/>
+
+
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

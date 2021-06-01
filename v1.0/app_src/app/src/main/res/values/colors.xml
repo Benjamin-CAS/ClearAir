@@ -10,7 +10,6 @@
     <color name="whitish">#f1f1f1</color>
     <color name="grey">#CCCCCC</color>
     <color name="dark_grey">#A9A9A9</color>
-    <color name="refresh">#E5D800</color>
 
     <!-- from ios -->
     <color name="cas_blue">#2E4287</color>
@@ -31,6 +30,7 @@
     <color name="background_good">#50b269</color>
     <color name="background_moderate">#e06843</color>
     <color name="background_bad">#e52f2e</color>
+    <color name="background_beyond">#3F3F3F</color>
     <!--- AQI COLORS -->
     <color name="aqi_good">#33B266</color>
     <color name="aqi_moderate">#E5D800</color>

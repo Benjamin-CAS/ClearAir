@@ -108,19 +108,19 @@ data class DevicesDetails(
     }
 }
 
-enum class DeviceDetailsStatus(val statusTxt: Int, val colorRes: Int) {
-    OFF(statusTxt = R.string.status_off, colorRes = R.color.cas_blue),
-    ON(statusTxt = R.string.status_on, colorRes = R.color.background_good),
-    PAUSED(statusTxt = R.string.status_paused, colorRes = R.color.cas_blue),
-    DISCONNECTED(statusTxt = R.string.status_disconnected, colorRes = R.color.background_bad),
-    REFRESHING(statusTxt = R.string.status_refreshing, colorRes = R.color.refresh),
-    RESTARTING(statusTxt = R.string.status_restarting, colorRes = R.color.dark_grey),
-    ON_LOW(statusTxt = R.string.status_low, colorRes = R.color.background_good),
-    ON_MED(statusTxt = R.string.status_med, colorRes = R.color.background_good),
-    ON_HIGH(statusTxt = R.string.status_high, colorRes = R.color.background_good),
+enum class DeviceDetailsStatus(val statusTxt: Int, val bgColorRes: Int, val statusDrawableBg : Int = R.drawable.green_rounded_bg ) {
+    OFF(statusTxt = R.string.status_off, bgColorRes = R.color.background_beyond, statusDrawableBg = R.drawable.blue_rounded_bg),
+    ON(statusTxt = R.string.status_on, bgColorRes = R.color.background_good),
+    PAUSED(statusTxt = R.string.status_paused, bgColorRes = R.color.background_beyond, statusDrawableBg = R.drawable.blue_rounded_bg),
+    DISCONNECTED(statusTxt = R.string.status_disconnected, bgColorRes = R.color.background_moderate, statusDrawableBg = R.drawable.red_rounded_bg),
+    REFRESHING(statusTxt = R.string.status_refreshing, bgColorRes = R.color.background_moderate),
+    RESTARTING(statusTxt = R.string.status_restarting, bgColorRes = R.color.background_beyond, statusDrawableBg = R.drawable.grey_rounded_bg),
+    ON_LOW(statusTxt = R.string.status_low, bgColorRes = R.color.background_good),
+    ON_MED(statusTxt = R.string.status_med, bgColorRes = R.color.background_good),
+    ON_HIGH(statusTxt = R.string.status_high, bgColorRes = R.color.background_good),
     UV_ISSUES(
         statusTxt = R.string.device_status_uv_issues_display_lbl,
-        colorRes = R.color.dark_grey
+        bgColorRes = R.color.background_beyond
     )
 }
 

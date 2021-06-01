@@ -17,7 +17,7 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
         device: DevicesDetails,
         deviceListener: WatchedItemsActionListener,
         aqiIndex: String?,
-        displayFav : Boolean = true
+        displayFav: Boolean = true
     ) {
         val ctx = itemView.context
         val deviceStatus = device.getStatusColor()
@@ -34,7 +34,7 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
 
         binding.deviceCard.setCardBackgroundColor(
             ContextCompat.getColor(
-                ctx, deviceStatus.colorRes
+                ctx, deviceStatus.bgColorRes
             )
         )
 
@@ -48,7 +48,7 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
             Glide.with(ctx)
                 .load(watchIndicator)
                 .into(binding.watchDevice)
-        }else{
+        } else {
             binding.watchDevice.isVisible = false
         }
 
@@ -224,7 +224,8 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
 
 
             //display fan off slow low med high and turbo
-            val hasFanExt = typeInfo.hasExtendedFanCalibrations
+            if(!hasFanCalib){
+            val hasFanExt =  typeInfo.hasExtendedFanCalibrations
             deviceFanCalibLbl.isVisible = hasFanExt
             fanOffBtn.isVisible = hasFanExt
             fanSleepBtn.isVisible = hasFanExt
@@ -330,24 +331,27 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
                 fanSleepBtn.setTextColor(blueColor)
 
             }
+        }
 
 
             //display basic fan settings
-            val hasBasicFanSettings = !hasFanCalib && typeInfo.hasFanBasic
-            deviceFanBasicLbl.isVisible = hasBasicFanSettings
-            fanBasicOffBtn.isVisible = hasBasicFanSettings
-            fanBasicOnBtn.isVisible = hasBasicFanSettings
-            if (device.isFanOn()) {
-                fanBasicOffBtn.background = inActiveBg
-                fanBasicOnBtn.background = activeBg
-                fanBasicOffBtn.background = inActiveBg
-                fanBasicOnBtn.setTextColor(whiteColor)
-                fanBasicOffBtn.setTextColor(blueColor)
-            } else {
-                fanBasicOffBtn.background = activeBg
-                fanBasicOnBtn.background = inActiveBg
-                fanBasicOffBtn.setTextColor(whiteColor)
-                fanBasicOnBtn.setTextColor(blueColor)
+            if(!hasFanCalib && !typeInfo.hasExtendedFanCalibrations) {
+                val hasBasicFanSettings = typeInfo.hasFanBasic
+                deviceFanBasicLbl.isVisible = hasBasicFanSettings
+                fanBasicOffBtn.isVisible = hasBasicFanSettings
+                fanBasicOnBtn.isVisible = hasBasicFanSettings
+                if (device.isFanOn()) {
+                    fanBasicOffBtn.background = inActiveBg
+                    fanBasicOnBtn.background = activeBg
+                    fanBasicOffBtn.background = inActiveBg
+                    fanBasicOnBtn.setTextColor(whiteColor)
+                    fanBasicOffBtn.setTextColor(blueColor)
+                } else {
+                    fanBasicOffBtn.background = activeBg
+                    fanBasicOnBtn.background = inActiveBg
+                    fanBasicOffBtn.setTextColor(whiteColor)
+                    fanBasicOnBtn.setTextColor(blueColor)
+                }
             }
 
 

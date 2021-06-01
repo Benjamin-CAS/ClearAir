@@ -24,7 +24,8 @@ class CasMqttClient @Inject constructor(
         private val TAG = CasMqttClient::class.java.simpleName
     }
 
-    fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
+    fun connectAndPublish(
+        deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
         val serverURI = "mqtt.cleanairspaces.com"
         val port = 1883
         val clientId = "androidApp_" + myLogger.uniqueID

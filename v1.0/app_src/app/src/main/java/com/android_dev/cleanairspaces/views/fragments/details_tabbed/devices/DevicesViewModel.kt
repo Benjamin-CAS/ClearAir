@@ -154,14 +154,14 @@ class DevicesViewModel
         viewModelScope.launch(Dispatchers.IO) {
             lastUpdateDevice?.let {
                 refreshedTimesAlready++
-                delay(REFRESHED_DEVICE_DELAY)
+                delay(REFRESHED_DEVICE_MQTT_DELAY)
                 withContext(Dispatchers.Main) {
                     fetchDevicesForLocation(
                         username = it.lastRecUname,
                         password = it.lastRecPwd
                     )
                 }
-                delay(REFRESHED_DEVICE_DELAY)
+                delay(REFRESHED_DEVICE_HTTP_DELAY)
                 withContext(Dispatchers.Main){
                     refreshDevicesAfterDelay()
                 }

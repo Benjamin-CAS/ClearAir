@@ -42,12 +42,22 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseMapFragment : Fragment(),
-    WatchedItemsActionListener {
+abstract class BaseMapFragment : Fragment(),WatchedItemsActionListener {
     companion object {
         private val TAG = BaseMapFragment::class.java.simpleName
     }
+    override fun onSwipeToDeleteDevice(device: DevicesDetails) {
 
+    }
+
+    override fun onSwipeToDeleteLocation(locationHighLights: WatchedLocationHighLights) {
+        viewModel.deleteLocation(locationHighLights)
+        viewModel.observeDevicesAllLocation(locationHighLights.actualDataTag).observe(this){
+            lifecycleScope.launch {
+                viewModel.deleteDevicesDetails(it)
+            }
+        }
+    }
     @Inject
     lateinit var myLogger: MyLogger
 
@@ -98,7 +108,6 @@ abstract class BaseMapFragment : Fragment(),
             }
 
             searchLocation.setOnClickListener {
-
                 lifecycleScope.launch(Dispatchers.IO) {
                     myLogger.logThis(
                         tag = LogTags.USER_ACTION_CLICK_FEATURE,
@@ -128,7 +137,6 @@ abstract class BaseMapFragment : Fragment(),
                     val adapter = watchedItemsRv.adapter as WatchedLocationsAndDevicesAdapter
                     adapter.removeAt(viewHolder.adapterPosition)
                 }
-
             }
             val itemTouchHelper = ItemTouchHelper(swipeHandler)
             itemTouchHelper.attachToRecyclerView(watchedItemsRv)
@@ -148,13 +156,13 @@ abstract class BaseMapFragment : Fragment(),
                 msgRes = R.string.turn_on_network_loc_provider,
                 okRes = R.string.go_to_settings,
                 dismissRes = R.string.not_now_txt,
-                positiveAction = {
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_LOCATION_SOURCE_SETTINGS
-                        )
+                ){
+                startActivity(
+                    Intent(
+                        Settings.ACTION_LOCATION_SOURCE_SETTINGS
                     )
-                })
+                )
+            }
         }
     }
 
@@ -244,19 +252,19 @@ abstract class BaseMapFragment : Fragment(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(
-            item
-        )
+        return item.onNavDestinationSelected(findNavController()) || super.onOptionsItemSelected(item)
     }
 
-
+    /**
+     * 扫描二维码
+     */
     /************** qr code act **********/
     private fun scanQRCode() {
         val intentIntegrator = IntentIntegrator(requireActivity())
         intentIntegrator.apply {
             val scanQrCodePromptText = getString(R.string.scan_qr_code_prompt)
-            setPrompt(scanQrCodePromptText)
-            setTimeout(SCANNING_QR_TIMEOUT_MILLS)
+            setPrompt(scanQrCodePromptText)   // 显示提示
+            setTimeout(SCANNING_QR_TIMEOUT_MILLS)  // 使用默认相机
             setOrientationLocked(true)
             captureActivity = CaptureQrCodeActivity::class.java
         }
@@ -269,13 +277,7 @@ abstract class BaseMapFragment : Fragment(),
     abstract fun handleScannedQrIntent(resultCode: Int, data: Intent?)
 
 
-    override fun onSwipeToDeleteDevice(device: DevicesDetails) {
-        //TODO viewModel.stopWatchingDevice(device)
-    }
 
-    override fun onSwipeToDeleteLocation(locationHighLights: WatchedLocationHighLights) {
-        viewModel.deleteLocation(locationHighLights)
-    }
 
     fun updateWatchedLocations(watchedLocationHighLights: List<WatchedLocationHighLights>) {
         watchedItemsAdapter.setWatchedLocationsList(watchedLocationHighLights)
@@ -316,5 +318,4 @@ abstract class BaseMapFragment : Fragment(),
 
         popUp?.show()
     }
-
 }

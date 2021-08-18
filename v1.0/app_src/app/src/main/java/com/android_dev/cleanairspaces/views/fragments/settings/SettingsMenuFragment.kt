@@ -105,7 +105,17 @@ class SettingsMenuFragment : Fragment() {
                 viewModel.setAQIIndex(selectedAqi)
             }
     }
-
+    private fun setupMapsAdapter() {
+        mapsSelector = (binding.mapSelect.editText as? AutoCompleteTextView)
+        mapsSelector?.setAdapter(mapsAdapter)
+        mapsSelector?.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                val selectedMap: String =
+                    mapsAdapter.getItem(position)
+                        ?: getString(R.string.default_map_a_map)
+                viewModel.setSelectedMap(selectedMap)
+            }
+    }
     private fun setupMapLanguageAdapter() {
         mapLangSelector = (binding.mapLanguageSelect.editText as? AutoCompleteTextView)
         mapLangSelector?.setAdapter(mapLangAdapter)
@@ -118,17 +128,7 @@ class SettingsMenuFragment : Fragment() {
             }
     }
 
-    private fun setupMapsAdapter() {
-        mapsSelector = (binding.mapSelect.editText as? AutoCompleteTextView)
-        mapsSelector?.setAdapter(mapsAdapter)
-        mapsSelector?.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-                val selectedMap: String =
-                    mapsAdapter.getItem(position)
-                        ?: getString(R.string.default_map_a_map)
-                viewModel.setSelectedMap(selectedMap)
-            }
-    }
+
 
 
     private fun observeSettings() {

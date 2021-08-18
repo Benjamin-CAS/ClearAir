@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
 
 
 @AndroidEntryPoint
@@ -43,9 +44,16 @@ class MainAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
-
+        WindowCompat.setDecorFitsSystemWindows(window,false)
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbarLayout.toolbar) { v, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val height = abs(statusBar.top - statusBar.bottom)
+            v.updatePadding(top = height)
+            insets
+        }
+//        val c =WindowCompat.getInsetsController(window,binding.root)
+//        c?.isAppearanceLightStatusBars =false
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.findNavController()

@@ -1,8 +1,10 @@
 package com.android_dev.cleanairspaces.views.adapters.view_holders
 
 import android.content.Context
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.DeviceItemBinding
@@ -19,6 +21,7 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
         aqiIndex: String?,
         displayFav: Boolean = true
     ) {
+        Log.e(TAG, "bind:${device.status}")
         val ctx = itemView.context
         val deviceStatus = device.getStatusColor()
         DevicesTypes.getDeviceInfoByType(device.device_type)?.let { typeInfo ->
@@ -37,6 +40,19 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
                 ctx, deviceStatus.bgColorRes
             )
         )
+//        if (device.status == IS_OFF){
+//            binding.deviceCard.setBackgroundColor(
+//                ContextCompat.getColor(
+//                    ctx, R.color.cas_blue
+//                )
+//            )
+//        }else{
+//            binding.deviceCard.setBackgroundColor(
+//                ContextCompat.getColor(
+//                    ctx, R.color.background_good
+//                )
+//            )
+//        }
 
         if (displayFav) {
             binding.watchDevice.isVisible = true
@@ -53,6 +69,7 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
         }
 
         binding.watchDevice.setOnClickListener {
+            Log.e(TAG, "watchDevice")
             deviceListener.onClickToggleWatchDevice(device = device)
         }
     }
@@ -63,14 +80,19 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
         device: DevicesDetails,
         typeInfo: DevicesTypes.DeviceInfo
     ) {
+        val ctx = itemView.context
         binding.apply {
-
             modeManualBtn.setOnClickListener {
                 deviceListener.onToggleMode(device, toMode = MANUAL)
             }
 
             modeAutoBtn.setOnClickListener {
                 deviceListener.onToggleMode(device, toMode = AUTO)
+                deviceCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        it.context, R.color.background_good
+                    )
+                )
             }
 
             fanBasicOffBtn.setOnClickListener {
@@ -85,6 +107,11 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
             }
 
             fanOffBtn.setOnClickListener {
+                binding.deviceCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        it.context, R.color.cas_blue
+                    )
+                )
                 deviceListener.onToggleFanSpeed(
                     device, status = OFF_STATUS
                 )
@@ -93,14 +120,25 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
                 deviceListener.onToggleFanSpeed(
                     device,
                     status = ON_STATUS,
-                    speed = if (typeInfo.hasExtendedFanCalibrations) TURBO_SLEEP_SPEED else LOW_SPEED
+                    speed = if (typeInfo.hasExtendedFanCalibrations) TURBO_LOW_SPEED else LOW_SPEED
                 )
+                deviceCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        it.context, R.color.background_good
+                    )
+                )
+                Log.e(TAG, "setClickListeners: 点击了 + typeInfo:${device.status}")
             }
             fanMedBtn.setOnClickListener {
                 deviceListener.onToggleFanSpeed(
                     device,
                     status = ON_STATUS,
                     speed = if (typeInfo.hasExtendedFanCalibrations) TURBO_MED_SPEED else MED_SPEED
+                )
+                deviceCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        it.context, R.color.background_good
+                    )
                 )
             }
             fanHighBtn.setOnClickListener {
@@ -109,17 +147,32 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
                     status = ON_STATUS,
                     speed = if (typeInfo.hasExtendedFanCalibrations) TURBO_HIGH_SPEED else HIGH_SPEED
                 )
+                deviceCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        it.context, R.color.background_good
+                    )
+                )
             }
 
             fanSleepBtn.setOnClickListener {
                 deviceListener.onToggleFanSpeed(
                     device, status = ON_STATUS, speed = TURBO_SLEEP_SPEED
                 )
+                deviceCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        it.context, R.color.background_good
+                    )
+                )
             }
 
             fanTurboBtn.setOnClickListener {
                 deviceListener.onToggleFanSpeed(
                     device, status = ON_STATUS, speed = TURBO_FULL_SPEED
+                )
+                deviceCard.setBackgroundColor(
+                    ContextCompat.getColor(
+                        it.context, R.color.background_good
+                    )
                 )
             }
 
@@ -202,6 +255,7 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
                 fanHighBtn.setTextColor(blueColor)
 
             } else if (device.isFanLow()) {
+                Log.e(TAG, "displayDeviceSettings: 应该为蓝色")
                 fanOffBtn.background = inActiveBg
                 fanLowBtn.background = activeBg
                 fanMedBtn.background = inActiveBg
@@ -234,14 +288,12 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
             fanHighBtn.isVisible = hasFanExt
             fanTurboBtn.isVisible = hasFanExt
             if (device.isTurboFanSleep()) {
-
                 fanOffBtn.background = inActiveBg
                 fanLowBtn.background = inActiveBg
                 fanMedBtn.background = inActiveBg
                 fanHighBtn.background = inActiveBg
                 fanTurboBtn.background = inActiveBg
                 fanSleepBtn.background = activeBg
-
                 fanOffBtn.setTextColor(blueColor)
                 fanLowBtn.setTextColor(blueColor)
                 fanMedBtn.setTextColor(blueColor)
@@ -298,14 +350,12 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
 
 
             } else if (device.isTurboFanLow()) {
-
                 fanOffBtn.background = inActiveBg
                 fanLowBtn.background = activeBg
                 fanMedBtn.background = inActiveBg
                 fanHighBtn.background = inActiveBg
                 fanTurboBtn.background = inActiveBg
                 fanSleepBtn.background = inActiveBg
-
                 fanOffBtn.setTextColor(blueColor)
                 fanLowBtn.setTextColor(whiteColor)
                 fanMedBtn.setTextColor(blueColor)
@@ -389,5 +439,8 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
                 ductfitOffBtn.setTextColor(whiteColor)
             }
         }
+    }
+    companion object{
+        const val TAG = "DevicesAdapterViewHolder"
     }
 }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,10 +17,7 @@ import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentMonitorsBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
-import com.android_dev.cleanairspaces.utils.LogTags
-import com.android_dev.cleanairspaces.utils.MyLogger
-import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
-import com.android_dev.cleanairspaces.utils.myTxt
+import com.android_dev.cleanairspaces.utils.*
 import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
 import com.android_dev.cleanairspaces.views.fragments.monitor_details.MonitorDetailsAqiWrapper
 import com.bumptech.glide.Glide
@@ -80,7 +78,16 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
             adapter = monitorsAdapter
             addItemDecoration(VerticalSpaceItemDecoration(30))
         }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isCheckGooglePlay){
+                    findNavController().navigate(R.id.AMapsFragment)
+                }else{
+                    findNavController().navigate(R.id.GMapsFragment)
+                }
+            }
 
+        })
     }
 
     private fun fetchMonitors() {

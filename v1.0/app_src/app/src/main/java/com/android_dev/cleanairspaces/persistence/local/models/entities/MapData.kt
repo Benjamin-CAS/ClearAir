@@ -20,13 +20,12 @@ data class MapData(
     @PrimaryKey(autoGenerate = false)
     val actualDataTag: String,
 
-    val lat: Double,
-    val lon: Double,
+    val lat: Double,    // 纬度
+    val lon: Double,    // 经度
 
-    val pm25: Double,
+    val pm25: Double,   // PM2.5
 
     val last_updated: Long = System.currentTimeMillis(),
-
     val type: MapDataType
 ) : Parcelable {
     fun getAMapLocationLatLng(): ALatLng = ALatLng(lat, lon)

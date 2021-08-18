@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.views.fragments.add_location
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +59,6 @@ class AddLocation : Fragment() {
         when {
 
             args.locDataIsIndoorQuery != null -> {
-
                 val searchDataForIndoorLocation = args.locDataIsIndoorQuery
                 displayLocationData(
                     searchDataForIndoorLocation = searchDataForIndoorLocation
@@ -75,11 +75,13 @@ class AddLocation : Fragment() {
 
             args.locDataFromQr != null -> {
                 val qrContent = args.locDataFromQr
+                Log.e(TAG, "onViewCreated: 二维码数据$qrContent")
                 handleQrCode(qrContent)
             }
         }
 
         viewModel.observeScanQrCodeData().observe(viewLifecycleOwner, {
+            Log.e(TAG, "onViewCreated: 更改后的数据:$it")
             displayLocationData(locationDataFromQr = it)
         })
 
@@ -170,7 +172,6 @@ class AddLocation : Fragment() {
                                 getString(R.string.device_info_lbl) + "\n" + getString(deviceInfo.deviceTitleRes)
                             val deviceIdLbl = getString(R.string.device_id_lbl)
                             infoText += "$deviceInfoTxt\n$deviceIdLbl: ${locationDataFromQr.monitor_id}\n"
-
                         } else {
                             binding.deviceLogo.isVisible = false
                         }
@@ -238,6 +239,7 @@ class AddLocation : Fragment() {
 
     private fun handleQrCode(scannedQrContent: String?) {
         val locationDataFromQrt = CasEncDecQrProcessor.identifyQrCode(scannedQrContent)
+        Log.e(TAG, "handleQrCode: 处理过的二维码数据$locationDataFromQrt")
         binding.apply {
             val processingQrCodeTxt = getString(R.string.processing_qr_code)
             info.text = processingQrCodeTxt
@@ -245,8 +247,7 @@ class AddLocation : Fragment() {
                 val infoTxt = processingQrCodeTxt + "\n" + locationDataFromQrt.extraData
                 info.text = infoTxt
                 if (locationDataFromQrt.monitorId != null) {
-                    val monitorId = locationDataFromQrt.monitorId
-                    viewModel.fetchLocationDetailsForScannedMonitor(monitorId)
+                    viewModel.fetchLocationDetailsForScannedMonitor(locationDataFromQrt.monitorId)
                 } else if (locationDataFromQrt.locId != null && locationDataFromQrt.compId != null) {
                     val locId = locationDataFromQrt.locId
                     val compId = locationDataFromQrt.compId
@@ -265,12 +266,16 @@ class AddLocation : Fragment() {
         val (userName, password) = if (locationDataFromQr.is_secure) {
             Pair(binding.userName.myTxt(binding.userName), binding.password.myTxt(binding.password))
         } else Pair("", "")
+
         if (locationDataFromQr.monitor_id.isNotBlank()) {
             viewModel.saveWatchedLocationFromScannedQr(
                 monitorDataFromQr = locationDataFromQr, userName = userName
                     ?: "", userPwd = password ?: ""
             )
-        } else if (locationDataFromQr.location_id.isNotBlank() && locationDataFromQr.company_id.isNotBlank()) {
+        }else if(locationDataFromQr.type == "13"){
+
+        }
+        else if (locationDataFromQr.location_id.isNotBlank() && locationDataFromQr.company_id.isNotBlank()) {
             viewModel.saveWatchedLocationFromScannedQr(
                 locationDataFromQr = locationDataFromQr, userName = userName
                     ?: "", userPwd = password ?: ""

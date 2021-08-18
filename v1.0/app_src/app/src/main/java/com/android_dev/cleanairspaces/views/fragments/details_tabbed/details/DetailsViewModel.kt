@@ -11,11 +11,8 @@ class DetailsViewModel
 @Inject constructor(
     private val repo: AppDataRepo,
 ) : ViewModel() {
-
     private val TAG = DetailsViewModel::class.java.simpleName
 
     fun observeWatchedLocationWithAqi(): LiveData<AppDataRepo.WatchedLocationWithAqi> =
         repo.watchedLocationWithAqi
-
-
 }

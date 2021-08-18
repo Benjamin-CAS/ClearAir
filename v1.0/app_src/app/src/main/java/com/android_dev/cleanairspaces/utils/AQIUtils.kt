@@ -3,8 +3,8 @@ package com.android_dev.cleanairspaces.utils
 import com.android_dev.cleanairspaces.R
 
 
-/**** from range of 1 to 6, 1 being good, six being hazardous *********/
-private val pm25UpperLimits = arrayOf<Double>(
+/**** 从1到6，1表示良好，6表示危险 *********/
+private val pm25UpperLimits = arrayOf(
     12.0,
     35.4,
     55.4,
@@ -13,14 +13,12 @@ private val pm25UpperLimits = arrayOf<Double>(
     350.4,
     500.0,
 )
-private val pm25UpperLimitsCn = arrayOf<Double>(35.0, 75.0, 115.0, 150.0, 250.0, 500.0)
-private val aqiUpperLimitsCn = arrayOf<Double>(50.0, 100.0, 150.0, 200.0, 300.0, 500.0)
+private val pm25UpperLimitsCn = arrayOf(35.0, 75.0, 115.0, 150.0, 250.0, 500.0)
+private val aqiUpperLimitsCn = arrayOf(50.0, 100.0, 150.0, 200.0, 300.0, 500.0)
 
 
 fun getAQIStatusFromPM25(pm25: Double, aqiIndex: String? = DEFAULT_AQI_INDEX_PM25): AQIStatus {
-    val scaleToUse = if (aqiIndex == DEFAULT_AQI_INDEX_PM25 ||
-        aqiIndex == AQI_INDEX_AQI_US
-    ) {
+    val scaleToUse = if (aqiIndex == DEFAULT_AQI_INDEX_PM25 || aqiIndex == AQI_INDEX_AQI_US) {
         pm25UpperLimits
     } else {
         pm25UpperLimitsCn

@@ -20,9 +20,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class OutDoorLocationsRepo
-@Inject constructor(
-
+class OutDoorLocationsRepo @Inject constructor(
     private val mapDataDao: MapDataDao,
     private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
     private val outDoorLocationApiService: OutDoorLocationApiService,
@@ -157,17 +155,12 @@ class OutDoorLocationsRepo
 
         //refreshing outdoor location details -- more detailed locations
         val rand10 = (0..10)
-        val timeStamp =
-            (rand10.random().toString() + System.currentTimeMillis().toString()).replace(" ", "")
+        val timeStamp = (rand10.random().toString() + System.currentTimeMillis().toString()).replace(" ", "")
         val data = JsonObject()
-        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForOutdoorLocation(
-            timeStamp = timeStamp
-        )
+        val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForOutdoorLocation(timeStamp = timeStamp)
         data.addProperty(L_TIME_KEY, timeStamp)
         data.addProperty(PAYLOAD_KEY, pl)
-        val request = outDoorLocationApiService.fetchOutDoorLocationsExtraDetails(
-            data = data
-        )
+        val request = outDoorLocationApiService.fetchOutDoorLocationsExtraDetails(data = data)
         request.enqueue(getOutdoorLocationsDetails())
 
     }
@@ -218,6 +211,7 @@ class OutDoorLocationsRepo
                 val mapDataList = ArrayList<MapData>()
                 val searchData = ArrayList<SearchSuggestionsData>()
                 when {
+                    // 台湾坐标
                     taiwanLocations != null -> {
                         for (location in taiwanLocations) {
                             val taiwanData = MapData(
@@ -236,7 +230,7 @@ class OutDoorLocationsRepo
                             }"
                         }
                     }
-
+                    // 美国坐标
                     usLocations != null -> {
                         for (location in usLocations) {
                             mapDataList.add(
@@ -250,7 +244,7 @@ class OutDoorLocationsRepo
                             )
                         }
                     }
-
+                    // 所有坐标
                     outDoorExtraDetailed != null -> {
                         //This info is not used in the map--
                         for (location in outDoorExtraDetailed) {

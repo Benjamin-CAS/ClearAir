@@ -10,7 +10,6 @@ import kotlinx.parcelize.Parcelize
 data class Logs(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-
     val key: String,
     val message: String,
     val tag: String,

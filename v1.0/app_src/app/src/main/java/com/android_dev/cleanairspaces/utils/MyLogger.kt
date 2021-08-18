@@ -6,18 +6,21 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
+/**
+ * 日志封装
+ * IS_DEBUG_MODE模式下打印Log   否则放在数据库中
+ */
 @Singleton
 class MyLogger @Inject constructor(
     private val logRepo: LogRepo
 ) {
-
-
     val uniqueID = UUID.randomUUID().toString()
 
     suspend fun logThis(tag: LogTags, from: String, msg: String? = "", exc: Exception? = null) {
-
         if (IS_DEBUG_MODE) {
-            Log.d("CAS_Logger ${tag.readableMsg}", "User $uniqueID $from $msg", exc)
+            Log.e(TAG, "logThis: -----------------")
+            Log.e("CAS_Logger ${tag.readableMsg}", "User $uniqueID $from $msg", exc)
         } else {
             if (tag == LogTags.USER_LOCATION_CHANGED) {
                 logRepo.updateUserLocation(uniqueID, msg)
@@ -29,6 +32,7 @@ class MyLogger @Inject constructor(
 
     companion object {
         const val IS_DEBUG_MODE = false
+        const val TAG = "MyLogger"
     }
 }
 

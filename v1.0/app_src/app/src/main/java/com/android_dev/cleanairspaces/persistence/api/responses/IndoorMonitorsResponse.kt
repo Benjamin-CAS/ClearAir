@@ -6,10 +6,10 @@ import kotlinx.parcelize.Parcelize
 
 data class IndoorMonitorsResponse(
     @Expose
-    val payload: String?,
+    val payload: String?,  // 加密内容
 
     @Expose
-    val ltime: String?
+    val ltime: String?  // 时间戳
 
 )
 

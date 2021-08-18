@@ -14,9 +14,7 @@ private val Context.dataStore by preferencesDataStore(SETTINGS_FILE_NAME)
 
 class DataStoreManager(appContext: Context) {
 
-
     private val mDataStore = appContext.dataStore
-
 
     fun getAqiIndex(): Flow<String?> {
         return mDataStore.data

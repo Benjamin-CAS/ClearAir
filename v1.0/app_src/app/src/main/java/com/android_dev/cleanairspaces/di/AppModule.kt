@@ -2,6 +2,7 @@ package com.android_dev.cleanairspaces.di
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import androidx.work.WorkManager
 import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
@@ -29,65 +30,63 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
-    /* IS_DEBUG_MODE ONLY
+    /* IS_DEBUG_MODE ONLY4
       for provideRetrofit() when building retrofit .client(getLogger())
      */
-    private fun getLogger(): OkHttpClient {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        return OkHttpClient.Builder().addInterceptor(interceptor).build()
-    }
 
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(getLogger())
+            .client(OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor{ message ->
+                Log.e(TAG, message)}
+                .apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                })
+                .build())
             .addConverterFactory(
-                GsonConverterFactory.create(
-                    GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
-                )
+                GsonConverterFactory.create(GsonBuilder().excludeFieldsWithoutExposeAnnotation().create())
             ).build()
 
+    // 户外位置信息
     @Provides
     @Singleton
     fun provideOutDoorLocationService(retrofit: Retrofit): OutDoorLocationApiService =
         retrofit.create(OutDoorLocationApiService::class.java)
-
+    // 室内位置信息
     @Provides
     @Singleton
     fun provideInDoorLocationService(retrofit: Retrofit): InDoorLocationApiService =
         retrofit.create(InDoorLocationApiService::class.java)
-
+    // 位置详情
     @Provides
     @Singleton
     fun provideLocationDetailsService(retrofit: Retrofit): LocationDetailsService =
         retrofit.create(LocationDetailsService::class.java)
-
+    // 二维码扫描
     @Provides
     @Singleton
     fun provideQrScannedItemsApiService(retrofit: Retrofit): QrScannedItemsApiService =
         retrofit.create(QrScannedItemsApiService::class.java)
-
+    // 日志航船
     @Provides
     @Singleton
     fun provideLoggerService(retrofit: Retrofit): LoggerService =
         retrofit.create(LoggerService::class.java)
-
+    // 历史位置记录
     @Provides
     @Singleton
     fun provideLocationHistoriesService(retrofit: Retrofit): LocationHistoriesService =
         retrofit.create(LocationHistoriesService::class.java)
 
-
+    // 全局单例WorkManager
     @Provides
     @Singleton
     fun provideWorkManager(app: Application): WorkManager =
         WorkManager.getInstance(app.applicationContext)
 
-
+    // 全局单例DataStore
     @Singleton
     @Provides
     fun provideDataStoreMgr(
@@ -163,7 +162,6 @@ class AppModule {
         qrScannedItemsApiService = qrScannedItemsApiService,
 
         )
-
     @Provides
     @Singleton
     fun provideInDoorLocationsRepo(
@@ -254,7 +252,9 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideLogger(logRepo: LogRepo): MyLogger = MyLogger(
+    fun provideLogger(
+        logRepo: LogRepo
+    ): MyLogger = MyLogger(
         logRepo = logRepo
     )
 
@@ -268,8 +268,13 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(app: Application): CasDatabase =
+    fun provideDatabase(
+        app: Application
+    ): CasDatabase =
         Room.databaseBuilder(app, CasDatabase::class.java, DATABASE_NAME)
             .fallbackToDestructiveMigration()
             .build()
+    companion object{
+        const val TAG = "AppModule"
+    }
 }

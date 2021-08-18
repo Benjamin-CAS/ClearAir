@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces
 
+import android.util.Log
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +13,13 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        Log.e(TAG, "addition_isCorrect: ")
+    }
+    @Test
+    fun start(){
+        Log.e(TAG, "addition_isCorrect: ")
+    }
+    companion object{
+        const val TAG = "ExampleUnitTest"
     }
 }

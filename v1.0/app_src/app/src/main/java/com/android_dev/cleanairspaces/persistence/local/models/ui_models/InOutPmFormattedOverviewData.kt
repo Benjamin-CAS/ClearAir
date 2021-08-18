@@ -11,7 +11,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class InOutPmFormattedOverviewData(
-    val locationName: String,
+    val locationName: String, //
     val logo: String,
     val updated: String,
     val locationArea: String?,

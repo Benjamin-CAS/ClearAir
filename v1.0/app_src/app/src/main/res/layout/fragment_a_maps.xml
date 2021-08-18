@@ -12,10 +12,11 @@
         <com.amap.api.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" >
 
-        <include
-            android:id="@+id/map_overlay"
-            layout="@layout/home_map_overlay" />
+            <include
+                android:id="@+id/map_overlay"
+                layout="@layout/home_map_overlay" />
+        </com.amap.api.maps.MapView>
 
-    </FrameLayout>
+</FrameLayout>

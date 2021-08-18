@@ -9,8 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
 
 
-abstract class SwipeToDeleteCallback(context: Context) :
-    ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
     private val deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete)
     private val intrinsicWidth = deleteIcon?.intrinsicWidth ?: 48

@@ -14,7 +14,6 @@ class WebViewFragment : Fragment() {
     companion object {
         private val TAG = WebViewFragment::class.java.simpleName
     }
-
     private var _binding: FragmentWebViewBinding? = null
     private val binding get() = _binding!!
 

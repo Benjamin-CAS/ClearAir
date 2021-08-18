@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.repositories.api_facing
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.android_dev.cleanairspaces.persistence.api.responses.LocationDataFromQr
 import com.android_dev.cleanairspaces.persistence.api.responses.ScannedDeviceQrWithCompLocResponse
@@ -69,10 +70,8 @@ class LocationDetailsRepo
             val data = JsonObject()
             data.addProperty(L_TIME_KEY, payLoadTimeStamp)
             data.addProperty(PAYLOAD_KEY, base64Str)
-            val response = qrScannedItemsApiService.fetchDataForScannedDeviceWithMonitorId(
-                data = data
-            )
-
+            Log.e(TAG, "fetchDataForScannedDeviceWithMonitorId: 扫描数据 $data")
+            val response = qrScannedItemsApiService.fetchDataForScannedDeviceWithMonitorId(data = data)
             // keep track of this request data ---
             data.addProperty(MONITOR_ID_KEY, monitorId)
             recentRequestsData.add(data)
@@ -84,7 +83,6 @@ class LocationDetailsRepo
                 msg = exc.message,
                 exc = exc
             )
-
         }
     }
 
@@ -102,6 +100,7 @@ class LocationDetailsRepo
                 when {
                     response.code() == 200 -> {
                         val responseBody = response.body()
+                        Log.e(TAG, "onResponse: 发送二维码返回来的数据：${responseBody}")
                         try {
                             if (responseBody?.payload != null) {
                                 when {
@@ -185,21 +184,26 @@ class LocationDetailsRepo
                 //identify requested data
                 val dataMatchingLTime =
                     recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+                Log.e(TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse: 解密上传二维码后的返回的数据$recentRequestsData")
                 if (!dataMatchingLTime.isNullOrEmpty()) {
                     val requestedData = dataMatchingLTime[0]
                     recentRequestsData.remove(requestedData)
+                    Log.e(TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse: remove后的数据$recentRequestsData")
                     //un encrypt
                     val unEncryptedPayload =
                         CasEncDecQrProcessor.decodeApiResponse(payload)
                     val unEncJson = JSONObject(unEncryptedPayload)
-
+                    Log.e(TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse: 解密后的数据$unEncJson")
                     val companyData =
                         unEncJson.getString(ScannedDeviceQrWithCompLocResponse.response_key)
+                    Log.e(TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse: companyData:$companyData")
                     val customerDeviceData =
                         Gson().fromJson(companyData, LocationDataFromQr::class.java)
+                    Log.e(TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse: customerDeviceData:$customerDeviceData")
                     val monitorId = requestedData.get(MONITOR_ID_KEY).asString
-
+                    Log.e(TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse: monitorId:$monitorId")
                     val type = unEncJson.getString(LocationDataFromQr.RESPONSE_MONITOR_TYPE_KEY)
+                    Log.e(TAG, "unEncryptScannedDeviceQrWithMonitorIdResponse: type:$type")
                     customerDeviceData.monitor_id = monitorId
                     customerDeviceData.type = type
 
@@ -214,7 +218,6 @@ class LocationDetailsRepo
                     msg = exc.message,
                     exc = exc
                 )
-
             }
         }
     }

@@ -4,7 +4,7 @@
     android:id="@+id/toolbar"
     style="@style/appToolbar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="wrap_content"
     android:elevation="0dp"
     app:popupTheme="@style/appToolbarPopUpMenu">
 

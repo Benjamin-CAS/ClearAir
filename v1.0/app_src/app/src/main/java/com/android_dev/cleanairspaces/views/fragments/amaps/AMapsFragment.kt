@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -40,45 +43,38 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AMapsFragment : BaseMapFragment() {
-
     companion object {
-        private val TAG = AMapsFragment::class.java.simpleName
+        const val TAG = "AMapsFragment"
     }
 
     private val goodCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-            BitmapFactory
-                .decodeResource(resources, R.drawable.good_circle)
+            BitmapFactory.decodeResource(resources, R.drawable.good_circle)   // 好的
         )
     }
     private val moderateCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-            BitmapFactory
-                .decodeResource(resources, R.drawable.moderate_circle)
+            BitmapFactory.decodeResource(resources, R.drawable.moderate_circle)   // 适宜的
         )
     }
     private val gUnhealthyCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-            BitmapFactory
-                .decodeResource(resources, R.drawable.g_unhealthy_circle)
+            BitmapFactory.decodeResource(resources, R.drawable.g_unhealthy_circle)   // 不良的
         )
     }
     private val unHealthyCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-            BitmapFactory
-                .decodeResource(resources, R.drawable.unhealthy_circle)
+            BitmapFactory.decodeResource(resources, R.drawable.unhealthy_circle)
         )
     }
     private val vUnHealthyCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-            BitmapFactory
-                .decodeResource(resources, R.drawable.v_unhealthy_circle)
+            BitmapFactory.decodeResource(resources, R.drawable.v_unhealthy_circle)
         )
     }
     private val hazardCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
-            BitmapFactory
-                .decodeResource(resources, R.drawable.hazardous_circle)
+            BitmapFactory.decodeResource(resources, R.drawable.hazardous_circle)  // 危险的
         )
     }
 
@@ -87,13 +83,13 @@ class AMapsFragment : BaseMapFragment() {
     private val binding get() = _binding!!
 
 
-    private val mapCirlcesMarkers: ArrayList<MarkerMapTypeWrapper> = arrayListOf()
+    private val mapCirclesMarkers: ArrayList<MarkerMapTypeWrapper> = arrayListOf()  // 地图圆环标记
     private var mapView: MapView? = null
     private var aMap: AMap? = null
 
 
     /**
-     * Initialize launchers for requesting permissions
+     * Initialize launchers for requesting permissions   初始化启动器请求权限
      * must be called in OnCreate
      */
     override fun initLocationPermissionsLauncher() {
@@ -109,14 +105,12 @@ class AMapsFragment : BaseMapFragment() {
 
     override fun initQrScannerLauncher() {
         //scan-qr launcher must be set
-        scanQrCodeLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        scanQrCodeLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
             { result: ActivityResult ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     //  you will get result here in result.data
                     handleScannedQrIntent(resultCode = result.resultCode, data = result.data)
                 }
-
             }
     }
 
@@ -125,7 +119,6 @@ class AMapsFragment : BaseMapFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAMapsBinding.inflate(inflater, container, false)
-
         setHasOptionsMenu(true)
         requireActivity().invalidateOptionsMenu()
         viewModel.mapHasBeenInitialized.value = false
@@ -138,23 +131,18 @@ class AMapsFragment : BaseMapFragment() {
                 }
 
             })
-
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
-
         watchedItemsAdapter = WatchedLocationsAndDevicesAdapter(this, displayFav = false)
         super.setHomeMapOverlay(binding.mapOverlay)
-
-
         //user setting - language
-        viewModel.mapHasBeenInitialized.value =
-            initializeMap(savedInstanceState = savedInstanceState)
+        viewModel.mapHasBeenInitialized.value = initializeMap(savedInstanceState = savedInstanceState)
         observeMapRelatedData()
         requestPermissionsAndShowUserLocation()
 
@@ -165,11 +153,14 @@ class AMapsFragment : BaseMapFragment() {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun initializeDataAfterMapIsReady() {
+        Log.e(TAG, "initializeDataAfterMapIsReady: 地图加载完毕")
+        // 设置语言
         viewModel.observeMapLang().observe(viewLifecycleOwner, {
             setMapLang(mapLangSet = it)
         })
-
+        // 设置空气指数PM2.5
         viewModel.observeAqiIndex().observe(viewLifecycleOwner, {
             viewModel.aqiIndex = it
             updateIndexForWatchedLocations(it)
@@ -188,6 +179,7 @@ class AMapsFragment : BaseMapFragment() {
     private fun observeDevicesIWatch() {
         viewModel.observeDevicesIWatch().observe(viewLifecycleOwner, {
             it?.let { devices ->
+                Log.e(TAG, "observeDevicesIWatch: $devices")
                 updateWatchedDevices(devices)
             }
         })
@@ -239,17 +231,13 @@ class AMapsFragment : BaseMapFragment() {
     }
 
     override fun showLocationOnMap(location: Location) {
-        val currentUserLocation = LatLng(location.latitude, location.longitude)
+        val currentUserLocation = LatLng(location.latitude, location.longitude)  // 当前坐标
         aMap?.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                currentUserLocation,
-                MY_LOCATION_ZOOM_LEVEL
-            )
+            CameraUpdateFactory.newLatLngZoom(currentUserLocation, MY_LOCATION_ZOOM_LEVEL)
         )
         viewModel.myLocMarkerOnAMap?.remove()
         val mIcon = BitmapDescriptorFactory.fromBitmap(
-            BitmapFactory
-                .decodeResource(resources, R.drawable.ic_my_location_marker)
+            BitmapFactory.decodeResource(resources, R.drawable.ic_my_location_marker)
         )
 
         val markerOptions = MarkerOptions()
@@ -261,10 +249,10 @@ class AMapsFragment : BaseMapFragment() {
                 icon(it)
             }
         }
-        viewModel.myLocMarkerOnAMap = aMap?.addMarker(markerOptions)
+        viewModel.myLocMarkerOnAMap = aMap?.addMarker(markerOptions)   // 将自己的坐标添加在地图上
     }
 
-
+    // 在地图上绘制圆
     private fun drawCirclesOnMap(mapDataPoints: List<MapData>) {
         try {
             clearMapCircles(mapType = mapDataPoints[0].type)
@@ -290,7 +278,7 @@ class AMapsFragment : BaseMapFragment() {
                     }
                     val circleMarker = aMap?.addMarker(markerOptions)
                     circleMarker?.let { marker ->
-                        mapCirlcesMarkers.add(
+                        mapCirclesMarkers.add(
                             MarkerMapTypeWrapper(
                                 marker = marker,
                                 mapType = mapData.type
@@ -313,7 +301,7 @@ class AMapsFragment : BaseMapFragment() {
 
 
     private fun clearMapCircles(mapType: MapDataType) {
-        val circlesToClear = mapCirlcesMarkers.filter { it.mapType == mapType }
+        val circlesToClear = mapCirclesMarkers.filter { it.mapType == mapType }
         for (circle in circlesToClear) {
             circle.marker.remove()
         }
@@ -332,6 +320,7 @@ class AMapsFragment : BaseMapFragment() {
                 // if the intentResult is not null we'll set
                 // the content and format of scan message
                 val qrContent = intentResult.contents
+                Log.e(TAG, "handleScannedQrIntent: $qrContent")
                 val action = AMapsFragmentDirections.actionAMapsFragmentToAddLocation(
                     locDataFromQr = qrContent
                 )
@@ -376,6 +365,7 @@ class AMapsFragment : BaseMapFragment() {
         super.onResume()
         mapView?.onResume()
         viewModel.getMyLocationOrNull()?.let {
+            Log.e(TAG, "onResume: $it")
             showLocationOnMap(it)
         }
     }
@@ -417,6 +407,7 @@ class AMapsFragment : BaseMapFragment() {
     }
 
     override fun onClickWatchedLocation(locationHighLights: WatchedLocationHighLights) {
+        Log.e(TAG, "onClickWatchedLocation: 根点击了")
         try {
             viewModel.setWatchedLocationInCache(locationHighLights, viewModel.aqiIndex)
             val action = AMapsFragmentDirections.actionAMapsFragmentToDetailsFragment()
@@ -462,6 +453,7 @@ class AMapsFragment : BaseMapFragment() {
     /************ MQTT **************/
     @Inject
     lateinit var casMqttClient: CasMqttClient
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
         casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
         viewModel.setMqttStatus(null) //clear

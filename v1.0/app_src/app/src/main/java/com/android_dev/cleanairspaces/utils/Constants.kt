@@ -23,7 +23,6 @@ const val DATABASE_NAME = "clean_air_spaces_db"
 
 //worker threads
 const val DATA_REFRESHER_WORKER_NAME = "data_refresh_1193"
-const val DATA_REFRESH_INTERVAL_MIN = 15L
 
 
 //MAPS

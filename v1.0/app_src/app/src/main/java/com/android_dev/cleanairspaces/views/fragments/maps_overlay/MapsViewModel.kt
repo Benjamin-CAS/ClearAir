@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.views.fragments.maps_overlay
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.*
 import com.amap.api.maps.model.Marker
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
@@ -28,11 +29,14 @@ class MapsViewModel @Inject constructor(
     var myLocMarkerOnAMap: Marker? = null
     var myLocMarkerOnGMap: com.google.android.gms.maps.model.Marker? = null
     var alreadyPromptedUserForLocationSettings = false
-
-    var mapHasBeenInitialized = MutableLiveData<Boolean>(false)
+    // 地图是否初始化完毕
+    var mapHasBeenInitialized = MutableLiveData(false)
+    // 语言
     fun observeMapLang() = dataStoreManager.getMapLang().asLiveData()
 
     var aqiIndex: String? = null
+
+    // 空气指数
     fun observeAqiIndex() = dataStoreManager.getAqiIndex().asLiveData()
 
 
@@ -43,7 +47,17 @@ class MapsViewModel @Inject constructor(
             repo.stopWatchingALocation(location)
         }
     }
+    /**
+     * 根据actualDataTag返回对应的设备详情列表
+     */
+    fun observeDevicesAllLocation(locationsTag: String) =
+        repo.observeDevicesForLocation(locationsTag = locationsTag).asLiveData()
 
+    fun deleteDevicesDetails(device: List<DevicesDetails>){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.deleteDevicesDetails(device)
+        }
+    }
 
     private var location: Location? = null
     fun getMyLocationOrNull() = location
@@ -110,6 +124,7 @@ class MapsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val updatedDevice = repo.onToggleFanSpeed(device, status, speed)
             withContext(Dispatchers.Main) {
+                Log.e(TAG, "onToggleFanSpeed: $updatedDevice")
                 setMqttStatus(updatedDevice)
                 sendRequestByHttp(updatedDevice)
             }
@@ -119,6 +134,7 @@ class MapsViewModel @Inject constructor(
     fun onToggleMode(device: DevicesDetails, toMode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val updatedDevice = repo.onToggleMode(device, toMode)
+            Log.e(TAG, "onToggleMode: 模式切换数据:$updatedDevice")
             withContext(Dispatchers.Main) {
                 setMqttStatus(updatedDevice)
                 sendRequestByHttp(updatedDevice)
@@ -146,10 +162,12 @@ class MapsViewModel @Inject constructor(
         } else {
             lastUpdateDevice = updatedDevice
             lastUpdateDevice?.let {
+                Log.d(TAG, "要发送的MQTT消息内容：$lastUpdateDevice")
                 val param =
                     if (DevicesTypes.getDeviceInfoByType(it.device_type)?.hasDuctFit == true)
                         "${it.fan_speed}${it.df}${it.mode}"
                     else "${it.fan_speed}${it.fa}${it.mode}"
+                Log.e(TAG, "setMqttStatus: MQTT MSG $param")
                 mqttParamsToSend.value = DeviceUpdateMqttMessage(
                     device_mac_address = it.mac.trim(),
                     param = param
@@ -170,6 +188,7 @@ class MapsViewModel @Inject constructor(
     }
 
     private fun sendRequestByHttp(device: DevicesDetails) {
+        Log.e(TAG, "sendRequestByHttp: 发送了${device}")
         viewModelScope.launch(Dispatchers.IO) {
             repo.updateDeviceStatusByHttp(
                 device = device

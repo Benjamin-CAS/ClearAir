@@ -43,7 +43,7 @@ class AppDataRepo
 ) {
 
     /************** CACHES ************* */
-    //shared across fragments
+    //Fragment中共享
     data class WatchedLocationWithAqi(
         val aqiIndex: String?,
         val watchedLocationHighLights: WatchedLocationHighLights
@@ -78,6 +78,7 @@ class AppDataRepo
     }
 
     suspend fun stopWatchingALocation(watchedLocationHighLight: WatchedLocationHighLights) {
+        Log.e(TAG, "stopWatchingALocation: $watchedLocationHighLight")
         watchedLocationHighLightsDao.deleteWatchedLocationHighLights(watchedLocationHighLight)
     }
 
@@ -547,7 +548,6 @@ class AppDataRepo
         userPwd: String,
         userName: String,
     ): Boolean {
-
         try {
             val tag: String
             val locationData: LocationDataFromQr
@@ -567,8 +567,6 @@ class AppDataRepo
                     if (foundData.isNotEmpty()) return true
                     locationData = locationDataFromQr
                 }
-
-
                 else -> return false
             }
             watchedLocationHighLightsDao.insertLocation(
@@ -909,7 +907,9 @@ class AppDataRepo
     suspend fun toggleWatchADevice(device: DevicesDetails, watch: Boolean) {
         deviceDetailsDao.toggleIsWatched(watchDevice = watch, devicesTag = device.actualDataTag)
     }
-
+    fun deleteDevicesDetails(device: List<DevicesDetails>){
+        deviceDetailsDao.deleteDetailsDatabase(device)
+    }
     fun observeDevicesForLocation(locationsTag: String): Flow<List<DevicesDetails>> {
         return deviceDetailsDao.observeDevicesForLocation(locationsTag = locationsTag)
     }
@@ -922,6 +922,13 @@ class AppDataRepo
         password: String,
         resultListener: AsyncResultListener? = null
     ) {
+        Log.e(TAG, "fetchDevicesForALocation: 获取设备位置" +
+                "watchedLocationTag" + "\n${watchedLocationTag}\n" +
+                "compId:$compId\n" +
+                "locId:$locId\n" +
+                "username：$username\n" +
+                "password:$password\n"
+        )
         val timeStamp = System.currentTimeMillis().toString()
         val pl =
             CasEncDecQrProcessor.getEncryptedEncodedPayloadForDevices(
@@ -934,8 +941,7 @@ class AppDataRepo
         val data = JsonObject()
         data.addProperty(L_TIME_KEY, timeStamp)
         data.addProperty(PAYLOAD_KEY, pl)
-        val request =
-            inDoorLocationsApiService.fetchInDoorLocationsDevices(pl = data)
+        val request = inDoorLocationsApiService.fetchInDoorLocationsDevices(pl = data)
         request.enqueue(object : Callback<DevicesDetailsResponse> {
             override fun onResponse(
                 call: Call<DevicesDetailsResponse>,
@@ -1004,7 +1010,7 @@ class AppDataRepo
                             devices.getJSONObject(i).toString(),
                             DevicesDetails::class.java
                         )
-
+                    Log.e(TAG, "unEncryptDevicesPayload: ${aDevice.status}")
                     aDevice.actualDataTag = "$compId$locId${aDevice.id}"
                     aDevice.lastRecUname = userName
                     aDevice.lastRecPwd = userPass
@@ -1015,7 +1021,7 @@ class AppDataRepo
                     foundDevices.add(aDevice)
                 }
 
-                if (foundDevices.isNotEmpty() ) {
+                if (foundDevices.isNotEmpty()) {
                     for (foundDevice in foundDevices) {
                         val isWatched = deviceDetailsDao.checkIfIsWatched(deviceId = foundDevice.id) > 0
                         foundDevice.watch_device = isWatched
@@ -1049,12 +1055,15 @@ class AppDataRepo
         speed: String?
     ): DevicesDetails {
         val fanSpeed = speed ?: status
+        Log.e(TAG, "onToggleFanSpeed: $fanSpeed")
         val updatedDevice = getUpdatedDevice(device, status = fanSpeed, changeParam = "fanSpeed")
+        Log.e(TAG, "onToggleFanSpeed: $updatedDevice")
         deviceDetailsDao.insertOrReplace(updatedDevice)
         return updatedDevice
     }
 
     suspend fun onToggleMode(device: DevicesDetails, toMode: String): DevicesDetails {
+        Log.e(TAG, "onToggleMode: 模式切换 $device")
         val updatedDevice = getUpdatedDevice(device, status = toMode, changeParam = "mode")
         deviceDetailsDao.insertOrReplace(updatedDevice)
         return updatedDevice
@@ -1091,7 +1100,7 @@ class AppDataRepo
             if (status == AUTO) {
                 //RESET fan and fa and ductFit
                 ductFit = OFF_STATUS
-                fanSpeed = OFF_STATUS
+                fanSpeed = AUTO
                 freshAir = OFF_STATUS
             }
         }
@@ -1209,6 +1218,5 @@ class AppDataRepo
             )
         }
     }
-
 
 }

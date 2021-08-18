@@ -36,15 +36,12 @@ class DevicesAdapter(private val deviceListener: WatchedItemsActionListener) :
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int {
-        return deviceList.size
-    }
+    override fun getItemCount() = deviceList.size
 
     fun updateSelectedAqiIndex(selectedAQIIndex: String?) {
         this.aqiIndex = selectedAQIIndex
         notifyDataSetChanged()
     }
-
     fun removeAt(adapterPosition: Int) {
         val device = deviceList[adapterPosition]
         deviceListener.onSwipeToDeleteDevice(device)

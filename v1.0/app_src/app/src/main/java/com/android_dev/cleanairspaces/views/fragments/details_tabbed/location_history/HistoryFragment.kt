@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat.getFont
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentHistoryBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
@@ -128,7 +130,16 @@ class HistoryFragment : Fragment() {
                 refreshLocationHistory(it.watchedLocationHighLights.actualDataTag)
             }
         })
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isCheckGooglePlay){
+                    findNavController().navigate(R.id.AMapsFragment)
+                }else{
+                    findNavController().navigate(R.id.GMapsFragment)
+                }
+            }
 
+        })
         observeHistoryData()
     }
 

@@ -136,11 +136,10 @@ object CasEncDecQrProcessor {
         return Base64.encodeToString(encryptedPayload.encodeToByteArray(), Base64.NO_PADDING).trim()
     }
 
-    private fun fromBase64Encoding(base64EncodeStr: String): String {
-        return Base64.decode(base64EncodeStr.encodeToByteArray(), Base64.NO_PADDING)
-            .decodeToString()
-            .trim()
-    }
+    private fun fromBase64Encoding(base64EncodeStr: String) =
+        Base64.decode(base64EncodeStr.encodeToByteArray(), Base64.NO_PADDING)
+        .decodeToString()
+        .trim()
 
 
     fun getEncryptedEncodedPayloadForLocationHistory(
@@ -200,7 +199,7 @@ object CasEncDecQrProcessor {
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
         Log.d(
             TAG,
-            "getEncryptedEncodedPayloadForIndoorLocation(timeStamp: $timeStamp) key $key payload $payload encrypted $casEncrypted"
+            "ssgetEncryptedEncodedPayloadForIndoorLocation(timeStamp: $timeStamp) key $key payload $payload encrypted $casEncrypted"
         )
         return toBase64Encoding(casEncrypted)
     }

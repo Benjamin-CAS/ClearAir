@@ -1,15 +1,19 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.devices
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
@@ -18,10 +22,7 @@ import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
-import com.android_dev.cleanairspaces.utils.LogTags
-import com.android_dev.cleanairspaces.utils.MyLogger
-import com.android_dev.cleanairspaces.utils.VerticalSpaceItemDecoration
-import com.android_dev.cleanairspaces.utils.myTxt
+import com.android_dev.cleanairspaces.utils.*
 import com.android_dev.cleanairspaces.views.adapters.DevicesAdapter
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
 import com.bumptech.glide.Glide
@@ -55,6 +56,7 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -115,13 +117,21 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
             }
         })
 
-        viewModel.getMqttMessage().observe(
-            viewLifecycleOwner, Observer {
-                it?.let { newMsg ->
-                    connectAndPublish(newMsg)
+        viewModel.getMqttMessage().observe(viewLifecycleOwner) {
+            it?.let { newMsg ->
+                connectAndPublish(newMsg)
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isCheckGooglePlay){
+                    findNavController().navigate(R.id.AMapsFragment)
+                }else{
+                    findNavController().navigate(R.id.GMapsFragment)
                 }
             }
-        )
+
+        })
     }
 
     private fun fetchDevices() {
@@ -154,9 +164,10 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
             .observe(viewLifecycleOwner, {
                 it?.let {
                     binding.progressCircular.isVisible = false
-
-                    if (it.isNotEmpty())
+                    if (it.isNotEmpty()) {
+                        Log.e(TAG, "observeDevicesForLoc: $it")
                         toggleCredentialsFormVisibility(show = false)
+                    }
                     devicesAdapter.updateSelectedAqiIndex(aqiIndex)
                     devicesAdapter.setWatchedDevicesList(it)
                 }
@@ -199,6 +210,7 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
 
     /*************************** DEVICE RELATED ACTIONS ********************/
     override fun onClickToggleWatchDevice(device: DevicesDetails) {
+        Log.e(TAG, "onClickToggleWatchDevice:${device} ${!device.watch_device}")
         viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
     }
 
@@ -234,6 +246,7 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
     /************ MQTT **************/
     @Inject
     lateinit var casMqttClient: CasMqttClient
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
         casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
         viewModel.setMqttStatus(null) //clear

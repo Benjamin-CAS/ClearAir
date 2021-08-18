@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.repositories.api_facing
 
+import android.util.Log
 import com.android_dev.cleanairspaces.persistence.api.responses.LocationDetails
 import com.android_dev.cleanairspaces.persistence.api.responses.LocationDetailsResponse
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService
@@ -37,6 +38,7 @@ class WatchedLocationUpdatesRepo
     suspend fun refreshWatchedLocationsData() {
         try {
             val myLocations = watchedLocationHighLightsDao.getWatchedLocationHighLightsOnce()
+            Log.e(TAG, "refreshWatchedLocationsData: ${myLocations.size}")
             for (aLocation in myLocations) {
                 val compId = aLocation.compId
                 val locId = aLocation.locId
@@ -66,6 +68,7 @@ class WatchedLocationUpdatesRepo
                 data.addProperty(USER_KEY, userName)
                 data.addProperty(PASSWORD_KEY, userPassword)
                 data.addProperty(API_LOCAL_DATA_BINDER_KEY, aLocation.actualDataTag)
+                Log.e(TAG, "refreshWatchedLocationsData: $data")
                 recentRequestsData.add(data)
                 response.enqueue(
                     getWatchedLocationDetailsResponseCallback()
@@ -125,28 +128,23 @@ class WatchedLocationUpdatesRepo
     private fun unEncryptWatchedLocationDetailsPayload(payload: String, lTime: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val dataMatchingLTime =
-                    recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
+                val dataMatchingLTime = recentRequestsData.filter { it.get(L_TIME_KEY).asString.equals(lTime) }
                 if (!dataMatchingLTime.isNullOrEmpty()) {
                     val requestedData = dataMatchingLTime[0]
                     recentRequestsData.remove(requestedData)
+
                     val dataTag = requestedData.get(API_LOCAL_DATA_BINDER_KEY).asString
                     if (!dataTag.isNullOrBlank()) {
-
-                        val unEncryptedPayload: String =
-                            CasEncDecQrProcessor.decodeApiResponse(payload)
+                        val unEncryptedPayload: String = CasEncDecQrProcessor.decodeApiResponse(payload)
                         val unEncJson = JSONObject(unEncryptedPayload)
-                        val locationDetails =
-                            Gson().fromJson(unEncJson.toString(), LocationDetails::class.java)
-
+                        val locationDetails = Gson().fromJson(unEncJson.toString(), LocationDetails::class.java)
                         if (locationDetails != null) {
                             locationDetails.company_id = requestedData.get(COMP_ID_KEY).asString
                             locationDetails.location_id = requestedData.get(LOC_ID_KEY).asString
                             locationDetails.lastKnownUserName = requestedData.get(USER_KEY).asString
-                            locationDetails.lastKnownPassword =
-                                requestedData.get(PASSWORD_KEY).asString
+                            locationDetails.lastKnownPassword = requestedData.get(PASSWORD_KEY).asString
                             locationDetails.lastUpdated = System.currentTimeMillis()
-
+                            Log.e(TAG, "unEncryptWatchedLocationDetailsPayload: $locationDetails")
                             updateWatchedLocationIfExists(locationDetails, dataTag)
                         }
                     }
@@ -201,6 +199,7 @@ class WatchedLocationUpdatesRepo
                         lastRecUsername = existingData.lastRecUsername,
                         is_secure = existingData.is_secure
                     )
+                    Log.e(TAG, "updateWatchedLocationIfExists: $updatedData")
                     watchedLocationHighLightsDao.insertLocation(updatedData)
                 }
             }

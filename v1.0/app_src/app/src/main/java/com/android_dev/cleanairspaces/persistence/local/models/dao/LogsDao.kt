@@ -7,7 +7,6 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.Logs
 
 @Dao
 interface LogsDao {
-
     @Insert
     suspend fun insertLog(log: Logs)
 
@@ -16,5 +15,4 @@ interface LogsDao {
 
     @Query("DELETE FROM logs")
     suspend fun clearLogData()
-
 }

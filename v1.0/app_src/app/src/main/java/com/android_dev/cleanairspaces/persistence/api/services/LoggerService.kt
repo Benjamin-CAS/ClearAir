@@ -18,6 +18,7 @@ interface LoggerService {
         @Body data: JsonObject
     ): Call<Any>
 
+    // 发送自己的坐标信息
     @POST("restapi/loc.php")
     fun sendUserLocation(
         @Query("uid") uid: String,

@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.persistence.local.models.entities
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.android_dev.cleanairspaces.R
@@ -36,6 +37,7 @@ data class DevicesDetails(
     val updated_on: Long = System.currentTimeMillis()
 ) : Parcelable {
     fun isModeAuto(): Boolean {
+        Log.e("isModeAuto", "isModeAuto: ${mode.trim().toLowerCase(Locale.ENGLISH)}")
         return mode.trim().toLowerCase(Locale.ENGLISH) == AUTO
     }
 
@@ -75,6 +77,7 @@ data class DevicesDetails(
     }
 
     fun isFanLow(): Boolean {
+        Log.e("isFanLow", "isFanLow: $fan_speed")
         return fan_speed.trim().toLowerCase(Locale.ENGLISH) == LOW_SPEED
     }
 
@@ -96,10 +99,12 @@ data class DevicesDetails(
     }
 
     fun isTurboFanLow(): Boolean {
+        Log.e("isTurboFanLow", "isTurboFanLow: ${fan_speed.trim().toLowerCase(Locale.ENGLISH)}")
         return fan_speed.trim().toLowerCase(Locale.ENGLISH) == TURBO_LOW_SPEED
     }
 
     fun isTurboFanSleep(): Boolean {
+        Log.e("isTurboFanSleep", "isTurboFanSleep: ${fan_speed.trim().toLowerCase(Locale.ENGLISH)}")
         return fan_speed.trim().toLowerCase(Locale.ENGLISH) == TURBO_SLEEP_SPEED
     }
 
@@ -109,7 +114,7 @@ data class DevicesDetails(
 }
 
 enum class DeviceDetailsStatus(val statusTxt: Int, val bgColorRes: Int, val statusDrawableBg : Int = R.drawable.green_rounded_bg ) {
-    OFF(statusTxt = R.string.status_off, bgColorRes = R.color.background_beyond, statusDrawableBg = R.drawable.blue_rounded_bg),
+    OFF(statusTxt = R.string.status_off, bgColorRes = R.color.cas_blue, statusDrawableBg = R.drawable.blue_rounded_bg),
     ON(statusTxt = R.string.status_on, bgColorRes = R.color.background_good),
     PAUSED(statusTxt = R.string.status_paused, bgColorRes = R.color.background_beyond, statusDrawableBg = R.drawable.blue_rounded_bg),
     DISCONNECTED(statusTxt = R.string.status_disconnected, bgColorRes = R.color.background_moderate, statusDrawableBg = R.drawable.red_rounded_bg),

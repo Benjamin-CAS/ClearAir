@@ -2,11 +2,11 @@ package com.android_dev.cleanairspaces.persistence.api.services
 
 import com.android_dev.cleanairspaces.BuildConfig
 
+
 interface AppApiService {
     companion object {
-        const val APP_USER = BuildConfig.APP_USER
-        const val APP_USER_PWD = BuildConfig.APP_USER_PWD
-
+        const val APP_USER = "pablo"
+        const val APP_USER_PWD = "cleanair"
         const val LOCATION_INFO_METHOD = "GetDevInfoById"
         const val LOCATION_INFO_METHOD_FOR_KEY = "GetDevInfoByIdCAS"
         const val MONITOR_INFO_METHOD_FOR_KEY = "GetDevInfoCAS"
@@ -23,6 +23,5 @@ interface AppApiService {
         const val DEVICE_METHOD = "GetDevicesByLocId"
         const val CONTROL_DEVICE_METHOD = "SetDevice"
         const val CONTROL_DEVICE_METHOD_KEY = "SetDeviceCAS"
-
     }
 }

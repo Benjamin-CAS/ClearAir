@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.views.adapters
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,9 +15,7 @@ import com.android_dev.cleanairspaces.views.adapters.view_holders.WatchedLocatio
 
 class WatchedLocationsAndDevicesAdapter(
     private val listener: WatchedItemsActionListener,
-    private val displayFav: Boolean = true
-    ) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val displayFav: Boolean = true) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         const val VIEW_TYPE_DEVICES = 1
@@ -44,6 +43,7 @@ class WatchedLocationsAndDevicesAdapter(
         changeDataset()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun changeDataset() {
         dataset.clear()
         for (newLoc in locationsList)
@@ -79,12 +79,9 @@ class WatchedLocationsAndDevicesAdapter(
 
     /************** Recycler view Holder *******/
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == VIEW_TYPE_DEVICES) {
-            return DevicesAdapterViewHolder(
-                DeviceItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            )
-        }
-        return WatchedLocationsViewHolder(
+        return if(viewType == VIEW_TYPE_DEVICES) DevicesAdapterViewHolder(
+            DeviceItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        ) else WatchedLocationsViewHolder(
             WatchedLocationItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
@@ -92,11 +89,16 @@ class WatchedLocationsAndDevicesAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         try {
             val item = dataset[position]
+            Log.e(TAG, "onBindViewHolder: $dataset")
             if (item.device != null) {
                 (holder as DevicesAdapterViewHolder).bind(
-                    device = item.device, deviceListener = listener, aqiIndex = aqiIndex, displayFav = displayFav
+                    device = item.device,
+                    deviceListener = listener,
+                    aqiIndex = aqiIndex,
+                    displayFav = displayFav
                 )
             } else {
+                Log.e(TAG, "onBindViewHolder: ${item.device}")
                 (holder as WatchedLocationsViewHolder).bind(
                     location = item.locationHighLights!!,
                     locationListener = listener,
@@ -104,23 +106,16 @@ class WatchedLocationsAndDevicesAdapter(
                 )
             }
         } catch (exc: Exception) {
-            Log.d(
-                TAG, "${exc.message}", exc
-            )
+            Log.e(TAG, "${exc.message}", exc)
         }
     }
 
-    override fun getItemCount(): Int {
-        return dataset.size
-    }
+    override fun getItemCount() = dataset.size
 
-    override fun getItemViewType(position: Int): Int {
-        return when {
-            dataset[position].device != null -> VIEW_TYPE_DEVICES
-            else -> VIEW_TYPE_LOCATIONS
-        }
+    override fun getItemViewType(position: Int) = when {
+        dataset[position].device != null -> VIEW_TYPE_DEVICES
+        else -> VIEW_TYPE_LOCATIONS
     }
-
     data class LocationMonitorWrapper(
         val device: DevicesDetails? = null,
         val locationHighLights: WatchedLocationHighLights? = null

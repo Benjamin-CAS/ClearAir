@@ -19,9 +19,8 @@ class LogRepo
     private val loggerDao: LogsDao,
     private val loggerService: LoggerService
 ) {
-
     companion object {
-        private val TAG = LogRepo::class.java.simpleName
+        const val TAG = "LogRepo"
     }
 
     suspend fun saveLocally(key: String, message: String, isExc: Boolean) {
@@ -36,7 +35,7 @@ class LogRepo
             )
         } catch (exc: java.lang.Exception) {
             if (MyLogger.IS_DEBUG_MODE)
-                Log.d(
+                Log.e(
                     TAG, "saveLocally() exc ${exc.message}", exc
                 )
         }
@@ -50,20 +49,16 @@ class LogRepo
                 data.addProperty("key", log.key)
                 data.addProperty("message", log.message)
                 data.addProperty("tag", "${log.tag}_${log.recordedAt}")
-                val request = loggerService.sendLogs(
-                    data = data
-                )
+                val request = loggerService.sendLogs(data = data)
                 request.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         if (MyLogger.IS_DEBUG_MODE)
-                            Log.d(
-                                TAG, "pushLogs onResponse->() $response ${response.body()}"
-                            )
+                            Log.e(TAG, "pushLogs onResponse->() $response ${response.body()}")
                     }
 
                     override fun onFailure(call: Call<Any>, t: Throwable) {
                         if (MyLogger.IS_DEBUG_MODE)
-                            Log.d(
+                            Log.e(
                                 TAG, "pushLogs onFailure->() ${t.message}"
                             )
                     }
@@ -73,9 +68,7 @@ class LogRepo
             loggerDao.clearLogData()
         } catch (exc: Exception) {
             if (MyLogger.IS_DEBUG_MODE)
-                Log.d(
-                    TAG, "pushLogs ${exc.message}", exc
-                )
+                Log.e(TAG, "pushLogs ${exc.message}", exc)
         }
 
     }
@@ -95,28 +88,19 @@ class LogRepo
                 request.enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
                         if (MyLogger.IS_DEBUG_MODE)
-                            Log.d(
-                                TAG,
-                                "updateUserLocation onResponse->() $response ${response.body()}"
-                            )
+                            Log.e(TAG, "updateUserLocation onResponse->() $response ${response.body()}")
                     }
 
                     override fun onFailure(call: Call<Any>, t: Throwable) {
                         if (MyLogger.IS_DEBUG_MODE)
-                            Log.d(
-                                TAG, "updateUserLocation onFailure->() ${t.message}"
-                            )
+                            Log.e(TAG, "updateUserLocation onFailure->() ${t.message}")
                     }
 
                 })
             }
         } catch (exc: Exception) {
             if (MyLogger.IS_DEBUG_MODE)
-                Log.d(
-                    TAG,
-                    "updateUserLocation for user $uniqueID to lat${LAT_LON_DELIMITER}lon $msg ${exc.message}",
-                    exc
-                )
+                Log.e(TAG, "updateUserLocation for user $uniqueID to lat${LAT_LON_DELIMITER}lon $msg ${exc.message}", exc)
         }
     }
 }

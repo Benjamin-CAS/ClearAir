@@ -3,6 +3,7 @@ package com.android_dev.cleanairspaces.views.fragments.gmaps
 import android.app.Activity
 import android.content.Intent
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -41,7 +43,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
-
     companion object {
         private val TAG = GMapsFragment::class.java.simpleName
     }
@@ -418,6 +419,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     /************ MQTT **************/
     @Inject
     lateinit var casMqttClient: CasMqttClient
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
         casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
         viewModel.setMqttStatus(null) //clear

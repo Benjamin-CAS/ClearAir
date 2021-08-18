@@ -16,14 +16,9 @@ class SettingsViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager,
     private val myLogger: MyLogger
 ) : ViewModel() {
-
-    private val TAG = SettingsViewModel::class.java.simpleName
-
     fun observeAQIIndex() = dataStoreManager.getAqiIndex().asLiveData()
     fun observeSelectedMapLang() = dataStoreManager.getMapLang().asLiveData()
     fun observeSelectedMap() = dataStoreManager.getSelectedMap().asLiveData()
-
-
     fun setAQIIndex(selectedAqi: String) = viewModelScope.launch(Dispatchers.IO) {
         dataStoreManager.saveAqiIndex(newAqiIndex = selectedAqi)
         viewModelScope.launch(Dispatchers.IO) {
@@ -36,9 +31,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setSelectedMap(selectedMap: String) = viewModelScope.launch(Dispatchers.IO) {
-
         dataStoreManager.saveMap(selectedMap = selectedMap)
-
         viewModelScope.launch(Dispatchers.IO) {
             myLogger.logThis(
                 tag = LogTags.USER_ACTION_SETTINGS,
@@ -49,7 +42,6 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun setSelectedMapLang(selectedMapLang: String) = viewModelScope.launch(Dispatchers.IO) {
-
         dataStoreManager.saveMapLang(selectedMapLang)
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,5 +52,7 @@ class SettingsViewModel @Inject constructor(
             )
         }
     }
-
+    companion object{
+        const val TAG = "SettingsViewModel"
+    }
 }

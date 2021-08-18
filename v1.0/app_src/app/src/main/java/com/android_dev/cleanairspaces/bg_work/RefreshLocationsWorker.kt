@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.bg_work
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -28,12 +29,11 @@ class RefreshLocationsWorker @AssistedInject constructor(
     private val monitorDetailsUpdatesRepo: MonitorDetailsUpdatesRepo
 ) : CoroutineWorker(appContext, workerParams) {
 
-    private val TAG = RefreshLocationsWorker::class.java.simpleName
-
     override suspend fun doWork(): Result {
 
         withContext(Dispatchers.IO) {
             try {
+                // 更新经纬度信息
                 refreshOutDoorLocations()
                 refreshInDoorLocations()
                 refreshWatchedLocations()
@@ -58,17 +58,14 @@ class RefreshLocationsWorker @AssistedInject constructor(
     }
 
     private suspend fun refreshWatchedLocations() {
-
         watchedLocationUpdatesRepo.refreshWatchedLocationsData()
     }
 
     private suspend fun refreshOutDoorLocations() {
-
         outDoorLocationsRepo.refreshOutDoorLocations()
     }
 
     private suspend fun refreshInDoorLocations() {
-
         inDoorLocationsRepo.refreshInDoorLocations()
     }
 
@@ -81,5 +78,7 @@ class RefreshLocationsWorker @AssistedInject constructor(
         delay(hourMills)
         logRepo.pushLogs()
     }
-
+    companion object{
+        const val TAG = "RefreshLocationsWorker"
+    }
 }

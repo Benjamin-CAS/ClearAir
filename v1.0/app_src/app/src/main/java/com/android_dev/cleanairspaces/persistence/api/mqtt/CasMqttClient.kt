@@ -1,6 +1,8 @@
 package com.android_dev.cleanairspaces.persistence.api.mqtt
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import com.hivemq.client.mqtt.MqttClient
@@ -14,22 +16,19 @@ import javax.inject.Singleton
 
 
 @Singleton
-class CasMqttClient @Inject constructor(
-    private val myLogger: MyLogger
-) {
+class CasMqttClient @Inject constructor(private val myLogger: MyLogger) {
 
     var client: Mqtt5AsyncClient? = null
 
     companion object {
-        private val TAG = CasMqttClient::class.java.simpleName
+        const val TAG = "CasMqttClient"
     }
 
-    fun connectAndPublish(
-        deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
         val serverURI = "mqtt.cleanairspaces.com"
         val port = 1883
         val clientId = "androidApp_" + myLogger.uniqueID
-
         client = MqttClient.builder()
             .useMqttVersion5()
             .identifier(clientId)
@@ -57,7 +56,7 @@ class CasMqttClient @Inject constructor(
                         }
                     } else {
                         // setup subscribes or start publishing
-                        Log.d(
+                        Log.e(
                             TAG, "connect() connected $connAck ${connAck?.type}"
                         )
                         client!!.publishWith()
@@ -76,7 +75,7 @@ class CasMqttClient @Inject constructor(
                                     }
                                 } else {
                                     // handle successful publish, e.g. logging or incrementing a metric
-                                    Log.d(
+                                    Log.e(
                                         TAG,
                                         "publish() ${deviceUpdateMqttMessage.getPayLoadId()} ${deviceUpdateMqttMessage.param} success ${publish?.publish}"
                                     )
@@ -84,8 +83,6 @@ class CasMqttClient @Inject constructor(
                                 client?.disconnect()
                                 client = null
                             }
-
-
                     }
                 }
         }
@@ -96,8 +93,6 @@ class CasMqttClient @Inject constructor(
         client?.disconnect()
         client = null
     }
-
-
 }
 
 data class DeviceUpdateMqttMessage(
@@ -108,5 +103,4 @@ data class DeviceUpdateMqttMessage(
     fun getPayLoadId(): String {
         return id_prefix + device_mac_address
     }
-
 }

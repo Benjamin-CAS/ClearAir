@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.repositories.api_facing
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.android_dev.cleanairspaces.persistence.api.responses.IndoorMonitorsResponse
 import com.android_dev.cleanairspaces.persistence.api.responses.MonitorDetailsResponseRoot
@@ -20,18 +21,19 @@ import javax.inject.Singleton
 @Singleton
 class MonitorDetailsUpdatesRepo
 @Inject constructor(
-
     private val monitorDetailsDataDao: MonitorDetailsDataDao,
     private val inDoorLocationApiService: InDoorLocationApiService,
     private val myLogger: MyLogger
 ) {
 
-    private val TAG = MonitorDetailsUpdatesRepo::class.java.simpleName
-
+    @SuppressLint("LongLogTag")
     suspend fun refreshWatchedMonitors() {
+
         try {
             val watchedMonitors = monitorDetailsDataDao.getAllWatchedMonitorsOnce()
+            Log.e(TAG, "refreshWatchedMonitors: ${watchedMonitors.size}")
             for (monitor in watchedMonitors) {
+                Log.e(TAG, "refreshWatchedMonitors: 执行了")
                 refreshWatchedMonitor(
                     watchedLocationTag = monitor.for_watched_location_tag,
                     compId = monitor.company_id,
@@ -42,6 +44,7 @@ class MonitorDetailsUpdatesRepo
                 )
             }
         } catch (exc: Exception) {
+            Log.e(TAG, "refreshWatchedMonitors: 失败")
             myLogger.logThis(
                 tag = LogTags.EXCEPTION,
                 from = "$TAG refreshWatchedMonitors()",
@@ -62,8 +65,7 @@ class MonitorDetailsUpdatesRepo
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val timeStamp = System.currentTimeMillis().toString()
-                val pl =
-                    CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocationMonitors(
+                val pl = CasEncDecQrProcessor.getEncryptedEncodedPayloadForIndoorLocationMonitors(
                         timeStamp = timeStamp,
                         companyId = compId,
                         locId = locId,
@@ -75,25 +77,29 @@ class MonitorDetailsUpdatesRepo
                 data.addProperty(PAYLOAD_KEY, pl)
                 val request =
                     inDoorLocationApiService.fetchInDoorLocationsMonitors(pl = data)
-                Log.d("refreshWatchedMonitor", "refreshing... $forMonitorId")
+                Log.e("refreshWatchedMonitor", "refreshing... $forMonitorId")
                 request.enqueue(object : Callback<IndoorMonitorsResponse> {
+                    @SuppressLint("LongLogTag")
                     override fun onResponse(
                         call: Call<IndoorMonitorsResponse>,
                         response: Response<IndoorMonitorsResponse>
                     ) {
                         try {
+                            Log.e(TAG, "onResponse: ${response.code()}")
                             if (response.body()?.payload != null) {
                                 unEncryptMonitorDetails(
                                     payload = response.body()!!.payload!!,
                                     forMonitorId = forMonitorId
                                 )
+                                Log.e("TAG", "onResponse: ")
                             } else {
-                                Log.d(
+                                Log.e(
                                     "refreshWatchedMonitor",
                                     "with tag  $watchedLocationTag returned ${response.body()}"
                                 )
                             }
                         } catch (exc: Exception) {
+                            Log.e(TAG, "onResponse: 失败了")
                             CoroutineScope(Dispatchers.IO).launch {
                                 myLogger.logThis(
                                     tag = LogTags.EXCEPTION,
@@ -133,8 +139,7 @@ class MonitorDetailsUpdatesRepo
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val decodedResponse = CasEncDecQrProcessor.decodeApiResponse(payload)
-                val monitorDetailsResponseRoot =
-                    Gson().fromJson(decodedResponse, MonitorDetailsResponseRoot::class.java)
+                val monitorDetailsResponseRoot = Gson().fromJson(decodedResponse, MonitorDetailsResponseRoot::class.java)
                 Log.d("refreshWatchedMonitor", "found $forMonitorId")
                 for ((key, entry) in monitorDetailsResponseRoot.monitor) {
                     if (key != forMonitorId) continue
@@ -151,7 +156,7 @@ class MonitorDetailsUpdatesRepo
                             outDisplayParam = entry.outdoor?.outdoor_display_param,
                             updatedOn = System.currentTimeMillis()
                         )
-                        Log.d("refreshWatchedMonitor", "updated monitor $forMonitorId")
+                        Log.e("refreshWatchedMonitor", "updated monitor $forMonitorId")
                         break
                     }
                 }
@@ -165,5 +170,7 @@ class MonitorDetailsUpdatesRepo
             }
         }
     }
-
+    companion object{
+        const val TAG = "MonitorDetailsUpdatesRepo"
+    }
 }

@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.views.fragments.welcome
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentSplashBinding
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
+import com.android_dev.cleanairspaces.utils.isCheckGooglePlay
 import com.android_dev.cleanairspaces.utils.showSnackBar
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -61,7 +63,6 @@ class SplashFragment : Fragment() {
                     }
 
                     getString(R.string.default_map_a_map) -> {
-
                         //use A MAP
                         navigateToFragment(useDefaultMap = true)
 
@@ -90,8 +91,10 @@ class SplashFragment : Fragment() {
     private fun navigateToFragment(useDefaultMap: Boolean) {
         try {
             val action = if (useDefaultMap) {
+                isCheckGooglePlay = true
                 SplashFragmentDirections.actionSplashFragmentToAMapsFragment()
             } else {
+                isCheckGooglePlay = false
                 SplashFragmentDirections.actionSplashFragmentToGMapsFragment()
             }
             findNavController().navigate(action)
@@ -106,13 +109,11 @@ class SplashFragment : Fragment() {
             }
         }
     }
-
+    // 检查是否支持GooglePlay
     private fun checkForGooglePlayServices(): Boolean {
         //maybe need update?
         val googleApiAvailability = GoogleApiAvailability.getInstance()
-        return when (googleApiAvailability.isGooglePlayServicesAvailable(
-            requireContext()
-        )) {
+        return when (googleApiAvailability.isGooglePlayServicesAvailable(requireContext())) {
             ConnectionResult.SUCCESS -> true
             else -> false
         }
@@ -123,7 +124,6 @@ class SplashFragment : Fragment() {
             if (snackBar.isShown)
                 snackBar.dismiss()
         }
-
     }
 
     override fun onPause() {

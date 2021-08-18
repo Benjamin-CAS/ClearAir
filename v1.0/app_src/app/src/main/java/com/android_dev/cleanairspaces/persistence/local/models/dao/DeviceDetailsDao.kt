@@ -1,11 +1,10 @@
 package com.android_dev.cleanairspaces.persistence.local.models.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import kotlinx.coroutines.flow.Flow
+import androidx.room.Delete
+
 
 @Dao
 interface DeviceDetailsDao {
@@ -13,6 +12,9 @@ interface DeviceDetailsDao {
     @Query("SELECT * FROM devices_data WHERE for_watched_location_tag =:locationsTag ORDER BY dev_name ASC")
     fun observeDevicesForLocation(locationsTag: String): Flow<List<DevicesDetails>>
 
+    /**
+     * 未使用
+     */
     @Query("SELECT * FROM devices_data WHERE watch_device =:watchLocation ORDER BY dev_name ASC")
     fun observeWatchedDevices(watchLocation: Boolean = true): Flow<List<DevicesDetails>>
 
@@ -21,7 +23,6 @@ interface DeviceDetailsDao {
 
     @Query("UPDATE devices_data SET watch_device =:watchDevice WHERE actualDataTag =:devicesTag ")
     suspend fun toggleIsWatched(watchDevice: Boolean, devicesTag: String)
-
 
     @Query("SELECT * FROM devices_data")
     suspend fun getAllDevicesNonObservable(): List<DevicesDetails>
@@ -34,5 +35,8 @@ interface DeviceDetailsDao {
 
     @Query("SELECT * FROM devices_data WHERE watch_device =:watched ORDER BY dev_name ASC")
     fun observeDevicesIWatch(watched: Boolean = true): Flow<List<DevicesDetails>>
+
+    @Delete
+    fun deleteDetailsDatabase(devicesDetails: List<DevicesDetails>)
 
 }

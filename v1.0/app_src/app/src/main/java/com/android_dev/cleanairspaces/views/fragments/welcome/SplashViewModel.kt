@@ -8,7 +8,6 @@ import androidx.work.*
 import com.android_dev.cleanairspaces.bg_work.RefreshLocationsWorker
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
 import com.android_dev.cleanairspaces.utils.DATA_REFRESHER_WORKER_NAME
-import com.android_dev.cleanairspaces.utils.DATA_REFRESH_INTERVAL_MIN
 import com.android_dev.cleanairspaces.utils.MyLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.concurrent.TimeUnit
@@ -23,7 +22,7 @@ class SplashViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private val TAG = SplashViewModel::class.java.simpleName
+        const val TAG = "SplashViewModel"
     }
 
     /************** PERIODIC DATA REFRESHES -- SET BY THE MAIN ACTIVITY ITSELF *****************/
@@ -31,30 +30,23 @@ class SplashViewModel @Inject constructor(
 
 
     fun scheduleDataRefresh() {
+        Log.e(TAG, "scheduleDataRefresh: 执行了")
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
-
-
-        val refreshDataRequest =
-            PeriodicWorkRequestBuilder<RefreshLocationsWorker>(
-                DATA_REFRESH_INTERVAL_MIN,
-                TimeUnit.MINUTES
-            )
+        val refreshDataRequest = PeriodicWorkRequestBuilder<RefreshLocationsWorker>(15L, TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .build()
-
+        // enqueueUniquePeriodicWork 防止重复
         workManager.enqueueUniquePeriodicWork(
             DATA_REFRESHER_WORKER_NAME,
             ExistingPeriodicWorkPolicy.REPLACE,
             refreshDataRequest
         )
-        workManager.getWorkInfoByIdLiveData(refreshDataRequest.id)
-            .observeForever {
+        workManager.getWorkInfoByIdLiveData(refreshDataRequest.id).observeForever {
                 if (it != null && MyLogger.IS_DEBUG_MODE) {
-                    Log.d(
-                        TAG, it.state.name
-                    )
+                    Log.e(TAG, "scheduleDataRefresh: ----------")
+                    Log.e(TAG, it.state.name)
                 }
             }
 

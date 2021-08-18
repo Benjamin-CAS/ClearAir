@@ -125,7 +125,6 @@ class AddLocationViewModel @Inject constructor(
                     msg = exc.message,
                     exc = exc
                 )
-
             }
         }
     }

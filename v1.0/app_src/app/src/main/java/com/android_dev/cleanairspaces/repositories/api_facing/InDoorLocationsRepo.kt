@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.repositories.api_facing
 
+import android.util.Log
 import com.android_dev.cleanairspaces.persistence.api.responses.IndoorLocations
 import com.android_dev.cleanairspaces.persistence.api.responses.IndoorLocationsResponse
 import com.android_dev.cleanairspaces.persistence.api.services.InDoorLocationApiService
@@ -20,7 +21,6 @@ import javax.inject.Singleton
 @Singleton
 class InDoorLocationsRepo
 @Inject constructor(
-
     private val searchSuggestionsDataDao: SearchSuggestionsDataDao,
     private val inDoorLocationsApiService: InDoorLocationApiService,
     private val myLogger: MyLogger
@@ -42,6 +42,7 @@ class InDoorLocationsRepo
             try {
                 val searchData = ArrayList<SearchSuggestionsData>()
                 for (location in indoorLocations) {
+                    Log.e(TAG, "mapIndoorLocationsToSearchableData: 所有公司名称${location.name_en}")
                     if (location.active.toInt() == 0)
                         continue
                     val tag = location.company_id
@@ -88,6 +89,7 @@ class InDoorLocationsRepo
                                 mapIndoorLocationsToSearchableData(
                                     responseBody.data
                                 )
+                                Log.e(TAG, "所有公司名称: ${responseBody.data}")
                             }
                         } catch (exc: Exception) {
                             CoroutineScope(Dispatchers.IO).launch {

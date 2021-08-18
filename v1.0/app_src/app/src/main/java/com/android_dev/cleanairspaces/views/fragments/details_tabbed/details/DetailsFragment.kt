@@ -1,14 +1,17 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.details
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentDetailsBinding
 import com.android_dev.cleanairspaces.databinding.LocationDetailsInOutLayoutBinding
@@ -19,10 +22,7 @@ import com.android_dev.cleanairspaces.persistence.local.models.ui_models.InOutPm
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.IndoorFormatterExtraDetailsData
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsData
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsIndoorExtras
-import com.android_dev.cleanairspaces.utils.AQIStatus
-import com.android_dev.cleanairspaces.utils.LogTags
-import com.android_dev.cleanairspaces.utils.MyLogger
-import com.android_dev.cleanairspaces.utils.getRecommendationsGivenAQIColorRes
+import com.android_dev.cleanairspaces.utils.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +82,16 @@ class DetailsFragment : Fragment() {
                 )
             }
         })
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isCheckGooglePlay){
+                    findNavController().navigate(R.id.AMapsFragment)
+                }else{
+                    findNavController().navigate(R.id.GMapsFragment)
+                }
+            }
 
+        })
 
     }
 
@@ -168,7 +177,7 @@ class DetailsFragment : Fragment() {
             energyMonth = energyMonth,
             addUnitsInVal = false
         )
-
+        Log.e(TAG, "displayIndoorDetailsSection: $uiReadyPmInfo")
         inOutLayoutBinding.apply {
             indoorPmIndexGradient.max = IndoorFormatterExtraDetailsData.sliderMaxFor3GradientLvls
             indoorPmIndexGradient.progress = uiReadyPmInfo.pmSliderValue

@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.views.adapters.view_holders
 
+import android.content.Context
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -18,6 +19,8 @@ class WatchedLocationsViewHolder(private val binding: WatchedLocationItemBinding
         locationListener: WatchedItemsActionListener,
         aqiIndex: String?
     ) {
+        Log.e(TAG, "根视图的高度${binding.root.height}")
+
         val ctx = itemView.context
         binding.apply {
             val uiData = formatWatchedHighLightsData(ctx = ctx, location = location, aqiIndex = aqiIndex)

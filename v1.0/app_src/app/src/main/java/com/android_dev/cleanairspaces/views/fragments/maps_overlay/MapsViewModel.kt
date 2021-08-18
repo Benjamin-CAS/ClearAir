@@ -23,9 +23,7 @@ class MapsViewModel @Inject constructor(
     private val repo: AppDataRepo,
     private val myLogger: MyLogger
 ) : ViewModel() {
-
     private val TAG = MapsViewModel::class.java.simpleName
-
     var myLocMarkerOnAMap: Marker? = null
     var myLocMarkerOnGMap: com.google.android.gms.maps.model.Marker? = null
     var alreadyPromptedUserForLocationSettings = false

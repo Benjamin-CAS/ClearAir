@@ -43,6 +43,7 @@ class WatchedLocationsAndDevicesAdapter(
         changeDataset()
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
     private fun changeDataset() {
         dataset.clear()
@@ -58,6 +59,7 @@ class WatchedLocationsAndDevicesAdapter(
                     device = newMonitor
                 )
             )
+
         notifyDataSetChanged()
     }
 

@@ -131,5 +131,5 @@ dependencies {
     //MQTT
     implementation("com.hivemq:hivemq-mqtt-client:1.2.2")
 
-
+    implementation 'com.github.gzu-liyujiang.AndroidPicker:WheelPicker:3.1.0'
 }

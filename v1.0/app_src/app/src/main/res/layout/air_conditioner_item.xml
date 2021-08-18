@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_margin="8dp"
+        android:checkable="true"
+        android:focusable="true"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="3dp"
+                    android:text="General Configuration"
+                    android:textColor="@color/black" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        android:checkable="true"
+                        android:focusable="true"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:background="@drawable/aqi_good_status">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textSize="12sp"
+                                android:text="Target"
+                                android:textColor="@color/black"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:textSize="20sp"
+                                    android:text="26"
+                                    android:textColor="@color/black"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text=" ℃"
+                                    android:textColor="@color/black"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="4dp"
+                        android:layout_weight="0.5"
+                        android:baselineAligned="false"
+                        android:checkable="true"
+                        android:focusable="true"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/aqi_good_status"
+                            android:padding="5dp"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:layout_weight="4"
+                                    android:text="FAN"
+                                    android:textColor="?attr/colorOnSurface"
+                                    tools:ignore="NestedWeights" />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal"
+                                    android:layout_weight="1">
+
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="AUTO"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="OFF"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="LOW"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="MED"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="HIGH"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:layout_weight="4"
+                                    android:text="MODE"
+                                    android:textColor="?attr/colorOnSurface"/>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal"
+                                    android:layout_weight="1">
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="COLD"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="HOT"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="FAN"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                    <androidx.appcompat.widget.AppCompatButton
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/timer_btn_selected"
+                                        android:text="H+C"
+                                        android:textAllCaps="false"
+                                        android:textSize="10sp"
+                                        tools:ignore="TooDeepLayout" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="3dp"
+                    android:text="Operation &amp; scheduling"
+                    android:textColor="@color/black" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/aqi_good_status"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.55"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:layout_weight="1"
+                            android:baselineAligned="false"
+                            android:checkable="true"
+                            android:focusable="true"
+                            app:cardCornerRadius="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/cas_outline_blue"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="3"
+                                    android:gravity="center"
+                                    android:text="Operation Start"
+                                    android:textColor="@color/black"
+                                    android:textSize="12sp" />
+
+                                <com.github.gzuliyujiang.wheelpicker.widget.TimeWheelLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="1"
+                                    app:wheel_curvedEnabled="true"
+                                    app:wheel_curvedMaxAngle="160"
+                                    app:wheel_hourLabel=":"
+                                    app:wheel_indicatorEnabled="false"
+                                    app:wheel_itemTextColor="?attr/colorOnSurface"
+                                    app:wheel_itemTextColorSelected="?attr/colorOnSurface"
+                                    app:wheel_itemTextSize="25sp"
+                                    app:wheel_timeMode="hour_24_no_second" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:layout_weight="1"
+                            android:baselineAligned="false"
+                            android:checkable="true"
+                            android:focusable="true"
+                            app:cardCornerRadius="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/cas_outline_blue"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="3"
+                                    android:gravity="center"
+                                    android:text="Operation End"
+                                    android:textColor="@color/black"
+                                    android:textSize="12sp" />
+
+                                <com.github.gzuliyujiang.wheelpicker.widget.TimeWheelLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="1"
+                                    app:wheel_curvedEnabled="true"
+                                    app:wheel_curvedMaxAngle="160"
+                                    app:wheel_hourLabel=":"
+                                    app:wheel_indicatorEnabled="false"
+                                    app:wheel_itemTextColor="?attr/colorOnSurface"
+                                    app:wheel_itemTextColorSelected="?attr/colorOnSurface"
+                                    app:wheel_itemTextSize="25sp"
+                                    app:wheel_timeMode="hour_24_no_second" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:layout_weight="1"
+                            android:baselineAligned="false"
+                            android:checkable="true"
+                            android:focusable="true"
+                            app:cardCornerRadius="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/cas_outline_blue"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="3"
+                                    android:gravity="center"
+                                    android:text="Silent Time Start"
+                                    android:textColor="@color/black"
+                                    android:textSize="12sp" />
+
+                                <com.github.gzuliyujiang.wheelpicker.widget.TimeWheelLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="1"
+                                    app:wheel_curvedEnabled="true"
+                                    app:wheel_curvedMaxAngle="160"
+                                    app:wheel_hourLabel=":"
+                                    app:wheel_indicatorEnabled="false"
+                                    app:wheel_itemTextColor="?attr/colorOnSurface"
+                                    app:wheel_itemTextColorSelected="?attr/colorOnSurface"
+                                    app:wheel_itemTextSize="25sp"
+                                    app:wheel_timeMode="hour_24_no_second" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:layout_weight="1"
+                            android:baselineAligned="false"
+                            android:checkable="true"
+                            android:focusable="true"
+                            app:cardCornerRadius="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/cas_outline_blue"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="3"
+                                    android:gravity="center"
+                                    android:text="Silent Time End"
+                                    android:textColor="@color/black"
+                                    android:textSize="12sp" />
+
+                                <com.github.gzuliyujiang.wheelpicker.widget.TimeWheelLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_weight="1"
+                                    app:wheel_curvedEnabled="true"
+                                    app:wheel_curvedMaxAngle="160"
+                                    app:wheel_hourLabel=":"
+                                    app:wheel_indicatorEnabled="false"
+                                    app:wheel_itemTextColor="?attr/colorOnSurface"
+                                    app:wheel_itemTextColorSelected="?attr/colorOnSurface"
+                                    app:wheel_itemTextSize="25sp"
+                                    app:wheel_timeMode="hour_24_no_second" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="3dp"
+                            android:text="WORK DAYS(SMTWTFS):"
+                            android:textColor="@color/black" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="5dp"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/timer_btn_selected"
+                                android:text="Sun"
+                                android:textAllCaps="false"
+                                android:textSize="10sp" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/timer_btn_selected"
+                                android:text="Mon"
+                                android:textAllCaps="false"
+                                android:textSize="10sp" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/timer_btn_selected"
+                                android:text="Tue"
+                                android:textAllCaps="false"
+                                android:textSize="10sp" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/timer_btn_selected"
+                                android:text="Wed"
+                                android:textAllCaps="false"
+                                android:textSize="10sp" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/timer_btn_selected"
+                                android:text="Thu"
+                                android:textAllCaps="false"
+                                android:textSize="10sp" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/timer_btn_selected"
+                                android:text="Fri"
+                                android:textAllCaps="false"
+                                android:textSize="10sp" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@drawable/timer_btn_selected"
+                                android:text="Sat"
+                                android:textAllCaps="false"
+                                android:textSize="10sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

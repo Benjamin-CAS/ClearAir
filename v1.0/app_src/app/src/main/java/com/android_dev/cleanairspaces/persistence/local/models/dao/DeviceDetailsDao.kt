@@ -32,7 +32,7 @@ interface DeviceDetailsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(devicesDetails: DevicesDetails)
-
+    // 筛选所有设备列表
     @Query("SELECT * FROM devices_data WHERE watch_device =:watched ORDER BY dev_name ASC")
     fun observeDevicesIWatch(watched: Boolean = true): Flow<List<DevicesDetails>>
 

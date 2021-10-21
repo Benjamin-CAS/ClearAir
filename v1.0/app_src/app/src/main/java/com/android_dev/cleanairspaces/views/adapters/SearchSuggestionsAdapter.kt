@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.views.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -41,6 +42,7 @@ class SearchSuggestionsAdapter(private val suggestionsListener: OnClickItemListe
     }
 
     fun setSearchSuggestionsList(suggestionsList: List<SearchSuggestionsData>) {
+        Log.e(TAG, "setSearchSuggestionsList: $suggestionsList")
         this.suggestionsList.clear()
         this.suggestionsList.addAll(suggestionsList)
         notifyDataSetChanged()
@@ -48,5 +50,8 @@ class SearchSuggestionsAdapter(private val suggestionsListener: OnClickItemListe
 
     override fun getItemCount(): Int {
         return suggestionsList.size
+    }
+    companion object{
+        const val TAG = "SearchSuggestionsAdapter"
     }
 }

@@ -116,11 +116,10 @@
         android:id="@+id/watched_items_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/std_space"
-        android:layout_marginEnd="@dimen/std_space"
-        android:layout_marginTop="@dimen/sm_space"
         android:layout_below="@id/progress_recycler"
-        />
+        android:layout_marginStart="@dimen/std_space"
+        android:layout_marginTop="@dimen/sm_space"
+        android:layout_marginEnd="@dimen/std_space" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/my_location_btn"

@@ -19,8 +19,6 @@ class WatchedLocationsViewHolder(private val binding: WatchedLocationItemBinding
         locationListener: WatchedItemsActionListener,
         aqiIndex: String?
     ) {
-        Log.e(TAG, "根视图的高度${binding.root.height}")
-
         val ctx = itemView.context
         binding.apply {
             val uiData = formatWatchedHighLightsData(ctx = ctx, location = location, aqiIndex = aqiIndex)
@@ -33,16 +31,13 @@ class WatchedLocationsViewHolder(private val binding: WatchedLocationItemBinding
             locationAreaTv.text = uiData.locationArea
             if (uiData.hasOutDoorData) {
                 outdoorTv.isVisible = true
-                itemCard.setCardBackgroundColor(
-                    ContextCompat.getColor(ctx, uiData.outDoorAqiStatus!!.backGroundColorRes)
-                )
                 outdoorPointsTv.text = uiData.outDoorPmValue.toString()
-                outdoorStatusIndicatorTv.text = ctx.getString(uiData.outDoorAqiStatus.lbl)
+                outdoorStatusIndicatorTv.text = ctx.getString(uiData.outDoorAqiStatus!!.lbl)
                 outdoorStatusIndicatorIv.setImageResource(uiData.outDoorAqiStatus.status_bar_res)
                 outdoorPmIndexTv.text = uiData.aqiIndexStr
 
             } else {
-                itemCard.setCardBackgroundColor(uiData.defaultBgColor)
+
             }
             //if we have indoor pm
             if (uiData.hasInDoorData) {
@@ -52,6 +47,9 @@ class WatchedLocationsViewHolder(private val binding: WatchedLocationItemBinding
                 indoorStatusIndicatorIv.setImageResource(
                     uiData.indoorAQIStatus.status_bar_res
                 )
+                itemCard.setCardBackgroundColor(
+                    ContextCompat.getColor(ctx, uiData.indoorAQIStatus.backGroundColorRes)
+                )
                 indoorPmIndexTv.text = uiData.aqiIndexStr
             } else {
                 //hide data
@@ -60,6 +58,7 @@ class WatchedLocationsViewHolder(private val binding: WatchedLocationItemBinding
                 indoorPointsTv.text = ""
                 indoorStatusIndicatorTv.text = ""
                 indoorPmIndexTv.text = ""
+                itemCard.setCardBackgroundColor(uiData.defaultBgColor)
             }
             itemView.setOnClickListener {
                 locationListener.onClickWatchedLocation(location)

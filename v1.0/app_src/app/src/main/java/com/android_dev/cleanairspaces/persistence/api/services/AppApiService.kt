@@ -1,6 +1,6 @@
 package com.android_dev.cleanairspaces.persistence.api.services
 
-import com.android_dev.cleanairspaces.BuildConfig
+
 
 
 interface AppApiService {
@@ -23,5 +23,6 @@ interface AppApiService {
         const val DEVICE_METHOD = "GetDevicesByLocId"
         const val CONTROL_DEVICE_METHOD = "SetDevice"
         const val CONTROL_DEVICE_METHOD_KEY = "SetDeviceCAS"
+        const val GET_AC_DEVICES_BY_LOC_ID = "GetACDevicesByLocId"
     }
 }

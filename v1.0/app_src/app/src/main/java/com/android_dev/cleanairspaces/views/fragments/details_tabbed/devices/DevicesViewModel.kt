@@ -1,7 +1,9 @@
 package com.android_dev.cleanairspaces.views.fragments.details_tabbed.devices
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
+import com.android_dev.cleanairspaces.persistence.local.models.entities.AirConditionerEntity
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.*
@@ -19,7 +21,6 @@ class DevicesViewModel
     private val repo: AppDataRepo,
     private val myLogger: MyLogger
 ) : ViewModel() {
-
     var aqiIndex: String? = null
     private val TAG = DevicesViewModel::class.java.simpleName
 
@@ -31,7 +32,7 @@ class DevicesViewModel
         return repo.observeDevicesForLocation(locationsTag = locationsTag).asLiveData()
     }
 
-    private val areDevicesLoaded = MutableLiveData<DevicesLoadingState>(DevicesLoadingState.IDLE)
+    private val areDevicesLoaded = MutableLiveData(DevicesLoadingState.IDLE)
     fun observeDeviceLoading(): LiveData<DevicesLoadingState> = areDevicesLoaded
 
     private val resultListener = object : AsyncResultListener {
@@ -46,13 +47,11 @@ class DevicesViewModel
                     areDevicesLoaded.value = DevicesLoadingState.LOADING_FAILED
             }
         }
-
     }
 
     fun fetchDevicesForLocation(username: String, password: String) {
         try {
             val watchedLoc = repo.watchedLocationWithAqi.value!!.watchedLocationHighLights
-
             viewModelScope.launch(Dispatchers.IO) {
                 repo.fetchDevicesForALocation(
                     watchedLocationTag = watchedLoc.actualDataTag,
@@ -76,13 +75,16 @@ class DevicesViewModel
             }
         }
     }
-
     fun watchThisDevice(Devices: DevicesDetails, watchDevice: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.toggleWatchADevice(Devices, watch = watchDevice)
         }
     }
-
+    fun watchThisAirConditioner(airConditionerEntity: AirConditionerEntity, b: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.toggleWatchAirConditioner(airConditionerEntity,b)
+        }
+    }
     fun onToggleFreshAir(device: DevicesDetails, status: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val updatedDevice = repo.onToggleFreshAir(device, status)
@@ -176,8 +178,7 @@ class DevicesViewModel
             )
         }
     }
-
-
+    fun getAirConditionerDevices() = repo.getAirConditionerList()
 }
 
 enum class DevicesLoadingState {

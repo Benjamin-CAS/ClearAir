@@ -197,7 +197,7 @@ object CasEncDecQrProcessor {
         val key = "${LOCATION_INFO_METHOD_FOR_KEY}$timeStamp"
         val payload = "ltime$timeStamp"
         val casEncrypted = doCASEncryptOrDecrypt(payload = payload, key = key)
-        Log.d(
+        Log.e(
             TAG,
             "ssgetEncryptedEncodedPayloadForIndoorLocation(timeStamp: $timeStamp) key $key payload $payload encrypted $casEncrypted"
         )

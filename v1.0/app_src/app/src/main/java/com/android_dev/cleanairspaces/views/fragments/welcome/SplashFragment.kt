@@ -25,7 +25,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
-
     companion object {
         private val TAG = SplashFragment::class.java.simpleName
     }
@@ -55,9 +54,11 @@ class SplashFragment : Fragment() {
                 when (it) {
                     null -> {
                         if (checkForGooglePlayServices()) {
+                            Log.e(TAG, "checkForGooglePlayServices: ${checkForGooglePlayServices()}")
                             //use google maps
                             navigateToFragment(useDefaultMap = false)
                         } else {
+                            Log.e(TAG, "checkForGooglePlayServices: ${checkForGooglePlayServices()}")
                             navigateToFragment(useDefaultMap = true)
                         }
                     }
@@ -65,7 +66,6 @@ class SplashFragment : Fragment() {
                     getString(R.string.default_map_a_map) -> {
                         //use A MAP
                         navigateToFragment(useDefaultMap = true)
-
                     }
 
                     else -> {
@@ -78,7 +78,7 @@ class SplashFragment : Fragment() {
                                 msgResId = R.string.no_google_play_services_err,
                                 actionMessage = R.string.switch_to_a_maps,
                                 actionToTake = {
-                                    //send to a-maps activity
+                                    // send to a-maps activity
                                     navigateToFragment(useDefaultMap = true)
                                 }
                             )

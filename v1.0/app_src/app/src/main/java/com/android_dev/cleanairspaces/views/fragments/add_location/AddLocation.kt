@@ -291,12 +291,14 @@ class AddLocation : Fragment() {
         if (!isInDoorData) {
             viewModel.saveWatchedOutdoorLocationSearchedInfo(outDoorInfo = searchInfo)
         } else {
+            Log.e(TAG, "addLocationFromSearchedInfo: ${searchInfo.is_secure}")
             val (userName, password) = if (searchInfo.is_secure) {
                 Pair(
                     binding.userName.myTxt(binding.userName)
                         ?: "", binding.password.myTxt(binding.password) ?: ""
                 )
             } else Pair("", "")
+            Log.e(TAG, "addLocationFromSearchedInfo: $userName $password")
             viewModel.saveWatchedIndoorLocationSearchedInfo(
                 userName, password, searchInfo
             )

@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import com.amap.api.maps.model.Marker
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
 import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
+import com.android_dev.cleanairspaces.persistence.local.models.entities.AirConditionerEntity
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
@@ -98,16 +99,19 @@ class MapsViewModel @Inject constructor(
 
 
     /************* DEVICES I WATCH *************/
-    fun observeDevicesIWatch() =
-        repo.observeDevicesIWatch().asLiveData()
-
+    fun observeDevicesIWatch() = repo.observeDevicesIWatch().asLiveData()
+    fun observeAirConditionerIWatch() = repo.observeAirConditionerIWatch().asLiveData()
 
     fun watchThisDevice(Devices: DevicesDetails, watchDevice: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.toggleWatchADevice(Devices, watch = watchDevice)
         }
     }
-
+    fun watchThisAirConditioner(airConditionerEntity: AirConditionerEntity, watchAirConditioner: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.toggleWatchAirConditioner(airConditionerEntity,watchAirConditioner)
+        }
+    }
     fun onToggleFreshAir(device: DevicesDetails, status: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val updatedDevice = repo.onToggleFreshAir(device, status)
@@ -199,6 +203,13 @@ class MapsViewModel @Inject constructor(
             repo.toggleWatchADevice(device =device, watch = false)
         }
     }
+    fun stopWatchingAirConditioner(airConditionerEntity: AirConditionerEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.toggleWatchAirConditioner(airConditionerEntity,false)
+        }
+    }
+
+
 
 
 }

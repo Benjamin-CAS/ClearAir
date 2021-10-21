@@ -26,10 +26,7 @@ import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentAMapsBinding
 import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
-import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
-import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
-import com.android_dev.cleanairspaces.persistence.local.models.entities.MapDataType
-import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
+import com.android_dev.cleanairspaces.persistence.local.models.entities.*
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
@@ -43,6 +40,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AMapsFragment : BaseMapFragment() {
+
     companion object {
         const val TAG = "AMapsFragment"
     }
@@ -167,6 +165,7 @@ class AMapsFragment : BaseMapFragment() {
         })
         observeWatchedLocations()
         observeDevicesIWatch()
+        observeAirConditionersIWatch()
         viewModel.getMqttMessage().observe(
             viewLifecycleOwner, {
                 it?.let { newMsg ->
@@ -184,7 +183,18 @@ class AMapsFragment : BaseMapFragment() {
             }
         })
     }
-
+    private fun observeAirConditionersIWatch(){
+        viewModel.observeAirConditionerIWatch().observe(viewLifecycleOwner){
+            it?.let {
+                updateWatchedAirConditioner(it)
+            }
+        }
+    }
+    private fun observeWatchedLocations() {
+        viewModel.observeWatchedLocations().observe(viewLifecycleOwner, {
+            updateWatchedLocations(it)
+        })
+    }
     private fun initializeMap(savedInstanceState: Bundle?): Boolean {
         binding.apply {
             mapView = map
@@ -213,11 +223,7 @@ class AMapsFragment : BaseMapFragment() {
         }
     }
 
-    private fun observeWatchedLocations() {
-        viewModel.observeWatchedLocations().observe(viewLifecycleOwner, {
-            updateWatchedLocations(it)
-        })
-    }
+
 
     private fun observeMapRelatedData() {
         //map data -locations & pm values
@@ -424,9 +430,17 @@ class AMapsFragment : BaseMapFragment() {
         }
     }
 
+    override fun onSwipeToDeleteAirConditioner(airConditionerEntity: AirConditionerEntity) {
+        viewModel.stopWatchingAirConditioner(airConditionerEntity)
+    }
+
     /************************* WATCHED DEVICES *************************/
     override fun onClickToggleWatchDevice(device: DevicesDetails) {
         viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
+    }
+
+    override fun onClickToggleWatchAirConditioner(airConditionerEntity: AirConditionerEntity) {
+        viewModel.watchThisAirConditioner(airConditionerEntity,!airConditionerEntity.watchAirConditioner)
     }
 
     override fun onSwipeToDeleteDevice(device: DevicesDetails) {
@@ -448,6 +462,7 @@ class AMapsFragment : BaseMapFragment() {
     override fun onToggleDuctFit(device: DevicesDetails, status: String) {
         viewModel.onToggleDuctFit(device, status)
     }
+
 
 
     /************ MQTT **************/

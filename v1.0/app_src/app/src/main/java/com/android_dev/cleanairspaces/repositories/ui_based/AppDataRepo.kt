@@ -2,6 +2,7 @@ package com.android_dev.cleanairspaces.repositories.ui_based
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.android_dev.cleanairspaces.persistence.api.responses.*
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.DEVICE_INFO_METHOD
 import com.android_dev.cleanairspaces.persistence.api.services.AppApiService.Companion.MONITOR_HISTORY_METHOD
@@ -39,7 +40,8 @@ class AppDataRepo
     private val inDoorLocationsApiService: InDoorLocationApiService,
     private val myLogger: MyLogger,
     private val monitorDetailsDataDao: MonitorDetailsDataDao,
-    private val deviceDetailsDao: DeviceDetailsDao
+    private val deviceDetailsDao: DeviceDetailsDao,
+    private val airConditionerDao: AirConditionerDao
 ) {
 
     /************** CACHES ************* */
@@ -71,7 +73,6 @@ class AppDataRepo
 
     fun getMapDataFlow() = mapDataDao.getMapDataFlow()
     fun getWatchedLocationHighLights() = watchedLocationHighLightsDao.getWatchedLocationHighLights()
-
 
     suspend fun watchALocation(watchedLocationHighLight: WatchedLocationHighLights) {
         watchedLocationHighLightsDao.insertLocation(watchedLocationHighLight)
@@ -907,6 +908,12 @@ class AppDataRepo
     suspend fun toggleWatchADevice(device: DevicesDetails, watch: Boolean) {
         deviceDetailsDao.toggleIsWatched(watchDevice = watch, devicesTag = device.actualDataTag)
     }
+    suspend fun toggleWatchAirConditioner(
+        airConditionerEntity: AirConditionerEntity,
+        watchAirConditioner: Boolean
+    ) {
+        airConditionerDao.toggleIsWatched(watchAirConditioner,airConditionerEntity.id)
+    }
     fun deleteDevicesDetails(device: List<DevicesDetails>){
         deviceDetailsDao.deleteDetailsDatabase(device)
     }
@@ -988,7 +995,41 @@ class AppDataRepo
         })
 
     }
-
+    suspend fun insertAirConditionerDevices(){
+        val data = inDoorLocationsApiService.getAirConditionerDevices()
+        Log.e(TAG, "这里是数据：${data.data}")
+        val air = ArrayList<AirConditionerEntity>()
+        for (item in data.data){
+            air.add(
+                AirConditionerEntity(
+                    item.auto,
+                    item.current,
+                    item.dev_name,
+                    item.device_type,
+                    item.fan_speed,
+                    item.id,
+                    item.iforce,
+                    item.last_auto,
+                    item.last_fan,
+                    item.last_mode,
+                    item.last_time,
+                    item.location_id,
+                    item.mac,
+                    item.mode,
+                    item.name_en,
+                    item.status,
+                    item.t_cal,
+                    item.target,
+                    item.version,
+                    item.zone_id,
+                    item.zone_mode
+                ))
+            Log.e(TAG, "这里执行了  $air")
+        }
+        Log.e(TAG, "这里是准备插入的: $air")
+        airConditionerDao.insertAirConditionerDao(air)
+    }
+    fun getAirConditionerList() = airConditionerDao.getAirConditionerAll().asLiveData()
     private fun unEncryptDevicesPayload(
         watchedLocationTag: String,
         payload: String,
@@ -998,9 +1039,11 @@ class AppDataRepo
         userPass: String,
         resultListener: AsyncResultListener? = null
     ) {
+        Log.e(TAG, "unEncryptDevicesPayload: $userName $userPass")
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val decodedResponse = CasEncDecQrProcessor.decodeApiResponse(payload)
+                Log.e(TAG, "decodedResponse: $decodedResponse")
                 val devices = JSONArray(decodedResponse)
                 val foundDevices = ArrayList<DevicesDetails>()
                 var i = 0
@@ -1017,15 +1060,20 @@ class AppDataRepo
                     aDevice.for_watched_location_tag = watchedLocationTag
                     aDevice.compId = compId
                     aDevice.locId = locId
+
                     i++
                     foundDevices.add(aDevice)
+                    Log.e(TAG, "foundDevices: aaaa $foundDevices")
                 }
 
                 if (foundDevices.isNotEmpty()) {
+                    Log.e(TAG, "unEncryptDevicesPayload: 不为空")
+
                     for (foundDevice in foundDevices) {
                         val isWatched = deviceDetailsDao.checkIfIsWatched(deviceId = foundDevice.id) > 0
                         foundDevice.watch_device = isWatched
                     }
+                    Log.e(TAG, "unEncryptDevicesPayload: ${foundDevices.toList()}")
                     deviceDetailsDao.insertOrReplaceAll(foundDevices.toList())
                 }
 
@@ -1197,6 +1245,8 @@ class AppDataRepo
     }
 
     fun observeDevicesIWatch() = deviceDetailsDao.observeDevicesIWatch()
+    fun observeAirConditionerIWatch() = airConditionerDao.observeAirConditionerIWatch()
+
     suspend fun refreshWatchedDevices() {
         try {
             val devices = deviceDetailsDao.getAllDevicesNonObservable()

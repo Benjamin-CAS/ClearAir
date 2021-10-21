@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.HomeMapOverlayBinding
+import com.android_dev.cleanairspaces.persistence.local.models.entities.AirConditionerEntity
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
@@ -120,7 +121,7 @@ abstract class BaseMapFragment : Fragment(),WatchedItemsActionListener {
             setupWatchedItemsRv()
         }
     }
-
+    // 滑动删除
     private fun setupWatchedItemsRv() {
         homeMapOverlay.apply {
             watchedItemsRv.apply {
@@ -286,7 +287,9 @@ abstract class BaseMapFragment : Fragment(),WatchedItemsActionListener {
     fun updateWatchedDevices(devices: List<DevicesDetails>) {
         watchedItemsAdapter.setWatchedDevicesList(devices)
     }
-
+    fun updateWatchedAirConditioner(airConditionerEntity: List<AirConditionerEntity>){
+        watchedItemsAdapter.setWatchedAirConditionerList(airConditionerEntity)
+    }
     fun updateIndexForWatchedLocations(selectedAQIIndex: String?) {
         val aqiIndex = selectedAQIIndex ?: getString(R.string.default_aqi_pm_2_5)
         watchedItemsAdapter.updateSelectedAqiIndex(aqiIndex)

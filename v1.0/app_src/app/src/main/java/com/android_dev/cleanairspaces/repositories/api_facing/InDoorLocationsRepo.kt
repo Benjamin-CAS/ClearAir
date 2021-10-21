@@ -25,9 +25,7 @@ class InDoorLocationsRepo
     private val inDoorLocationsApiService: InDoorLocationApiService,
     private val myLogger: MyLogger
 ) {
-
     private val TAG = IndoorLocationsResponse::class.java.simpleName
-
     suspend fun refreshInDoorLocations() {
         val timeStamp = System.currentTimeMillis().toString()
         val pl =
@@ -42,7 +40,7 @@ class InDoorLocationsRepo
             try {
                 val searchData = ArrayList<SearchSuggestionsData>()
                 for (location in indoorLocations) {
-                    Log.e(TAG, "mapIndoorLocationsToSearchableData: 所有公司名称${location.name_en}")
+//                    Log.e(TAG, "mapIndoorLocationsToSearchableData: 所有公司名称${location.name_en}")
                     if (location.active.toInt() == 0)
                         continue
                     val tag = location.company_id
@@ -69,7 +67,6 @@ class InDoorLocationsRepo
                     msg = exc.message,
                     exc = exc
                 )
-
             }
         }
     }

@@ -69,7 +69,6 @@ class DevicesAdapterViewHolder(private val binding: DeviceItemBinding) :
         }
 
         binding.watchDevice.setOnClickListener {
-            Log.e(TAG, "watchDevice")
             deviceListener.onClickToggleWatchDevice(device = device)
         }
     }

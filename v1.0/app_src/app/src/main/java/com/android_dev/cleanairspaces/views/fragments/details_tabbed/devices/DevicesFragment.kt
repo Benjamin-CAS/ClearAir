@@ -20,6 +20,7 @@ import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentDevicesBinding
 import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
+import com.android_dev.cleanairspaces.persistence.local.models.entities.AirConditionerEntity
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
@@ -33,7 +34,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DevicesFragment : Fragment(), WatchedItemsActionListener {
-
     companion object {
         private val TAG = DevicesFragment::class.java.simpleName
     }
@@ -59,9 +59,9 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner, {
+        viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner){
             it?.let {
+                Log.e(TAG, "onViewCreated: $it")
                 viewModel.aqiIndex = it.aqiIndex
                 updateGenDetails(it.watchedLocationHighLights)
                 observeDevicesForLoc(
@@ -69,11 +69,11 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
                     aqiIndex = it.aqiIndex
                 )
             }
-        })
+        }
+
         binding.searchDevicesBtn.setOnClickListener {
             fetchDevices()
         }
-
         binding.foundDevices.apply {
             layoutManager = LinearLayoutManager(
                 requireContext(),
@@ -86,7 +86,6 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
 
         viewModel.observeDeviceLoading().observe(viewLifecycleOwner, {
             it?.let { loadingState ->
-
                 when (loadingState) {
                     DevicesLoadingState.IDLE -> {
                         toggleProgressVisibility(false)
@@ -161,22 +160,30 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
         aqiIndex: String?
     ) {
         viewModel.observeDevicesForLocation(locationsTag = actualDataTag)
-            .observe(viewLifecycleOwner, {
+            .observe( viewLifecycleOwner, {
                 it?.let {
                     binding.progressCircular.isVisible = false
                     if (it.isNotEmpty()) {
                         Log.e(TAG, "observeDevicesForLoc: $it")
                         toggleCredentialsFormVisibility(show = false)
+                        if (binding.locationNameTv.text == "CAS DEVEL"){
+                            viewModel.getAirConditionerDevices().observe(viewLifecycleOwner){ airConditioner ->
+                                Log.e(TAG, "这里是观察的: $airConditioner")
+                                Log.e(TAG, "这里是观察的长度: ${airConditioner.size}")
+                                devicesAdapter.setAirConditionerList(airConditioner)
+                            }
+                        }
                     }
-                    devicesAdapter.updateSelectedAqiIndex(aqiIndex)
-                    devicesAdapter.setWatchedDevicesList(it)
+                    devicesAdapter.apply {
+                        updateSelectedAqiIndex(aqiIndex)
+                        setWatchedDevicesList(it)
+                    }
                 }
             })
     }
 
     private fun updateGenDetails(currentlyWatchedLocationHighLights: WatchedLocationHighLights) {
         val logoURL = currentlyWatchedLocationHighLights.getFullLogoUrl()
-
         lifecycleScope.launch(Dispatchers.IO) {
             myLogger.logThis(
                 tag = LogTags.USER_ACTION_OPEN_SCREEN,
@@ -194,11 +201,11 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
             locationNameTv.text = if (currentlyWatchedLocationHighLights.name.isNotBlank())
                 currentlyWatchedLocationHighLights.name
             else currentlyWatchedLocationHighLights.location_area
+
             locationNameTv.isSelected = true
         }
         toggleCredentialsFormVisibility(show = true)
     }
-
     private fun toggleCredentialsFormVisibility(show: Boolean) {
         binding.apply {
             userName.isVisible = show
@@ -214,8 +221,16 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
         viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
     }
 
+    override fun onClickToggleWatchAirConditioner(airConditionerEntity: AirConditionerEntity) {
+        viewModel.watchThisAirConditioner(airConditionerEntity,!airConditionerEntity.watchAirConditioner)
+    }
+
     override fun onSwipeToDeleteDevice(device: DevicesDetails) {
         //do nothing --
+    }
+
+    override fun onSwipeToDeleteAirConditioner(airConditionerEntity: AirConditionerEntity) {
+
     }
 
     override fun onToggleFreshAir(device: DevicesDetails, status: String) {

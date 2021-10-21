@@ -419,7 +419,6 @@ class HistoryFragment : Fragment() {
         forWeek: Boolean = false,
         forMonth: Boolean = false
     ): List<Float> {
-
         val chartData = arrayListOf<Float>()
         val chartDates = arrayListOf<String>()
         val outChartDates = arrayListOf<String>()
@@ -639,12 +638,9 @@ class HistoryFragment : Fragment() {
                 textSize = 12f
                 axisMinimum = 0f
                 xAxis.setDrawLabels(false)
-
             }
 
             setNoDataTextTypeface(titleFont)
-
-
             setTouchEnabled(true)
             setPinchZoom(false)
             isDoubleTapToZoomEnabled = false
@@ -878,7 +874,6 @@ class HistoryFragment : Fragment() {
     }
 
     private fun getStatusColorForValue(value: Float, paramType: ParamTypes): Int {
-
         val aqiIndex = viewModel.aqiIndex ?: DEFAULT_AQI_INDEX_PM25
         return when (paramType) {
             ParamTypes.IN_OUT_PM -> getAQIStatusFromPM25(
@@ -979,7 +974,6 @@ class HistoryFragment : Fragment() {
                 notifyDataSetChanged()
             }
         } catch (exc: Exception) {
-
             lifecycleScope.launch(Dispatchers.IO) {
                 myLogger.logThis(
                     tag = LogTags.EXCEPTION,

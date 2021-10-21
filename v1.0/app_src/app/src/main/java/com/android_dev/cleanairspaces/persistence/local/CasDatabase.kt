@@ -16,7 +16,9 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.*
         LocationHistoryUpdatesTracker::class,
         Logs::class,
         MonitorDetails::class,
-        DevicesDetails::class],
+        DevicesDetails::class,
+        AirConditionerEntity::class
+        ],
     version = 1,
     exportSchema = false
 )
@@ -31,4 +33,5 @@ abstract class CasDatabase : RoomDatabase() {
     abstract fun logsDao(): LogsDao
     abstract fun monitorDetailsDataDao(): MonitorDetailsDataDao
     abstract fun deviceDetailsDataDao(): DeviceDetailsDao
+    abstract fun airConditionerDao():AirConditionerDao
 }

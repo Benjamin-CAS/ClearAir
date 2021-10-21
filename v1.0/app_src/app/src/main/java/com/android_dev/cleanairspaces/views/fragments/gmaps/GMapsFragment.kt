@@ -19,6 +19,7 @@ import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentGMapsBinding
 import com.android_dev.cleanairspaces.persistence.api.mqtt.CasMqttClient
 import com.android_dev.cleanairspaces.persistence.api.mqtt.DeviceUpdateMqttMessage
+import com.android_dev.cleanairspaces.persistence.local.models.entities.AirConditionerEntity
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.MapData
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
@@ -116,6 +117,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -147,6 +149,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             })
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun initializeDataAfterMapIsSet() {
         viewModel.observeAqiIndex().observe(viewLifecycleOwner, {
             viewModel.aqiIndex = it
@@ -156,6 +159,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         observeWatchedLocations()
         requestPermissionsAndShowUserLocation()
         observeDevicesIWatch()
+        observeAirConditionersIWatch()
         viewModel.getMqttMessage().observe(
             viewLifecycleOwner, {
                 it?.let { newMsg ->
@@ -172,7 +176,13 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             }
         })
     }
-
+    private fun observeAirConditionersIWatch(){
+        viewModel.observeAirConditionerIWatch().observe(viewLifecycleOwner){
+            it?.let {
+                updateWatchedAirConditioner(it)
+            }
+        }
+    }
     override fun onMapReady(gMap: GoogleMap?) {
         if (gMap != null) {
             mMap = gMap
@@ -389,10 +399,18 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         }
     }
 
+    override fun onSwipeToDeleteAirConditioner(airConditionerEntity: AirConditionerEntity) {
+        viewModel.stopWatchingAirConditioner(airConditionerEntity)
+    }
+
 
     /************************* WATCHED DEVICES *************************/
     override fun onClickToggleWatchDevice(device: DevicesDetails) {
         viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
+    }
+
+    override fun onClickToggleWatchAirConditioner(airConditionerEntity: AirConditionerEntity) {
+        viewModel.watchThisAirConditioner(airConditionerEntity,!airConditionerEntity.watchAirConditioner)
     }
 
     override fun onSwipeToDeleteDevice(device: DevicesDetails) {

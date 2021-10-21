@@ -9,7 +9,6 @@ data class IndoorLocationsDetailsResponse(
 
     @Expose
     val ltime: String?
-
 )
 
 data class IndoorLocationExtraDetails(

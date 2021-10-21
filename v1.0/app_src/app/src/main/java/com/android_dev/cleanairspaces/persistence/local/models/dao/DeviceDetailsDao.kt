@@ -8,7 +8,6 @@ import androidx.room.Delete
 
 @Dao
 interface DeviceDetailsDao {
-
     @Query("SELECT * FROM devices_data WHERE for_watched_location_tag =:locationsTag ORDER BY dev_name ASC")
     fun observeDevicesForLocation(locationsTag: String): Flow<List<DevicesDetails>>
 
@@ -18,10 +17,11 @@ interface DeviceDetailsDao {
     @Query("SELECT * FROM devices_data WHERE watch_device =:watchLocation ORDER BY dev_name ASC")
     fun observeWatchedDevices(watchLocation: Boolean = true): Flow<List<DevicesDetails>>
 
+    // 插入数据
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplaceAll(devices: List<DevicesDetails>)
 
-    @Query("UPDATE devices_data SET watch_device =:watchDevice WHERE actualDataTag =:devicesTag ")
+    @Query("UPDATE devices_data SET watch_device =:watchDevice WHERE actualDataTag =:devicesTag")
     suspend fun toggleIsWatched(watchDevice: Boolean, devicesTag: String)
 
     @Query("SELECT * FROM devices_data")

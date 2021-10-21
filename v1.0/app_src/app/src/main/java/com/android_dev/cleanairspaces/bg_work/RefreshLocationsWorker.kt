@@ -1,11 +1,9 @@
 package com.android_dev.cleanairspaces.bg_work
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.android_dev.cleanairspaces.persistence.local.models.dao.DeviceDetailsDao
 import com.android_dev.cleanairspaces.repositories.api_facing.*
 import com.android_dev.cleanairspaces.repositories.ui_based.AppDataRepo
 import com.android_dev.cleanairspaces.utils.LogTags
@@ -28,9 +26,7 @@ class RefreshLocationsWorker @AssistedInject constructor(
     private val logRepo: LogRepo,
     private val monitorDetailsUpdatesRepo: MonitorDetailsUpdatesRepo
 ) : CoroutineWorker(appContext, workerParams) {
-
     override suspend fun doWork(): Result {
-
         withContext(Dispatchers.IO) {
             try {
                 // 更新经纬度信息
@@ -39,6 +35,7 @@ class RefreshLocationsWorker @AssistedInject constructor(
                 refreshWatchedLocations()
                 refreshWatchedMonitors()
                 refreshWatchedDevices()
+                refreshAirConditioner()
                 sendLogData()
             } catch (exc: Exception) {
                 myLogger.logThis(
@@ -72,13 +69,16 @@ class RefreshLocationsWorker @AssistedInject constructor(
     private suspend fun refreshWatchedDevices() {
         appDataRepo.refreshWatchedDevices()
     }
+    private suspend fun refreshAirConditioner(){
+        appDataRepo.insertAirConditionerDevices()
+    }
 
     private suspend fun sendLogData() {
         val hourMills = 3600000L
         delay(hourMills)
         logRepo.pushLogs()
     }
-    companion object{
+    companion object {
         const val TAG = "RefreshLocationsWorker"
     }
 }

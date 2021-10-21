@@ -68,8 +68,7 @@ class AddLocationViewModel @Inject constructor(
         }
     }
 
-    private val locationIsAdded =
-        MutableLiveData<WatchLocationProcessState>(WatchLocationProcessState.IDLE)
+    private val locationIsAdded = MutableLiveData(WatchLocationProcessState.IDLE)
 
     fun observeAddProcess(): LiveData<WatchLocationProcessState> = locationIsAdded
     fun saveWatchedLocationFromScannedQr(

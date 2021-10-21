@@ -39,7 +39,9 @@ class AppModule {
     fun provideRetrofit(): Retrofit =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor{ message ->
+            .client(OkHttpClient.Builder()
+                .addInterceptor(ParamsLogInterceptor())
+                .addInterceptor(HttpLoggingInterceptor{ message ->
                 Log.e(TAG, message)}
                 .apply {
                     level = HttpLoggingInterceptor.Level.BODY
@@ -59,6 +61,7 @@ class AppModule {
     @Singleton
     fun provideInDoorLocationService(retrofit: Retrofit): InDoorLocationApiService =
         retrofit.create(InDoorLocationApiService::class.java)
+
     // 位置详情
     @Provides
     @Singleton
@@ -109,7 +112,8 @@ class AppModule {
         inDoorLocationsApiService: InDoorLocationApiService,
         myLogger: MyLogger,
         monitorDetailsDataDao: MonitorDetailsDataDao,
-        deviceDetailsDao: DeviceDetailsDao
+        deviceDetailsDao: DeviceDetailsDao,
+        airConditionerDao: AirConditionerDao
     ): AppDataRepo = AppDataRepo(
         mapDataDao = mapDataDao,
         searchSuggestionsDataDao = searchSuggestionsDataDao,
@@ -122,7 +126,8 @@ class AppModule {
         inDoorLocationsApiService = inDoorLocationsApiService,
         myLogger = myLogger,
         monitorDetailsDataDao = monitorDetailsDataDao,
-        deviceDetailsDao = deviceDetailsDao
+        deviceDetailsDao = deviceDetailsDao,
+        airConditionerDao = airConditionerDao
     )
 
     @Provides
@@ -239,7 +244,9 @@ class AppModule {
     @Singleton
     fun provideDeviceDetailsDao(casDatabase: CasDatabase): DeviceDetailsDao =
         casDatabase.deviceDetailsDataDao()
-
+    @Provides
+    @Singleton
+    fun provideAirConditionerService(casDatabase: CasDatabase) = casDatabase.airConditionerDao()
     @Provides
     @Singleton
     fun provideLogsRepo(

@@ -35,6 +35,7 @@ import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragme
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,7 +45,7 @@ class AMapsFragment : BaseMapFragment() {
     companion object {
         const val TAG = "AMapsFragment"
     }
-
+    private var managerBtnClickLiveData = true
     private val goodCircle: BitmapDescriptor by lazy {
         BitmapDescriptorFactory.fromBitmap(
             BitmapFactory.decodeResource(resources, R.drawable.good_circle)   // 好的
@@ -103,7 +104,8 @@ class AMapsFragment : BaseMapFragment() {
 
     override fun initQrScannerLauncher() {
         //scan-qr launcher must be set
-        scanQrCodeLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        scanQrCodeLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
             { result: ActivityResult ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     //  you will get result here in result.data
@@ -137,10 +139,11 @@ class AMapsFragment : BaseMapFragment() {
         super.onViewCreated(view, savedInstanceState)
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
-        watchedItemsAdapter = WatchedLocationsAndDevicesAdapter(this, displayFav = false)
+        watchedItemsAdapter = WatchedLocationsAndDevicesAdapter(this, displayFav = false, this,this)
         super.setHomeMapOverlay(binding.mapOverlay)
         //user setting - language
-        viewModel.mapHasBeenInitialized.value = initializeMap(savedInstanceState = savedInstanceState)
+        viewModel.mapHasBeenInitialized.value =
+            initializeMap(savedInstanceState = savedInstanceState)
         observeMapRelatedData()
         requestPermissionsAndShowUserLocation()
 
@@ -183,18 +186,21 @@ class AMapsFragment : BaseMapFragment() {
             }
         })
     }
-    private fun observeAirConditionersIWatch(){
-        viewModel.observeAirConditionerIWatch().observe(viewLifecycleOwner){
+
+    private fun observeAirConditionersIWatch() {
+        viewModel.observeAirConditionerIWatch().observe(viewLifecycleOwner) {
             it?.let {
                 updateWatchedAirConditioner(it)
             }
         }
     }
+
     private fun observeWatchedLocations() {
         viewModel.observeWatchedLocations().observe(viewLifecycleOwner, {
             updateWatchedLocations(it)
         })
     }
+
     private fun initializeMap(savedInstanceState: Bundle?): Boolean {
         binding.apply {
             mapView = map
@@ -222,7 +228,6 @@ class AMapsFragment : BaseMapFragment() {
             }
         }
     }
-
 
 
     private fun observeMapRelatedData() {
@@ -434,13 +439,43 @@ class AMapsFragment : BaseMapFragment() {
         viewModel.stopWatchingAirConditioner(airConditionerEntity)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun submitAirConditioner(locId: String, address: String, param: String) {
+        casMqttClient.connectAndPublish(
+            DeviceUpdateMqttMessage(
+                address,param
+            )
+        ){
+
+        }
+        lifecycleScope.launch {
+            delay(7000)
+            viewModel.refreshAirConditioner(locId)
+        }
+    }
+
+    override fun cancelAirConditioner(locId: String) {
+        viewModel.refreshAirConditioner(locId)
+    }
+
+    override fun managerBtnClickListener(airConditionerEntity: AirConditionerEntity) = if (managerBtnClickLiveData){
+        managerBtnClickLiveData = false
+        managerBtnClickLiveData
+    }else {
+        managerBtnClickLiveData = true
+        managerBtnClickLiveData
+    }
+
     /************************* WATCHED DEVICES *************************/
     override fun onClickToggleWatchDevice(device: DevicesDetails) {
         viewModel.watchThisDevice(device, watchDevice = !device.watch_device)
     }
 
     override fun onClickToggleWatchAirConditioner(airConditionerEntity: AirConditionerEntity) {
-        viewModel.watchThisAirConditioner(airConditionerEntity,!airConditionerEntity.watchAirConditioner)
+        viewModel.watchThisAirConditioner(
+            airConditionerEntity,
+            !airConditionerEntity.watchAirConditioner
+        )
     }
 
     override fun onSwipeToDeleteDevice(device: DevicesDetails) {
@@ -464,13 +499,15 @@ class AMapsFragment : BaseMapFragment() {
     }
 
 
-
     /************ MQTT **************/
     @Inject
     lateinit var casMqttClient: CasMqttClient
+
     @RequiresApi(Build.VERSION_CODES.N)
     private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
-        casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
+        casMqttClient.connectAndPublish(deviceUpdateMqttMessage){
+
+        }
         viewModel.setMqttStatus(null) //clear
         viewModel.refreshDevicesAfterDelay()
     }

@@ -169,7 +169,6 @@ class AppDataRepo
                         CasEncDecQrProcessor.decodeApiResponse(pl)
                     val unEncJson = JSONObject(unEncryptedPayload)
 
-
                     /** last 72 hours history */
                     val sevenTwoHrsJsonArray =
                         unEncJson.getJSONArray(LocationHistoriesResponse.daysResponseKey)
@@ -402,7 +401,6 @@ class AppDataRepo
                         }
                         k++
                     }
-
                     saveFetchedHistoryForLocation(
                         daysHistory = sevenTwoHrsArrList,
                         weekHistory = weekArrList,
@@ -995,8 +993,8 @@ class AppDataRepo
         })
 
     }
-    suspend fun insertAirConditionerDevices(){
-        val data = inDoorLocationsApiService.getAirConditionerDevices()
+    suspend fun insertAirConditionerDevices(locationId:String){
+        val data = inDoorLocationsApiService.getAirConditionerDevices(l = locationId)
         Log.e(TAG, "这里是数据：${data.data}")
         val air = ArrayList<AirConditionerEntity>()
         for (item in data.data){
@@ -1027,7 +1025,15 @@ class AppDataRepo
             Log.e(TAG, "这里执行了  $air")
         }
         Log.e(TAG, "这里是准备插入的: $air")
-        airConditionerDao.insertAirConditionerDao(air)
+        airConditionerDao.apply {
+            if (air.isNotEmpty()){
+                for (airStatus in air){
+                    val isWatched = airConditionerDao.checkIfIsWatched(deviceId = airStatus.id) > 0
+                    airStatus.watchAirConditioner = isWatched
+                    insertAirConditionerDao(air)
+                }
+            }
+        }
     }
     fun getAirConditionerList() = airConditionerDao.getAirConditionerAll().asLiveData()
     private fun unEncryptDevicesPayload(
@@ -1068,7 +1074,6 @@ class AppDataRepo
 
                 if (foundDevices.isNotEmpty()) {
                     Log.e(TAG, "unEncryptDevicesPayload: 不为空")
-
                     for (foundDevice in foundDevices) {
                         val isWatched = deviceDetailsDao.checkIfIsWatched(deviceId = foundDevice.id) > 0
                         foundDevice.watch_device = isWatched

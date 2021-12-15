@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.persistence.local.models.entities
 
+import androidx.annotation.IdRes
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.android_dev.cleanairspaces.R
@@ -36,27 +37,34 @@ data class AirConditionerEntity(
     var watchAirConditioner: Boolean = false,
 ){
     fun zoneModeSelect() = when(zoneMode){
-        "1" -> R.id.independent_btn
-        "2" -> R.id.inside_zone_btn
+        "1" -> AirConditionerItemData(R.id.independent_btn,"1","Independent")
+        "2" -> AirConditionerItemData(R.id.inside_zone_btn,"2","Inside Zone")
         else -> null
     }
-    fun lastModeSelect() = when(lastMode){
-        "0" -> R.id.fan_btn
-        "1" -> R.id.cooling_btn
-        "2" -> R.id.heating_btn
-        "3" -> R.id.auto_btn
+    fun lastModeSelect() = when(mode){
+        "0" -> AirConditionerItemData(R.id.fan_btn,"0","Fan")
+        "1" -> AirConditionerItemData(R.id.cooling_btn,"1","Cooling")
+        "2" -> AirConditionerItemData(R.id.heating_btn,"2","Heating")
+        "3" -> AirConditionerItemData(R.id.auto_btn,"3","Auto")
         else -> null
     }
-    fun lastAutoSelect() = when(lastAuto){
-        "1" -> R.id.fan_mode_manual_btn
-        "2" -> R.id.fan_mode_auto_btn
+    fun lastAutoSelect() = when(auto){
+        "1" -> AirConditionerItemData(R.id.fan_mode_manual_btn,"1","Manual")
+        "2" -> AirConditionerItemData(R.id.fan_mode_auto_btn,"2","Auto")
         else -> null
     }
-    fun lastFanSelect() = when(lastFan){
-        "0" -> R.id.off_btn
-        "1" -> R.id.Low_btn
-        "2" -> R.id.Medium_btn
-        "3" -> R.id.height_btn
+    fun lastFanSelect() = when(fanSpeed){
+        "0" -> AirConditionerItemData(R.id.off_btn,"0","Off")
+        "1" -> AirConditionerItemData(R.id.Low_btn,"1","Low")
+        "2" -> AirConditionerItemData(R.id.Medium_btn,"2","Medium")
+        "3" -> AirConditionerItemData(R.id.height_btn,"3","Height")
         else -> null
     }
 }
+
+data class AirConditionerItemData(
+    @IdRes
+    val btnId:Int,
+    val num:String,
+    val text:String
+)

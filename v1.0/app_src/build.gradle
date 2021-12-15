@@ -17,8 +17,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
+        classpath 'com.android.tools.build:gradle:7.0.3'
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.38.1'
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
 
         // NOTE: Do not place your application dependencies here; they belong

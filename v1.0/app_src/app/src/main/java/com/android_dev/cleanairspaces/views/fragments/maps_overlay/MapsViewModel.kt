@@ -1,5 +1,6 @@
 package com.android_dev.cleanairspaces.views.fragments.maps_overlay
 
+
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.*
@@ -209,7 +210,12 @@ class MapsViewModel @Inject constructor(
         }
     }
 
-
+    fun refreshAirConditioner(locationId:String){
+        Log.e(TAG, "执行了这段代码: ")
+        viewModelScope.launch {
+            repo.insertAirConditionerDevices(locationId)
+        }
+    }
 
 
 }

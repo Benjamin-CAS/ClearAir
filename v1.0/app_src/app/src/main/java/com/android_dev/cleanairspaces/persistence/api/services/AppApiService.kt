@@ -1,8 +1,6 @@
 package com.android_dev.cleanairspaces.persistence.api.services
 
 
-
-
 interface AppApiService {
     companion object {
         const val APP_USER = "pablo"

@@ -32,6 +32,8 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesD
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndDevicesAdapter
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.ManagerBtnClick
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.OnRepeatAirConditionerListener
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
 import com.android_dev.cleanairspaces.views.fragments.smartqr.CaptureQrCodeActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -43,7 +45,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseMapFragment : Fragment(),WatchedItemsActionListener {
+abstract class BaseMapFragment : Fragment(),WatchedItemsActionListener,OnRepeatAirConditionerListener,ManagerBtnClick {
     companion object {
         private val TAG = BaseMapFragment::class.java.simpleName
     }

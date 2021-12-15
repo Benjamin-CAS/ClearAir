@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,7 +48,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     companion object {
         private val TAG = GMapsFragment::class.java.simpleName
     }
-
+    private var managerBtnClickLiveData = true
     private var _binding: FragmentGMapsBinding? = null
     private val binding get() = _binding!!
 
@@ -124,7 +125,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
 
-        watchedItemsAdapter = WatchedLocationsAndDevicesAdapter(this, displayFav = false)
+        watchedItemsAdapter = WatchedLocationsAndDevicesAdapter(this, displayFav = false, this,this)
         super.setHomeMapOverlay(binding.mapOverlay)
 
 
@@ -176,13 +177,15 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
             }
         })
     }
-    private fun observeAirConditionersIWatch(){
-        viewModel.observeAirConditionerIWatch().observe(viewLifecycleOwner){
+
+    private fun observeAirConditionersIWatch() {
+        viewModel.observeAirConditionerIWatch().observe(viewLifecycleOwner) {
             it?.let {
                 updateWatchedAirConditioner(it)
             }
         }
     }
+
     override fun onMapReady(gMap: GoogleMap?) {
         if (gMap != null) {
             mMap = gMap
@@ -403,6 +406,33 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         viewModel.stopWatchingAirConditioner(airConditionerEntity)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun submitAirConditioner(locId: String, address: String, param: String) {
+        casMqttClient.connectAndPublish(
+            DeviceUpdateMqttMessage(
+                address,param
+            )
+        ){
+
+        }
+        lifecycleScope.launch {
+            delay(7000)
+            viewModel.refreshAirConditioner(locId)
+        }
+    }
+
+    override fun cancelAirConditioner(locId: String) {
+        viewModel.refreshAirConditioner(locId)
+    }
+
+    override fun managerBtnClickListener(airConditionerEntity: AirConditionerEntity) = if (managerBtnClickLiveData){
+        managerBtnClickLiveData = false
+        managerBtnClickLiveData
+    }else {
+        managerBtnClickLiveData = true
+        managerBtnClickLiveData
+    }
+
 
     /************************* WATCHED DEVICES *************************/
     override fun onClickToggleWatchDevice(device: DevicesDetails) {
@@ -410,7 +440,10 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     }
 
     override fun onClickToggleWatchAirConditioner(airConditionerEntity: AirConditionerEntity) {
-        viewModel.watchThisAirConditioner(airConditionerEntity,!airConditionerEntity.watchAirConditioner)
+        viewModel.watchThisAirConditioner(
+            airConditionerEntity,
+            !airConditionerEntity.watchAirConditioner
+        )
     }
 
     override fun onSwipeToDeleteDevice(device: DevicesDetails) {
@@ -437,9 +470,12 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     /************ MQTT **************/
     @Inject
     lateinit var casMqttClient: CasMqttClient
+
     @RequiresApi(Build.VERSION_CODES.N)
     private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
-        casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
+        casMqttClient.connectAndPublish(deviceUpdateMqttMessage){
+
+        }
         viewModel.setMqttStatus(null) //clear
         viewModel.refreshDevicesAfterDelay()
     }

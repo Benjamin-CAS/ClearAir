@@ -16,3 +16,10 @@ interface WatchedItemsActionListener {
     fun onSwipeToDeleteDevice(device: DevicesDetails)
     fun onSwipeToDeleteAirConditioner(airConditionerEntity: AirConditionerEntity)
 }
+interface OnRepeatAirConditionerListener{
+    fun submitAirConditioner(locId:String,address:String,param:String)
+    fun cancelAirConditioner(locId:String)
+}
+interface ManagerBtnClick{
+    fun managerBtnClickListener(airConditionerEntity: AirConditionerEntity):Boolean?
+}

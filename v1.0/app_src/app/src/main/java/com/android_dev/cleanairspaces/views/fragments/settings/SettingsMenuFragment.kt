@@ -23,6 +23,7 @@ class SettingsMenuFragment : Fragment() {
 
     companion object {
         private val TAG = SettingsMenuFragment::class.java.simpleName
+        var language = ""
     }
 
     private var displayedMapsSettings: Boolean = false
@@ -125,7 +126,9 @@ class SettingsMenuFragment : Fragment() {
                     mapLangAdapter.getItem(position)
                         ?: getString(R.string.map_lang_chinese)
                 viewModel.setSelectedMapLang(selectedMapLang)
+                language = selectedMapLang
             }
+        language = binding.mapLanguageSelect.editText?.text.toString()
     }
 
 
@@ -173,7 +176,6 @@ class SettingsMenuFragment : Fragment() {
                 }
                 displayedMapsSettings = true
             }
-
         })
     }
 

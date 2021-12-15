@@ -43,7 +43,6 @@ class SettingsViewModel @Inject constructor(
 
     fun setSelectedMapLang(selectedMapLang: String) = viewModelScope.launch(Dispatchers.IO) {
         dataStoreManager.saveMapLang(selectedMapLang)
-
         viewModelScope.launch(Dispatchers.IO) {
             myLogger.logThis(
                 tag = LogTags.USER_ACTION_SETTINGS,

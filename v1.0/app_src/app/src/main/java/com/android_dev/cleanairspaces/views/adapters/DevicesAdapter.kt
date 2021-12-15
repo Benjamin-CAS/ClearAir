@@ -8,12 +8,17 @@ import com.android_dev.cleanairspaces.databinding.AirConditionerItemBinding
 import com.android_dev.cleanairspaces.databinding.DeviceItemBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.AirConditionerEntity
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.ManagerBtnClick
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.OnRepeatAirConditionerListener
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
 import com.android_dev.cleanairspaces.views.adapters.view_holders.AirConditionerViewHolder
 import com.android_dev.cleanairspaces.views.adapters.view_holders.DevicesAdapterViewHolder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class DevicesAdapter(private val deviceListener: WatchedItemsActionListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val deviceList = ArrayList<TestAirConditioner>()
+class DevicesAdapter(private val deviceListener: WatchedItemsActionListener,private val onSubmitAirConditioner:OnRepeatAirConditionerListener,private val managerBtnClick: ManagerBtnClick) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val deviceList = ArrayList<DeviceWrapper>()
     private val devicesDetails = ArrayList<DevicesDetails>()
     private var aqiIndex: String? = null
     private val airConditionerList = ArrayList<AirConditionerEntity>()
@@ -30,10 +35,10 @@ class DevicesAdapter(private val deviceListener: WatchedItemsActionListener) : R
     private fun changeData(){
         deviceList.clear()
         for(item in devicesDetails){
-            deviceList.add(TestAirConditioner(details = item))
+            deviceList.add(DeviceWrapper(details = item))
         }
         for (item in airConditionerList){
-            deviceList.add(TestAirConditioner(airConditionerEntity = item))
+            deviceList.add(DeviceWrapper(airConditionerEntity = item))
         }
         notifyDataSetChanged()
     }
@@ -54,7 +59,7 @@ class DevicesAdapter(private val deviceListener: WatchedItemsActionListener) : R
             (holder as DevicesAdapterViewHolder).bind(item.details,deviceListener, aqiIndex)
         }
         if (item.airConditionerEntity != null){
-            (holder as AirConditionerViewHolder).bind(airConditioner = item.airConditionerEntity,listener = deviceListener)
+            (holder as AirConditionerViewHolder).bind(airConditioner = item.airConditionerEntity,listener = deviceListener,onRepeatAirConditionerListener = onSubmitAirConditioner,managerBtnClick = managerBtnClick)
         }
     }
 
@@ -74,11 +79,12 @@ class DevicesAdapter(private val deviceListener: WatchedItemsActionListener) : R
         val device = deviceList[adapterPosition]
         device.details?.let { deviceListener.onSwipeToDeleteDevice(it) }
     }
-    data class TestAirConditioner(val airConditionerEntity:AirConditionerEntity? = null, val details: DevicesDetails? = null)
+    data class DeviceWrapper(val airConditionerEntity:AirConditionerEntity? = null, val details: DevicesDetails? = null)
     companion object {
         const val AIR_CONDITIONER_ITEM = 1
         const val DEVICES = 2
         const val TAG = "DevicesAdapter"
     }
+
     inner class EmptyViewHolder(val view:View):RecyclerView.ViewHolder(view)
 }

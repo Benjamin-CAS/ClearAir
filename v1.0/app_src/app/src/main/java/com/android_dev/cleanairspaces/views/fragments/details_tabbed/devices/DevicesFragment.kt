@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,25 +26,28 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesD
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
 import com.android_dev.cleanairspaces.views.adapters.DevicesAdapter
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.ManagerBtnClick
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.OnRepeatAirConditionerListener
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DevicesFragment : Fragment(), WatchedItemsActionListener {
+class DevicesFragment : Fragment(), WatchedItemsActionListener, OnRepeatAirConditionerListener,ManagerBtnClick {
     companion object {
         private val TAG = DevicesFragment::class.java.simpleName
     }
 
     @Inject
     lateinit var myLogger: MyLogger
-
+    private var managerBtnClickLiveData = true
     private var _binding: FragmentDevicesBinding? = null
     private val binding get() = _binding!!
-    private val devicesAdapter = DevicesAdapter(this)
+    private val devicesAdapter = DevicesAdapter(this, this,this)
 
     private val viewModel: DevicesViewModel by viewModels()
 
@@ -59,7 +63,7 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner){
+        viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner) {
             it?.let {
                 Log.e(TAG, "onViewCreated: $it")
                 viewModel.aqiIndex = it.aqiIndex
@@ -121,16 +125,16 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
                 connectAndPublish(newMsg)
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (isCheckGooglePlay){
-                    findNavController().navigate(R.id.AMapsFragment)
-                }else{
-                    findNavController().navigate(R.id.GMapsFragment)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isCheckGooglePlay) {
+                        findNavController().navigate(R.id.AMapsFragment)
+                    } else {
+                        findNavController().navigate(R.id.GMapsFragment)
+                    }
                 }
-            }
-
-        })
+            })
     }
 
     private fun fetchDevices() {
@@ -160,18 +164,19 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
         aqiIndex: String?
     ) {
         viewModel.observeDevicesForLocation(locationsTag = actualDataTag)
-            .observe( viewLifecycleOwner, {
+            .observe(viewLifecycleOwner, {
                 it?.let {
                     binding.progressCircular.isVisible = false
                     if (it.isNotEmpty()) {
                         Log.e(TAG, "observeDevicesForLoc: $it")
                         toggleCredentialsFormVisibility(show = false)
-                        if (binding.locationNameTv.text == "CAS DEVEL"){
-                            viewModel.getAirConditionerDevices().observe(viewLifecycleOwner){ airConditioner ->
-                                Log.e(TAG, "这里是观察的: $airConditioner")
-                                Log.e(TAG, "这里是观察的长度: ${airConditioner.size}")
-                                devicesAdapter.setAirConditionerList(airConditioner)
-                            }
+                        if (binding.locationNameTv.text == "CAS DEVEL") {
+                            viewModel.getAirConditionerDevices()
+                                .observe(viewLifecycleOwner) { airConditioner ->
+                                    Log.e(TAG, "这里是观察的: $airConditioner")
+                                    Log.e(TAG, "这里是观察的长度: ${airConditioner.size}")
+                                    devicesAdapter.setAirConditionerList(airConditioner)
+                                }
                         }
                     }
                     devicesAdapter.apply {
@@ -201,11 +206,17 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
             locationNameTv.text = if (currentlyWatchedLocationHighLights.name.isNotBlank())
                 currentlyWatchedLocationHighLights.name
             else currentlyWatchedLocationHighLights.location_area
-
             locationNameTv.isSelected = true
         }
         toggleCredentialsFormVisibility(show = true)
+        if (currentlyWatchedLocationHighLights.name == "CAS DEVEL") {
+            airConditionerId = currentlyWatchedLocationHighLights.locId
+            viewModel.refreshAirConditioner(airConditionerId)
+        } else {
+            airConditionerId = ""
+        }
     }
+
     private fun toggleCredentialsFormVisibility(show: Boolean) {
         binding.apply {
             userName.isVisible = show
@@ -222,7 +233,10 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
     }
 
     override fun onClickToggleWatchAirConditioner(airConditionerEntity: AirConditionerEntity) {
-        viewModel.watchThisAirConditioner(airConditionerEntity,!airConditionerEntity.watchAirConditioner)
+        viewModel.watchThisAirConditioner(
+            airConditionerEntity,
+            !airConditionerEntity.watchAirConditioner
+        )
     }
 
     override fun onSwipeToDeleteDevice(device: DevicesDetails) {
@@ -232,6 +246,7 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
     override fun onSwipeToDeleteAirConditioner(airConditionerEntity: AirConditionerEntity) {
 
     }
+
 
     override fun onToggleFreshAir(device: DevicesDetails, status: String) {
         viewModel.onToggleFreshAir(device, status)
@@ -253,6 +268,7 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
         //pass -- no locations in this fragment
     }
 
+
     override fun onSwipeToDeleteLocation(locationHighLights: WatchedLocationHighLights) {
         //pass -- no locations in this fragment
     }
@@ -261,9 +277,12 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
     /************ MQTT **************/
     @Inject
     lateinit var casMqttClient: CasMqttClient
+
     @RequiresApi(Build.VERSION_CODES.N)
     private fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
-        casMqttClient.connectAndPublish(deviceUpdateMqttMessage)
+        casMqttClient.connectAndPublish(deviceUpdateMqttMessage){
+
+        }
         viewModel.setMqttStatus(null) //clear
         viewModel.refreshDevicesAfterDelay()
     }
@@ -274,4 +293,30 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener {
         casMqttClient.disconnect()
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun submitAirConditioner(locId: String, address: String, param: String) {
+        casMqttClient.connectAndPublish(
+            DeviceUpdateMqttMessage(
+                address, param
+            )
+        ){
+
+        }
+        lifecycleScope.launch {
+            delay(7000)
+            viewModel.refreshAirConditioner(locId)
+        }
+    }
+
+    override fun cancelAirConditioner(locId: String) {
+        viewModel.refreshAirConditioner(locId)
+    }
+
+    override fun managerBtnClickListener(airConditionerEntity: AirConditionerEntity) = if (managerBtnClickLiveData){
+        managerBtnClickLiveData = false
+        managerBtnClickLiveData
+    }else {
+        managerBtnClickLiveData = true
+        managerBtnClickLiveData
+    }
 }

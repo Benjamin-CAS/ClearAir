@@ -26,7 +26,7 @@ class CasMqttClient @Inject constructor(private val myLogger: MyLogger) {
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage) {
+    fun connectAndPublish(deviceUpdateMqttMessage: DeviceUpdateMqttMessage,success:() -> Unit) {
         val serverURI = "mqtt.cleanairspaces.com"
         val port = 1883
         val clientId = "androidApp_" + myLogger.uniqueID
@@ -80,6 +80,7 @@ class CasMqttClient @Inject constructor(private val myLogger: MyLogger) {
                                         TAG,
                                         "publish() ${deviceUpdateMqttMessage.getPayLoadId()} ${deviceUpdateMqttMessage.param} success ${publish?.publish}"
                                     )
+                                    success()
                                 }
                                 client?.disconnect()
                                 client = null

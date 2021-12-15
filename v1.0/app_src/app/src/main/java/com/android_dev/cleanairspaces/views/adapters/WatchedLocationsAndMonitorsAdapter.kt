@@ -11,14 +11,21 @@ import com.android_dev.cleanairspaces.databinding.WatchedLocationItemBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.AirConditionerEntity
 import com.android_dev.cleanairspaces.persistence.local.models.entities.DevicesDetails
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.ManagerBtnClick
+import com.android_dev.cleanairspaces.views.adapters.action_listeners.OnRepeatAirConditionerListener
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
 import com.android_dev.cleanairspaces.views.adapters.view_holders.AirConditionerViewHolder
 import com.android_dev.cleanairspaces.views.adapters.view_holders.DevicesAdapterViewHolder
 import com.android_dev.cleanairspaces.views.adapters.view_holders.WatchedLocationsViewHolder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class WatchedLocationsAndDevicesAdapter(
     private val listener: WatchedItemsActionListener,
-    private val displayFav: Boolean = true
+    private val displayFav: Boolean = true,
+    private val onSubmitAirConditioner:OnRepeatAirConditionerListener,
+    private val managerBtnClick: ManagerBtnClick
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -135,7 +142,9 @@ class WatchedLocationsAndDevicesAdapter(
                     (holder as AirConditionerViewHolder).bind(
                         listener,
                         item.airConditionerEntity,
-                        displayFav
+                        displayFav,
+                        onRepeatAirConditionerListener = onSubmitAirConditioner,
+                        managerBtnClick = managerBtnClick
                     )
                 }
                 else -> {

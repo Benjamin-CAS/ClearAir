@@ -1,10 +1,14 @@
 package com.android_dev.cleanairspaces.views
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.*
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -16,26 +20,27 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.ActivityMainBinding
+import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
+import com.android_dev.cleanairspaces.views.fragments.settings.SettingsMenuFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
 
 @AndroidEntryPoint
 class MainAct : AppCompatActivity() {
-
     companion object {
         private val TAG = MainAct::class.java.simpleName
     }
-
     @Inject
     lateinit var myLogger: MyLogger
-
-
+    @Inject
+    lateinit var dataStoreManager: DataStoreManager
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -52,6 +57,7 @@ class MainAct : AppCompatActivity() {
             v.updatePadding(top = height)
             insets
         }
+
 //        val c =WindowCompat.getInsetsController(window,binding.root)
 //        c?.isAppearanceLightStatusBars =false
         val navHostFragment =
@@ -68,12 +74,9 @@ class MainAct : AppCompatActivity() {
         setSupportActionBar(binding.toolbarLayout.toolbar)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.bottomNav.setupWithNavController(navController)
-
-
         //hide and show menus depending on fragment
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-
                 R.id.splashFragment -> {
                     binding.apply {
                         toolbarLayout.toolbar.isVisible = false
@@ -150,6 +153,26 @@ class MainAct : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
+        Log.e(TAG, "onOptionsItemSelected: 点击了点击了")
+        Log.e(TAG, "onOptionsItemSelected:${item.title}")
+        lifecycleScope.launch {
+            if (item.itemId == R.id.splashFragment){
+                val settingLanguage = SettingsMenuFragment.language
+                if (settingLanguage.isNotBlank()){
+                    when(settingLanguage){
+                        "English" -> {
+                            dataStoreManager.saveCurrentLocaleLanguage("en")
+                            dataStoreManager.saveCurrentLocaleCountry("")
+                        }
+                        "Chinese" -> {
+                            dataStoreManager.saveCurrentLocaleLanguage("zh")
+                            dataStoreManager.saveCurrentLocaleCountry("CN")
+                        }
+                    }
+                }
+                recreate()
+            }
+        }
         return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
@@ -168,4 +191,11 @@ class MainAct : AppCompatActivity() {
         }
     }
 
+    override fun attachBaseContext(newBase: Context?) {
+        val currentLanguage = dataStoreManager.getCurrentLocaleLanguage().value ?:""
+        val currentCountry = dataStoreManager.getCurrentLocaleLocaleCountry().value ?: ""
+        super.attachBaseContext(newBase?.createConfigurationContext(Configuration(newBase.resources.configuration).apply {
+            setLocale(Locale(currentLanguage, currentCountry))
+        }))
+    }
 }

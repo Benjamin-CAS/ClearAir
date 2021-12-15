@@ -35,7 +35,7 @@ class RefreshLocationsWorker @AssistedInject constructor(
                 refreshWatchedLocations()
                 refreshWatchedMonitors()
                 refreshWatchedDevices()
-                refreshAirConditioner()
+//                refreshAirConditioner()
                 sendLogData()
             } catch (exc: Exception) {
                 myLogger.logThis(
@@ -69,9 +69,9 @@ class RefreshLocationsWorker @AssistedInject constructor(
     private suspend fun refreshWatchedDevices() {
         appDataRepo.refreshWatchedDevices()
     }
-    private suspend fun refreshAirConditioner(){
-        appDataRepo.insertAirConditionerDevices()
-    }
+//    private suspend fun refreshAirConditioner(){
+//        appDataRepo.insertAirConditionerDevices()
+//    }
 
     private suspend fun sendLogData() {
         val hourMills = 3600000L

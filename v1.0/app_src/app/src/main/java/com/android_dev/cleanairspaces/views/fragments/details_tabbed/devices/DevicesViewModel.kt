@@ -179,6 +179,12 @@ class DevicesViewModel
         }
     }
     fun getAirConditionerDevices() = repo.getAirConditionerList()
+    fun refreshAirConditioner(locationId:String){
+        Log.e(TAG, "执行了这段代码: ")
+        viewModelScope.launch {
+            repo.insertAirConditionerDevices(locationId)
+        }
+    }
 }
 
 enum class DevicesLoadingState {

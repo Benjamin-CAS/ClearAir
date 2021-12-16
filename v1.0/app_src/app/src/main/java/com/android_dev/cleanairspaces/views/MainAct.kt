@@ -24,6 +24,7 @@ import com.android_dev.cleanairspaces.persistence.local.DataStoreManager
 import com.android_dev.cleanairspaces.utils.LogTags
 import com.android_dev.cleanairspaces.utils.MyLogger
 import com.android_dev.cleanairspaces.views.fragments.settings.SettingsMenuFragment
+import com.tencent.mmkv.MMKV
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,8 +35,11 @@ import kotlin.math.abs
 
 @AndroidEntryPoint
 class MainAct : AppCompatActivity() {
+    private val mk: MMKV = MMKV.defaultMMKV()
     companion object {
         private val TAG = MainAct::class.java.simpleName
+        private const val LANGUAGE = "LANGUAGE"
+        private const val COUNTRY = "COUNTRY"
     }
     @Inject
     lateinit var myLogger: MyLogger
@@ -44,8 +48,6 @@ class MainAct : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -161,16 +163,20 @@ class MainAct : AppCompatActivity() {
                 if (settingLanguage.isNotBlank()){
                     when(settingLanguage){
                         "English" -> {
-                            dataStoreManager.saveCurrentLocaleLanguage("en")
-                            dataStoreManager.saveCurrentLocaleCountry("")
+                            mk.encode(LANGUAGE,"en")
+                            mk.encode(COUNTRY,"US")
                         }
                         "Chinese" -> {
-                            dataStoreManager.saveCurrentLocaleLanguage("zh")
-                            dataStoreManager.saveCurrentLocaleCountry("CN")
+                            mk.encode(LANGUAGE,"zh")
+                            mk.encode(COUNTRY,"CN")
+                        }
+                        "Spain" -> {
+                            mk.encode(LANGUAGE,"es")
+                            mk.encode(COUNTRY,"ES")
                         }
                     }
+                    recreate()
                 }
-                recreate()
             }
         }
         return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
@@ -192,10 +198,8 @@ class MainAct : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context?) {
-        val currentLanguage = dataStoreManager.getCurrentLocaleLanguage().value ?:""
-        val currentCountry = dataStoreManager.getCurrentLocaleLocaleCountry().value ?: ""
         super.attachBaseContext(newBase?.createConfigurationContext(Configuration(newBase.resources.configuration).apply {
-            setLocale(Locale(currentLanguage, currentCountry))
+            setLocale(Locale(mk.decodeString(LANGUAGE)?:"",mk.decodeString(COUNTRY)?:""))
         }))
     }
 }

@@ -32,6 +32,7 @@ import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndDevicesAdapter
 import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragment
+import com.android_dev.cleanairspaces.views.fragments.maps_overlay.MapsViewModel.Companion.mapViewName
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -41,9 +42,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AMapsFragment : BaseMapFragment() {
-
     companion object {
         const val TAG = "AMapsFragment"
+        const val MAP_VIEW = "MAP_VIEW"
     }
     private var managerBtnClickLiveData = true
     private val goodCircle: BitmapDescriptor by lazy {
@@ -421,8 +422,8 @@ class AMapsFragment : BaseMapFragment() {
         Log.e(TAG, "onClickWatchedLocation: 根点击了")
         try {
             viewModel.setWatchedLocationInCache(locationHighLights, viewModel.aqiIndex)
-            val action = AMapsFragmentDirections.actionAMapsFragmentToDetailsFragment()
-            binding.container.findNavController().navigate(action)
+            mapViewName = "AMAP"
+            binding.container.findNavController().navigate(R.id.detailsFragment)
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {
                 myLogger.logThis(

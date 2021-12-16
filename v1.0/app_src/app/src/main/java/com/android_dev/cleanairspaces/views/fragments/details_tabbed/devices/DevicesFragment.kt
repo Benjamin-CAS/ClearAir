@@ -29,6 +29,7 @@ import com.android_dev.cleanairspaces.views.adapters.DevicesAdapter
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.ManagerBtnClick
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.OnRepeatAirConditionerListener
 import com.android_dev.cleanairspaces.views.adapters.action_listeners.WatchedItemsActionListener
+import com.android_dev.cleanairspaces.views.fragments.maps_overlay.MapsViewModel
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +64,13 @@ class DevicesFragment : Fragment(), WatchedItemsActionListener, OnRepeatAirCondi
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.devicesBackHomeBtn.setOnClickListener {
+            if (MapsViewModel.mapViewName == "AMAP"){
+                findNavController().navigate(R.id.AMapsFragment)
+            }else{
+                findNavController().navigate(R.id.GMapsFragment)
+            }
+        }
         viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner) {
             it?.let {
                 Log.e(TAG, "onViewCreated: $it")

@@ -216,6 +216,8 @@ class MapsViewModel @Inject constructor(
             repo.insertAirConditionerDevices(locationId)
         }
     }
-
+    companion object{
+        var mapViewName = ""
+    }
 
 }

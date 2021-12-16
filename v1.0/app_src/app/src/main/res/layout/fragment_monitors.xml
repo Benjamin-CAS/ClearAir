@@ -9,6 +9,14 @@
     tools:context=".views.fragments.details_tabbed.monitors.MonitorsFragment">
 
 
+    <Button
+        android:id="@+id/monitors_back_home_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/back_home_btn_text" />
+
     <ImageView
         android:id="@+id/location_logo"
         android:contentDescription="@string/location_logo_image_desc"

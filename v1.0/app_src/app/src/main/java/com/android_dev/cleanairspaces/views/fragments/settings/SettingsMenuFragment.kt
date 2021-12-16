@@ -1,6 +1,7 @@
 package com.android_dev.cleanairspaces.views.fragments.settings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -127,8 +128,8 @@ class SettingsMenuFragment : Fragment() {
                         ?: getString(R.string.map_lang_chinese)
                 viewModel.setSelectedMapLang(selectedMapLang)
                 language = selectedMapLang
+                Log.e(TAG, "setupMapLanguageAdapter: $language")
             }
-        language = binding.mapLanguageSelect.editText?.text.toString()
     }
 
 

@@ -140,4 +140,6 @@ dependencies {
 
     //MQTT
     implementation("com.hivemq:hivemq-mqtt-client:1.2.2")
+    // MMKV
+    implementation 'com.tencent:mmkv-static:1.2.10'
 }

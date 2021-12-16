@@ -2,4 +2,197 @@
 <resources>
     <string name="app_name">CleanAir Spaces</string>
     <string name="settings_txt">设置</string>
+    <string name="default_map_a_map" translatable="true">A Map</string>
+    <string name="map_g_map" translatable="true">G Map</string>
+    <string name="default_aqi_pm_2_5" translatable="true">PM2.5</string>
+    <string name="a_map_act_lbl" translatable="true">A Map</string>
+    <string name="g_map_act_lbl" translatable="true">G Map</string>
+    <string name="loading_txt" translatable="true">正在刷新…</string>
+    <string name="clean_air_spaces_logo_description" translatable="true">Clean Air Spaces Logo</string>
+    <string name="no_google_play_services_err" translatable="true">谷歌地图需要谷歌播放服务</string>
+    <string name="switch_to_a_maps" translatable="true">使用高德地图</string>
+    <string name="my_location_btn_desc" translatable="true">在地图上显示我的位置</string>
+    <string name="about_app_txt" translatable="true">关于</string>
+    <string name="fragment_map_lbl" translatable="true">首页</string>
+    <string name="smart_qr_txt" translatable="true">扫一扫</string>
+    <string name="map_view" translatable="true">地图视图</string>
+    <string name="search_location" translatable="true">搜索</string>
+    <string name="location_permission_rationale" translatable="true">显示您的位置所需的权限</string>
+    <string name="got_it_txt" translatable="true">明白</string>
+    <string name="not_now_txt" translatable="true">不是现在</string>
+    <string name="turn_on_gps_prompt" translatable="true">需要GPS来显示您的位置</string>
+    <string name="go_to_settings" translatable="true">更改设置</string>
+    <string name="scan_qr_code_cancelled" translatable="true">扫描已被取消</string>
+    <string name="scan_qr_code_unknown" translatable="true">无效的二维码</string>
+    <string name="scan_qr_code_prompt" translatable="true">扫描CAS设备二维码</string>
+    <string name="search_location_hint" translatable="true">键入公司或地点名称</string>
+    <string name="air_status_indicator_desc" translatable="true">空气质量状况指示器</string>
+    <string name="outdoor_txt" translatable="true">室外</string>
+    <string name="indoor_txt" translatable="true">室内</string>
+    <string name="location_logo_image_desc" translatable="true">位置标志</string>
+    <string name="tool_bar_logo_desc" translatable="true">标志</string>
+    <string name="map_menu_help_txt" translatable="true">帮助</string>
+    <string name="map_menu_about_app_txt" translatable="true">关于</string>
+    <string name="app_logo_image_desc" translatable="true">应用标志</string>
+    <string name="app_version_desc" translatable="true">版本 1.0</string>
+    <string name="got_it" translatable="true">明白！</string>
+    <string name="dismiss" translatable="true">消失</string>
+    <string name="locations_txt" translatable="true">位置</string>
+    <string name="map_view_txt" translatable="true">地图视图</string>
+    <string name="add_txt" translatable="true">添加</string>
+    <string name="click_to_view_info_txt" translatable="true">单击以查看信息</string>
+    <string name="map_menu_help_desc_txt" translatable="true">使用智能Qr扫描设备的Qr码并跟踪您的位置，或者只需单击“添加”搜索您的位置名称。您可以通过单击“地图视图”在地图顶部隐藏/显示添加的位置</string>
+    <string name="danger_txt" translatable="true">Bad</string>
+    <string name="pm2_5_lvl_comment" translatable="true">PM2.5 等级</string>
+    <string name="pm2_5_lvl_aqi_us_comment" translatable="true">PM2.5 等级 AQI 美国</string>
+    <string name="good_air_status_txt" translatable="true">Good</string>
+    <string name="moderate_air_status_txt" translatable="true">Moderate</string>
+    <string name="aqi_status_unhealthy_sensitive_groups" translatable="true">对敏感人群不健康</string>
+    <string name="aqi_status_unhealthy_sensitive_groups_abbrev" translatable="true">Unhealthy F.S.G</string>
+    <string name="aqi_status_unhealthy" translatable="true">Unhealthy</string>
+    <string name="aqi_status_very_unhealthy" translatable="true">Very Unhealthy</string>
+    <string name="aqi_status_hazardous" translatable="true">Hazardous</string>
+    <string name="pm2_5_lvl_aqi_cn_comment" translatable="true">PM2.5 等级 AQI 中国</string>
+    <string name="condition_excellent" translatable="true">Excellent</string>
+    <string name="condition_lightly" translatable="true">Lightly</string>
+    <string name="condition_heavy" translatable="true">Heavy</string>
+    <string name="condition_severe" translatable="true">Severe</string>
+    <string name="condition_undetermined" translatable="true">Undetermined</string>
+    <string name="voc_lvl_comment" translatable="true">VOC 等级</string>
+    <string name="good_voc_lvl_comment" translatable="true">Good VOC Level</string>
+    <string name="moderate_voc_lvl_comment" translatable="true">Moderate VOC 等级</string>
+    <string name="unhealthy_voc_lvl_comment" translatable="true">Unhealthy VOC 等级</string>
+    <string name="co_2_lvl_comment" translatable="true">CO2 等级</string>
+    <string name="scanned_qr_content_image_desc" translatable="true">位置标志</string>
+    <string name="site_credentials_txt" translatable="true">站点凭据</string>
+    <string name="user_name_hint" translatable="true">用户名</string>
+    <string name="password_hint" translatable="true">密码</string>
+    <string name="add_location_text" translatable="true">添加位置</string>
+    <string name="cancel_text" translatable="true">取消</string>
+    <string name="processing_qr_code" translatable="true">处理中…</string>
+    <string name="parsing_device_qr_failed" translatable="true">无法分析该设备的二维码。\n请稍后再试。</string>
+    <string name="parsing_monitor_qr_failed" translatable="true">无法分析该监视器的二维码。\n请稍后再试。</string>
+    <string name="company_name_lbl" translatable="true">公司</string>
+    <string name="location_lbl" translatable="true">位置</string>
+    <string name="device_id_lbl" translatable="true">ID</string>
+    <string name="ref_mon_lbl" translatable="true">Name</string>
+    <string name="location_information" translatable="true">位置信息</string>
+    <string name="location_added_text" translatable="true">位置已添加</string>
+    <string name="enter_username_password" translatable="true"><![CDATA[Please enter the username & password]]></string>
+    <string name="device_type_one" translatable="true">CMD - ductFIT</string>
+    <string name="device_type_three" translatable="true">EP550</string>
+    <string name="device_type_four" translatable="true">CMD</string>
+    <string name="device_type_five" translatable="true">KleanSense Air Quality Monitor</string>
+    <string name="device_type_six" translatable="true">Fresh Air Unit</string>
+    <string name="device_type_eight" translatable="true">CMD - Fresh Air</string>
+    <string name="device_type_nine" translatable="true">ductFIT</string>
+    <string name="device_type_ten" translatable="true">Fresh Air Unit</string>
+    <string name="device_type_eleven" translatable="true">ductFIT Cloud</string>
+    <string name="device_type_twelve" translatable="true">ductFIT Wall</string>
+    <string name="device_info_lbl" translatable="true">设备信息</string>
+    <string name="remove_location_text" translatable="true">删除位置</string>
+    <string name="failed_to_add_location_check_credentials" translatable="true">添加位置失败。检查你的证件</string>
+    <string name="updated_on_prefix" translatable="true">更新完成</string>
+    <string name="map_menu_settings_txt" translatable="true">设置</string>
+    <string name="air_quality_index_txt" translatable="true">Air Quality Index</string>
+    <string name="default_pm_hint_text" translatable="true">默认情况下使用PM 2.5</string>
+    <string name="save_changes_txt" translatable="true">保存</string>
+    <string name="indoor_details_txt" translatable="true">室内信息</string>
+    <string name="co_lbl" translatable="true">CO2</string>
+    <string name="tvoc_lbl" translatable="true">TVOC</string>
+    <string name="tmp_lbl" translatable="true">温度</string>
+    <string name="humidity_lbl" translatable="true">湿度</string>
+    <string name="indoor_energy_title_txt" translatable="true"><![CDATA[energy efficiency & impact]]></string>
+    <string name="carbon_saved_lbl" translatable="true">Carbon Saved</string>
+    <string name="last_thirty_lbl" translatable="true">过去30天</string>
+    <string name="energy_saved_lbl" translatable="true">节能</string>
+    <string name="recommendations_txt" translatable="true">建议</string>
+    <string name="mask_image_txt" translatable="true">遮罩图像</string>
+    <string name="co2_units" translatable="true">ppm</string>
+    <string name="tvoc_units" translatable="true">mg/m³</string>
+    <string name="tmp_units" translatable="true">&#xb0;C</string>
+    <string name="humid_units" translatable="true">%</string>
+    <string name="pm_units" translatable="true">µg/m³</string>
+    <string name="tonnes_txt" translatable="true">Tn</string>
+    <string name="kg_txt" translatable="true">Kg</string>
+    <string name="percent" translatable="true">%</string>
+    <string name="no_mask" translatable="true">不需要面具</string>
+    <string name="outdoor_acts_suitable" translatable="true">适合户外活动</string>
+    <string name="windoors_open" translatable="true">窗户可以打开</string>
+    <string name="air_purify_not_needed" translatable="true">关闭空气净化装置</string>
+    <string name="masks_recommended" translatable="true">外出时戴口罩</string>
+    <string name="avoid_outdoors" translatable="true">避免户外活动</string>
+    <string name="close_windows" translatable="true">关闭窗户</string>
+    <string name="air_purify_needed" translatable="true">空气净化应在适当的时间进行</string>
+    <string name="masks_recommended_sensitive" translatable="true">建议敏感人群佩戴口罩</string>
+    <string name="minimal_outdoor_acts" translatable="true">限制户外活动</string>
+    <string name="air_purify_recommended" translatable="true">空气净化建议</string>
+    <string name="a_map_language_settings" translatable="true">高德地图语言</string>
+    <string name="details_fragment_lbl" translatable="true">最新信息</string>
+    <string name="history_fragment_lbl" translatable="true">历史</string>
+    <string name="last_seven_two_hours" translatable="true">过去72小时</string>
+    <string name="loading_graph_data" translatable="true">加载数据…</string>
+    <string name="last_week_lbl" translatable="true">上周</string>
+    <string name="air_quality_txt" translatable="true">空气质量</string>
+    <string name="outdoors_air_quality_txt" translatable="true">室外空气质量</string>
+    <string name="search" translatable="true">搜索位置或城市</string>
+    <string name="search_long_hint" translatable="true">搜索室内或室外位置，如城市</string>
+    <string name="default_pm_text" translatable="true">PM2.5</string>
+    <string name="map_settings_hint" translatable="true">Map</string>
+    <string name="google_maps_hint" translatable="true">*谷歌地图需要谷歌播放服务</string>
+    <string name="default_pm_text_settings" translatable="true">默认情况下使用PM 2.5</string>
+    <string name="settings_act_lbl" translatable="true">设置</string>
+    <string name="select_history_type_hint" translatable="true">信息</string>
+    <string name="indoor_air_quality_txt" translatable="true">室内空气质量</string>
+    <string name="add_location_failed_text" translatable="true">无法添加该位置…请重试</string>
+    <string name="add_location_ongoing_text" translatable="true">添加位置</string>
+    <string name="failed_to_load_gmap" translatable="true">谷歌地图加载失败！</string>
+    <string name="search_found_indoor_locations_hint" translatable="true">搜索</string>
+    <string name="location_added_suffix" translatable="true">已添加</string>
+    <string name="done_txt" translatable="true">完成</string>
+    <string name="add_location_hint" translatable="true">单击要跟踪的每个位置的右添加图标</string>
+    <string name="fetch_monitors_txt" translatable="true">搜索监视器</string>
+    <string name="monitors_fragment_lbl" translatable="true">监视器</string>
+    <string name="monitor_credentials_required" translatable="true"><![CDATA[Username & password are required]]></string>
+    <string name="monitor_pm_2_5_lbl" translatable="true">PM 2.5:</string>
+    <string name="monitor_tvoc_lbl" translatable="true">TVOC:</string>
+    <string name="monitor_co2_lbl" translatable="true">CO2:</string>
+    <string name="monitor_temperature_lbl" translatable="true">温度:</string>
+    <string name="monitor_humidity_lbl" translatable="true">湿度:</string>
+    <string name="is_watching_loc_iv_desc" translatable="true">正在监视位置指示器</string>
+    <string name="turn_on_network_loc_provider" translatable="true">"在“设置”中启用位置访问"</string>
+    <string name="fragment_about_app_lbl" translatable="true">关于CleanAir Spaces</string>
+    <string name="app_copyright_txt" translatable="true">Copyright &#169; 2021 CleanAir Spaces</string>
+    <string name="web_view_fragment_lbl" translatable="true">CleanAir Spaces</string>
+    <string name="devices_fragment_lbl" translatable="true">设备</string>
+    <string name="fetch_devices_txt" translatable="true">显示设备</string>
+    <string name="device_credentials_required" translatable="true">请提供用户名和密码</string>
+    <string name="invalid_device_credentials" translatable="true">无效的用户名或密码</string>
+    <string name="device_type_lbl" translatable="true">类型</string>
+    <string name="device_mode_lbl" translatable="true">模式</string>
+    <string name="status_on" translatable="true">开</string>
+    <string name="status_off" translatable="true">关</string>
+    <string name="fan_basic_manual" translatable="true">手动</string>
+    <string name="device_fan_lbl" translatable="true">风速</string>
+    <string name="fan_ext_low" translatable="true">低</string>
+    <string name="fan_basic_automatic" translatable="true">自动</string>
+    <string name="fan_ext_medium" translatable="true">中</string>
+    <string name="fan_ext_high" translatable="true">高</string>
+    <string name="device_duct_fit_lbl" translatable="true">ductFIT</string>
+    <string name="device_fresh_air_lbl" translatable="true">新鲜空气</string>
+    <string name="no_devices_found" translatable="true">找不到任何设备</string>
+    <string name="status_paused" translatable="true">已暂停</string>
+    <string name="status_disconnected" translatable="true">断开的</string>
+    <string name="status_refreshing" translatable="true">刷新中</string>
+    <string name="status_low" translatable="true">低速</string>
+    <string name="status_med" translatable="true">中速</string>
+    <string name="status_high" translatable="true">高速</string>
+    <string name="device_status_uv_issues_display_lbl" translatable="true">UV Has Issues</string>
+    <string name="device_type_thirteen" translatable="true">DuctFit Mobile</string>
+    <string name="fan_ext_sleep" translatable="true">睡眠</string>
+    <string name="fan_ext_turbo" translatable="true">涡轮</string>
+    <string name="is_watching_dev_iv_desc" translatable="true">Watch this device</string>
+    <string name="status_restarting" translatable="true">重新启动</string>
+    <string name="back_monitor_btn_text" translatable="true">返回</string>
+    <string name="back_home_btn_text" translatable="true"><![CDATA[<主页]]></string>
 </resources>

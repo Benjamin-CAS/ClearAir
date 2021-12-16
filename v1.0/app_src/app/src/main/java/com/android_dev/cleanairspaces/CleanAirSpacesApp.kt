@@ -4,6 +4,7 @@ package com.android_dev.cleanairspaces
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -17,4 +18,9 @@ class CleanAirSpacesApp : Application(), Configuration.Provider {
         Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
+
+    override fun onCreate() {
+        super.onCreate()
+        MMKV.initialize(this)
+    }
 }

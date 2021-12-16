@@ -28,7 +28,9 @@ import com.android_dev.cleanairspaces.utils.MY_LOCATION_ZOOM_LEVEL
 import com.android_dev.cleanairspaces.utils.getAQIStatusFromPM25
 import com.android_dev.cleanairspaces.utils.showSnackBar
 import com.android_dev.cleanairspaces.views.adapters.WatchedLocationsAndDevicesAdapter
+import com.android_dev.cleanairspaces.views.fragments.amaps.AMapsFragment
 import com.android_dev.cleanairspaces.views.fragments.maps_overlay.BaseMapFragment
+import com.android_dev.cleanairspaces.views.fragments.maps_overlay.MapsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -389,6 +391,7 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
         try {
             viewModel.setWatchedLocationInCache(locationHighLights, viewModel.aqiIndex)
             val action = GMapsFragmentDirections.actionGMapsFragmentToDetailsFragment()
+            MapsViewModel.mapViewName = "GMAP"
             binding.container.findNavController().navigate(action)
         } catch (exc: Exception) {
             lifecycleScope.launch(Dispatchers.IO) {

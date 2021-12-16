@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentMonitorHistoryBinding
@@ -107,7 +108,9 @@ class MonitorHistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.backMonitorBtn.setOnClickListener {
+            findNavController().navigate(R.id.monitorsFragment)
+        }
         //initially
         selectedParamType = ParamTypes.IN_OUT_PM
         toggleCombinedCharts(showCombined = true)

@@ -9,6 +9,16 @@
     tools:context=".views.fragments.details_tabbed.details.DetailsFragment">
 
 
+    <Button
+        android:id="@+id/details_back_home_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/back_home_btn_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/location_logo"
         android:contentDescription="@string/location_logo_image_desc"
@@ -82,7 +92,8 @@
                     layout="@layout/location_details_out_layout"
                     android:visibility="gone" />
 
-                <include android:id="@+id/recommendations_layout_id"
+                <include
+                    android:id="@+id/recommendations_layout_id"
                     layout="@layout/recommendations_layout"
                     android:visibility="gone" />
             </LinearLayout>

@@ -19,6 +19,7 @@ import com.android_dev.cleanairspaces.persistence.local.models.entities.MonitorD
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
 import com.android_dev.cleanairspaces.views.adapters.MonitorsAdapter
+import com.android_dev.cleanairspaces.views.fragments.maps_overlay.MapsViewModel
 import com.android_dev.cleanairspaces.views.fragments.monitor_details.MonitorDetailsAqiWrapper
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,7 +54,13 @@ class MonitorsFragment : Fragment(), MonitorsAdapter.OnClickItemListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.monitorsBackHomeBtn.setOnClickListener {
+            if (MapsViewModel.mapViewName == "AMAP"){
+                findNavController().navigate(R.id.AMapsFragment)
+            }else{
+                findNavController().navigate(R.id.GMapsFragment)
+            }
+        }
         viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner, {
             it?.let {
                 viewModel.aqiIndex = it.aqiIndex

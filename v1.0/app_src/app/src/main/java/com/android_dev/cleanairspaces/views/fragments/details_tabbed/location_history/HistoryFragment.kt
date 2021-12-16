@@ -19,6 +19,7 @@ import com.android_dev.cleanairspaces.R
 import com.android_dev.cleanairspaces.databinding.FragmentHistoryBinding
 import com.android_dev.cleanairspaces.persistence.local.models.entities.WatchedLocationHighLights
 import com.android_dev.cleanairspaces.utils.*
+import com.android_dev.cleanairspaces.views.fragments.maps_overlay.MapsViewModel
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.BarChart
@@ -108,7 +109,13 @@ class HistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.historyBackHomeBtn.setOnClickListener {
+            if (MapsViewModel.mapViewName == "AMAP"){
+                findNavController().navigate(R.id.AMapsFragment)
+            }else{
+                findNavController().navigate(R.id.GMapsFragment)
+            }
+        }
         //initially
         selectedParamType = ParamTypes.IN_OUT_PM
         toggleCombinedCharts(showCombined = true)

@@ -23,6 +23,7 @@ import com.android_dev.cleanairspaces.persistence.local.models.ui_models.IndoorF
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsData
 import com.android_dev.cleanairspaces.persistence.local.models.ui_models.formatWatchedHighLightsIndoorExtras
 import com.android_dev.cleanairspaces.utils.*
+import com.android_dev.cleanairspaces.views.fragments.maps_overlay.MapsViewModel.Companion.mapViewName
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -48,9 +49,7 @@ class DetailsFragment : Fragment() {
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
-
     private val viewModel: DetailsViewModel by viewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,7 +71,14 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.detailsBackHomeBtn.setOnClickListener {
+            Log.e(TAG, "onViewCreated: $mapViewName")
+            if (mapViewName == "AMAP"){
+                findNavController().navigate(R.id.AMapsFragment)
+            }else{
+                findNavController().navigate(R.id.GMapsFragment)
+            }
+        }
         viewModel.observeWatchedLocationWithAqi().observe(viewLifecycleOwner, {
             it?.let { watchedLocationWithAqi ->
                 updateGenDetails(watchedLocationWithAqi.watchedLocationHighLights)
@@ -84,7 +90,7 @@ class DetailsFragment : Fragment() {
         })
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (isCheckGooglePlay){
+                if (mapViewName == "AMAP"){
                     findNavController().navigate(R.id.AMapsFragment)
                 }else{
                     findNavController().navigate(R.id.GMapsFragment)
@@ -92,7 +98,6 @@ class DetailsFragment : Fragment() {
             }
 
         })
-
     }
 
     private fun updateGenDetails(watchedLocation: WatchedLocationHighLights) {

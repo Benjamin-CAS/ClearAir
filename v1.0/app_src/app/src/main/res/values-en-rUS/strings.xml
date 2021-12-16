@@ -2,4 +2,197 @@
 <resources>
     <string name="app_name">CleanAir Spaces</string>
     <string name="settings_txt">Settings</string>
+    <string name="default_map_a_map">A Map</string>
+    <string name="map_g_map">G Map</string>
+    <string name="default_aqi_pm_2_5" translatable="true">PM2.5</string>
+    <string name="a_map_act_lbl" translatable="true">A Map</string>
+    <string name="g_map_act_lbl" translatable="true">G Map</string>
+    <string name="loading_txt" translatable="true">Refreshing…</string>
+    <string name="clean_air_spaces_logo_description" translatable="true">Clean Air Spaces Logo</string>
+    <string name="no_google_play_services_err" translatable="true">Google Maps requires google play services</string>
+    <string name="switch_to_a_maps" translatable="true">Use AMap</string>
+    <string name="my_location_btn_desc" translatable="true">show my location on map</string>
+    <string name="about_app_txt" translatable="true">About App</string>
+    <string name="fragment_map_lbl" translatable="true">Home</string>
+    <string name="smart_qr_txt" translatable="true">Smart QR</string>
+    <string name="map_view" translatable="true">Map View</string>
+    <string name="search_location" translatable="true">Search</string>
+    <string name="location_permission_rationale" translatable="true">Permissions required to show your location</string>
+    <string name="got_it_txt" translatable="true">Got It</string>
+    <string name="not_now_txt" translatable="true">Not now</string>
+    <string name="turn_on_gps_prompt" translatable="true">GPS is required to display your location</string>
+    <string name="go_to_settings" translatable="true">Change settings</string>
+    <string name="scan_qr_code_cancelled" translatable="true">Scanning was cancelled</string>
+    <string name="scan_qr_code_unknown" translatable="true">Unknown QR Code</string>
+    <string name="scan_qr_code_prompt" translatable="true">Scan CAS Device Qr Code</string>
+    <string name="search_location_hint" translatable="true">type company or location name</string>
+    <string name="air_status_indicator_desc" translatable="true">air quality status indicator</string>
+    <string name="outdoor_txt" translatable="true">Outdoor</string>
+    <string name="indoor_txt" translatable="true">Indoor</string>
+    <string name="location_logo_image_desc" translatable="true">Location logo</string>
+    <string name="tool_bar_logo_desc" translatable="true">logo</string>
+    <string name="map_menu_help_txt" translatable="true">Help</string>
+    <string name="map_menu_about_app_txt" translatable="true">About App</string>
+    <string name="app_logo_image_desc" translatable="true">app logo</string>
+    <string name="app_version_desc" translatable="true">Version 1.0</string>
+    <string name="got_it" translatable="true">Got it!</string>
+    <string name="dismiss" translatable="true">Dismiss</string>
+    <string name="locations_txt" translatable="true">Locations</string>
+    <string name="map_view_txt" translatable="true">Map View</string>
+    <string name="add_txt" translatable="true">Add</string>
+    <string name="click_to_view_info_txt" translatable="true">Click to view info</string>
+    <string name="map_menu_help_desc_txt" translatable="true">Use Smart Qr to scan your device\'s QR Code and keep track of your location Or simply click Add to search for your location name.\nYou can hide/show the added locations on top of the map by clicking Map View</string>
+    <string name="danger_txt" translatable="true">Bad</string>
+    <string name="pm2_5_lvl_comment" translatable="true">PM2.5 Level</string>
+    <string name="pm2_5_lvl_aqi_us_comment" translatable="true">PM2.5 Level AQI US</string>
+    <string name="good_air_status_txt" translatable="true">Good</string>
+    <string name="moderate_air_status_txt" translatable="true">Moderate</string>
+    <string name="aqi_status_unhealthy_sensitive_groups" translatable="true">Unhealthy for sensitive groups</string>
+    <string name="aqi_status_unhealthy_sensitive_groups_abbrev" translatable="true">Unhealthy F.S.G</string>
+    <string name="aqi_status_unhealthy" translatable="true">Unhealthy</string>
+    <string name="aqi_status_very_unhealthy" translatable="true">Very Unhealthy</string>
+    <string name="aqi_status_hazardous" translatable="true">Hazardous</string>
+    <string name="pm2_5_lvl_aqi_cn_comment" translatable="true">PM2.5 Level AQI CN</string>
+    <string name="condition_excellent" translatable="true">Excellent</string>
+    <string name="condition_lightly" translatable="true">Lightly</string>
+    <string name="condition_heavy" translatable="true">Heavy</string>
+    <string name="condition_severe" translatable="true">Severe</string>
+    <string name="condition_undetermined" translatable="true">Undetermined</string>
+    <string name="voc_lvl_comment" translatable="true">VOC Level</string>
+    <string name="good_voc_lvl_comment" translatable="true">Good VOC Level</string>
+    <string name="moderate_voc_lvl_comment" translatable="true">Moderate VOC Level</string>
+    <string name="unhealthy_voc_lvl_comment" translatable="true">Unhealthy VOC Level</string>
+    <string name="co_2_lvl_comment" translatable="true">CO2 Level</string>
+    <string name="scanned_qr_content_image_desc" translatable="true">Location Logo</string>
+    <string name="site_credentials_txt" translatable="true">Site Credentials</string>
+    <string name="user_name_hint" translatable="true">Username</string>
+    <string name="password_hint" translatable="true">Password</string>
+    <string name="add_location_text" translatable="true">Add Location</string>
+    <string name="cancel_text" translatable="true">Cancel</string>
+    <string name="processing_qr_code" translatable="true">Processing…</string>
+    <string name="parsing_device_qr_failed" translatable="true">Could not parse that device\'s qr code.\nPlease try again later.</string>
+    <string name="parsing_monitor_qr_failed" translatable="true">Could not parse that monitor\'s qr code.\nPlease try again later.</string>
+    <string name="company_name_lbl" translatable="true">Company</string>
+    <string name="location_lbl" translatable="true">Location</string>
+    <string name="device_id_lbl" translatable="true">ID</string>
+    <string name="ref_mon_lbl" translatable="true">Name</string>
+    <string name="location_information" translatable="true">Location Information</string>
+    <string name="location_added_text" translatable="true">Location Added</string>
+    <string name="enter_username_password" translatable="true"><![CDATA[Please enter the username & password]]></string>
+    <string name="device_type_one" translatable="true">CMD - ductFIT</string>
+    <string name="device_type_three" translatable="true">EP550</string>
+    <string name="device_type_four" translatable="true">CMD</string>
+    <string name="device_type_five" translatable="true">KleanSense Air Quality Monitor</string>
+    <string name="device_type_six" translatable="true">Fresh Air Unit</string>
+    <string name="device_type_eight" translatable="true">CMD - Fresh Air</string>
+    <string name="device_type_nine" translatable="true">ductFIT</string>
+    <string name="device_type_ten" translatable="true">Fresh Air Unit</string>
+    <string name="device_type_eleven" translatable="true">ductFIT Cloud</string>
+    <string name="device_type_twelve" translatable="true">ductFIT Wall</string>
+    <string name="device_info_lbl" translatable="true">Device Information</string>
+    <string name="remove_location_text" translatable="true">Remove Location</string>
+    <string name="failed_to_add_location_check_credentials" translatable="true">Adding location failed. Check your credentials</string>
+    <string name="updated_on_prefix" translatable="true">Updated</string>
+    <string name="map_menu_settings_txt" translatable="true">Settings</string>
+    <string name="air_quality_index_txt" translatable="true">Air Quality Index</string>
+    <string name="default_pm_hint_text" translatable="true">PM 2.5 is used by default</string>
+    <string name="save_changes_txt" translatable="true">Save</string>
+    <string name="indoor_details_txt" translatable="true">indoor details</string>
+    <string name="co_lbl" translatable="true">CO2</string>
+    <string name="tvoc_lbl" translatable="true">TVOC</string>
+    <string name="tmp_lbl" translatable="true">Temperature</string>
+    <string name="humidity_lbl" translatable="true">Humidity</string>
+    <string name="indoor_energy_title_txt" translatable="true"><![CDATA[energy efficiency & impact]]></string>
+    <string name="carbon_saved_lbl" translatable="true">Carbon Saved</string>
+    <string name="last_thirty_lbl" translatable="true">Last 30 Days</string>
+    <string name="energy_saved_lbl" translatable="true">Energy Saved</string>
+    <string name="recommendations_txt" translatable="true">recommendations</string>
+    <string name="mask_image_txt" translatable="true">Mask Image</string>
+    <string name="co2_units" translatable="true">ppm</string>
+    <string name="tvoc_units" translatable="true">mg/m³</string>
+    <string name="tmp_units" translatable="true">&#xb0;C</string>
+    <string name="humid_units" translatable="true">%</string>
+    <string name="pm_units" translatable="true">µg/m³</string>
+    <string name="tonnes_txt" translatable="true">Tn</string>
+    <string name="kg_txt" translatable="true">Kg</string>
+    <string name="percent" translatable="true">%</string>
+    <string name="no_mask" translatable="true">No masks necessary</string>
+    <string name="outdoor_acts_suitable" translatable="true">Suitable for outdoor activities</string>
+    <string name="windoors_open" translatable="true">Windows can be openned</string>
+    <string name="air_purify_not_needed" translatable="true">Turn air purification off</string>
+    <string name="masks_recommended" translatable="true">Wear masks while outdoors</string>
+    <string name="avoid_outdoors" translatable="true">Avoid outdoor activities</string>
+    <string name="close_windows" translatable="true">Keep windows closed</string>
+    <string name="air_purify_needed" translatable="true">Air purification should be tured on</string>
+    <string name="masks_recommended_sensitive" translatable="true">Masks recommended for sensitive groups</string>
+    <string name="minimal_outdoor_acts" translatable="true">Limit outdoor activities</string>
+    <string name="air_purify_recommended" translatable="true">Air purification recommended\"</string>
+    <string name="a_map_language_settings" translatable="true">A Map Language</string>
+    <string name="details_fragment_lbl" translatable="true">Latest Info</string>
+    <string name="history_fragment_lbl" translatable="true">History</string>
+    <string name="last_seven_two_hours" translatable="true">Last 72 hours</string>
+    <string name="loading_graph_data" translatable="true">Loading data …</string>
+    <string name="last_week_lbl" translatable="true">Last week</string>
+    <string name="air_quality_txt" translatable="true">Air Quality</string>
+    <string name="outdoors_air_quality_txt" translatable="true">Outdoor Air Quality</string>
+    <string name="search" translatable="true">Search location or city</string>
+    <string name="search_long_hint" translatable="true">Search for an indoor or out door location such as a city</string>
+    <string name="default_pm_text" translatable="true">PM2.5</string>
+    <string name="map_settings_hint" translatable="true">Map</string>
+    <string name="google_maps_hint" translatable="true">*Google Maps requires google play services</string>
+    <string name="default_pm_text_settings" translatable="true">PM 2.5 is used by default</string>
+    <string name="settings_act_lbl" translatable="true">Settings</string>
+    <string name="select_history_type_hint" translatable="true">Info</string>
+    <string name="indoor_air_quality_txt" translatable="true">Indoor Air Quality</string>
+    <string name="add_location_failed_text" translatable="true">Failed to add that location… try again</string>
+    <string name="add_location_ongoing_text" translatable="true">Adding location</string>
+    <string name="failed_to_load_gmap" translatable="true">Google maps loading failed!</string>
+    <string name="search_found_indoor_locations_hint" translatable="true">Search</string>
+    <string name="location_added_suffix" translatable="true">added</string>
+    <string name="done_txt" translatable="true">DONE</string>
+    <string name="add_location_hint" translatable="true">Click the right add icon for each location you wish to track</string>
+    <string name="fetch_monitors_txt" translatable="true">Search Monitors</string>
+    <string name="monitors_fragment_lbl" translatable="true">Monitors</string>
+    <string name="monitor_credentials_required" translatable="true"><![CDATA[Username & password are required]]></string>
+    <string name="monitor_pm_2_5_lbl" translatable="true">PM 2.5:</string>
+    <string name="monitor_tvoc_lbl" translatable="true">TVOC:</string>
+    <string name="monitor_co2_lbl" translatable="true">CO2:</string>
+    <string name="monitor_temperature_lbl" translatable="true">Temperature:</string>
+    <string name="monitor_humidity_lbl" translatable="true">Humidity:</string>
+    <string name="is_watching_loc_iv_desc" translatable="true">is watching location indicator</string>
+    <string name="turn_on_network_loc_provider" translatable="true">"Turn on location access in settings"</string>
+    <string name="fragment_about_app_lbl" translatable="true">About CleanAir Spaces</string>
+    <string name="app_copyright_txt" translatable="true">Copyright &#169; 2021 CleanAir Spaces</string>
+    <string name="web_view_fragment_lbl" translatable="true">CleanAir Spaces</string>
+    <string name="devices_fragment_lbl" translatable="true">Devices</string>
+    <string name="fetch_devices_txt" translatable="true">Show Devices</string>
+    <string name="device_credentials_required" translatable="true">Please provide username and password</string>
+    <string name="invalid_device_credentials" translatable="true">Invalid username or password</string>
+    <string name="device_type_lbl" translatable="true">Type</string>
+    <string name="device_mode_lbl" translatable="true">Mode</string>
+    <string name="status_on" translatable="true">On</string>
+    <string name="status_off" translatable="true">Off</string>
+    <string name="fan_basic_manual" translatable="true">Manual</string>
+    <string name="device_fan_lbl" translatable="true">Fan</string>
+    <string name="fan_ext_low" translatable="true">Low</string>
+    <string name="fan_basic_automatic" translatable="true">Auto</string>
+    <string name="fan_ext_medium" translatable="true">Med</string>
+    <string name="fan_ext_high" translatable="true">High</string>
+    <string name="device_duct_fit_lbl" translatable="true">ductFIT</string>
+    <string name="device_fresh_air_lbl" translatable="true">Fresh Air</string>
+    <string name="no_devices_found" translatable="true">No devices found</string>
+    <string name="status_paused" translatable="true">Paused</string>
+    <string name="status_disconnected" translatable="true">Disconnected</string>
+    <string name="status_refreshing" translatable="true">Refreshing</string>
+    <string name="status_low" translatable="true">Low speed</string>
+    <string name="status_med" translatable="true">Medium speed</string>
+    <string name="status_high" translatable="true">High speed</string>
+    <string name="device_status_uv_issues_display_lbl" translatable="true">UV Has Issues</string>
+    <string name="device_type_thirteen" translatable="true">DuctFit Mobile</string>
+    <string name="fan_ext_sleep" translatable="true">Sleep</string>
+    <string name="fan_ext_turbo" translatable="true">Turbo</string>
+    <string name="is_watching_dev_iv_desc" translatable="true">Watch this device</string>
+    <string name="status_restarting" translatable="true">Restarting</string>
+    <string name="back_monitor_btn_text" translatable="true"><![CDATA[<Back Monitor]]></string>
+    <string name="back_home_btn_text" translatable="true"><![CDATA[<Home]]></string>
 </resources>

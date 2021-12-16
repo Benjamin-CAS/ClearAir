@@ -20,19 +20,18 @@
         />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/location_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/location_logo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
-        android:id="@+id/location_name_tv"
-        android:singleLine="true"
         android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:layout_marginTop="@dimen/sm_space"
         android:gravity="center"
-        android:textStyle="bold"/>
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:textAppearance="@style/Theme.CleanAirSpaces.Subtitle1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/back_monitor_btn" />
 
     <TextView
         android:id="@+id/select_hint_tv"
@@ -409,4 +408,15 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
+
+    <Button
+        android:id="@+id/back_monitor_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/back_monitor_btn_text"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

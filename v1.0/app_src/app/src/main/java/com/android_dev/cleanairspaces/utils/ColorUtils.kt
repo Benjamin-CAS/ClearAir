@@ -66,5 +66,4 @@ fun getColorResFromHumid(humid: Double): Int {
     } else {
         R.color.aqi_good
     }
-
 }

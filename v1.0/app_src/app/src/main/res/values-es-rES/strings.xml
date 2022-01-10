@@ -14,7 +14,7 @@
     <string name="my_location_btn_desc" translatable="true">Mostrar mi ubicación en el mapa</string>
     <string name="about_app_txt" translatable="true">Sobre la aplicación</string>
     <string name="fragment_map_lbl" translatable="true">Hogar</string>
-    <string name="smart_qr_txt" translatable="true">QR inteligente</string>
+    <string name="smart_qr_txt" translatable="true">Smart QR</string>
     <string name="map_view" translatable="true">Vista del mapa</string>
     <string name="search_location" translatable="true">Búsqueda</string>
     <string name="location_permission_rationale" translatable="true">Mostrar los permisos necesarios para su ubicación</string>

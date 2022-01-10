@@ -222,10 +222,11 @@ class AMapsFragment : BaseMapFragment() {
 
     private fun setMapLang(mapLangSet: String?) {
         aMap?.apply {
-            if (mapLangSet == null || mapLangSet == getString(R.string.map_lang_chinese)) {
-                setMapLanguage(AMap.CHINESE)
-            } else {
-                setMapLanguage(AMap.ENGLISH)
+            when(mapLangSet){
+                null -> setMapLanguage(AMap.CHINESE)
+                getString(R.string.map_lang_chinese) -> setMapLanguage(AMap.CHINESE)
+                getString(R.string.map_lang_english) -> setMapLanguage(AMap.ENGLISH)
+                else -> setMapLanguage(AMap.ENGLISH)
             }
         }
     }

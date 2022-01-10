@@ -81,9 +81,7 @@ class LocationHistoryViewModel
         viewModelScope.launch(Dispatchers.IO) {
             val lastUpdate = repo.getLastTimeUpdatedHistory(dataTag)
             val timeNow = System.currentTimeMillis()
-            if (lastUpdate == null
-                || hasExpired(timeNow, lastUpdate)
-            ) {
+            if (lastUpdate == null || hasExpired(timeNow, lastUpdate)) {
                 withContext(context = Dispatchers.Main) {
                     fetchHistory(
                         compId = location.compId,

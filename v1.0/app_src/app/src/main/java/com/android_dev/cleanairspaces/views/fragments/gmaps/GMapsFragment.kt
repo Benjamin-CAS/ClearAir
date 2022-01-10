@@ -123,7 +123,6 @@ class GMapsFragment : BaseMapFragment(), OnMapReadyCallback {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initLocationPermissionsLauncher()
         initQrScannerLauncher()
 

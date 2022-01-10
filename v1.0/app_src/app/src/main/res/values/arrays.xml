@@ -1,6 +1,8 @@
 <resources>
     <!--  SETTINGS  DO NOT TRANSLATE-->
     <string name="map_lang_chinese" translatable="false">Chinese</string>
+    <string name="map_lang_english" translatable="false">English</string>
+    <string name="map_lang_spain" translatable="false">Spain</string>
     <string-array name="map_languages">
         <item>Chinese</item>
         <item>English</item>

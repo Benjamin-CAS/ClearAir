@@ -110,9 +110,9 @@ class HistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.historyBackHomeBtn.setOnClickListener {
-            if (MapsViewModel.mapViewName == "AMAP"){
+            if (MapsViewModel.mapViewName == "AMAP") {
                 findNavController().navigate(R.id.AMapsFragment)
-            }else{
+            } else {
                 findNavController().navigate(R.id.GMapsFragment)
             }
         }
@@ -137,16 +137,17 @@ class HistoryFragment : Fragment() {
                 refreshLocationHistory(it.watchedLocationHighLights.actualDataTag)
             }
         })
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (isCheckGooglePlay){
-                    findNavController().navigate(R.id.AMapsFragment)
-                }else{
-                    findNavController().navigate(R.id.GMapsFragment)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isCheckGooglePlay) {
+                        findNavController().navigate(R.id.AMapsFragment)
+                    } else {
+                        findNavController().navigate(R.id.GMapsFragment)
+                    }
                 }
-            }
 
-        })
+            })
         observeHistoryData()
     }
 
@@ -173,19 +174,15 @@ class HistoryFragment : Fragment() {
                 if (it != null)
                     viewModel.setDaysHistory(it)
             })
-        viewModel.observeHistories(actualDataTag).week.observe(
-            viewLifecycleOwner,
-            {
-                if (it != null)
-                    viewModel.setWeekHistory(it)
-            })
+        viewModel.observeHistories(actualDataTag).week.observe(viewLifecycleOwner, {
+            if (it != null)
+                viewModel.setWeekHistory(it)
+        })
 
-        viewModel.observeHistories(actualDataTag).month.observe(
-            viewLifecycleOwner,
-            {
-                if (it != null)
-                    viewModel.setMonthHistory(it)
-            })
+        viewModel.observeHistories(actualDataTag).month.observe(viewLifecycleOwner, {
+            if (it != null)
+                viewModel.setMonthHistory(it)
+        })
 
     }
 
@@ -612,8 +609,6 @@ class HistoryFragment : Fragment() {
             axisRight.isEnabled = false
             axisLeft.isEnabled = true
             tag = barChartTag
-
-
             val legendGood = LegendEntry()
             legendGood.label = getString(R.string.good_air_status_txt)
             legendGood.formColor = goodColor
@@ -677,8 +672,6 @@ class HistoryFragment : Fragment() {
             axisRight.isEnabled = false
             axisLeft.isEnabled = true
             tag = combinedChartTag
-
-
             val legendGood = LegendEntry()
             legendGood.label = getString(R.string.good_air_status_txt)
             legendGood.formColor = goodColor
@@ -710,13 +703,8 @@ class HistoryFragment : Fragment() {
                 textSize = 12f
                 axisMinimum = 0f
                 xAxis.setDrawLabels(false)
-
             }
-
-
             setNoDataTextTypeface(titleFont)
-
-
             setTouchEnabled(true)
             setPinchZoom(false)
             isDoubleTapToZoomEnabled = false
@@ -725,9 +713,7 @@ class HistoryFragment : Fragment() {
             setNoDataTextTypeface(bodyFont)
             setNoDataTextColor(blackColor)
             animateX(1000, Easing.EaseInExpo)
-
             setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-
                 override fun onValueSelected(e: Entry?, h: Highlight?) {
                     e?.let { entry ->
                         val isOutDoorData = h?.dataIndex != 1
@@ -739,7 +725,6 @@ class HistoryFragment : Fragment() {
                     clearClickedValue(combinedChartTag)
                 }
             })
-
         }
     }
 
@@ -781,7 +766,6 @@ class HistoryFragment : Fragment() {
                             "displayClickedValue",
                             "${viewModel.currentOutdoorDatesForWeekChart.size} -- read"
                         )
-
                         "$prefixTxt ${viewModel.currentOutdoorDatesForWeekChart[pos]} $value $unitsTxt"
                     } else
                         "$prefixTxt ${viewModel.currentDatesForWeekChart[pos]} $value $unitsTxt"
@@ -892,7 +876,6 @@ class HistoryFragment : Fragment() {
             ParamTypes.HUMIDITY -> getColorResFromHumid(value.toDouble())
             ParamTypes.CO2 -> getColorResFromCO2(value.toDouble())
         }
-
     }
 
     private fun getMaximumY(
@@ -973,7 +956,6 @@ class HistoryFragment : Fragment() {
             }
             val daysHistoryDataSet = MyBarDataSet(entries, title)
             styleBarDataSet(daysHistoryDataSet, valColorMap)
-
             chart.apply {
                 axisLeft.axisMaximum = getMaximumY(chartData)
                 invalidate()
@@ -998,7 +980,6 @@ class HistoryFragment : Fragment() {
         indoorChartData: List<Float>
     ) {
         try {
-
             //Outdoor data --- line data
             val mLineData = LineData()
             val outDoorEntries = ArrayList<Entry>()
